@@ -1,0 +1,8 @@
+message:
+    username: Username required
+    password: Password required
+    unauth: Unauthorized access!!
+    badCredentials: Invalid username or password
+    sessionExpired: Session timed out
+    logoutError: Sorry, error login out
+    logoutSucc: You logged out successfully
