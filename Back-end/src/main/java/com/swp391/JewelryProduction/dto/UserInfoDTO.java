@@ -1,24 +1,23 @@
 package com.swp391.JewleryProduction.dto;
 
 import com.swp391.JewleryProduction.enums.Gender;
-import com.swp391.JewleryProduction.enums.Role;
+import com.swp391.JewleryProduction.pojos.Account;
+import jakarta.persistence.Column;
+import jakarta.persistence.OneToOne;
 import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Data
 @Builder
-public class UserDTO {
-    private String id;
-    private String email;
-    private LocalDateTime dateCreated;
-    private Role role;
+public class UserInfoDTO {
+    private Integer id;
     private String firstName;
     private String lastName;
     private LocalDate birthDate;
     private Gender gender;
     private long phoneNumber;
     private String address;
+    private Account account;
 }
