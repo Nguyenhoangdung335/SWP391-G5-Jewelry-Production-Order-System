@@ -39,6 +39,19 @@ function OrderPage1() {
     }
   }, [selectedType]);
 
+  const productSpecification = {
+    selectedType,
+    selectedStyle,
+    selectedOccasion,
+    selectedChainType,
+    selectedTexture,
+    selectedGem,
+    selectedGemShape,
+    selectedGemWeight,
+    selectedMetal,
+    selectedLength,
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log(selectedLength);
@@ -48,18 +61,7 @@ function OrderPage1() {
       method: "POST",
       url: `${ServerUrl}/api/product/customize`,
       headers: { "Content-Type": "application/json" },
-      data: {
-        selectedType,
-        selectedStyle,
-        selectedOccasion,
-        selectedChainType,
-        selectedTexture,
-        selectedGem,
-        selectedGemShape,
-        selectedGemWeight,
-        selectedMetal,
-        selectedLength,
-      },
+      data: productSpecification,
     })
       .then((response) => {
         // Create a components for quotation
