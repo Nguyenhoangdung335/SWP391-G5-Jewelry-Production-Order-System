@@ -142,7 +142,7 @@ export default function SignUp() {
             </Button>
           </div>
         </Form>
-        <div className="d-flex align-items-center my-3">
+        {/* <div className="d-flex align-items-center my-3">
           <div style={{ flex: 1, height: "1px", backgroundColor: "#000" }} />
           <span className="mx-3 text-muted">Or</span>
           <div style={{ flex: 1, height: "1px", backgroundColor: "#000" }} />
@@ -161,8 +161,8 @@ export default function SignUp() {
             style={{ borderRadius: 10, padding: "5px 10px" }}
           >
             <FaGithub size={20} />
-          </Button>
-        </div>
+          </Button> */}
+        {/* </div> */}
       </div>
     </Container>
   );

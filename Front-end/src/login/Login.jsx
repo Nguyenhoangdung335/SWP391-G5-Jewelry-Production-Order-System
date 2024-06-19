@@ -125,7 +125,7 @@ export default function Login() {
               </Button>
             </div>
           </Form>
-          <div className="d-flex align-items-center my-3">
+          {/* <div className="d-flex align-items-center my-3">
             <div style={{ flex: 1, height: "1px", backgroundColor: "#000" }} />
             <span className="mx-3 text-muted">Or</span>
             <div style={{ flex: 1, height: "1px", backgroundColor: "#000" }} />
@@ -137,7 +137,7 @@ export default function Login() {
             <Button variant="outline-dark" className="mx-2">
               <FaGithub />
             </Button>
-          </div>
+          </div> */}
           <p className="text-center text-muted">
             Don’t have an account?{" "}
             <Link to="/signup" className="text-decoration-underline text-muted">
