@@ -4,8 +4,7 @@ import { Container, Form, Button } from "react-bootstrap";
 import { FaGoogle, FaGithub } from "react-icons/fa";
 import { useAuth } from "../provider/AuthProvider";
 import axios from "axios";
-import BlueDiamond from "../assets/BlueDiamond.jpg";
-import Download from "../assets/download.jpg";
+import ServerUrl from "../reusable/ServerUrl";
 // import UseFetch from "../hooks/useFetch";
 
 export default function Login() {
@@ -14,6 +13,8 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const { setToken } = useAuth();
   const navigate = useNavigate();
+
+  console.log(ServerUrl);
 
   //Handle submit
   const handleSubmit = async (e) => {
@@ -25,7 +26,7 @@ export default function Login() {
       //Send user's input to backend
       axios({
         method: "POST",
-        url: "http://localhost:8080/api/registration/login",
+        url: `${ServerUrl}/api/registration/login`,
         headers: { "Content-Type": "application/json" },
         data: { email, password },
       })

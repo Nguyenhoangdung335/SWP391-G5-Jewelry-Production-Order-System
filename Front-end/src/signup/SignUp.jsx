@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Container, Form, Button, Alert } from "react-bootstrap";
 import { FaGoogle, FaGithub } from "react-icons/fa";
 import axios from "axios";
+import ServerUrl from "../reusable/ServerUrl";
 
 export default function SignUp() {
   const [validated, setValidated] = useState(false);
@@ -30,7 +31,7 @@ export default function SignUp() {
       //Fetch Data in here
       axios({
         method: "POST",
-        url: "http://localhost:8080/api/registration/register",
+        url: `${ServerUrl}/api/registration/register`,
         headers: {
           "Content-Type": "application/json",
         },

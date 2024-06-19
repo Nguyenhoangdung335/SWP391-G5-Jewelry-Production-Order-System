@@ -3,6 +3,7 @@ import { RiArrowLeftLine, RiArrowRightLine } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
 import { Container, Form, Button } from "react-bootstrap";
 import axios from "axios";
+import ServerUrl from "../reusable/ServerUrl";
 
 export default function ResetPassword() {
   const [validated, setValidated] = useState(false);
@@ -22,7 +23,7 @@ export default function ResetPassword() {
       e.preventDefault();
       axios({
         method: "POST",
-        url: "http://localhost:8080/api/registration/forget-password",
+        url: `${ServerUrl}/api/registration/forget-password`,
         headers: { "Content-Type": "application/json", key: email },
       })
         .then((response) => {

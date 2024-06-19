@@ -19,6 +19,10 @@ export default function Header() {
     }
   });
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+  };
+
   const items = [
     {
       key: "1",

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { RiArrowLeftLine, RiArrowRightLine } from "react-icons/ri";
 import { Container, Form, Button } from "react-bootstrap";
 import axios from "axios";
+import ServerUrl from "../reusable/ServerUrl";
 
 export default function OtpScreen() {
   const [validated, setValidated] = useState(false);
@@ -30,7 +31,7 @@ export default function OtpScreen() {
       e.preventDefault();
       axios({
         method: "POST",
-        url: `http://localhost:8080/api/registration/verify?otp=${otp}`,
+        url: `${ServerUrl}/api/registration/verify?otp=${otp}`,
         headers: { "Content-Type": "application/json", key: email },
       })
         .then((response) => {

@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useState } from "react";
 import { Container, Form, Button, Row, Col, Alert } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import ServerUrl from "../reusable/ServerUrl";
 
 export default function Information() {
   const [validated, setValidated] = useState(false);
@@ -28,7 +29,7 @@ export default function Information() {
 
       axios({
         method: "POST",
-        url: "http://localhost:8080/api/registration/user-info",
+        url: `${ServerUrl}/api/registration/user-info`,
         headers: {
           "Content-Type": "application/json",
           key: email,
