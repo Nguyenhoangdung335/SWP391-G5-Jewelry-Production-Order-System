@@ -7,10 +7,11 @@ import ImageRotator from "../components/ImageRotator";
 function Home() {
   return (
     <>
-      <Carousel />
-
+      <div className="carousel-banner" style={{ margin: "5px 0px 5px" }}>
+        <Carousel />
+      </div>
       {/*Collections section*/}
-      <div >
+      <div>
         <div
           className="slider-bar d-flex align-content-center justify-content-center p-2"
           style={{ backgroundColor: "#4B4B4B", marginBottom: "10px" }}
@@ -19,7 +20,9 @@ function Home() {
             to={"/collections_page"}
             className="text-decoration-none text-white fw-bold"
           >
-            <h2 className="mt-1 pt-1 pb-1">OUR COLLECTIONS</h2>
+            <div>
+              <h2 className="mt-1 pt-1 pb-1 fw-bold">OUR COLLECTIONS</h2>
+            </div>
           </Link>
         </div>
         <ImageRotator />
@@ -27,11 +30,11 @@ function Home() {
 
       {/*About us section*/}
       <section
-        className="about-us-section text-white mb-2 mt-2 p-2 pb-5 "
+        className="about-us-section text-white mb-4 mt-4 p-2 pb-5 "
         style={{ backgroundColor: "#4B4B4B" }}
       >
         <h2 className="text-center mt-1 pt-3 pb-3 fw-bold">ABOUT US</h2>
-        <Row className="w-100" style={{marginLeft:"1px"}}>
+        <Row className="w-100" style={{ marginLeft: "1px" }}>
           <Col className="about-us-context align-content-center">
             <div
               className="w-75"
@@ -80,8 +83,8 @@ function Home() {
         </div>
       </div>
 
-      <section className="feedback-section mb-2">
-        <div className="customers-feedbakcs d-flex justify-content-center mb-3">
+      <section className="feedback-section mb-2 w-75" style={{margin:"0px auto"}}>
+        <div className="customers-feedbakcs d-flex justify-content-center mb-5">
           <div
             className="d-inline-flex justify-content-between"
             style={{ width: "80%" }}

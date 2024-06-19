@@ -5,7 +5,6 @@ import { FaGoogle, FaGithub } from "react-icons/fa";
 import { useAuth } from "../provider/AuthProvider";
 import axios from "axios";
 import ServerUrl from "../reusable/ServerUrl";
-// import UseFetch from "../hooks/useFetch";
 
 export default function Login() {
   const [validated, setValidated] = useState(false);
