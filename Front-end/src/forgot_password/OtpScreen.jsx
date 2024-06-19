@@ -45,7 +45,7 @@ export default function OtpScreen() {
             } else if (purpose === "register") {
               navigate("/info");
             }
-          } else if (response.status === "BAD REQUEST")
+          } else if (response.status === 400)
             throw new Error(response.message);
         })
         .catch((error) => {
@@ -65,7 +65,7 @@ export default function OtpScreen() {
       .then((response) => {
         if (response.status === 200) {
           alert("Your OTP has been resent!!");
-        } else if (response.status === "BAD REQUEST")
+        } else if (response.status === 400)
           throw new Error(response.message);
       })
       .catch((error) => {

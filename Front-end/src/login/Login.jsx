@@ -35,7 +35,7 @@ export default function Login() {
             alert(response.data.message);
             setToken(response.data.responseList.token);
             navigate("/");
-          } else if (response.status === "BAD REQUEST") {
+          } else if (response.status === 400) {
             throw new Error(response.message);
           }
         })

@@ -42,7 +42,7 @@ export default function SignUp() {
             localStorage.setItem("purpose", "register");
             localStorage.setItem("email", email);
             navigate("/otp");
-          } else if (response.status === "BAD REQUEST") {
+          } else if (response.status === 400) {
             throw new Error(response.message);
           }
         })

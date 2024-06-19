@@ -41,7 +41,7 @@ export default function ConfirmPassword() {
             localStorage.removeItem("purpose");
             localStorage.removeItem("email");
             navigate("/login");
-          } else if (response.status === "BAD REQUEST") {
+          } else if (response.status === 400) {
             throw new Error(response.message);
           }
         })

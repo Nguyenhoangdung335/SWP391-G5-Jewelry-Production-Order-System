@@ -31,7 +31,7 @@ export default function ResetPassword() {
             navigate("/otp");
             localStorage.setItem("purpose", "reset_password");
             localStorage.setItem("email", email);
-          } else if (response.status === "BAD REQUEST")
+          } else if (response.status === 400)
             throw new Error(response.message);
         })
         .catch((error) => {
