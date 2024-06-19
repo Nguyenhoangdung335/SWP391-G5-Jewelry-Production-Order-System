@@ -78,9 +78,9 @@ export default function Header() {
             style={{ right: "-2%" }}
           />
           <input
-            className="w-100 py-1"
+            className="w-100 py-1 border-1"
             style={{
-              borderRadius: 20,
+              borderRadius: 30,
               backgroundColor: "rgba(255, 251, 251, 1)",
             }}
             type="text"

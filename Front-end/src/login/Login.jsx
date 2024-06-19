@@ -31,7 +31,6 @@ export default function Login() {
         data: { email, password },
       })
         .then((response) => {
-          console.log(response.data.responseList.token);
           if (response.status === 200) {
             alert(response.data.message);
             setToken(response.data.responseList.token);
@@ -81,7 +80,7 @@ export default function Login() {
                 placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="border-2"
+                className="border-1"
                 style={{ borderColor: "#000", borderRadius: 10 }}
               />
               <Form.Control.Feedback type="invalid">
@@ -94,7 +93,7 @@ export default function Login() {
                 required
                 type="password"
                 placeholder="Password"
-                className="border-2"
+                className="border-1"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 style={{ borderColor: "#000", borderRadius: 10 }}
@@ -114,7 +113,7 @@ export default function Login() {
             <div className="d-flex justify-content-center mb-3">
               <Button
                 type="submit"
-                className="w-75 border-2"
+                className="w-75 border-1"
                 style={{
                   backgroundColor: "rgba(201, 201, 201, 1)",
                   borderColor: "#000",
@@ -131,7 +130,7 @@ export default function Login() {
             <span className="mx-3 text-muted">Or</span>
             <div style={{ flex: 1, height: "1px", backgroundColor: "#000" }} />
           </div>
-          <div className="d-flex justify-content-center mb-3">
+          <div className="d-flex justify-content-center border-1">
             <Button variant="outline-dark" className="mx-2">
               <FaGoogle />
             </Button>

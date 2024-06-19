@@ -85,7 +85,7 @@ export default function SignUp() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Email"
-              className="border-2"
+              className="border-1"
               style={{ borderColor: "#000", borderRadius: 10 }}
             />
             <Form.Control.Feedback type="invalid">
@@ -98,7 +98,7 @@ export default function SignUp() {
               required
               type="password"
               placeholder="Password"
-              className="border-2"
+              className="border-1"
               style={{ borderColor: "#000", borderRadius: 10 }}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -113,7 +113,7 @@ export default function SignUp() {
               required
               type="password"
               placeholder="Confirm Password"
-              className="border-2"
+              className="border-1"
               style={{ borderColor: "#000", borderRadius: 10 }}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
@@ -130,7 +130,7 @@ export default function SignUp() {
           <div className="d-flex justify-content-center mb-3">
             <Button
               type="submit"
-              className="w-75 border-2"
+              className="w-75 border-1"
               style={{
                 backgroundColor: "rgba(201, 201, 201, 1)",
                 borderColor: "#000",

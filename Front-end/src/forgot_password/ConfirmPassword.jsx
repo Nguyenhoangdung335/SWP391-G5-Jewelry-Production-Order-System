@@ -75,7 +75,7 @@ export default function ConfirmPassword() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Password"
-              className="border-2"
+              className="border-1"
               style={{
                 borderColor: "#000",
                 borderRadius: 10,
@@ -92,7 +92,7 @@ export default function ConfirmPassword() {
               required
               type="password"
               placeholder="Confirm Password"
-              className="border-2"
+              className="border-1"
               style={{ borderColor: "#000", borderRadius: 10 }}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
@@ -108,7 +108,7 @@ export default function ConfirmPassword() {
             <Button
               type="button"
               onClick={handleBack}
-              className="d-flex align-items-center border-2"
+              className="d-flex align-items-center border-1"
               style={{
                 backgroundColor: "rgba(201, 201, 201, 1)",
                 borderColor: "#000",
@@ -120,7 +120,7 @@ export default function ConfirmPassword() {
             </Button>
             <Button
               type="submit"
-              className="d-flex align-items-center border-2"
+              className="d-flex align-items-center border-1"
               style={{
                 backgroundColor: "rgba(201, 201, 201, 1)",
                 borderColor: "#000",

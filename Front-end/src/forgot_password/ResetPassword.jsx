@@ -64,7 +64,7 @@ export default function ResetPassword() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Email"
-              className="border-2"
+              className="border-1"
               style={{ borderColor: "#000", borderRadius: 10 }}
             />
             <Form.Control.Feedback type="invalid">
@@ -75,7 +75,7 @@ export default function ResetPassword() {
             <Button
               type="button"
               onClick={handleBack}
-              className="d-flex align-items-center border-2"
+              className="d-flex align-items-center border-1"
               style={{
                 backgroundColor: "rgba(201, 201, 201, 1)",
                 borderColor: "#000",
@@ -87,7 +87,7 @@ export default function ResetPassword() {
             </Button>
             <Button
               type="submit"
-              className="d-flex align-items-center border-2"
+              className="d-flex align-items-center border-1"
               style={{
                 backgroundColor: "rgba(201, 201, 201, 1)",
                 borderColor: "#000",

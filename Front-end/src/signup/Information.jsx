@@ -99,7 +99,7 @@ export default function Information() {
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                   name="firstName"
-                  className="border-2"
+                  className="border-1"
                   style={{ borderColor: "#000", borderRadius: 10 }}
                 />
                 <Form.Control.Feedback type="invalid">
@@ -116,7 +116,7 @@ export default function Information() {
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                   name="lastName"
-                  className="border-2"
+                  className="border-1"
                   style={{ borderColor: "#000", borderRadius: 10 }}
                 />
                 <Form.Control.Feedback type="invalid">
@@ -133,7 +133,7 @@ export default function Information() {
               value={birthDate}
               onChange={(e) => setBirthDate(e.target.value)}
               name="dob"
-              className="border-2"
+              className="border-1"
               style={{ borderColor: "#000", borderRadius: 10 }}
             />
             <Form.Control.Feedback type="invalid">
@@ -178,7 +178,7 @@ export default function Information() {
               pattern="[0-9]{10}"
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
-              className="border-2"
+              className="border-1"
               style={{ borderColor: "#000", borderRadius: 10 }}
             />
             <Form.Control.Feedback type="invalid">
@@ -192,7 +192,7 @@ export default function Information() {
               type="text"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              className="border-2"
+              className="border-1"
               style={{ borderColor: "#000", borderRadius: 10 }}
             />
             <Form.Control.Feedback type="invalid">
@@ -202,7 +202,7 @@ export default function Information() {
           <div className="d-flex justify-content-center">
             <Button
               type="submit"
-              className="w-75 border-2"
+              className="w-75 border-1"
               style={{
                 backgroundColor: "#ccc",
                 borderColor: "#000",
