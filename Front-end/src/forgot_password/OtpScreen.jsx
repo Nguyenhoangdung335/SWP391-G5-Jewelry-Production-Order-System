@@ -56,7 +56,7 @@ export default function OtpScreen() {
     setValidated(true);
   };
 
-  const handleRegenerate = () => {
+  const handleResend = () => {
     axios({
       method: "POST",
       url: `${ServerUrl}/api/registration/resend-otp`,
@@ -101,8 +101,8 @@ export default function OtpScreen() {
               style={{ borderColor: "#000", borderRadius: "10px 0px 0px 10px" }}
             />
             <Button
-              onClick={handleRegenerate}
-              title="Regenerate OTP"
+              onClick={handleResend}
+              title="Resend OTP"
               variant="outline-secondary"
               style={{ borderRadius: "0 10px 10px 0" }}
             >
