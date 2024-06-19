@@ -19,6 +19,7 @@ export default function OtpScreen() {
       navigate("/signup");
     }
   };
+  console.log(email);
 
   const handleSubmit = (e) => {
     const form = e.currentTarget;
@@ -29,17 +30,15 @@ export default function OtpScreen() {
       e.preventDefault();
       axios({
         method: "POST",
-        url:
-          "https://swp391-g5-jewelry-production-order-system.onrender.com/api/registration/verify?" +
-          { otp },
-        headers: { "Content-Type": "application/json", key: { email } },
+        url: `http://localhost:8080/api/registration/verify?otp=${otp}`,
+        headers: { "Content-Type": "application/json", key: email },
       })
         .then((response) => {
-          if (response.status === "OK") {
+          if (response.status === 200) {
             if (purpose === "reset_password") {
               navigate("/new_password");
             } else if (purpose === "register") {
-              navigate("/signup");
+              navigate("/info");
             }
           } else if (response.status === "BAD REQUEST")
             throw new Error(response.message);

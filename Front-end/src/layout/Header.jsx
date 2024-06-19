@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { IoSearchCircle } from "react-icons/io5";
 import { IoNotificationsOutline } from "react-icons/io5";
@@ -6,8 +6,19 @@ import { GoPerson } from "react-icons/go";
 import { Button } from "react-bootstrap";
 import { Dropdown } from "antd";
 import { jwtDecode } from "jwt-decode";
+import { useAuth } from "../provider/AuthProvider";
 
 export default function Header() {
+  const [role, setRole] = useState("GUEST");
+  const { token } = useAuth();
+
+  useEffect(() => {
+    if (token) {
+      const decodedToken = jwtDecode(token);
+      setRole(decodedToken.role);
+    }
+  });
+
   const items = [
     {
       key: "1",
@@ -34,13 +45,6 @@ export default function Header() {
       ),
     },
   ];
-
-  const token = localStorage.getItem("token");
-  const [role, setRole] = useState("GUEST");
-  if (token) {
-    const decodedToken = jwtDecode(token);
-    setRole(decodedToken.role);
-  }
 
   return (
     <div

@@ -22,11 +22,11 @@ export default function ResetPassword() {
       e.preventDefault();
       axios({
         method: "POST",
-        url: "https://swp391-g5-jewelry-production-order-system.onrender.com/api/registration/forget-password",
-        headers: { "Content-Type": "application/json", key: { email } },
+        url: "http://localhost:8080/api/registration/forget-password",
+        headers: { "Content-Type": "application/json", key: email },
       })
         .then((response) => {
-          if (response.status === "OK") {
+          if (response.status === 200) {
             navigate("/otp");
             localStorage.setItem("purpose", "reset_password");
             localStorage.setItem("email", email);

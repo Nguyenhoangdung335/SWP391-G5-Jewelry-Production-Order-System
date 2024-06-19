@@ -6,7 +6,7 @@ import axios from "axios";
 
 export default function ConfirmPassword() {
   const [validated, setValidated] = useState(false);
-  const [newPassword, setNewPassword] = useState("");
+  const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordMatch, setPasswordMatch] = useState(true);
   const navigate = useNavigate();
@@ -19,25 +19,24 @@ export default function ConfirmPassword() {
 
   const handleSubmit = (e) => {
     const form = e.currentTarget;
-    if (form.checkValidity() === false || newPassword !== confirmPassword) {
+    if (form.checkValidity() === false || password !== confirmPassword) {
       e.preventDefault();
       e.stopPropagation();
-      if (newPassword !== confirmPassword) {
+      if (password !== confirmPassword) {
         setPasswordMatch(false);
       }
     } else {
       e.preventDefault();
       axios({
         method: "POST",
-        url: "https://swp391-g5-jewelry-production-order-system.onrender.com/api/registration/update-password",
+        url: "http://localhost:8080/api/registration/update-password",
         headers: {
           "Content-Type": "application/json",
-          key: { email },
         },
-        data: { newPassword },
+        data: { email, password },
       })
         .then((response) => {
-          if (response.status === "OK") {
+          if (response.status === 200) {
             localStorage.removeItem("purpose");
             localStorage.removeItem("email");
             navigate("/login");
@@ -72,8 +71,8 @@ export default function ConfirmPassword() {
             <Form.Control
               required
               type="password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="Password"
               className="border-2"
               style={{
@@ -99,7 +98,7 @@ export default function ConfirmPassword() {
               isInvalid={!passwordMatch}
             />
             <Form.Control.Feedback type="invalid">
-              {newPassword !== confirmPassword
+              {password !== confirmPassword
                 ? "Passwords do not match."
                 : "Please confirm your new password."}
             </Form.Control.Feedback>

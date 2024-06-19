@@ -25,14 +25,15 @@ export default function Login() {
       //Send user's input to backend
       axios({
         method: "POST",
-        url: "https://swp391-g5-jewelry-production-order-system.onrender.com/api/registration/login",
+        url: "http://localhost:8080/api/registration/login",
         headers: { "Content-Type": "application/json" },
         data: { email, password },
       })
         .then((response) => {
-          if (response.status === "OK") {
-            alert(response.message);
-            setToken(response.token);
+          console.log(response.data.responseList.token);
+          if (response.status === 200) {
+            alert(response.data.message);
+            setToken(response.data.responseList.token);
             navigate("/");
           } else if (response.status === "BAD REQUEST") {
             throw new Error(response.message);

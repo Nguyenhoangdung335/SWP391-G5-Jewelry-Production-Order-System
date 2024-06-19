@@ -8,9 +8,9 @@ export default function Information() {
   const [dobError, setDobError] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [dob, setDob] = useState();
+  const [birthDate, setBirthDate] = useState();
   const [gender, setGender] = useState("");
-  const [phone, setPhone] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [address, setAddress] = useState("");
   const navigate = useNavigate();
 
@@ -28,16 +28,16 @@ export default function Information() {
 
       axios({
         method: "POST",
-        url: "https://swp391-g5-jewelry-production-order-system.onrender.com/api/registration/user-info",
+        url: "http://localhost:8080/api/registration/user-info",
         headers: {
           "Content-Type": "application/json",
-          key: { email },
+          key: email,
         },
-        data: { firstName, lastName, dob, gender, phone, address },
+        data: { firstName, lastName, birthDate, gender, phoneNumber, address },
       })
         .then((response) => {
-          localStorage.removeItem("purpose");
-          if (response.status === "OK") {
+          if (response.status === 200) {
+            localStorage.removeItem("purpose");
             localStorage.removeItem("email");
             navigate("/login");
           } else if (response.status === "BAD REQUEST") {
@@ -129,8 +129,8 @@ export default function Information() {
             <Form.Control
               required
               type="date"
-              value={dob}
-              onChange={(e) => setDob(e.target.value)}
+              value={birthDate}
+              onChange={(e) => setBirthDate(e.target.value)}
               name="dob"
               className="border-2"
               style={{ borderColor: "#000", borderRadius: 10 }}
@@ -152,8 +152,8 @@ export default function Information() {
                 type="radio"
                 label="Male"
                 name="gender"
-                value="male"
-                onChange={(e) => setGender(e.target.value)}
+                value="MALE"
+                onChange={(e) => setGender("MALE")}
                 className="me-3"
               />
               <Form.Check
@@ -161,8 +161,8 @@ export default function Information() {
                 type="radio"
                 label="Female"
                 name="gender"
-                value="female"
-                onChange={(e) => setGender(e.target.value)}
+                value="FEMALE"
+                onChange={(e) => setGender("FEMALE")}
               />
             </div>
             <Form.Control.Feedback type="invalid" className="ms-3">
@@ -175,8 +175,8 @@ export default function Information() {
               required
               type="tel"
               pattern="[0-9]{10}"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
               className="border-2"
               style={{ borderColor: "#000", borderRadius: 10 }}
             />

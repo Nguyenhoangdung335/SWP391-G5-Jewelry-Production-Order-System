@@ -30,14 +30,14 @@ export default function SignUp() {
       //Fetch Data in here
       axios({
         method: "POST",
-        url: "https://swp391-g5-jewelry-production-order-system.onrender.com/api/registration/register",
+        url: "http://localhost:8080/api/registration/register",
         headers: {
           "Content-Type": "application/json",
         },
         data: { email, password },
       })
         .then((response) => {
-          if (response.status === "OK") {
+          if (response.status === 200) {
             localStorage.setItem("purpose", "register");
             localStorage.setItem("email", email);
             navigate("/otp");
