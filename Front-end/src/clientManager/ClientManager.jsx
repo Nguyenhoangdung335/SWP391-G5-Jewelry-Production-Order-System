@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Table, Tag, Button, Modal, Form, Input } from "antd";
 import { FiPlus } from "react-icons/fi";
+import axios from "axios";
 
 export default function ClientManager() {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -8,17 +9,92 @@ export default function ClientManager() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [deleteUser, setDeleteUser] = useState(null);
   const [data, setData] = useState([
-    { id: "CL_0001", name: "Tran Mai Quang Khai", gmail: "khaitmq@gmail.com", phone: "0867406725", status: "active" },
-    { id: "CL_0002", name: "Nguyen Hoang Dung", gmail: "dungnh@gmail.com", phone: "0574179547", status: "inactive" },
-    { id: "CL_0003", name: "Vu Tien Dat", gmail: "datvt@gmail.com", phone: "0936127853", status: "active" },
-    { id: "CL_0004", name: "Nguyen Viet Thai", gmail: "thainv@gmail.com", phone: "0826709871", status: "active" },
-    { id: "CL_0005", name: "Bui Khanh Duy", gmail: "duybkse73484@gmail.com", phone: "0936137090", status: "active" },
-    { id: "CL_0006", name: "Ly Hoang Khang", gmail: "khang@gmail.com", phone: "0845123898", status: "active" },
-    { id: "CL_0007", name: "Ha Duy Tung", gmail: "tung@gmail.com", phone: "091834926", status: "inactive" },
-    { id: "CL_0008", name: "Doan Dang Thien Bao", gmail: "bao@gmail.com", phone: "0938110083", status: "active" },
-    { id: "CL_0009", name: "Nguyen Huu Quoc Hung", gmail: "hung@gmail.com", phone: "0965326132", status: "inactive" },
-    { id: "CL_0010", name: "Duong Hong An", gmail: "An@gmail.com", phone: "0987665512", status: "active" },
+    {
+      id: "CL_0001",
+      name: "Tran Mai Quang Khai",
+      gmail: "khaitmq@gmail.com",
+      phone: "0867406725",
+      status: "active",
+    },
+    {
+      id: "CL_0002",
+      name: "Nguyen Hoang Dung",
+      gmail: "dungnh@gmail.com",
+      phone: "0574179547",
+      status: "inactive",
+    },
+    {
+      id: "CL_0003",
+      name: "Vu Tien Dat",
+      gmail: "datvt@gmail.com",
+      phone: "0936127853",
+      status: "active",
+    },
+    {
+      id: "CL_0004",
+      name: "Nguyen Viet Thai",
+      gmail: "thainv@gmail.com",
+      phone: "0826709871",
+      status: "active",
+    },
+    {
+      id: "CL_0005",
+      name: "Bui Khanh Duy",
+      gmail: "duybkse73484@gmail.com",
+      phone: "0936137090",
+      status: "active",
+    },
+    {
+      id: "CL_0006",
+      name: "Ly Hoang Khang",
+      gmail: "khang@gmail.com",
+      phone: "0845123898",
+      status: "active",
+    },
+    {
+      id: "CL_0007",
+      name: "Ha Duy Tung",
+      gmail: "tung@gmail.com",
+      phone: "091834926",
+      status: "inactive",
+    },
+    {
+      id: "CL_0008",
+      name: "Doan Dang Thien Bao",
+      gmail: "bao@gmail.com",
+      phone: "0938110083",
+      status: "active",
+    },
+    {
+      id: "CL_0009",
+      name: "Nguyen Huu Quoc Hung",
+      gmail: "hung@gmail.com",
+      phone: "0965326132",
+      status: "inactive",
+    },
+    {
+      id: "CL_0010",
+      name: "Duong Hong An",
+      gmail: "An@gmail.com",
+      phone: "0987665512",
+      status: "active",
+    },
   ]);
+
+  useEffect(() => {
+    axios({
+      method: "GET",
+      url: "http://localhost:8080/api/admin/get/customer-list",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        alert(error);
+        console.error("There was an error!", error);
+      });
+  });
 
   const handleEdit = (record) => {
     setSelectedUser(record);
@@ -110,7 +186,7 @@ export default function ClientManager() {
 
   return (
     <div style={{ padding: "3%" }}>
-      <p style={{ margin: 0, fontSize: 24, fontWeight: 'bold' }}>Welcome, K!</p>
+      <p style={{ margin: 0, fontSize: 24, fontWeight: "bold" }}>Welcome, K!</p>
       <p style={{ fontSize: 16 }}>Clients Manager</p>
       <div
         style={{
@@ -127,8 +203,7 @@ export default function ClientManager() {
             alignItems: "center",
             gap: 20,
           }}
-        >
-        </div>
+        ></div>
         <div
           style={{
             display: "flex",
@@ -150,9 +225,7 @@ export default function ClientManager() {
             }}
           >
             <FiPlus color="rgba(224, 215, 234, 1)" />
-            <p style={{ margin: 0, fontSize: 20, color: "white" }}>
-              New User
-            </p>
+            <p style={{ margin: 0, fontSize: 20, color: "white" }}>New User</p>
           </div>
         </div>
       </div>
