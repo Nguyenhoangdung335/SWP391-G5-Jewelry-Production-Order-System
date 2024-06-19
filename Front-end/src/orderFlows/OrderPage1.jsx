@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Button, Container, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import ServerUrl from "../reusable/ServerUrl";
 
 function OrderPage1() {
   const [selectedStyle, setSelectedStyle] = useState("");
@@ -45,7 +46,7 @@ function OrderPage1() {
 
     axios({
       method: "POST",
-      url: "https://swp391-g5-jewelry-production-order-system.onrender.com/api/product/customize",
+      url: `${ServerUrl}/api/product/customize`,
       headers: { "Content-Type": "application/json" },
       data: {
         selectedType,
@@ -62,7 +63,6 @@ function OrderPage1() {
     })
       .then((response) => {
         // Create a components for quotation
-        navigate("/quotaion");
       })
       .catch((error) => {
         console.log("There is an error in this code" + error);
