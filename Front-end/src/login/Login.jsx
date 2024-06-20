@@ -33,7 +33,7 @@ export default function Login() {
           if (response.status === 200) {
             alert(response.data.message);
             setToken(response.data.responseList.token);
-            navigate("/");
+            navigate("/userManager");
           } else if (response.status === 400) {
             throw new Error(response.message);
           }

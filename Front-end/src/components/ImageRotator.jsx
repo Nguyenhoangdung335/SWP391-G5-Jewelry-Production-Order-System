@@ -25,7 +25,7 @@ const responsive = {
 
 export default function ImageRotator() {
   return (
-    <Container style={{ paddingBottom: "30px", paddingTop: "40px" }}>
+    <Container style={{ paddingBottom: "10px", paddingTop: "10px" }}>
       <Carousel
         responsive={responsive}
         centerMode={false}

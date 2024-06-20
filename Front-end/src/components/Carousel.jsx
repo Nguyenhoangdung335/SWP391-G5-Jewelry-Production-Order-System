@@ -24,7 +24,7 @@ function ControlledCarousel() {
             src={LuxuryBanner1}
             alt="luxury-banner-1"
             className="d-block w-100"
-            style={{ objectFit: "cover", height: "87vh" }}
+            style={{ objectFit: "cover", height: "40vh" }}
           />
         </Carousel.Item>
         <Carousel.Item>
@@ -32,7 +32,7 @@ function ControlledCarousel() {
             src={LuxuryBanner2}
             alt="luxury-banner-2"
             className="d-block w-100"
-            style={{ objectFit: "cover", height: "87vh" }}
+            style={{ objectFit: "cover", height: "40vh" }}
           />
         </Carousel.Item>
         <Carousel.Item>
@@ -40,7 +40,7 @@ function ControlledCarousel() {
             src={NecklaceBanner}
             alt="necklace-banner"
             className="d-block w-100"
-            style={{ objectFit: "cover", height: "87vh" }}
+            style={{ objectFit: "cover", height: "40vh" }}
           />
         </Carousel.Item>
       </Carousel>

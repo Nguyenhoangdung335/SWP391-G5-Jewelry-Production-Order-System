@@ -1,28 +1,46 @@
-import { Col, Container, Nav, Row } from "react-bootstrap";
-import Carousel from "../components/Carousel";
+import { Carousel, Col, Container, Nav, Row } from "react-bootstrap";
+// import Carousel from "../components/Carousel";
 import { Link } from "react-router-dom";
 import { FaStar } from "react-icons/fa";
 import ImageRotator from "../components/ImageRotator";
+import VideoBanner from "../assets/2024-Icons-HP-Hero-HW-Video-Desktop-3.mp4";
 
 function Home() {
   return (
     <>
       <div className="carousel-banner" style={{ margin: "5px 0px 5px" }}>
-        <Carousel />
+        <Carousel controls indicators={false} prevIcon={false} nextIcon={false}>
+          <Carousel.Item>
+            <video
+              width="100%"
+              height="100%"
+              autoPlay
+              muted
+              loop
+              playsInline
+              disablePictureInPicture
+              preload="auto"
+              data-preload="true"
+              class="load-lazily b-loaded"
+              // poster="//media.tiffany.com/is/image/tiffanydm/2024-Icons-HP-Hero-HW-Video-Desktop-2?$tile$&amp;&amp;hei=900"
+              src={VideoBanner}
+            ></video>
+            <Carousel.Caption>
+              <h3>With Love, Since 1837 </h3>
+            </Carousel.Caption>
+          </Carousel.Item>
+        </Carousel>
       </div>
       {/*Collections section*/}
       <div>
         <div
           className="slider-bar d-flex align-content-center justify-content-center p-2"
-          style={{ backgroundColor: "#4B4B4B", marginBottom: "10px" }}
+          style={{ marginBottom: "12px", marginTop: "10px" }}
         >
-          <Link
-            to={"/collections_page"}
-            className="text-decoration-none text-white fw-bold"
-          >
-            <div>
-              <h2 className="mt-1 pt-1 pb-1 fw-bold">OUR COLLECTIONS</h2>
-            </div>
+          <Link to={"/collections_page"} className="text-black fw-bold">
+            {/* <div>
+              <h2 className="mt-1 fw-bold">OUR COLLECTIONS</h2>
+            </div> */}
           </Link>
         </div>
         <ImageRotator />
@@ -83,7 +101,10 @@ function Home() {
         </div>
       </div>
 
-      <section className="feedback-section mb-2 w-75" style={{margin:"0px auto"}}>
+      <section
+        className="feedback-section mb-2 w-75"
+        style={{ margin: "0px auto" }}
+      >
         <div className="customers-feedbakcs d-flex justify-content-center mb-5">
           <div
             className="d-inline-flex justify-content-between"

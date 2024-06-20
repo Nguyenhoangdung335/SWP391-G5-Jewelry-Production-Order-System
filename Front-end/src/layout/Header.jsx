@@ -10,17 +10,22 @@ import { useAuth } from "../provider/AuthProvider";
 
 export default function Header() {
   const [role, setRole] = useState("GUEST");
-  const { token } = useAuth();
+  const { token, setToken } = useAuth();
 
-  useEffect(() => {
-    if (token) {
-      const decodedToken = jwtDecode(token);
-      setRole(decodedToken.role);
-    }
-  });
+useEffect(() => {
+  if (token) {
+    const decodedToken = jwtDecode(token);
+    setRole(decodedToken.role);
+  }else{
+    setRole("GUEST")
+  }
+}, [token])
+
+  
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    setToken(null);
   };
 
   const items = [
@@ -43,7 +48,11 @@ export default function Header() {
     {
       key: "3",
       label: (
-        <Link to="/" style={{ textDecoration: "none" }}>
+        <Link
+          to="/login"
+          style={{ textDecoration: "none" }}
+          onClick={handleLogout}
+        >
           Sign out
         </Link>
       ),

@@ -426,12 +426,25 @@ function OrderPage1() {
       </Form>
 
       <div className="mb-4">
-        <h5 className="fw-bold d-inline">Contact us for consult: </h5>
-        <Button className="fw-bold d-inline">Contact us</Button> 
-        <h5 className="fw-bold d-inline" > Or </h5>
-        <Button className="fw-bold d-inline">Chat now</Button>
-        </div> 
+        <h6 className="d-inline h-100">Contact us for consult: </h6>
 
+        <Button
+          className="d-inline"
+          variant="secondary"
+          style={{ width: "125px", height: "100%" }}
+        >
+          Contact us
+        </Button>
+        <h6 className=" d-inline"> Or </h6>
+
+        <Button
+          className="d-inline"
+          variant="secondary"
+          style={{ width: "125px", height: "100%" }}
+        >
+          Chat now
+        </Button>
+      </div>
     </Container>
   );
 }
