@@ -18,6 +18,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -37,6 +38,7 @@ import java.util.Random;
 @SpringBootApplication
 @ComponentScan({"com.swp391.JewelryProduction.security.*", "com.swp391.JewelryProduction.*"})
 @EntityScan("com.swp391.JewelryProduction.*")
+@ConfigurationPropertiesScan("com.swp391.JewelryProduction.*")
 @EnableJpaRepositories("com.swp391.JewelryProduction.*")
 @EnableScheduling
 public class Application   {
@@ -73,9 +75,27 @@ public class Application   {
 	public CommandLineRunner commandLineRunner (AccountRepository accountRepository) {
 		return args -> {
 				logger.info("Application start");
+				Account acc = Account.builder()
+						.email("nguyenhoangdung335@gmail.com")
+						.password(passwordEncoder.encode("#Dung111004"))
+						.dateCreated(LocalDateTime.now())
+						.role(Role.ADMIN)
+						.status(AccountStatus.ACTIVE)
+						.build();
+				accountRepository.save(acc);
+
+				acc = Account.builder()
+						.email("dungnhse180163@fpt.edu.vn")
+						.password(passwordEncoder.encode("#Dung111004"))
+						.dateCreated(LocalDateTime.now())
+						.role(Role.MANAGER)
+						.status(AccountStatus.ACTIVE)
+						.build();
+				accountRepository.save(acc);
+
 				Faker faker = new Faker();
 				Random rand = new Random();
-				for (int i = 0; i < 50; i++) {
+				for (int i = 0; i < 20; i++) {
 					Account account = Account.builder()
 							.email(faker.internet().safeEmailAddress())
 							.password(passwordEncoder.encode(faker.internet().password()))
@@ -86,23 +106,14 @@ public class Application   {
 					accountRepository.save(account);
 				}
 
-				Account acc = Account.builder()
-						.email("nguyenhoangdung335@gmail.com")
-						.password(passwordEncoder.encode("dung111004"))
+				acc = Account.builder()
+						.email("tranmaiquangkhai@gmail.com")
+						.password(passwordEncoder.encode("Khai1@"))
 						.dateCreated(LocalDateTime.now())
 						.role(Role.ADMIN)
 						.status(AccountStatus.ACTIVE)
 						.build();
 				accountRepository.save(acc);
-
-			acc = Account.builder()
-					.email("tranmaiquangkhai@gmail.com")
-					.password(passwordEncoder.encode("Khai1@"))
-					.dateCreated(LocalDateTime.now())
-					.role(Role.ADMIN)
-					.status(AccountStatus.ACTIVE)
-					.build();
-			accountRepository.save(acc);
 		};
 	}
 }

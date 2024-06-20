@@ -3,14 +3,13 @@ package com.swp391.JewelryProduction.services.account;
 import com.swp391.JewelryProduction.dto.AccountDTO;
 import com.swp391.JewelryProduction.enums.AccountStatus;
 import com.swp391.JewelryProduction.enums.Role;
-import com.swp391.JewelryProduction.enums.WorkStatus;
 import com.swp391.JewelryProduction.pojos.Account;
-import com.swp391.JewelryProduction.pojos.Staff;
 import com.swp391.JewelryProduction.pojos.UserInfo;
 import com.swp391.JewelryProduction.repositories.AccountRepository;
 import com.swp391.JewelryProduction.repositories.UserInfoRepository;
 import com.swp391.JewelryProduction.util.exceptions.ObjectNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
@@ -78,11 +78,6 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Staff findStaffByRoleAndWorkStatus(Role role, WorkStatus workStatus) {
-        return accountRepository.findStaffByRoleAndWorkStatus(role, workStatus).isPresent() ? accountRepository.findStaffByRoleAndWorkStatus(role, workStatus).get() : null;
-    }
-
-    @Override
     public List<Account> findAllByRole(Role role) {
         return accountRepository.findAllByRole(role);
     }
@@ -93,6 +88,9 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Account updateAccount(AccountDTO accountDTO) {
         Account updatedAcc = accountRepository.findByEmail(accountDTO.getEmail()).orElseThrow(() -> new ObjectNotFoundException("Account with email "+accountDTO.getEmail()+" does not exist"));
+        log.info("Old Password: " +updatedAcc.getPassword());
+        String.format("Old password: %s \nNew Password: %s", updatedAcc.getPassword(), accountDTO.getPassword());
+
         updatedAcc.setPassword(passwordEncoder.encode(accountDTO.getPassword()));
         return accountRepository.save(updatedAcc);
     }
@@ -124,9 +122,10 @@ public class AccountServiceImpl implements AccountService {
         if (acc != null && acc.getStatus().equals(AccountStatus.LOCKED)) {
             if (passwordEncoder.matches(accountDTO.getPassword(), acc.getPassword()))
                 return acc;
+            else
+                return null;
         } else if (acc != null)
             return null;
-
 
         UserInfo info = new UserInfo();
         acc = Account.builder()
@@ -138,19 +137,25 @@ public class AccountServiceImpl implements AccountService {
                 .userInfo(info)
                 .build();
         info.setAccount(acc);
-
-        accountRepository.save(acc);
-        return acc;
+        return accountRepository.save(acc);
     }
 
     @Transactional
     @Override
-    public Account saveUserInfo(UserInfo info, String email) {
+    public Account saveUserInfo(UserInfo newInfo, String email) {
         Account acc = accountRepository.findByEmail(email)
                 .orElseThrow(() -> new ObjectNotFoundException("Account with email " + email + " cannot be found, cannot update info"));
-        info.setAccount(acc);
-        userInfoRepository.save(info);
-        return null;
+        mappedNewValueUserInfo(acc.getUserInfo(), newInfo);
+        return accountRepository.save(acc);
+    }
+
+    private void mappedNewValueUserInfo (UserInfo oldUI, UserInfo newUI) {
+        oldUI.setGender(newUI.getGender());
+        oldUI.setFirstName(newUI.getFirstName());
+        oldUI.setLastName(newUI.getLastName());
+        oldUI.setBirthDate(newUI.getBirthDate());
+        oldUI.setPhoneNumber(newUI.getPhoneNumber());
+        oldUI.setAddress(newUI.getAddress());
     }
     //</editor-fold>
 
@@ -161,7 +166,12 @@ public class AccountServiceImpl implements AccountService {
         Account acc = accountRepository.findById(accountID).orElseThrow(() -> new ObjectNotFoundException("Account with id " + accountID + " not found, can't be deleted"));
         accountRepository.delete(acc);
     }
+
+    @Override
+    public boolean checkCurrentOrderExist(String accountId) {
+        Account acc = accountRepository.findById(accountId)
+                .orElseThrow(() -> new ObjectNotFoundException("Account with id "+accountId+" does not exist."));
+        return acc.getCurrentOrder() != null;
+    }
     //</editor-fold>
-
-
 }

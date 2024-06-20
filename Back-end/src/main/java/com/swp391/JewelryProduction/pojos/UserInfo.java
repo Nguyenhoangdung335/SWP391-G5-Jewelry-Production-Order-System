@@ -1,12 +1,8 @@
 package com.swp391.JewelryProduction.pojos;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.swp391.JewelryProduction.enums.Gender;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -16,6 +12,8 @@ import java.time.LocalDate;
 @Builder
 @Entity
 @Table(name = "User_Info")
+@ToString(exclude = {"account"})
+@EqualsAndHashCode(exclude = {"account"})
 public class UserInfo {
     @Id
     private String id;
@@ -26,7 +24,6 @@ public class UserInfo {
     @Column(name = "last_name")
     private String lastName;
 
-    @JsonFormat(pattern="yyyy-MM-dd")
     @Column(name = "birth_date")
     private LocalDate birthDate;
 
@@ -34,7 +31,7 @@ public class UserInfo {
     private Gender gender;
 
     @Column(name = "phone_number", length = 10)
-    private Long phoneNumber;
+    private String phoneNumber;
 
     private String address;
 

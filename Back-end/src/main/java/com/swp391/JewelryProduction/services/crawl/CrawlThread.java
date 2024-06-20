@@ -11,6 +11,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -24,7 +25,9 @@ public class CrawlThread implements Runnable{
     private static final Logger log = LoggerFactory.getLogger(CrawlThread.class);
     private List<Material> materials;
     private ConnectionPage connection;
+    @Value("${exchange.url}")
     private String urlExchange;
+    @Value("${page.url}")
     private String urlPage;
 
 

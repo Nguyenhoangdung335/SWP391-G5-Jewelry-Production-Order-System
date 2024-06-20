@@ -1,4 +1,4 @@
-package com.swp391.JewelryProduction.websocket.config;
+package com.swp391.JewelryProduction.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;

@@ -52,4 +52,10 @@ public class StateMachineInterceptor extends StateMachineInterceptorAdapter<Orde
         log.info("Post Transition: State Context = {}, State Machine Id = {}", stateContext, stateContext.getStateMachine().getId());
         return stateContext;
     }
+
+    @Override
+    public void postStateChange(State<OrderStatus, OrderEvent> state, Message<OrderEvent> message, Transition<OrderStatus, OrderEvent> transition, StateMachine<OrderStatus, OrderEvent> stateMachine, StateMachine<OrderStatus, OrderEvent> rootStateMachine) {
+        log.info("Post Transition: State = {}, State Machine Id = {}, Transition = {}", state, stateMachine.getId(), transition);
+        super.postStateChange(state, message, transition, stateMachine, rootStateMachine);
+    }
 }

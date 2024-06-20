@@ -1,11 +1,10 @@
 package com.swp391.JewelryProduction.pojos;
 
-import com.swp391.JewelryProduction.enums.*;
+import com.swp391.JewelryProduction.enums.AccountStatus;
+import com.swp391.JewelryProduction.enums.Role;
 import com.swp391.JewelryProduction.util.IdGenerator;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
@@ -21,6 +20,8 @@ import java.util.List;
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "is_staff", columnDefinition = "bit")
 @DiscriminatorValue("0")
+@ToString(exclude = {"userInfo", "pastOrder", "sendingReports", "notifications"})
+@EqualsAndHashCode(exclude = {"userInfo", "pastOrder", "sendingReports", "notifications"})
 public class Account{
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "account_seq")
@@ -70,9 +71,9 @@ public class Account{
         this.getSendingReports().add(report);
     }
 
-    public Order getCurrentOrder () {
+    public Order getCurrentOrder() {
         if (pastOrder != null && !pastOrder.isEmpty())
-            currentOrder = pastOrder.getLast();
+            currentOrder = pastOrder.get(pastOrder.size() - 1);
         return currentOrder;
     }
 }

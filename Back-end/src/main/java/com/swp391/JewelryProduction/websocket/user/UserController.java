@@ -1,5 +1,6 @@
 package com.swp391.JewelryProduction.websocket.user;
 
+import com.swp391.JewelryProduction.util.Response;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,17 +22,24 @@ public class UserController {
     private final SimpMessagingTemplate messagingTemplate;
 
     @GetMapping("/user/check/{userId}")
-    public ResponseEntity<User> checkUser(@PathVariable String userId) throws Exception {
+    public ResponseEntity<Response> checkUser(@PathVariable String userId) throws Exception {
         try {
             User existingUser = userService.findUserById(userId);
             if (existingUser != null) {
                 messagingTemplate.convertAndSend("/topic/public", existingUser);
-                return ResponseEntity.ok(existingUser);
+                return Response.builder()
+                        .status(HttpStatus.OK)
+                        .response("user", existingUser)
+                        .buildEntity();
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+                return Response.builder()
+                        .status(HttpStatus.BAD_REQUEST)
+                        .buildEntity();
             }
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return Response.builder()
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .buildEntity();
         }
     }
 

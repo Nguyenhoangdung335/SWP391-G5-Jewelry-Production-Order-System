@@ -9,6 +9,7 @@ import com.swp391.JewelryProduction.pojos.UserInfo;
 import com.swp391.JewelryProduction.security.model.User;
 import com.swp391.JewelryProduction.security.model.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
@@ -62,6 +64,9 @@ public class AuthenticationService {
     }
 
     public String authenticate(AccountDTO accountDTO) {
+        var test = userRepository.findByEmail(accountDTO.getEmail()).orElseThrow(() -> new UsernameNotFoundException("No user found"));
+        log.info(accountDTO.getPassword() + ": " + passwordEncoder.encode(accountDTO.getPassword()) + " and " + test.getPassword() + ": " +passwordEncoder.matches(accountDTO.getPassword(), test.getPassword()));
+
         authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(
                     accountDTO.getEmail(),
@@ -90,8 +95,8 @@ public class AuthenticationService {
 
     public boolean verifyOTP (String emailKey, String otp) {
         String savedOTP = otpCache.getIfPresent(emailKey);
-        if (savedOTP == null) throw new RuntimeException("Your OTP have been expired, please re-send it again");
-        boolean isVerified = savedOTP.equals(otp);
+//        if (savedOTP == null) throw new RuntimeException("Your OTP have been expired, please re-send it again");
+        boolean isVerified = savedOTP != null && savedOTP.equals(otp);
         if (isVerified)
             otpCache.invalidate(emailKey);
         return isVerified;

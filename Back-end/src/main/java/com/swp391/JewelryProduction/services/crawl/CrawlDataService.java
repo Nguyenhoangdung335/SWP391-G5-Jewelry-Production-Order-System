@@ -6,9 +6,13 @@ import com.swp391.JewelryProduction.services.connection.ConnectionPage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.scheduler.Schedulers;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -18,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class CrawlDataService implements ICrawlDataService {
+public class    CrawlDataService implements ICrawlDataService {
 
     private final MaterialRepository materialRepository;
     private final ConnectionPage connection;
@@ -69,6 +73,30 @@ public class CrawlDataService implements ICrawlDataService {
         }
     }
 
+    @Override
+    public Flux<ServerSentEvent<List<Material>>> getAll() {
+        return Flux.merge(getHeartBeat(), getPrice());
+    }
+
+    private Flux<ServerSentEvent<List<Material>>> getHeartBeat() {
+        return Flux.interval(Duration.ofSeconds(3))
+                .map(seq -> ServerSentEvent.<List<Material>>builder()
+                        .id("heartbeat")  // Use priceData size as ID
+                        .event("heartbeat")
+                        .build());
+    }
+
+    private Flux<ServerSentEvent<List<Material>>> getPrice() {
+        List<Material> list = materialRepository.findAll();
+        return Flux.interval(Duration.ofSeconds(10))
+                .publishOn(Schedulers.boundedElastic())
+                .map(priceData -> ServerSentEvent.<List<Material>>builder()
+                        .id(String.valueOf(list.size()))  // Use priceData size as ID
+                        .event("live")
+                        .data(list)
+                        .build());
+    }
+
     @Scheduled(fixedRate = 60000)
     public void scheduledCrawl() {
         try {
@@ -78,12 +106,5 @@ public class CrawlDataService implements ICrawlDataService {
         }
     }
 
-    public List<Material> getAll() {
-        try {
-            return materialRepository.findAll();
-        } catch (Exception e) {
-            log.error("Error fetching components", e);
-            return new ArrayList<>();
-        }
-    }
+
 }
