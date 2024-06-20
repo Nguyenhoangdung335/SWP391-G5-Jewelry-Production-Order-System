@@ -424,6 +424,14 @@ function OrderPage1() {
           Submit
         </Button>
       </Form>
+
+      <div className="mb-4">
+        <h5 className="fw-bold d-inline">Contact us for consult: </h5>
+        <Button className="fw-bold d-inline">Contact us</Button> 
+        <h5 className="fw-bold d-inline" > Or </h5>
+        <Button className="fw-bold d-inline">Chat now</Button>
+        </div> 
+
     </Container>
   );
 }

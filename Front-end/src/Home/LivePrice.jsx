@@ -14,9 +14,10 @@ function LivePrice() {
       fetchEventSource(`${baseUrl}/api/v1/crawls`, {
         method: "GET",
         headers: {
-          Accept: "text/event-stream",
+          // Accept: "text/event-stream",
+          'Content-Type': 'application/json',
         },
-        signal: signal,
+        signal: controller.signal,
         onopen(res) {
           if (res.ok && res.status === 200) {
             // Status should be a number
@@ -63,7 +64,7 @@ function LivePrice() {
         </thead>
         <tbody>
           {data.map((dataItem) => {
-            console.log("jklksdj", dataItem);
+            // console.log("jklksdj", dataItem);
             return (
               <tr key={dataItem.id}>
                 <td>{dataItem.name}</td>

@@ -12,7 +12,7 @@ function ControlledCarousel() {
     setIndex(selectedIndex);
   };
   return (
-    <div className="carousel-banner" style={{ margin: "5px 0px 5px" }}>
+    
       <Carousel
         activeIndex={index}
         onSelect={handleSelect}
@@ -44,7 +44,7 @@ function ControlledCarousel() {
           />
         </Carousel.Item>
       </Carousel>
-    </div>
+    
   );
 }
 export default ControlledCarousel;
