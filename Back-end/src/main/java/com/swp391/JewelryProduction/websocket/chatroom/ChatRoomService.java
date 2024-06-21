@@ -57,6 +57,7 @@ public class ChatRoomService {
         return Optional.empty();
     }
 
+    @Transactional
     public String createChatId(String senderId, String recipientId) {
         return String.format("%s_%s", senderId, recipientId);
     }

@@ -2,42 +2,24 @@ package com.swp391.JewelryProduction.config.stateMachine;
 
 import com.swp391.JewelryProduction.enums.OrderEvent;
 import com.swp391.JewelryProduction.enums.OrderStatus;
-import com.swp391.JewelryProduction.enums.Role;
-import com.swp391.JewelryProduction.pojos.*;
-import com.swp391.JewelryProduction.services.account.AccountService;
-import com.swp391.JewelryProduction.services.notification.NotificationService;
-import com.swp391.JewelryProduction.services.order.OrderService;
-import com.swp391.JewelryProduction.services.report.ReportService;
-import com.swp391.JewelryProduction.util.MessagesConstant;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.support.MessageBuilder;
-import org.springframework.statemachine.StateMachine;
-import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.config.EnableStateMachineFactory;
 import org.springframework.statemachine.config.EnumStateMachineConfigurerAdapter;
 import org.springframework.statemachine.config.builders.StateMachineConfigurationConfigurer;
 import org.springframework.statemachine.config.builders.StateMachineStateConfigurer;
 import org.springframework.statemachine.config.builders.StateMachineTransitionConfigurer;
-import org.springframework.statemachine.config.configurers.StateConfigurer;
 import org.springframework.statemachine.data.RepositoryState;
 import org.springframework.statemachine.data.RepositoryTransition;
 import org.springframework.statemachine.data.StateRepository;
 import org.springframework.statemachine.data.TransitionRepository;
-import org.springframework.statemachine.guard.Guard;
 import org.springframework.statemachine.listener.StateMachineListener;
 import org.springframework.statemachine.listener.StateMachineListenerAdapter;
 import org.springframework.statemachine.persist.StateMachineRuntimePersister;
 import org.springframework.statemachine.processor.StateMachineAnnotationPostProcessor;
 import org.springframework.statemachine.state.State;
-import reactor.core.publisher.Mono;
-
-import java.util.List;
 
 @Slf4j
 @Configuration
@@ -45,22 +27,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderStatus, OrderEvent> {
 
-    @Autowired
-    private OrderService orderService;
-    @Autowired
-    private NotificationService notificationService;
-    @Autowired
-    private AccountService accountService;
-    @Autowired
-    private ReportService reportService;
-    @Autowired
-    private ModelMapper modelMapper;
+    private final ActionAndGuardConfiguration actionAndGuardConfiguration;
 
-    private final MessagesConstant messagesConstant = new MessagesConstant();
 
     private StateRepository<? extends RepositoryState> stateRepository;
     private TransitionRepository<? extends RepositoryTransition> transitionRepository;
-    private StateMachineRuntimePersister<OrderStatus, OrderEvent, String> stateMachineRuntimePersister;
+    private final StateMachineRuntimePersister<OrderStatus, OrderEvent, String> stateMachineRuntimePersister;
 
     @Bean
     public static StateMachineAnnotationPostProcessor stateMachineAnnotationPostProcessor() {
@@ -92,74 +64,74 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
     @Override
     public void configure(StateMachineStateConfigurer<OrderStatus, OrderEvent> states) throws Exception {
         states
-                .withStates()
+            .withStates()
                 .initial(OrderStatus.REQUEST)
                 .state(OrderStatus.QUOTATION)
                 .state(OrderStatus.DESIGN)
                 .state(OrderStatus.PRODUCTION)
                 .state(OrderStatus.TRANSPORT)
-                .state(OrderStatus.CANCEL)
-                .history(OrderStatus.ORDER_RESTORED, StateConfigurer.History.DEEP)          //History state for reverting back
+//                .state(OrderStatus.CANCEL)
+//                .history(OrderStatus.ORDER_RESTORED, StateConfigurer.History.DEEP)          //History state for reverting back
                 .end(OrderStatus.ORDER_COMPLETED)                                           //End state for finalize the order
 
-                /*-----------REQUEST SUPERSTATE-----------*/
                 .and()
-                .withStates()
-                .parent(OrderStatus.REQUEST)
-                .initial(OrderStatus.REQUESTING)
-                .state(OrderStatus.REQ_AWAIT_APPROVAL)
-                .choice(OrderStatus.REQ_APPROVAL_PROCESS)
-                .state(OrderStatus.REQ_APPROVED, approvedAction(), null)
-                .state(OrderStatus.REQ_DECLINED, declinedAction(), null)
-                .state(OrderStatus.AWAIT_ASSIGN_STAFF)
-                .state(OrderStatus.IN_EXCHANGING, createChatRoomAction(), null)
+                    .withStates()
+                    .parent(OrderStatus.REQUEST)
+                        .initial(OrderStatus.REQUESTING)
+                        .state(OrderStatus.REQ_AWAIT_APPROVAL)
+                            .choice(OrderStatus.REQ_APPROVAL_PROCESS)
+                                .state(OrderStatus.REQ_APPROVED, actionAndGuardConfiguration.approvedAction(), null)
+                                .state(OrderStatus.REQ_DECLINED, actionAndGuardConfiguration.declinedAction(), null)
+                        .state(OrderStatus.AWAIT_ASSIGN_STAFF)
+                        .state(OrderStatus.IN_EXCHANGING, actionAndGuardConfiguration.createChatRoomAction(), null)
 
                 .and()
-                .withStates()
-                .parent(OrderStatus.QUOTATION)
-                .initial(OrderStatus.AWAIT_QUO)
-                .state(OrderStatus.QUO_AWAIT_MANA_APPROVAL)
-                .choice(OrderStatus.QUO_MANA_APPROVAL_PROCESS)
-                .state(OrderStatus.QUO_MANA_APPROVED, approvedAction(), null)
-                .state(OrderStatus.QUO_MANA_DECLINED, declinedAction(), null)
-                .state(OrderStatus.QUO_AWAIT_CUST_APPROVAL)
-                .choice(OrderStatus.QUO_CUST_APPROVAL_PROCESS)
-                .state(OrderStatus.QUO_CUST_APPROVED, approvedAction(), null)
-                .state(OrderStatus.QUO_CUST_DECLINED, declinedAction(), null)
-                .state(OrderStatus.AWAIT_TRANSACTION)
-                .choice(OrderStatus.TRANSACTION_PROCESS)
-                .state(OrderStatus.TRANSACTION_SUCCESSFUL, approvedAction(), notifyTransactionReceiptAction())
-                .state(OrderStatus.TRANSACTION_UNSUCCESSFUL, declinedAction(), null)
+                    .withStates()
+                    .parent(OrderStatus.QUOTATION)
+                        .initial(OrderStatus.AWAIT_QUO)
+                        .state(OrderStatus.QUO_AWAIT_MANA_APPROVAL)
+                            .choice(OrderStatus.QUO_MANA_APPROVAL_PROCESS)
+                                .state(OrderStatus.QUO_MANA_APPROVED, actionAndGuardConfiguration.approvedAction(), null)
+                                .state(OrderStatus.QUO_MANA_DECLINED, actionAndGuardConfiguration.declinedAction(), null)
+                        .state(OrderStatus.QUO_AWAIT_CUST_APPROVAL)
+                            .choice(OrderStatus.QUO_CUST_APPROVAL_PROCESS)
+                                .state(OrderStatus.QUO_CUST_APPROVED, actionAndGuardConfiguration.approvedAction(), null)
+                                .state(OrderStatus.QUO_CUST_DECLINED, actionAndGuardConfiguration.declinedAction(), null)
+                        .state(OrderStatus.AWAIT_TRANSACTION)
+                            .choice(OrderStatus.TRANSACTION_PROCESS)
+                                .state(OrderStatus.TRANSACTION_SUCCESSFUL, actionAndGuardConfiguration.approvedAction(), actionAndGuardConfiguration.notifyTransactionReceiptAction())
+                                .state(OrderStatus.TRANSACTION_UNSUCCESSFUL, actionAndGuardConfiguration.declinedAction(), null)
 
                 .and()
-                .withStates()
-                .parent(OrderStatus.DESIGN)
-                .initial(OrderStatus.IN_DESIGNING)
-                .state(OrderStatus.DES_AWAIT_MANA_APPROVAL)
-                .choice(OrderStatus.DES_MANA_APPROVAL_PROCESS)
-                .state(OrderStatus.DES_MANA_APPROVED, approvedAction(), null)
-                .state(OrderStatus.DES_MANA_DECLINED, declinedAction(), null)
-                .state(OrderStatus.DES_AWAIT_CUST_APPROVAL)
-                .choice(OrderStatus.DES_CUST_APPROVAL_PROCESS)
-                .state(OrderStatus.DES_CUST_APPROVED, approvedAction(), null)
-                .state(OrderStatus.DES_CUST_DECLINED, declinedAction(), null)
+                    .withStates()
+                    .parent(OrderStatus.DESIGN)
+                        .initial(OrderStatus.IN_DESIGNING)
+                        .state(OrderStatus.DES_AWAIT_MANA_APPROVAL)
+                            .choice(OrderStatus.DES_MANA_APPROVAL_PROCESS)
+                                .state(OrderStatus.DES_MANA_APPROVED, actionAndGuardConfiguration.approvedAction(), null)
+                                .state(OrderStatus.DES_MANA_DECLINED, actionAndGuardConfiguration.declinedAction(), null)
+                        .state(OrderStatus.DES_AWAIT_CUST_APPROVAL)
+                            .choice(OrderStatus.DES_CUST_APPROVAL_PROCESS)
+                                .state(OrderStatus.DES_CUST_APPROVED, actionAndGuardConfiguration.approvedAction(), null)
+                                .state(OrderStatus.DES_CUST_DECLINED, actionAndGuardConfiguration.declinedAction(), null)
 
                 .and()
-                .withStates()
-                .parent(OrderStatus.PRODUCTION)
-                .initial(OrderStatus.IN_PRODUCTION)
-                .state(OrderStatus.PRO_AWAIT_APPROVAL)
-                .choice(OrderStatus.PRO_APPROVAL_PROCESS)
-                .state(OrderStatus.PRO_APPROVED, approvedAction(), null)
-                .state(OrderStatus.PRO_DECLINED, declinedAction(), null)
+                    .withStates()
+                    .parent(OrderStatus.PRODUCTION)
+                        .initial(OrderStatus.IN_PRODUCTION)
+                        .state(OrderStatus.PRO_AWAIT_APPROVAL)
+                            .choice(OrderStatus.PRO_APPROVAL_PROCESS)
+                                .state(OrderStatus.PRO_APPROVED, actionAndGuardConfiguration.approvedAction(), null)
+                                .state(OrderStatus.PRO_DECLINED, actionAndGuardConfiguration.declinedAction(), null)
+
                 .and()
-                .withStates()
-                .parent(OrderStatus.TRANSPORT)
-                .state(OrderStatus.ON_DELIVERING)
-                .state(OrderStatus.DELIVERED_AWAIT_APPROVAL)
-                .choice(OrderStatus.DELIVERED_APPROVAL_PROCESS)
-                .state(OrderStatus.DELIVERED_CONFIRMED, approvedAction(), null)
-                .state(OrderStatus.DELIVERED_DENIED, declinedAction(), null)
+                    .withStates()
+                    .parent(OrderStatus.TRANSPORT)
+                        .initial(OrderStatus.ON_DELIVERING)
+                        .state(OrderStatus.DELIVERED_AWAIT_APPROVAL)
+                            .choice(OrderStatus.DELIVERED_APPROVAL_PROCESS)
+                                .state(OrderStatus.DELIVERED_CONFIRMED, actionAndGuardConfiguration.approvedAction(), null)
+                                .state(OrderStatus.DELIVERED_DENIED, actionAndGuardConfiguration.declinedAction(), null)
         ;
 
     }
@@ -167,22 +139,25 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
     @Override
     public void configure(StateMachineTransitionConfigurer<OrderStatus, OrderEvent> transitions) throws Exception {
         transitions
-                .withExternal()
-                .source(OrderStatus.CANCEL).target(OrderStatus.ORDER_RESTORED)
-                .event(OrderEvent.RESTORE_ORDER)
-                .action(notifyRestoreOrderAction())
-                .and()
-                .withHistory()
-                .source(OrderStatus.ORDER_RESTORED).target(OrderStatus.REQUESTING)  //Placeholder target
+                /*----------------------------------------------------------------------------------------------------*/
+                /*--------------------------------CANCEL TRANSITION LOGIC (IN-WORKING)--------------------------------*/
 
-                /*------------------------------------------------------------------------------------------------*/
+//                .withExternal()
+//                .source(OrderStatus.CANCEL).target(OrderStatus.ORDER_RESTORED)
+//                .event(OrderEvent.RESTORE_ORDER)
+//                .action(actionAndGuardConfiguration.notifyRestoreOrderAction())
+//                .and()
+//                .withHistory()
+//                .source(OrderStatus.ORDER_RESTORED).target(OrderStatus.REQUESTING)  //Placeholder target
+//
+                /*---------------------------------------------------------------------------------------------------*/
                 /*--------------------------------REQUEST SUPERSTATE LOCAL TRANSITION--------------------------------*/
 
-                .and()
+//                .and()
                 .withLocal()
                 .source(OrderStatus.REQUESTING).target(OrderStatus.REQ_AWAIT_APPROVAL)
                 .event(OrderEvent.REQ_RECEIVED)
-                .action(notifyManagerApprovalAction())
+                .action(actionAndGuardConfiguration.notifyManagerApprovalAction())
                 .and()
                 .withLocal()
                 .source(OrderStatus.REQ_AWAIT_APPROVAL).target(OrderStatus.REQ_APPROVAL_PROCESS)
@@ -190,18 +165,18 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
                 .and()
                 .withChoice()
                 .source(OrderStatus.REQ_APPROVAL_PROCESS)
-                .first(OrderStatus.REQ_APPROVED, checkApprovalGuard())
+                .first(OrderStatus.REQ_APPROVED, actionAndGuardConfiguration.checkApprovalGuard())
                 .last(OrderStatus.REQ_DECLINED)
                 .and()
                 .withExternal()
                 .source(OrderStatus.REQ_DECLINED).target(OrderStatus.CANCEL)
                 .event(OrderEvent.REQ_DECLINE)
-                .action(notifyRequestDeclinedAction())
+                .action(actionAndGuardConfiguration.notifyRequestDeclinedAction())
                 .and()
                 .withLocal()
                 .source(OrderStatus.REQ_APPROVED).target(OrderStatus.AWAIT_ASSIGN_STAFF)
                 .event(OrderEvent.REQ_APPROVE)
-                .action(notifyRequestApprovedAction())
+                .action(actionAndGuardConfiguration.notifyRequestApprovedAction())
                 .and()
                 .withLocal()
                 .source(OrderStatus.AWAIT_ASSIGN_STAFF).target(OrderStatus.IN_EXCHANGING)
@@ -222,7 +197,7 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
                 .withLocal()
                 .source(OrderStatus.AWAIT_QUO).target(OrderStatus.QUO_AWAIT_MANA_APPROVAL)
                 .event(OrderEvent.QUO_FINISH)
-                .action(notifyManagerApprovalAction())
+                .action(actionAndGuardConfiguration.notifyManagerApprovalAction())
                 .and()
                 .withLocal()
                 .source(OrderStatus.QUO_AWAIT_MANA_APPROVAL).target(OrderStatus.QUO_MANA_APPROVAL_PROCESS)
@@ -230,13 +205,13 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
                 .and()
                 .withChoice()
                 .source(OrderStatus.QUO_MANA_APPROVAL_PROCESS)
-                .first(OrderStatus.QUO_MANA_APPROVED, checkApprovalGuard())
+                .first(OrderStatus.QUO_MANA_APPROVED, actionAndGuardConfiguration.checkApprovalGuard())
                 .last(OrderStatus.QUO_MANA_DECLINED)
                 .and()
                 .withLocal()
                 .source(OrderStatus.QUO_MANA_APPROVED).target(OrderStatus.QUO_AWAIT_CUST_APPROVAL)
                 .event(OrderEvent.QUO_MANA_APPROVE)
-                .action(notifyCustomerApprovalAction())
+                .action(actionAndGuardConfiguration.notifyCustomerApprovalAction())
                 .and()
                 .withLocal()
                 .source(OrderStatus.QUO_MANA_DECLINED).target(OrderStatus.AWAIT_QUO)
@@ -248,13 +223,13 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
                 .and()
                 .withChoice()
                 .source(OrderStatus.QUO_CUST_APPROVAL_PROCESS)
-                .first(OrderStatus.QUO_CUST_APPROVED, checkApprovalGuard())
+                .first(OrderStatus.QUO_CUST_APPROVED, actionAndGuardConfiguration.checkApprovalGuard())
                 .last(OrderStatus.QUO_CUST_DECLINED)
                 .and()
                 .withLocal()
                 .source(OrderStatus.QUO_CUST_APPROVED).target(OrderStatus.AWAIT_TRANSACTION)
                 .event(OrderEvent.QUO_CUST_APPROVE)
-                .action(notifyCustomerTransactionAction())
+                .action(actionAndGuardConfiguration.notifyCustomerTransactionAction())
                 .and()
                 .withLocal()
                 .source(OrderStatus.QUO_CUST_DECLINED).target(OrderStatus.AWAIT_QUO)
@@ -266,7 +241,7 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
                 .and()
                 .withChoice()
                 .source(OrderStatus.TRANSACTION_PROCESS)
-                .first(OrderStatus.TRANSACTION_SUCCESSFUL, checkTransactionGuard())
+                .first(OrderStatus.TRANSACTION_SUCCESSFUL, actionAndGuardConfiguration.checkTransactionGuard())
                 .last(OrderStatus.TRANSACTION_UNSUCCESSFUL)
                 .and()
                 .withLocal()
@@ -280,7 +255,7 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
                 .withExternal()
                 .source(OrderStatus.TRANSACTION_SUCCESSFUL).target(OrderStatus.IN_DESIGNING)
                 .event(OrderEvent.TRANSACTION_APPROVE)
-                .action(notifyDesignStaffAction())
+                .action(actionAndGuardConfiguration.notifyDesignStaffAction())
 
                 /*--------------------------------------------------------------------------------------------------*/
                 /*--------------------------------DESIGN SUPERSTATE LOCAL TRANSITION--------------------------------*/
@@ -289,7 +264,7 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
                 .withLocal()
                 .source(OrderStatus.IN_DESIGNING).target(OrderStatus.DES_AWAIT_MANA_APPROVAL)
                 .event(OrderEvent.QUO_FINISH)
-                .action(notifyManagerApprovalAction())
+                .action(actionAndGuardConfiguration.notifyManagerApprovalAction())
                 .and()
                 .withLocal()
                 .source(OrderStatus.DES_AWAIT_MANA_APPROVAL).target(OrderStatus.DES_MANA_APPROVAL_PROCESS)
@@ -297,18 +272,18 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
                 .and()
                 .withChoice()
                 .source(OrderStatus.DES_MANA_APPROVAL_PROCESS)
-                .first(OrderStatus.DES_MANA_APPROVED, checkApprovalGuard())
+                .first(OrderStatus.DES_MANA_APPROVED, actionAndGuardConfiguration.checkApprovalGuard())
                 .last(OrderStatus.DES_MANA_DECLINED)
                 .and()
                 .withLocal()
                 .source(OrderStatus.DES_MANA_APPROVED).target(OrderStatus.DES_AWAIT_CUST_APPROVAL)
                 .event(OrderEvent.DES_MANA_APPROVE)
-                .action(notifyCustomerApprovalAction())
+                .action(actionAndGuardConfiguration.notifyCustomerApprovalAction())
                 .and()
                 .withLocal()
                 .source(OrderStatus.DES_MANA_DECLINED).target(OrderStatus.IN_DESIGNING)
                 .event(OrderEvent.DES_MANA_DECLINE)
-                .action(deleteImageAction())
+                .action(actionAndGuardConfiguration.deleteImageAction())
                 .and()
                 .withLocal()
                 .source(OrderStatus.DES_AWAIT_CUST_APPROVAL).target(OrderStatus.DES_CUST_APPROVAL_PROCESS)
@@ -316,7 +291,7 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
                 .and()
                 .withChoice()
                 .source(OrderStatus.DES_CUST_APPROVAL_PROCESS)
-                .first(OrderStatus.DES_CUST_APPROVED, checkApprovalGuard())
+                .first(OrderStatus.DES_CUST_APPROVED, actionAndGuardConfiguration.checkApprovalGuard())
                 .last(OrderStatus.DES_CUST_DECLINED)
                 .and()
                 .withLocal()
@@ -330,7 +305,7 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
                 .withExternal()
                 .source(OrderStatus.DES_CUST_APPROVED).target(OrderStatus.IN_PRODUCTION)
                 .event(OrderEvent.DES_CUST_APPROVE)
-                .action(notifyProductionStaffAction())
+                .action(actionAndGuardConfiguration.notifyProductionStaffAction())
 
                 /*------------------------------------------------------------------------------------------------------*/
                 /*--------------------------------PRODUCTION SUPERSTATE LOCAL TRANSITION--------------------------------*/
@@ -339,7 +314,7 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
                 .withLocal()
                 .source(OrderStatus.IN_PRODUCTION).target(OrderStatus.PRO_AWAIT_APPROVAL)
                 .event(OrderEvent.PRO_FINISH)
-                .action(notifyCustomerApprovalAction())
+                .action(actionAndGuardConfiguration.notifyCustomerApprovalAction())
                 .and()
                 .withLocal()
                 .source(OrderStatus.PRO_AWAIT_APPROVAL).target(OrderStatus.PRO_APPROVAL_PROCESS)
@@ -347,7 +322,7 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
                 .and()
                 .withChoice()
                 .source(OrderStatus.PRO_APPROVAL_PROCESS)
-                .first(OrderStatus.PRO_APPROVED, checkApprovalGuard())
+                .first(OrderStatus.PRO_APPROVED, actionAndGuardConfiguration.checkApprovalGuard())
                 .last(OrderStatus.PRO_DECLINED)
                 .and()
                 .withLocal()
@@ -369,7 +344,7 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
                 .withLocal()
                 .source(OrderStatus.ON_DELIVERING).target(OrderStatus.DELIVERED_AWAIT_APPROVAL)
                 .event(OrderEvent.DELIVERED)
-                .action(notifyDeliveredAction())
+                .action(actionAndGuardConfiguration.notifyDeliveredAction())
                 .and()
                 .withLocal()
                 .source(OrderStatus.DELIVERED_AWAIT_APPROVAL).target(OrderStatus.DELIVERED_APPROVAL_PROCESS)
@@ -377,7 +352,7 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
                 .and()
                 .withChoice()
                 .source(OrderStatus.DELIVERED_APPROVAL_PROCESS)
-                .first(OrderStatus.DELIVERED_CONFIRMED, checkApprovalGuard())
+                .first(OrderStatus.DELIVERED_CONFIRMED, actionAndGuardConfiguration.checkApprovalGuard())
                 .last(OrderStatus.DELIVERED_DENIED)
                 .and()
                 .withLocal()
@@ -406,268 +381,8 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
                         .source(status)
                         .target(OrderStatus.CANCEL)
                         .event(OrderEvent.CANCEL)
-                        .action(notifyCancelAction());
+                        .action(actionAndGuardConfiguration.notifyCancelAction());
             }
         }
     }
-
-    //<editor-fold desc="GUARD BEAN" defaultstate="collapsed">
-    @Bean
-    public Guard<OrderStatus, OrderEvent> checkApprovalGuard() {
-        return context -> {
-            Boolean approved = context.getExtendedState().get("isApproved", Boolean.class);
-            return approved != null && approved;
-        };
-    }
-
-    @Bean
-    public Guard<OrderStatus, OrderEvent> checkTransactionGuard () {
-        return context -> {
-            Boolean successful = context.getExtendedState().get("isSuccessful", Boolean.class);
-            return successful != null && successful;
-        };
-    }
-    //</editor-fold>
-
-    //<editor-fold desc="ACTION BEAN" defaultstate="collapsed">
-    @Bean
-    public Action<OrderStatus, OrderEvent> notifyManagerApprovalAction() {
-        return context -> {
-            Order order = orderService.findOrderById(context.getExtendedState().get("orderID", String.class));
-            Report report = reportService.findReportByID(context.getExtendedState().get("reportID", Integer.class));
-
-            List<Account> managers = accountService
-                    .findAllByRole(Role.MANAGER)
-                    .stream()
-                    .map(acc -> modelMapper.map(acc, Account.class))
-                    .toList();
-
-            managers.forEach(manager -> {
-                Notification notification = Notification.builder()
-                        .receiver(manager)
-                        .report(report)
-                        .order(order)
-                        .build();
-                notification = notificationService.createOptionNotification(notification);
-                log.info("Notification with id {} of order id {} sent to user {} of role {}",
-                        notification.getId(), order.getId(), manager.getId(), manager.getRole()
-                );
-            });
-        };
-    }
-
-    @Bean
-    public Action<OrderStatus, OrderEvent> notifyCustomerApprovalAction() {
-        return context -> {
-            Order order = orderService.findOrderById(context.getExtendedState().get("orderID", String.class));
-            Report report = reportService.findReportByID(context.getExtendedState().get("reportID", Integer.class));
-            Account owner = order.getOwner();
-
-            Notification notification = Notification.builder()
-                    .receiver(owner)
-                    .report(report)
-                    .order(order)
-                    .build();
-            notification = notificationService.createOptionNotification(notification);
-            log.info("Notification with id {} of order id {} sent to customer with id {} and email {}",
-                    notification.getId(), order.getId(), owner.getId(), owner.getEmail()
-            );
-        };
-    }
-
-    @Bean
-    public Action<OrderStatus, OrderEvent> notifySaleStaffAction() {
-        return context -> {
-            String notifyMessage = context.getExtendedState().get("message", String.class);
-            //Notify logic using NotificationService
-            log.info(notifyMessage);
-        };
-    }
-
-    @Bean
-    public Action<OrderStatus, OrderEvent> notifyDesignStaffAction() {
-        return context -> {
-            Order order = orderService.findOrderById(context.getExtendedState().get("orderID", String.class));
-            Staff designStaff = order.getDesignStaff();
-
-            String title = String.format("Work assignment for order %s", order.getId());
-            String description = String.format("You have been assigned to the order %s", order.getId());
-
-            Report report = reportService.createNormalReport(order, title, description);
-
-            Notification notification = Notification.builder()
-                    .receiver(designStaff)
-                    .report(report)
-                    .order(order)
-                    .build();
-            notification = notificationService.createOptionNotification(notification);
-            log.info("Notification with id {} of order id {} sent to design staff of id {} with email {}",
-                    notification.getId(), order.getId(), designStaff.getId(), designStaff.getEmail()
-            );
-        };
-    }
-
-    @Bean
-    public Action<OrderStatus, OrderEvent> notifyProductionStaffAction() {
-        return context -> {
-            String notifyMessage = context.getExtendedState().get("message", String.class);
-            //Notify logic using NotificationService
-            log.info(notifyMessage);
-        };
-    }
-
-    @Bean
-    public Action<OrderStatus, OrderEvent> notifyManagerAction() {
-        return context -> {
-            String notifyMessage = context.getExtendedState().get("message", String.class);
-            //Notify logic using NotificationService
-            log.info(notifyMessage);
-        };
-    }
-
-    @Bean
-    public Action<OrderStatus, OrderEvent> approvedAction () {
-        return context -> {
-            Order order = orderService.findOrderById(context.getExtendedState().get("orderID", String.class));
-            StateMachine<OrderStatus, OrderEvent> stateMachine = context.getStateMachine();
-            Message<OrderEvent> message;
-
-            switch (context.getStateMachine().getState().getId()) {
-                case OrderStatus.REQ_APPROVED ->
-                        message = MessageBuilder.withPayload(OrderEvent.REQ_APPROVE)
-                                .setHeader("message", messagesConstant.createRequestApprovedMessage(order.getOwner().getUserInfo().getFirstName()))
-                                .build();
-                case OrderStatus.QUO_MANA_APPROVED ->
-                        message = MessageBuilder.withPayload(OrderEvent.QUO_MANA_APPROVE).build();
-                case OrderStatus.QUO_CUST_APPROVED ->
-                        message = MessageBuilder.withPayload(OrderEvent.QUO_CUST_DECLINE).build();
-                case OrderStatus.TRANSACTION_SUCCESSFUL ->
-                        message = MessageBuilder.withPayload(OrderEvent.TRANSACTION_APPROVE).build();
-                case OrderStatus.DES_MANA_APPROVED ->
-                        message = MessageBuilder.withPayload(OrderEvent.DES_MANA_APPROVE).build();
-                case OrderStatus.DES_CUST_APPROVED ->
-                        message = MessageBuilder.withPayload(OrderEvent.DES_CUST_APPROVE).build();
-                case OrderStatus.PRO_APPROVED ->
-                        message = MessageBuilder.withPayload(OrderEvent.PRO_APPROVE).build();
-                case OrderStatus.DELIVERED_CONFIRMED ->
-                        message = MessageBuilder.withPayload(OrderEvent.DELIVERED_APPROVE).build();
-                default ->
-                        throw new RuntimeException("Unexpected state machine state " + context.getStateMachine().getState());
-            }
-            stateMachine.sendEvent(Mono.just(message)).subscribe();
-        };
-    }
-
-    @Bean
-    public Action<OrderStatus, OrderEvent> declinedAction() {
-        return context -> {
-            Order order = orderService.findOrderById(context.getExtendedState().get("orderID", String.class));
-            StateMachine<OrderStatus, OrderEvent> stateMachine = context.getStateMachine();
-            Message<OrderEvent> message;
-
-            switch (context.getStateMachine().getState().getId()) {
-                case OrderStatus.REQ_DECLINED ->
-                        message = MessageBuilder.withPayload(OrderEvent.REQ_DECLINE)
-                                .setHeader("message", messagesConstant.createRequestDeclinedMessage(order.getOwner().getUserInfo().getFirstName()))
-                                .build();
-                case OrderStatus.QUO_MANA_DECLINED ->
-                        message = MessageBuilder.withPayload(OrderEvent.QUO_MANA_DECLINE).build();
-                case OrderStatus.QUO_CUST_DECLINED ->
-                        message = MessageBuilder.withPayload(OrderEvent.QUO_CUST_DECLINE).build();
-                case OrderStatus.TRANSACTION_UNSUCCESSFUL ->
-                        message = MessageBuilder.withPayload(OrderEvent.TRANSACTION_DECLINE).build();
-                case OrderStatus.DES_MANA_DECLINED ->
-                        message = MessageBuilder.withPayload(OrderEvent.DES_MANA_DECLINE).build();
-                case OrderStatus.DES_CUST_DECLINED ->
-                        message = MessageBuilder.withPayload(OrderEvent.DES_CUST_DECLINE).build();
-                case OrderStatus.PRO_DECLINED ->
-                        message = MessageBuilder.withPayload(OrderEvent.PRO_DECLINE).build();
-                case OrderStatus.DELIVERED_DENIED ->
-                        message = MessageBuilder.withPayload(OrderEvent.DELIVERED_DENY).build();
-                default ->
-                        throw new RuntimeException("Unexpected state machine state " + context.getStateMachine().getState());
-            }
-            stateMachine.sendEvent(Mono.just(message)).subscribe();
-        };
-    }
-
-    @Bean
-    public Action<OrderStatus, OrderEvent> notifyCancelAction() {
-        return context -> {
-            Order order = orderService.findOrderById(context.getExtendedState().get("orderID", String.class));
-
-            String title = String.format("Your order %s have been cancelled", order.getId());
-            String description = String.format("We are sorry to announce that your order %s have been cancelled", order.getId());
-
-            Report report = reportService.createNormalReport(order, title, description);
-
-            Notification notification = notificationService.saveNotification(
-                    Notification.builder()
-                            .report(report)
-                            .order(order)
-                            .receiver(order.getOwner())
-                            .build()
-            );
-        };
-    }
-
-    @Bean
-    public Action<OrderStatus, OrderEvent> notifyCustomerTransactionAction() {
-        return context -> {
-
-        };
-    }
-
-    @Bean
-    public Action<OrderStatus, OrderEvent> deleteImageAction () {
-        return context -> {
-            Order order = orderService.findOrderById(context.getExtendedState().get("orderID", String.class));
-            Design design = order.getDesign();
-            design.setDesignLink(null);
-            orderService.updateOrder(order);
-        };
-    }
-
-    @Bean
-    public Action<OrderStatus, OrderEvent> notifyDeliveredAction () {
-        return context -> {
-
-        };
-    }
-
-    @Bean
-    public Action<OrderStatus, OrderEvent> notifyTransactionReceiptAction() {
-        return context -> {
-
-        };
-    }
-
-    @Bean
-    public Action<OrderStatus, OrderEvent> notifyRestoreOrderAction() {
-        return context -> {
-
-        };
-    }
-
-    @Bean
-    public Action<OrderStatus, OrderEvent> notifyRequestApprovedAction() {
-        return context -> {
-
-        };
-    }
-
-    @Bean
-    public Action<OrderStatus, OrderEvent> notifyRequestDeclinedAction () {
-        return context -> {
-
-        };
-    }
-
-    @Bean
-    public Action<OrderStatus, OrderEvent> createChatRoomAction () {
-        return context -> {
-
-        };
-    }
-    //</editor-fold>
 }

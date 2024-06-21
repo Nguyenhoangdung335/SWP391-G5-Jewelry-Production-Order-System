@@ -18,5 +18,4 @@ public interface AccountRepository extends JpaRepository<Account, String> {
     Optional<Account> findAccountByRole(Role role);
     Optional<Staff> findStaffByRoleAndWorkStatus(Role role, WorkStatus workStatus);
     List<Account> findAllByRole(Role role);
-    Optional<Account> save(Account account);
 }

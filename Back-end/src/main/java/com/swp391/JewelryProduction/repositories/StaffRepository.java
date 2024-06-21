@@ -10,6 +10,4 @@ import java.util.Optional;
 public interface StaffRepository extends JpaRepository<Staff, String> {
     List<Staff> findAllByRole(Role role);
     Optional<Staff> findStaffById(String staffId);
-    Optional<Staff> save(Staff staff);
-    List<Staff> findStaffByRoleEndingWith(String suffix);
 }

@@ -1,8 +1,10 @@
 package com.swp391.JewelryProduction.services.notification;
 
+import com.swp391.JewelryProduction.dto.ResponseDTOs.NotificationResponse;
 import com.swp391.JewelryProduction.pojos.Account;
 import com.swp391.JewelryProduction.pojos.Notification;
 import com.swp391.JewelryProduction.repositories.NotificationRepository;
+import com.swp391.JewelryProduction.util.exceptions.ObjectNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.codec.ServerSentEvent;
@@ -88,7 +90,10 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public Notification getNotificationById(UUID id) {
-        return notificationRepository.findById(id).orElse(null);
+        Notification notification = notificationRepository.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException("Notification id "+id+" not found"));
+        notification.setRead(true);
+        return notificationRepository.save(notification);
     }
 
     @Override
@@ -121,53 +126,60 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public Notification saveNotification(Notification notification) {
+    public Notification createNotification(Notification notification, boolean isOption) {
         notification.setDelivered(false);
         notification.setRead(false);
-        notification.setOption(false);
-        return notificationRepository.save(notification);
-    }
-
-    @Override
-    public Notification createOptionNotification(Notification notification) {
-        notification.setDelivered(false);
-        notification.setRead(false);
-        notification.setOption(true);
+        notification.setOption(isOption);
         return notificationRepository.save(notification);
     }
 
     //</editor-fold>
 
     //<editor-fold desc="WebFlux Service methods" defaultstate="collapsed">
-    private final String EVENT_NAME = "notify";
-
     @Override
-    public Flux<ServerSentEvent<List<Notification>>> subscribeNotificationStream(Account receiver) {
-        if (receiver != null) {
-            return Flux.interval(Duration.ofSeconds(3))
-                    .publishOn(Schedulers.boundedElastic())
-                    .map(sequence -> ServerSentEvent.<List<Notification>>builder()
-                            .id(String.valueOf(sequence))
-                            .event(EVENT_NAME)
-                            .data(getNotifications(receiver))
-                            .build()
-                    );
-        }
-        return Flux.interval(Duration.ofSeconds(3))
-                .map(sequence -> ServerSentEvent.<List<Notification>>builder()
+    public Flux<ServerSentEvent<List<NotificationResponse>>> subscribeNotificationStream(Account receiver) {
+        return Flux.merge(Flux.interval(Duration.ofSeconds(3))
+                .publishOn(Schedulers.boundedElastic())
+                .map(sequence -> ServerSentEvent.<List<NotificationResponse>>builder()
                         .id(String.valueOf(sequence))
-                        .event(EVENT_NAME)
-                        .data(new ArrayList<>())
-                        .build());
+                        .event("notify")
+                        .data(getNotifications(receiver))
+                        .build()
+                ), Flux.interval(Duration.ofSeconds(3))
+                .map(sequence -> ServerSentEvent.<List<NotificationResponse>>builder()
+                        .event("heartbeat")
+                        .build()));
     }
 
-    private List<Notification> getNotifications(Account receiver) {
+    private List<NotificationResponse> getNotifications(Account receiver) {
+        List<NotificationResponse> list = new ArrayList<>();
         List<Notification> notifications = notificationRepository
                 .findAllByReceiverAndDeliveredFalse(receiver);
+
         notifications.forEach(notification -> {
             notification.setDelivered(true);
+            list.add(mappedToResponse(notification));
         });
-        return notificationRepository.saveAll(notifications);
+
+        notificationRepository.saveAll(notifications);
+        return list;
+    }
+
+    private NotificationResponse mappedToResponse(Notification notif) {
+        return NotificationResponse.builder()
+                .id(notif.getId())
+                .reportID(notif.getReport().getId())
+                .reportTitle(notif.getReport().getTitle())
+                .reportDescription(notif.getReport().getDescription())
+                .reportCreatedDate(notif.getReport().getCreatedDate())
+                .reportType(notif.getReport().getType())
+                .reportSenderID(notif.getReport().getSender().getId())
+                .orderID(notif.getOrder().getId())
+                .receiverID(notif.getReceiver().getId())
+                .delivered(true)
+                .read(notif.isRead())
+                .isOption(notif.isOption())
+                .build();
     }
     //</editor-fold>
 }

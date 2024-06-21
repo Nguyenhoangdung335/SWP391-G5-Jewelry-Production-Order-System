@@ -1,5 +1,6 @@
 package com.swp391.JewelryProduction.controller;
 
+import com.swp391.JewelryProduction.dto.ResponseDTOs.NotificationResponse;
 import com.swp391.JewelryProduction.pojos.Account;
 import com.swp391.JewelryProduction.pojos.Notification;
 import com.swp391.JewelryProduction.services.account.AccountService;
@@ -24,8 +25,7 @@ public class PushNotificationController {
     private final ModelMapper modelMapper;
 
     @GetMapping("/{accountID}")
-    public Flux<ServerSentEvent<List<Notification>>> notify (@PathVariable("accountID") String accountID) {
-        Account receiver = modelMapper.map(accountService.findAccountById(accountID), Account.class);
-        return notificationService.subscribeNotificationStream(receiver);
+    public Flux<ServerSentEvent<List<NotificationResponse>>> notify (@PathVariable("accountID") String accountID) {
+        return notificationService.subscribeNotificationStream(accountService.findAccountById(accountID));
     }
 }

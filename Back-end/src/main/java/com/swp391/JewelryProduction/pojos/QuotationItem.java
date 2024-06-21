@@ -20,7 +20,7 @@ public class QuotationItem {
     private int quantity;
     @Column(name = "unit_price", columnDefinition = "decimal(15,2)")
     private double unitPrice;
-    @Formula("speed * distance")
+    @Formula("quantity * unit_price")
     private double totalPrice;
 
     @ManyToOne

@@ -5,6 +5,7 @@ import com.swp391.JewelryProduction.websocket.image.ImageService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -24,7 +25,9 @@ public class ChatController {
     private static final Logger log = LoggerFactory.getLogger(ChatController.class);
     private final SimpMessagingTemplate messagingTemplate;
     private final ChatMessageService chatMessageService;
-    private final ImageService imageService;
+
+    @Autowired
+    private ImageService imageService;
 
     @PostMapping("/chat/upload")
     public ResponseEntity<String> handleImageMessage(

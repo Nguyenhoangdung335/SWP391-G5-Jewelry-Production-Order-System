@@ -50,6 +50,7 @@ public class UserService {
                     userData.put("saleStaff", saleStaff.getId());
                 }
             }
+
             ApiFuture<WriteResult> result = docRef.set(userData);
             try {
                 result.get();

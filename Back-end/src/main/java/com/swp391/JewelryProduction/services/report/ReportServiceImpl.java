@@ -2,6 +2,7 @@ package com.swp391.JewelryProduction.services.report;
 
 import com.swp391.JewelryProduction.config.stateMachine.StateMachineInterceptor;
 import com.swp391.JewelryProduction.dto.RequestDTOs.ReportRequest;
+import com.swp391.JewelryProduction.enums.ConfirmedState;
 import com.swp391.JewelryProduction.enums.OrderEvent;
 import com.swp391.JewelryProduction.enums.OrderStatus;
 import com.swp391.JewelryProduction.enums.ReportType;
@@ -14,6 +15,7 @@ import com.swp391.JewelryProduction.services.order.OrderService;
 import com.swp391.JewelryProduction.util.exceptions.ObjectNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.statemachine.StateMachine;
@@ -24,49 +26,54 @@ import org.springframework.util.ObjectUtils;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.LinkedList;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ReportServiceImpl implements ReportService {
 
-    private ReportRepository reportRepository;
-    private AccountService accountService;
-    private ReportService reportService;
-    private OrderService orderService;
+    private final ReportRepository reportRepository;
+    private final AccountService accountService;
+    private final OrderService orderService;
 
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
-    private StateMachineService<OrderStatus, OrderEvent> stateMachineService;
-    private StateMachinePersist<OrderStatus, OrderEvent, String> stateMachinePersist;
+    private final StateMachineService<OrderStatus, OrderEvent> stateMachineService;
+    private final StateMachinePersist<OrderStatus, OrderEvent, String> stateMachinePersist;
     private StateMachine<OrderStatus, OrderEvent> currentStateMachine;
 
     public Report saveReport(Report report) {
-        reportRepository.save(report);
-        return report;
+        return reportRepository.save(report);
     }
 
     @Override
     public Report createRequest(ReportRequest report, Order order) {
         Account sender = modelMapper.map(accountService.findAccountById(report.getSenderId()), Account.class);
-        Report request = Report.builder()
+        Report requestReport = Report.builder()
                         .reportingOrder(order)
                         .title(report.getTitle())
                         .description(report.getDescription())
                         .createdDate(LocalDateTime.now())
                         .type(ReportType.REQUEST)
                         .sender(sender)
+                        .reportingOrder(order)
                         .build();
-        order.getRelatedReports().add(request);
-        orderService.updateOrder(order);
+        order.setRelatedReports(new LinkedList<>(Arrays.asList(requestReport)));
+        requestReport = reportRepository.save(requestReport);
 
         StateMachine<OrderStatus, OrderEvent> stateMachine = instantiateStateMachine(order);
-
-        stateMachine.sendEvent(Mono.just(MessageBuilder
-                        .withPayload(OrderEvent.REQ_RECEIVED).build())
+        stateMachine.getExtendedState().getVariables().put("reportID", requestReport.getId());
+        stateMachine.sendEvent(
+                Mono.just(MessageBuilder
+                        .withPayload(OrderEvent.REQ_RECEIVED)
+                        .build())
         ).subscribe();
-        return request;
+        return requestReport;
     }
 
+    @Transactional
     @Override
     public Report createQuotationReport(ReportRequest report, Order order) {
         Report quote = Report.builder()
@@ -87,6 +94,7 @@ public class ReportServiceImpl implements ReportService {
         return quote;
     }
 
+    @Transactional
     @Override
     public Report createDesignReport(ReportRequest report, Order order) {
         Report design = Report.builder()
@@ -109,23 +117,24 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     @Transactional
-    public void handleUserResponse(String orderId, String response) throws RuntimeException {
+    public void handleUserResponse(String orderId, ConfirmedState response) throws RuntimeException {
         StateMachine<OrderStatus, OrderEvent> stateMachine = getStateMachine(orderId);
-        OrderStatus status =  stateMachine.getState().getId();
+        OrderStatus status = stateMachine.getState().getId();
         OrderEvent triggerEvent = switch (response) {
-            case "approve" -> {
+            case ConfirmedState.APPROVE -> {
                 stateMachine.getExtendedState().getVariables().put("isApproved", true);
                 yield getApprovalEvent(status);
             }
-            case "decline" -> {
+            case ConfirmedState.DECLINE -> {
                 stateMachine.getExtendedState().getVariables().put("isApproved", false);
-                yield getApprovalEvent(stateMachine.getState().getId());
+                yield getApprovalEvent(status);
             }
             default -> throw new IllegalArgumentException("Invalid response");
         };
         stateMachine.sendEvent(Mono.just(MessageBuilder.withPayload(triggerEvent).build())).subscribe();
     }
 
+    @Transactional
     @Override
     public Report createNormalReport(Order order, String title, String content) {
         Report newReport = Report.builder()
@@ -175,7 +184,7 @@ public class ReportServiceImpl implements ReportService {
 
     private StateMachine<OrderStatus, OrderEvent> instantiateStateMachine (Order order) {
         String orderId = order.getId();
-        StateMachine<OrderStatus, OrderEvent> stateMachine = stateMachineService.acquireStateMachine(order.getId(), true);
+        StateMachine<OrderStatus, OrderEvent> stateMachine = stateMachineService.acquireStateMachine(orderId, true);
         stateMachine.getExtendedState().getVariables().put("orderID", orderId);
         stateMachine.getStateMachineAccessor()
                 .doWithAllRegions(
@@ -183,6 +192,7 @@ public class ReportServiceImpl implements ReportService {
                         )
                 );
         stateMachine.startReactively().block();
+        log.info("State machine started successfully. Current state: " + stateMachine.getState().getId());
         return stateMachine;
     }
 }

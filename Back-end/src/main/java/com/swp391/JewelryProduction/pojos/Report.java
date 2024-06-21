@@ -1,7 +1,6 @@
 package com.swp391.JewelryProduction.pojos;
 
 import com.swp391.JewelryProduction.enums.ReportType;
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
@@ -34,8 +35,11 @@ public class Report {
     @JoinColumn(name = "order_id")
     private Order reportingOrder;
 
-    @OneToOne
-    private Notification notification;
+    @OneToMany(mappedBy = "report", fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<Notification> notifications;
 
-
+    public List<Notification> getNotifications () {
+        if (notifications == null) notifications = new ArrayList<>();
+        return notifications;
+    }
 }

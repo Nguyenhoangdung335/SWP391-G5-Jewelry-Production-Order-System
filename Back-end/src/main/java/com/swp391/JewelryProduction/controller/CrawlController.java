@@ -6,22 +6,24 @@ import com.swp391.JewelryProduction.services.crawl.ICrawlDataService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
 
 import java.io.IOException;
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/v1")
+@RequestMapping("api/v1/crawls")
 public class CrawlController {
 
     private final ICrawlDataService CrawDataService;
 
-    @PostMapping("crawls")
+    @PostMapping
     public ResponseEntity<DataDTO> crawlingData() {
         try {
             CrawDataService.crawData();
@@ -35,9 +37,9 @@ public class CrawlController {
         }
     }
 
-    @GetMapping("crawls")
-    public ResponseEntity<List<Material>> readData() throws IOException {
-        return ResponseEntity.ok(CrawDataService.getAll());
+    @GetMapping
+    public Flux<ServerSentEvent<List<Material>>> getPrice() throws IOException {
+        return CrawDataService.getAll();
     }
 
 }

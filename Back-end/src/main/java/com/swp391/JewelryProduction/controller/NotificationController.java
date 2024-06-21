@@ -2,11 +2,12 @@ package com.swp391.JewelryProduction.controller;
 
 import com.swp391.JewelryProduction.pojos.Notification;
 import com.swp391.JewelryProduction.services.account.AccountService;
+import com.swp391.JewelryProduction.enums.ConfirmedState;
 import com.swp391.JewelryProduction.services.notification.NotificationService;
-import com.swp391.JewelryProduction.services.order.OrderService;
 import com.swp391.JewelryProduction.services.report.ReportService;
 import com.swp391.JewelryProduction.util.Response;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/notification")
@@ -31,14 +32,14 @@ public class NotificationController {
                 .buildEntity();
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<Response> createNotification (Notification notification) {
-        return Response.builder()
-                .status(HttpStatus.OK)
-                .message("Notification saved successfully")
-                .response("notification-list", notificationService.saveNotification(notification))
-                .buildEntity();
-    }
+//    @PostMapping("/create")
+//    public ResponseEntity<Response> createNotification (Notification notification) {
+//        return Response.builder()
+//                .status(HttpStatus.OK)
+//                .message("Notification saved successfully")
+//                .response("notification-list", notificationService.saveNotification(notification))
+//                .buildEntity();
+//    }
 
 //    @PatchMapping("/read/{notificationID}")
 //    public ResponseEntity<Response> changeStatusToRead (@PathVariable("notificationID") UUID notificationID) {
@@ -58,7 +59,7 @@ public class NotificationController {
     }
 
     @PostMapping("/{orderId}/confirm")
-    public ResponseEntity<Response> submitConfirmation(@RequestParam String confirm, @PathVariable("orderId") String orderId ) throws Exception {
+    public ResponseEntity<Response> submitConfirmation(@RequestParam("comfirmed") ConfirmedState confirm, @PathVariable("orderId") String orderId ) throws Exception {
         reportService.handleUserResponse(orderId, confirm);
         return Response.builder()
                 .status(HttpStatus.OK)

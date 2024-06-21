@@ -1,13 +1,10 @@
 package com.swp391.JewelryProduction.pojos.designPojos;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.util.Map;
-import java.util.Set;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.*;
 
 @Data
 @AllArgsConstructor
@@ -15,6 +12,7 @@ import java.util.Set;
 @Builder
 @Entity
 @Table(name = "product_specification")
+@EqualsAndHashCode(exclude = {"id"})
 public class ProductSpecification {
     @Id
     @GeneratedValue

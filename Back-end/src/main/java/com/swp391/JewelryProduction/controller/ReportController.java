@@ -1,10 +1,11 @@
 package com.swp391.JewelryProduction.controller;
 
 import com.swp391.JewelryProduction.dto.RequestDTOs.ReportRequest;
+import com.swp391.JewelryProduction.services.account.AccountService;
 import com.swp391.JewelryProduction.services.order.OrderService;
-import com.swp391.JewelryProduction.services.product.ProductService;
 import com.swp391.JewelryProduction.services.report.ReportService;
 import com.swp391.JewelryProduction.util.Response;
+import com.swp391.JewelryProduction.util.exceptions.ObjectExistsException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class ReportController {
     private final OrderService orderService;
     private final ReportService reportService;
-    private final ProductService productService;
+    private final AccountService accountService;
 
     @PostMapping("/{accountId}/{productSpecId}/create/request")
     public ResponseEntity<Response> createRequest(
@@ -24,6 +25,9 @@ public class ReportController {
             @PathVariable("productSpecId") String specId,
             @PathVariable("accountId") String accountId)
     {
+        if (accountService.checkCurrentOrderExist(accountId))
+            throw new ObjectExistsException("Your account currently has an on-going order");
+
         request.setReportContentID(specId);
         request.setSenderId(accountId);
         reportService.createRequest(request, orderService.saveNewOrder(accountId));

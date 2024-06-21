@@ -4,7 +4,6 @@ import com.swp391.JewelryProduction.dto.AccountDTO;
 import com.swp391.JewelryProduction.dto.UserInfoDTO;
 import com.swp391.JewelryProduction.pojos.Account;
 import com.swp391.JewelryProduction.pojos.UserInfo;
-import com.swp391.JewelryProduction.repositories.AccountRepository;
 import com.swp391.JewelryProduction.security.services.AuthenticationService;
 import com.swp391.JewelryProduction.services.account.AccountService;
 import com.swp391.JewelryProduction.services.email.EmailService;
@@ -16,8 +15,6 @@ import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -43,7 +40,6 @@ public class RegistrationController {
             @Valid @RequestBody AccountDTO accountDTO,
             BindingResult bindingResult
     ) {
-        log.info("/api/registration/register endpoint called: " + accountDTO);
         ResponseEntity<Response> errorMsg = getResponseError(bindingResult);
         if (errorMsg != null) return errorMsg;
 
@@ -105,11 +101,11 @@ public class RegistrationController {
         ResponseEntity<Response> errorMsg = getResponseError(bindingResult);
         if (errorMsg != null) return errorMsg;
 
-        String jwtToken = authenticationService.authenticate(modelMapper.map(account, AccountDTO.class));
+        String jwtToken = authenticationService.authenticate(account);
         return Response.builder()
                 .status(HttpStatus.OK)
                 .message("Login successfully")
-                .response("Token", jwtToken)
+                .response("token", jwtToken)
                 .buildEntity();
     }
 
@@ -118,8 +114,6 @@ public class RegistrationController {
             @RequestBody UserInfo info,
             @RequestHeader(name = "key") String email) {
         Account acc = accountService.saveUserInfo(info, email);
-//        UserInfo info = accountService.findAccountByEmail(email).getUserInfo();
-//        UserInfoDTO dto = modelMapper.map(info, UserInfoDTO.class);
 
         return Response.builder()
                 .message("User info added successfully")
@@ -131,10 +125,10 @@ public class RegistrationController {
     public ResponseEntity<Response> forgetPassword (
             @Pattern(regexp = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message = "Email is invalid")
             @NotEmpty
-            @RequestParam("email") String email
+            @RequestHeader("key") String email
     ) {
         try {
-            Account acc = accountService.findAccountByEmail(email);
+            accountService.findAccountByEmail(email);
             String otp = authenticationService.generateOTP(email);
             log.info("OTP code: " + otp);
 
@@ -148,17 +142,11 @@ public class RegistrationController {
 
     @PostMapping("/update-password")
     public ResponseEntity<Response> updatePassword (
-            @RequestBody @NotEmpty @Pattern(regexp = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$", message = "Password is invalid") String newPassword,
-            @RequestHeader("key") String email) {
-        Account updatedAcc = accountService.updateAccount(
-                AccountDTO.builder()
-                        .email(email)
-                        .password(newPassword)
-                        .build()
-        );
+            @RequestBody AccountDTO account) {
+        Account updatedAcc = accountService.updateAccount(account);
         if (updatedAcc == null) throw new RuntimeException();
         return Response.builder()
-                .message("Password updated successfully for account with email "+email+", please log in again.")
+                .message("Password updated successfully for account with email "+account.getEmail()+", please log in again.")
                 .buildEntity();
     }
 

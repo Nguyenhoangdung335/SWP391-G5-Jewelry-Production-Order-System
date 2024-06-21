@@ -18,33 +18,27 @@ import java.util.Properties;
 
 @Slf4j
 @Service
-//@RequiredArgsConstructor
+@RequiredArgsConstructor
 public class EmailServiceImpl implements EmailService {
 
-    private Session session;
-    private Properties properties;
+    private final Session session;
 
     private final String buttonLink = "<a href=\"%$s\" target=\"_blank\" style=\"display: inline-block; padding: 16px 36px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; color: #ffffff; text-decoration: none; border-radius: 6px;\">%2$s</a>\n";
     private final String otpText = "<p style=\"display: inline-block; padding: 16px 36px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; color: #ffffff; text-decoration: none; border-radius: 6px;\">Your OTP code<br/>%1$s<p>";
 
-    @Value("${spring.mail.username}")
+    @Value("${mail.smtp.user}")
     private String senderEmail;
-    @Value("${spring.mail.password}")
-    private String smtpPassword;
-
-    @Autowired
-    public EmailServiceImpl(JavaMailSender javaMailSender) {
-        properties = System.getProperties();
-		properties.setProperty("mail.smtp.host", "smtp.gmail.com");
-		properties.setProperty("mail.smtp.port", "587");
-		properties.setProperty("mail.smtp.auth", "true");
-		properties.setProperty("mail.smtp.starttls.enable", "true");
-        this.session = Session.getDefaultInstance(System.getProperties(), new Authenticator() {
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(senderEmail, smtpPassword);
-            }
-        });
-    }
+//
+//
+//    @Autowired
+//    public EmailServiceImpl(JavaMailSender javaMailSender) {
+//
+//        this.session = Session.getDefaultInstance(System.getProperties(), new Authenticator() {
+//            protected PasswordAuthentication getPasswordAuthentication() {
+//                return new PasswordAuthentication(senderEmail, smtpPassword);
+//            }
+//        });
+//    }
 
     @Override
     public void sendLinkEmail(
@@ -74,7 +68,6 @@ public class EmailServiceImpl implements EmailService {
             String toEmail,
             String otpCode
     ) throws MessagingException {
-        log.info(senderEmail + ": " + smtpPassword);
 
         MimeMessage mimeMessage = new MimeMessage(session);
         mimeMessage.setFrom(new InternetAddress(senderEmail));

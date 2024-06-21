@@ -5,10 +5,7 @@ import com.swp391.JewelryProduction.enums.Role;
 import com.swp391.JewelryProduction.pojos.designPojos.Product;
 import com.swp391.JewelryProduction.util.IdGenerator;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
@@ -21,7 +18,10 @@ import java.util.List;
 @Builder
 @Entity
 @Table(name = "[Order]")
+@ToString(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(exclude = {"staffOrderHistory", "notifications", "relatedReports"})
 public class Order {
+    @ToString.Include
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_seq")
     @GenericGenerator(
@@ -35,22 +35,25 @@ public class Order {
     )
     @Column(length = 8, nullable = false, updatable = false, unique = true)
     private String id;
+    @ToString.Include
     private String name;
+    @ToString.Include
     private double budget;
+    @ToString.Include
     @Column(name = "date_created", nullable = false)
     private LocalDateTime createdDate;
-
+    @ToString.Include
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
-
+    @ToString.Include
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "owner_id")
     private Account owner;
-
+    @ToString.Include
     @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "quotation_id")
     private Quotation quotation;
-
+    @ToString.Include
     @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "design_id")
     private Design design;
@@ -70,7 +73,6 @@ public class Order {
 
     @OneToMany(mappedBy = "reportingOrder", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Report> relatedReports;
-
     @Transient
     private Staff saleStaff;
     @Transient
@@ -78,22 +80,25 @@ public class Order {
     @Transient
     private Staff productionStaff;
 
+    @ToString.Include
     public Staff getSaleStaff() {
         return getStaffByRole(Role.SALE_STAFF);
     }
-
+    @ToString.Include
     public Staff getDesignStaff() {
         return getStaffByRole(Role.DESIGN_STAFF);
     }
-
+    @ToString.Include
     public Staff getProductionStaff() {
         return getStaffByRole(Role.PRODUCTION_STAFF);
     }
 
     private Staff getStaffByRole(Role role) {
-        for (StaffOrderHistory history : staffOrderHistory) {
-            if (history.getStaff().getRole() == role) {
-                return history.getStaff();
+        if (staffOrderHistory != null) {
+            for (StaffOrderHistory history : staffOrderHistory) {
+                if (history.getStaff().getRole() == role) {
+                    return history.getStaff();
+                }
             }
         }
         return null;

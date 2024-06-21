@@ -7,7 +7,6 @@ import com.swp391.JewelryProduction.enums.WorkStatus;
 import com.swp391.JewelryProduction.pojos.Staff;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface StaffService {
     List<Staff> findAllStaff();
