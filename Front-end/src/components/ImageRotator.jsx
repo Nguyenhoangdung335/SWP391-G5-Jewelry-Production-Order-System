@@ -1,6 +1,7 @@
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import Snowfall from "../assets/snowfall.jpg";
+import "./ImageRotatorCSS.css";
 import { CarouselCaption, Container } from "react-bootstrap";
 
 const responsive = {
@@ -11,7 +12,7 @@ const responsive = {
   },
   desktop: {
     breakpoint: { max: 3000, min: 1024 },
-    items: 3,
+    items: 4,
   },
   tablet: {
     breakpoint: { max: 1024, min: 464 },
@@ -25,11 +26,12 @@ const responsive = {
 
 export default function ImageRotator() {
   return (
-    <Container style={{ paddingBottom: "10px", paddingTop: "10px" }}>
+    
       <Carousel
         responsive={responsive}
         centerMode={false}
         draggable={false}
+        arrows={false}
         swipeable={false}
         infinite={true}
         pauseOnHover
@@ -37,27 +39,21 @@ export default function ImageRotator() {
         autoPlay={true}
         containerClass=" carousel-container"
       >
-        <div className="card text-center" style={{ margin: "0px 5px" }}>
+        <div className="card">
           <img className="product--image" src={Snowfall} alt="product " />
-          <h4>Placeholder</h4>
         </div>
-        <div className="card text-center " style={{ margin: "0px 5px" }}>
+        <div className="card ">
           <img className="product--image" src={Snowfall} alt="product " />
-          <h4>Placeholder</h4>
         </div>
-        <div className="card text-center " style={{ margin: "0px 5px" }}>
+        <div className="card ">
           <img className="product--image" src={Snowfall} alt="product " />
-          <h4>Placeholder</h4>
         </div>
-        <div className="card text-center " style={{ margin: "0px 5px" }}>
+        <div className="card">
           <img className="product--image" src={Snowfall} alt="product " />
-          <h4>Placeholder</h4>
         </div>
-        <div className="card text-center " style={{ margin: "0px 5px" }}>
+        <div className="card ">
           <img className="product--image" src={Snowfall} alt="product " />
-          <h4>Placeholder</h4>
         </div>
       </Carousel>
-    </Container>
   );
 }

@@ -1,50 +1,46 @@
 import React from "react";
 import Carousel from "react-bootstrap/Carousel";
-import LuxuryBanner1 from "../assets/luxury-banner1.jpg";
-import LuxuryBanner2 from "../assets/luxury-banner2.jpg";
-import NecklaceBanner from "../assets/necklace-banner.jpg";
-import { Container } from "react-bootstrap";
+import VideoBanner from "../assets/2024-Icons-HP-Hero-HW-Video-Desktop-3.mp4";
+import { Button } from "react-bootstrap";
 
 function ControlledCarousel() {
-  const [index, setIndex] = React.useState(0);
-
-  const handleSelect = (selectedIndex) => {
-    setIndex(selectedIndex);
-  };
   return (
-    
-      <Carousel
-        activeIndex={index}
-        onSelect={handleSelect}
-        indicators={true}
-        fade
-      >
-        <Carousel.Item>
-          <img
-            src={LuxuryBanner1}
-            alt="luxury-banner-1"
-            className="d-block w-100"
-            style={{ objectFit: "cover", height: "40vh" }}
-          />
-        </Carousel.Item>
-        <Carousel.Item>
-          <img
-            src={LuxuryBanner2}
-            alt="luxury-banner-2"
-            className="d-block w-100"
-            style={{ objectFit: "cover", height: "40vh" }}
-          />
-        </Carousel.Item>
-        <Carousel.Item>
-          <img
-            src={NecklaceBanner}
-            alt="necklace-banner"
-            className="d-block w-100"
-            style={{ objectFit: "cover", height: "40vh" }}
-          />
-        </Carousel.Item>
-      </Carousel>
-    
+    <Carousel controls indicators={false} prevIcon={false} nextIcon={false}>
+      <Carousel.Item>
+        <video
+          width="100%"
+          height="100%"
+          autoPlay
+          muted
+          loop
+          playsInline
+          disablePictureInPicture
+          preload="auto"
+          data-preload="true"
+          class="load-lazily b-loaded"
+          poster="//media.tiffany.com/is/image/tiffanydm/2024-Icons-HP-Hero-HW-Video-Desktop-2?$tile$&amp;&amp;hei=900"
+          src={VideoBanner}
+        ></video>
+        <Carousel.Caption className="mb-5">
+          <div className="carousel-introduction mb-3">
+            <h3>Welcome To 宝石店</h3>
+            <h6>Where To Make Your Dream Jewelry</h6>
+          </div>
+          <Button
+            variant="outline-light fw-bold"
+            style={{
+              backgroundColor: "#707070",
+              borderColor: "#707070",
+              width: "150px",
+              borderRadius: "22px",
+              height: "40px",
+            }}
+          >
+            Create Jewelry
+          </Button>
+        </Carousel.Caption>
+      </Carousel.Item>
+    </Carousel>
   );
 }
 export default ControlledCarousel;

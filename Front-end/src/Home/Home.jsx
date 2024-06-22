@@ -1,317 +1,304 @@
-import { Carousel, Col, Container, Nav, Row } from "react-bootstrap";
-// import Carousel from "../components/Carousel";
-import { Link } from "react-router-dom";
-import { FaStar } from "react-icons/fa";
+import { Button, Card, Col, Container, Row } from "react-bootstrap";
+import Carousel from "../components/Carousel";
 import ImageRotator from "../components/ImageRotator";
-import VideoBanner from "../assets/2024-Icons-HP-Hero-HW-Video-Desktop-3.mp4";
+import Ring from "../assets/ring-banner.jpg";
+import { AiOutlineShoppingCart } from "react-icons/ai";
+import AndieNecklace from "../assets/andie-gomez-acebo-sEq4onJnWrI-unsplash.jpg";
+import SabriannaRing from "../assets/sabrianna-uiKSc7-NM2s-unsplash.jpg";
+import { useState } from "react";
+import Snowfall from "../assets/snowfall.jpg";
+import { LiaShippingFastSolid } from "react-icons/lia";
+import { RiCustomerServiceLine } from "react-icons/ri";
+import { MdOutlineCleaningServices } from "react-icons/md";
+
+const HoverDiv = ({ children }) => {
+  const [isHover, setIsHover] = useState(false);
+
+  const handleMouseEnter = () => {
+    setIsHover(true);
+  };
+  const handleMouseLeave = () => {
+    setIsHover(false);
+  };
+  return (
+    <div
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        opacity: isHover ? "1" : "0.5",
+        filter: isHover ? "brightness(50%)" : "brightness(85%)",
+        position: "relative",
+        textAlign: "center",
+        cursor: "pointer",
+        transition: "filter 0.5s linear",
+      }}
+    >
+      {children}
+    </div>
+  );
+};
 
 function Home() {
+  const blogImageStyle = {
+    objectFit: "cover",
+    padding: "10px",
+  };
+
   return (
     <>
-      <div className="carousel-banner" style={{ margin: "5px 0px 5px" }}>
-        <Carousel controls indicators={false} prevIcon={false} nextIcon={false}>
-          <Carousel.Item>
-            <video
-              width="100%"
-              height="100%"
-              autoPlay
-              muted
-              loop
-              playsInline
-              disablePictureInPicture
-              preload="auto"
-              data-preload="true"
-              class="load-lazily b-loaded"
-              // poster="//media.tiffany.com/is/image/tiffanydm/2024-Icons-HP-Hero-HW-Video-Desktop-2?$tile$&amp;&amp;hei=900"
-              src={VideoBanner}
-            ></video>
-            <Carousel.Caption>
-              <h3>With Love, Since 1837 </h3>
-            </Carousel.Caption>
-          </Carousel.Item>
-        </Carousel>
+      <div className="carousel-banner mb-3">
+        <Carousel />
       </div>
-      {/*Collections section*/}
-      <div>
-        <div
-          className="slider-bar d-flex align-content-center justify-content-center p-2"
-          style={{ marginBottom: "12px", marginTop: "10px" }}
-        >
-          <Link to={"/collections_page"} className="text-black fw-bold">
-            {/* <div>
-              <h2 className="mt-1 fw-bold">OUR COLLECTIONS</h2>
-            </div> */}
-          </Link>
+
+      <div className="product-rotator pb-4 pt-4 mb-3">
+        <div className="collection-title pt-4 pb-4">
+          <h2 className="fw-bold text-center">Our Latest Products</h2>
         </div>
         <ImageRotator />
       </div>
 
-      {/*About us section*/}
-      <section
-        className="about-us-section text-white mb-4 mt-4 p-2 pb-5 "
-        style={{ backgroundColor: "#4B4B4B" }}
+      <Container
+        fluid
+        className="introduction-article d-flex justify-content-center pb-4 pt-4 mb-3"
       >
-        <h2 className="text-center mt-1 pt-3 pb-3 fw-bold">ABOUT US</h2>
-        <Row className="w-100" style={{ marginLeft: "1px" }}>
-          <Col className="about-us-context align-content-center">
-            <div
-              className="w-75"
-              style={{
-                margin: "0px auto",
-                padding: "0px auto",
-                textAlign: "justify",
-              }}
-            >
-              <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-                enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor
-                in reprehenderit in voluptate velit esse cillum dolore eu fugiat
-                nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-                sunt in culpa qui officia deserunt mollit anim id est laborum.
-              </p>
-              <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-                enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                nisi ut aliquip ex ea commodo consequat.
-              </p>
-            </div>
-          </Col>
-          <Col className="about-us-image d-flex align-content-center justify-content-center">
-            <img
-              src="https://www.greatplacetowork.ca/images/Asset_3.webp"
-              alt="about-us-image"
-              width={500}
-              height={300}
-              style={{ borderRadius: "15px" }}
-            />
-          </Col>
-        </Row>
-      </section>
-
-      {/*Feedback section*/}
-      <div className="d-flex justify-content-center mb-5">
-        <div
-          className="d-flex content-align-center justify-content-center"
-          style={{ borderBottom: "2px solid black", width: "80%" }}
-        >
-          <h2 className="fw-bold p-2">FEEDBACKS</h2>
+        <div>
+          <Row className="introduction-quotes">
+            <Col md={6}>
+              <div className="pb-4 pt-4">
+                <h3 className="fw-bold">
+                  We Here To Help You Make Your Dream Jewelry.
+                </h3>
+              </div>
+              <div className="pb-4">
+                <p>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                  Ut enim ad minim veniam, quis nostrud exercitation ullamco
+                  laboris nisi ut aliquip ex ea commodo consequat. Duis aute
+                  irure dolor in reprehenderit in voluptate velit esse cillum
+                  dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+                  cupidatat non proident, sunt in culpa qui officia deserunt
+                  mollit anim id est laborum.
+                </p>
+                <p>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                  Ut enim ad minim veniam, quis nostrud exercitation ullamco
+                  laboris nisi ut aliquip ex ea commodo consequat. Duis aute
+                  irure dolor in reprehenderit in voluptate velit esse cillum
+                  dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+                  cupidatat non proident, sunt in culpa qui officia deserunt
+                  mollit anim id est laborum.
+                </p>
+              </div>
+              <Button
+                variant="outline-dark fw-bold"
+                className="mt-2 mb-2"
+                style={{
+                  width: "150px",
+                  borderRadius: "22px",
+                  height: "40px",
+                }}
+              >
+                Get Started
+              </Button>
+            </Col>
+            <Col md={6}>
+              <img
+                src={Ring}
+                alt="Ring Background"
+                width="100%"
+                height="100%"
+              />
+            </Col>
+          </Row>
         </div>
+      </Container>
+
+      <Container fluid className="pt-4 pb-4 mb-3">
+        <div>
+          <Row>
+            <Col md={6}>
+              <div className="mb-2 mt-2" style={{ position: "relative" }}>
+                <HoverDiv>
+                  <img
+                    src={AndieNecklace}
+                    alt="A Woman Wearing A Necklace"
+                    width="100%"
+                    height="100%"
+                  />
+                </HoverDiv>
+                <div
+                  style={{
+                    position: "absolute",
+                    transform: "translate(-50%, -50%)",
+                    top: "50%",
+                    left: "50%",
+                  }}
+                >
+                  <h2 className="fw-bold text-white">Custom Your Own</h2>
+                </div>
+              </div>
+            </Col>
+            <Col md={6}>
+              <div className="mb-2 mt-2" style={{ position: "relative" }}>
+                <HoverDiv>
+                  <img
+                    src={SabriannaRing}
+                    alt="Ruby Ring"
+                    width="100%"
+                    height="100%"
+                  />
+                </HoverDiv>
+
+                <div
+                  style={{
+                    position: "absolute",
+                    transform: "translate(-50%, -50%)",
+                    top: "50%",
+                    left: "50%",
+                  }}
+                >
+                  <h2 className="fw-bold text-white">
+                    Use Available Templates
+                  </h2>
+                </div>
+              </div>
+            </Col>
+          </Row>
+        </div>
+      </Container>
+
+      <div className=" pb-4 pt-4 mb-3" style={{backgroundColor:"#f8f8f8"}}>
+        <Container>
+          <div className="text-center pt-4 pb-4">
+            <h2 className="fw-bold">Our Features</h2>
+          </div>
+          <Row>
+            <Col className="text-center">
+              <div className="mb-3">
+                <LiaShippingFastSolid size="50px" />
+              </div>
+              <h5>Complimentary Shipping & Returns</h5>
+              <p>
+                We offer complimentary shipping and returns on orders above 2000
+                AED
+              </p>
+            </Col>
+            <Col className="text-center">
+              <div className="mb-3">
+                <RiCustomerServiceLine size="50px" />
+              </div>
+              <h5>Always At Your Service</h5>
+              <p>Our staffs are always here to help.</p>
+            </Col>
+            <Col className="text-center">
+              <div className="mb-3">
+                <MdOutlineCleaningServices size="50px"/>
+              </div>
+              <h5>Clean Your Jewelry</h5>
+              <p>We guarantee to clean your jewelry for a year</p>
+            </Col>
+          </Row>
+        </Container>
       </div>
 
-      <section
-        className="feedback-section mb-2 w-75"
-        style={{ margin: "0px auto" }}
-      >
-        <div className="customers-feedbakcs d-flex justify-content-center mb-5">
-          <div
-            className="d-inline-flex justify-content-between"
-            style={{ width: "80%" }}
-          >
-            <div style={{ width: "49%" }}>
-              <div style={{ borderBottom: "2px solid black" }}>
-                <div
-                  className="d-flex justify-content-between"
-                  style={{ lineHeight: "10px" }}
-                >
-                  <div>
-                    <p className="fw-bold" style={{ fontSize: "20px" }}>
-                      Name
-                    </p>
-                  </div>
-                  <div className="rate">
-                    <FaStar color="#FFD600" />
-                    <FaStar color="#FFD600" />
-                    <FaStar color="#FFD600" />
-                    <FaStar color="#FFD600" />
-                    <FaStar color="#FFD600" />
-                  </div>
-                </div>
-                <div
-                  className="d-flex justify-content-between"
-                  style={{ lineHeight: "1px" }}
-                >
-                  <div>
-                    <p style={{ fontSize: "16px" }}>Placeholder</p>
-                  </div>
-                  <div>
-                    <p style={{ color: "#939393" }}>6/2/2024</p>
-                  </div>
-                </div>
-                <div className="customer-comment">
-                  <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua.
-                  </p>
-                </div>
-                <div
-                  className="d-flex justify-content-end"
-                  style={{ color: "#939393", lineHeight: "1px" }}
-                >
-                  <p>Read more</p>
-                </div>
-              </div>
-            </div>
-
-            <div style={{ width: "49%" }}>
-              <div style={{ borderBottom: "2px solid black" }}>
-                <div
-                  className="d-flex justify-content-between"
-                  style={{ lineHeight: "10px" }}
-                >
-                  <div>
-                    <p className="fw-bold" style={{ fontSize: "20px" }}>
-                      Name
-                    </p>
-                  </div>
-                  <div className="rate">
-                    <FaStar color="#FFD600" />
-                    <FaStar color="#FFD600" />
-                    <FaStar color="#FFD600" />
-                    <FaStar color="#FFD600" />
-                    <FaStar color="#FFD600" />
-                  </div>
-                </div>
-                <div
-                  className="d-flex justify-content-between"
-                  style={{ lineHeight: "1px" }}
-                >
-                  <div>
-                    <p>Placeholder</p>
-                  </div>
-                  <div>
-                    <p style={{ color: "#939393" }}>6/2/2024</p>
-                  </div>
-                </div>
-                <div className="customer-comment">
-                  <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua.
-                  </p>
-                </div>
-                <div
-                  className="d-flex justify-content-end"
-                  style={{ color: "#939393", lineHeight: "1px" }}
-                >
-                  <p>Read more</p>
-                </div>
-              </div>
-            </div>
-          </div>
+      <Container fluid className=" pb-4 pt-4 b-3">
+        <div className="text-center pt-4 pb-4">
+          <h2 className="fw-bold">Newest Blogs</h2>
         </div>
-
-        <div className="customers-feedbakcs d-flex justify-content-center mb-3">
-          <div
-            className="d-inline-flex justify-content-between"
-            style={{ width: "80%" }}
-          >
-            <div style={{ width: "49%" }}>
-              <div style={{ borderBottom: "2px solid black" }}>
-                <div
-                  className="d-flex justify-content-between"
-                  style={{ lineHeight: "10px" }}
-                >
-                  <div>
-                    <p className="fw-bold" style={{ fontSize: "20px" }}>
-                      Name
-                    </p>
-                  </div>
-                  <div className="rate">
-                    <FaStar color="#FFD600" />
-                    <FaStar color="#FFD600" />
-                    <FaStar color="#FFD600" />
-                    <FaStar color="#FFD600" />
-                    <FaStar color="#FFD600" />
-                  </div>
+        <Row>
+          <Col md={3}>
+            <Card className="mb-2 mt-2" style={{ cursor: "pointer" }}>
+              <Card.Img
+                src={Snowfall}
+                variant="top"
+                width="100%"
+                height="380px"
+                style={blogImageStyle}
+              />
+              <Card.Body>
+                <div className="pb-3">
+                  <Card.Title>
+                    <h4 className="fw-bold">Clean Your Jewelry</h4>
+                  </Card.Title>
+                  <Card.Subtitle>
+                    <p>Learn how to clean your jewelry at home</p>
+                  </Card.Subtitle>
                 </div>
-                <div
-                  className="d-flex justify-content-between"
-                  style={{ lineHeight: "1px" }}
-                >
-                  <div>
-                    <p style={{ fontSize: "16px" }}>Placeholder</p>
-                  </div>
-                  <div>
-                    <p style={{ color: "#939393" }}>6/2/2024</p>
-                  </div>
+                <Card.Link>
+                  <Button>Read now</Button>
+                </Card.Link>
+              </Card.Body>
+            </Card>
+          </Col>
+          <Col md={3}>
+            <Card className="mb-2 mt-2" style={{ cursor: "pointer" }}>
+              <Card.Img
+                src={Snowfall}
+                variant="top"
+                width="100%"
+                height="380px"
+                style={blogImageStyle}
+              />
+              <Card.Body>
+                <div className="pb-3">
+                  <Card.Title>
+                    <h4 className="fw-bold">Clean Your Jewelry</h4>
+                  </Card.Title>
+                  <Card.Subtitle>
+                    <p>Learn how to clean your jewelry at home</p>
+                  </Card.Subtitle>
                 </div>
-                <div className="customer-comment">
-                  <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua.
-                  </p>
+                <Button>Read now</Button>
+              </Card.Body>
+            </Card>
+          </Col>
+          <Col md={3}>
+            <Card className="mb-2 mt-2" style={{ cursor: "pointer" }}>
+              <Card.Img
+                src={Snowfall}
+                variant="top"
+                width="100%"
+                height="380px"
+                style={blogImageStyle}
+              />
+              <Card.Body>
+                <div className="pb-3">
+                  <Card.Title>
+                    <h4 className="fw-bold">Clean Your Jewelry</h4>
+                  </Card.Title>
+                  <Card.Subtitle>
+                    <p>Learn how to clean your jewelry at home</p>
+                  </Card.Subtitle>
                 </div>
-                <div
-                  className="d-flex justify-content-end"
-                  style={{ color: "#939393", lineHeight: "1px" }}
-                >
-                  <p>Read more</p>
+                <Button>Read now</Button>
+              </Card.Body>
+            </Card>
+          </Col>
+          <Col md={3}>
+            <Card className="mb-2 mt-2" style={{ cursor: "pointer" }}>
+              <Card.Img
+                src={Snowfall}
+                width="100%"
+                height="380px"
+                style={blogImageStyle}
+              />
+              <Card.Body>
+                <div className="pb-3">
+                  <Card.Title>
+                    <h4 className="fw-bold">Clean Your Jewelry</h4>
+                  </Card.Title>
+                  <Card.Subtitle>
+                    <p>Learn how to clean your jewelry at home</p>
+                  </Card.Subtitle>
                 </div>
-              </div>
-            </div>
-
-            <div style={{ width: "49%" }}>
-              <div style={{ borderBottom: "2px solid black" }}>
-                <div
-                  className="d-flex justify-content-between"
-                  style={{ lineHeight: "10px" }}
-                >
-                  <div>
-                    <p className="fw-bold" style={{ fontSize: "20px" }}>
-                      Name
-                    </p>
-                  </div>
-                  <div className="rate">
-                    <FaStar color="#FFD600" />
-                    <FaStar color="#FFD600" />
-                    <FaStar color="#FFD600" />
-                    <FaStar color="#FFD600" />
-                    <FaStar color="#FFD600" />
-                  </div>
-                </div>
-                <div
-                  className="d-flex justify-content-between"
-                  style={{ lineHeight: "1px" }}
-                >
-                  <div>
-                    <p>Placeholder</p>
-                  </div>
-                  <div>
-                    <p style={{ color: "#939393" }}>6/2/2024</p>
-                  </div>
-                </div>
-                <div className="customer-comment">
-                  <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua.
-                  </p>
-                </div>
-                <div
-                  className="d-flex justify-content-end"
-                  style={{ color: "#939393", lineHeight: "1px" }}
-                >
-                  <p>Read more</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="d-flex justify-content-center p-3">
-          <button
-            className="btn btn-outline-dark"
-            style={{ borderRadius: "20px" }}
-          >
-            More FeedBacks
-          </button>
-        </div>
-      </section>
+                <Button>Read now</Button>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+      </Container>
     </>
   );
 }
