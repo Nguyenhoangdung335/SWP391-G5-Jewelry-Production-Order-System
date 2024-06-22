@@ -11,7 +11,8 @@ public interface ReportService {
     Report createRequest(ReportRequest report, Order order);
     Report createQuotationReport(ReportRequest report, Order order);
     Report createDesignReport(ReportRequest report, Order order);
-    void handleUserResponse(String orderId, ConfirmedState response) throws Exception;
+    void handleUserResponse(String orderId, boolean isApproved) throws Exception;
     Report createNormalReport(Order order, String title, String content);
     Report findReportByID (Integer id);
+    Report updateReport (Report report);
 }

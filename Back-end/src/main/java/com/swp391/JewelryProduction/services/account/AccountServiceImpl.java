@@ -31,7 +31,6 @@ public class AccountServiceImpl implements AccountService {
     private final UserInfoRepository userInfoRepository;
 
     //<editor-fold desc="GET METHODS" defaultstate="collapsed">
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     @Override
     public List<Account> findAllAccounts() {
         return accountRepository.findAll();

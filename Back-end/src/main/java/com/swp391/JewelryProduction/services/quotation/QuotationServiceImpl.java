@@ -4,6 +4,7 @@ import com.swp391.JewelryProduction.pojos.Quotation;
 import com.swp391.JewelryProduction.repositories.QuotationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -20,6 +21,7 @@ public class QuotationServiceImpl implements QuotationService {
         } else return null;
     }
 
+    @Transactional
     @Override
     public Quotation saveQuotation(Quotation quotation) {
         return quotationRepository.save(quotation);
