@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @Controller
 @RequiredArgsConstructor
@@ -72,6 +73,19 @@ public class UserController {
             }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/{userId}/sale-staff")
+    public ResponseEntity<String> getSaleStaffById(@PathVariable String userId) {
+        try {
+            String saleStaff = userService.findSaleStaffById(userId);
+            return ResponseEntity.ok(saleStaff);
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
         }
     }
 
