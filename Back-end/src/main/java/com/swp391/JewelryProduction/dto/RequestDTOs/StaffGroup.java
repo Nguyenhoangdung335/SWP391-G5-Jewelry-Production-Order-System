@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class StaffGroup {
-    private Staff saleStaff;
-    private Staff designStaff;
-    private Staff productionStaff;
+    private String saleStaffID;
+    private String designStaffID;
+    private String productionStaffID;
 }
