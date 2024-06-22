@@ -169,7 +169,7 @@ function Home() {
         </div>
       </Container>
 
-      <div className=" pb-4 pt-4 mb-3" style={{backgroundColor:"#f8f8f8"}}>
+      <div className=" pb-4 pt-4 mb-3" style={{ backgroundColor: "#e5e5e5" }}>
         <Container>
           <div className="text-center pt-4 pb-4">
             <h2 className="fw-bold">Our Features</h2>
@@ -194,7 +194,7 @@ function Home() {
             </Col>
             <Col className="text-center">
               <div className="mb-3">
-                <MdOutlineCleaningServices size="50px"/>
+                <MdOutlineCleaningServices size="50px" />
               </div>
               <h5>Clean Your Jewelry</h5>
               <p>We guarantee to clean your jewelry for a year</p>
@@ -203,7 +203,7 @@ function Home() {
         </Container>
       </div>
 
-      <Container fluid className=" pb-4 pt-4 b-3">
+      <Container fluid className="pb-4 pt-4 mb-3">
         <div className="text-center pt-4 pb-4">
           <h2 className="fw-bold">Newest Blogs</h2>
         </div>
