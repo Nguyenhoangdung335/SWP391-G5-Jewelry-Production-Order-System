@@ -33,17 +33,17 @@ public class MessagesConstant {
         public String description () {
             return description = String.format(
                     """
-                    Dear %1$s,
+                    Dear %s,
     
                     I am pleased to inform you that your request for a custom jewelry has been approved. \
                     Our team has reviewed your submission and is pleased to confirm that your request meets the necessary \
                     criteria and requirements. As a result, we will be moving forward with the design phase. Please note \
                     that any further information or documentation required will be sent to you separately. If you have any \
-                    questions or concerns, please do not hesitate to reach out to us at %2$s. Thank you \
+                    questions or concerns, please do not hesitate to reach out to us at %s. Thank you \
                     for your patience and cooperation.
     
                     Best regards,
-                    %3$s
+                    %s
                     """,
                     customerName, companyContact, companyName
             );
@@ -58,18 +58,18 @@ public class MessagesConstant {
         public String description () {
             return description = String.format(
                     """
-                    Dear %1$s,
+                    Dear %s,
                     
                     I regret to inform you that your request for a custom jewelry has been declined. \
                     After careful review, our team has determined that it does not align with our current \
                     priorities or requirements. We appreciate the effort you took to submit your request \
                     and apologize for any inconvenience this may cause. If you would like to resubmit your \
                     request or discuss alternative options, please do not hesitate to reach out to us at \
-                    %2$s. We are always happy to consider alternative approaches and look forward to the \
+                    %s. We are always happy to consider alternative approaches and look forward to the \
                     possibility of working together in the future.
                     
                     Best regards,
-                    %3$s
+                    %s
                     """,
                     customerName, companyContact, companyName
             );
@@ -89,19 +89,19 @@ public class MessagesConstant {
 
             return description = String.format(
                     """
-                    Dear %1$s,
+                    Dear %s,
                    
-                    I am pleased to inform you that you have been assigned to the order id %2$s 
+                    I am pleased to inform you that you have been assigned to the order id %s 
                     as one of the team members responsible for fulfilling the customer's order.
                     Your expertise and skills will be valuable assets in delivering a high-quality solution 
                     to our client.
                     
                     As part of the project team, your responsibilities will include:
                     
-                    %3$s
+                    %s
                    
-                    Your involvement in this project will commence on %4$s and is expected to be 
-                    completed by %5$s. Please review the project scope and timeline carefully and 
+                    Your involvement in this project will commence on %s and is expected to be 
+                    completed by %s. Please review the project scope and timeline carefully and 
                     ensure that you understand your role and responsibilities.
                     
                     If you have any questions or concerns, please do not hesitate to reach out to me or the 
@@ -127,18 +127,18 @@ public class MessagesConstant {
         public String description () {
             return description = String.format(
                     """
-                    Dear %1$s,
+                    Dear %s,
                     
                     I regret to inform you that your request for a custom jewelry has been declined. \
                     After careful review, our team has determined that it does not align with our current \
                     priorities or requirements. We appreciate the effort you took to submit your request \
                     and apologize for any inconvenience this may cause. If you would like to resubmit your \
                     request or discuss alternative options, please do not hesitate to reach out to us at \
-                    %2$s. We are always happy to consider alternative approaches and look forward to the \
+                    %s. We are always happy to consider alternative approaches and look forward to the \
                     possibility of working together in the future.
                     
                     Best regards,
-                    %3$s
+                    %s
                     """,
                     customerName, companyContact, companyName
             );
