@@ -1,5 +1,7 @@
 package com.swp391.JewelryProduction.pojos;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.swp391.JewelryProduction.enums.AccountStatus;
 import com.swp391.JewelryProduction.enums.Role;
 import com.swp391.JewelryProduction.util.IdGenerator;
@@ -20,9 +22,13 @@ import java.util.List;
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "is_staff", columnDefinition = "bit")
 @DiscriminatorValue("0")
-@ToString(exclude = {"userInfo", "pastOrder", "sendingReports", "notifications"})
-@EqualsAndHashCode(exclude = {"userInfo", "pastOrder", "sendingReports", "notifications"})
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id"
+)
 public class Account{
+    @ToString.Include
+    @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "account_seq")
     @GenericGenerator(
@@ -36,33 +42,56 @@ public class Account{
     )
     @Column(length = 8, nullable = false, updatable = false, unique = true)
     private String id;
+
+    @ToString.Include
+    @EqualsAndHashCode.Include
     @Column(nullable = false)
     private String email;
+
+    @ToString.Include
+    @EqualsAndHashCode.Include
     @Column(nullable = false)
     private String password;
+
+    @ToString.Include
+    @EqualsAndHashCode.Include
     @Column(name = "date_created", nullable = false)
     private LocalDateTime dateCreated;
 
+    @ToString.Include
+    @EqualsAndHashCode.Include
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @ToString.Include
+    @EqualsAndHashCode.Include
     @Enumerated(EnumType.STRING)
     private AccountStatus status;
 
-    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
+    @ToString.Include
+    @EqualsAndHashCode.Include
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     @PrimaryKeyJoinColumn
     private UserInfo userInfo;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "owner", cascade = CascadeType.REMOVE)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner", cascade = CascadeType.REMOVE)
     private List<Order> pastOrder;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "sender", fetch = FetchType.LAZY)
     private List<Report> sendingReports;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "receiver", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Notification> notifications;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @Transient
     private Order currentOrder;
 
@@ -75,5 +104,10 @@ public class Account{
         if (pastOrder != null && !pastOrder.isEmpty())
             currentOrder = pastOrder.get(pastOrder.size() - 1);
         return currentOrder;
+    }
+
+    public void setUserInfo (UserInfo userInfo) {
+        this.userInfo = userInfo;
+        userInfo.setAccount(this);
     }
 }

@@ -12,29 +12,36 @@ import java.time.LocalDate;
 @Builder
 @Entity
 @Table(name = "User_Info")
-@ToString(exclude = {"account"})
-@EqualsAndHashCode(exclude = {"account"})
 public class UserInfo {
+    @ToString.Include
     @Id
     private String id;
 
+    @ToString.Include
     @Column(name = "first_name")
     private String firstName;
 
+    @ToString.Include
     @Column(name = "last_name")
     private String lastName;
 
+    @ToString.Include
     @Column(name = "birth_date")
     private LocalDate birthDate;
 
+    @ToString.Include
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    @Column(name = "phone_number", length = 10)
+    @ToString.Include
+    @Column(name = "phone_number")
     private String phoneNumber;
 
+    @ToString.Include
     private String address;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @OneToOne
     @MapsId
     @JoinColumn(name = "id")

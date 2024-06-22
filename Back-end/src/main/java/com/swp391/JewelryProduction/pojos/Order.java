@@ -1,5 +1,9 @@
 package com.swp391.JewelryProduction.pojos;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.swp391.JewelryProduction.enums.OrderStatus;
 import com.swp391.JewelryProduction.enums.Role;
 import com.swp391.JewelryProduction.pojos.designPojos.Product;
@@ -20,6 +24,10 @@ import java.util.List;
 @Table(name = "[Order]")
 @ToString(onlyExplicitlyIncluded = true)
 @EqualsAndHashCode(exclude = {"staffOrderHistory", "notifications", "relatedReports"})
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id"
+)
 public class Order {
     @ToString.Include
     @Id
@@ -49,9 +57,11 @@ public class Order {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "owner_id")
     private Account owner;
+
     @ToString.Include
     @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "quotation_id")
+    @JsonManagedReference
     private Quotation quotation;
     @ToString.Include
     @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
@@ -71,6 +81,7 @@ public class Order {
     @OneToOne(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Product product;
 
+    @JsonBackReference
     @OneToMany(mappedBy = "reportingOrder", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Report> relatedReports;
     @Transient

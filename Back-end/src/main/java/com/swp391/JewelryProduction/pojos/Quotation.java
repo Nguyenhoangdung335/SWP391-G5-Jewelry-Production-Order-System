@@ -1,6 +1,6 @@
 package com.swp391.JewelryProduction.pojos;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.*;
 import com.swp391.JewelryProduction.util.IdGenerator;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -19,6 +19,10 @@ import java.util.List;
 @Builder
 @Entity
 @Table(name = "final_quotation")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id"
+)
 public class Quotation {
     @Id
     @GeneratedValue(generator = "quotation_seq")
@@ -42,9 +46,11 @@ public class Quotation {
     private LocalDate expiredDate;
 
     @OneToMany(mappedBy = "quotation", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonManagedReference
     private List<QuotationItem> quotationItems;
 
     @OneToOne(mappedBy = "quotation", fetch = FetchType.LAZY)
+    @JsonBackReference
     private Order order;
 
     public Double getTotalPrice () {
