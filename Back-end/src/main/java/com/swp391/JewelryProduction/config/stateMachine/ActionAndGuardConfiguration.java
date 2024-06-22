@@ -29,6 +29,8 @@ import reactor.core.publisher.Mono;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.swp391.JewelryProduction.util.StateMachineUtil.getCurrentState;
+
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
@@ -105,6 +107,8 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
                         notification.getId(), order.getId(), manager.getId(), manager.getRole()
                 );
             });
+//            reportService.updateReport(report);
+//            orderService.updateOrder(order);
         };
     }
 
@@ -196,7 +200,7 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
             StateMachine<OrderStatus, OrderEvent> stateMachine = context.getStateMachine();
             Message<OrderEvent> message;
 
-            switch (context.getStateMachine().getState().getId()) {
+            switch (getCurrentState(context.getStateMachine()).getId()) {
                 case OrderStatus.REQ_APPROVED ->
                         message = MessageBuilder.withPayload(OrderEvent.REQ_APPROVE).build();
                 case OrderStatus.QUO_MANA_APPROVED ->
@@ -229,7 +233,7 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
             StateMachine<OrderStatus, OrderEvent> stateMachine = context.getStateMachine();
             Message<OrderEvent> message;
 
-            switch (context.getStateMachine().getState().getId()) {
+            switch (getCurrentState(context.getStateMachine()).getId()) {
                 case OrderStatus.REQ_DECLINED ->
                         message = MessageBuilder.withPayload(OrderEvent.REQ_DECLINE).build();
                 case OrderStatus.QUO_MANA_DECLINED ->
@@ -325,18 +329,16 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
 
             OrderService orderService = applicationContext.getBean(OrderService.class);
             NotificationService notificationService = applicationContext.getBean(NotificationService.class);
+            ReportService reportService = applicationContext.getBean(ReportService.class);
 
             Order order = orderService.findOrderById(context.getExtendedState().get("orderID", String.class));
             MessagesConstant approvedMessage = messagesConstant.createRequestApprovedMessage(order.getOwner().getUserInfo().getFirstName());
 
-            Report report = Report.builder()
-                    .sender(null)
-                    .reportingOrder(order)
-                    .createdDate(LocalDateTime.now())
-                    .type(ReportType.NONE)
-                    .title(approvedMessage.getTitle())
-                    .description(approvedMessage.getDescription())
-                    .build();
+            Report report = reportService.createNormalReport(
+                    order,
+                    approvedMessage.getTitle(),
+                    approvedMessage.getDescription()
+            );
             Notification notification = Notification.builder()
                     .report(report)
                     .order(order)
@@ -345,9 +347,11 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
             report.getNotifications().add(notification);
             order.getRelatedReports().add(report);
             order.getNotifications().add(notification);
-            order = orderService.updateOrder(order);
-            notification = notificationService.createNotification(notification, false);
-            log.info("Notification approved message for owner id {}", order.getOwner());
+
+//            order = orderService.updateOrder(order);
+            notificationService.createNotification(notification, false);
+//            reportService.updateReport(report);
+            log.info("Notification approved message for owner id {}", order.getOwner().getId());
         };
     }
 
