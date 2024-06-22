@@ -59,7 +59,7 @@ public class NotificationController {
     }
 
     @PostMapping("/{orderId}/confirm")
-    public ResponseEntity<Response> submitConfirmation(@RequestParam("comfirmed") ConfirmedState confirm, @PathVariable("orderId") String orderId ) throws Exception {
+    public ResponseEntity<Response> submitConfirmation(@RequestParam("comfirmed") Boolean confirm, @PathVariable("orderId") String orderId ) throws Exception {
         reportService.handleUserResponse(orderId, confirm);
         return Response.builder()
                 .status(HttpStatus.OK)
