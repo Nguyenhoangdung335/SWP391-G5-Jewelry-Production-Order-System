@@ -12,6 +12,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
 import java.time.LocalDateTime;
+import java.util.LinkedList;
 import java.util.List;
 
 @Data
@@ -78,17 +79,20 @@ public class Account{
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner", cascade = CascadeType.REMOVE)
-    private List<Order> pastOrder;
+    @Builder.Default
+    private List<Order> pastOrder = new LinkedList<>();
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "sender", fetch = FetchType.LAZY)
-    private List<Report> sendingReports;
+    @Builder.Default
+    private List<Report> sendingReports = new LinkedList<>();
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "receiver", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Notification> notifications;
+    @Builder.Default
+    private List<Notification> notifications = new LinkedList<>();
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

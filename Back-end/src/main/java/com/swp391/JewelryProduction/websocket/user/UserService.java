@@ -9,8 +9,11 @@ import com.swp391.JewelryProduction.services.account.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,9 +29,11 @@ public class UserService {
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
     private final AccountService accountService;
 
+    @Transactional
+    @EventListener(ApplicationReadyEvent.class)
     public void syncUsersToFirestore() {
         Firestore db = FirestoreClient.getFirestore();
-        CollectionReference usersCollection = db.collection("users");
+        CollectionReference usersCollection = db.collection(USER_COLLECTION_NAME);
         List<Account> accounts = accountService.findAllAccounts(); // Lấy tất cả các tài khoản từ SQL
 
         for (Account account : accounts) {
@@ -128,7 +133,7 @@ public class UserService {
         }
     }
 
-    @Scheduled(fixedRate = 60000) // Đồng bộ hóa mỗi 1 phút
+//    @Scheduled(fixedRate = 60000) // Đồng bộ hóa mỗi 1 phút
     public void syncData() {
         syncUsersToFirestore();
     }

@@ -107,7 +107,7 @@ public class Application   {
 
 				Faker faker = new Faker();
 				Random rand = new Random();
-				for (int i = 0; i < 20; i++) {
+				for (int i = 0; i < 10; i++) {
 					acc = Account.builder()
 							.email(faker.internet().safeEmailAddress())
 							.password(passwordEncoder.encode(faker.internet().password()))
@@ -127,6 +127,31 @@ public class Application   {
 							.build());
 					accountRepository.save(acc);
 				}
+
+			for (int i = 0; i < 15; i++) {
+				acc = Account.builder()
+						.email(faker.internet().safeEmailAddress())
+						.password(passwordEncoder.encode(faker.internet().password()))
+						.dateCreated(LocalDateTime.now().plusWeeks(rand.nextLong(10)).plusDays(rand.nextLong(31)))
+						.role(
+								(i < 10)?
+										(i< 5)? Role.SALE_STAFF: Role.DESIGN_STAFF
+										: Role.PRODUCTION_STAFF
+						)
+						.status(AccountStatus.ACTIVE)
+						.build();
+				acc.setUserInfo(UserInfo.builder()
+						.firstName(faker.name().firstName())
+						.lastName(faker.name().lastName())
+						.gender(Gender.values()[rand.nextInt(1)])
+						.address(faker.address().fullAddress())
+						.birthDate(faker.date().birthday(10, 80).toInstant()
+								.atZone(ZoneId.systemDefault())
+								.toLocalDate())
+						.phoneNumber(faker.phoneNumber().phoneNumber())
+						.build());
+				accountRepository.save(acc);
+			}
 
 				acc = Account.builder()
 						.email("tranmaiquangkhai@gmail.com")
