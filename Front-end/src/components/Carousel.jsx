@@ -2,6 +2,7 @@ import React from "react";
 import Carousel from "react-bootstrap/Carousel";
 import VideoBanner from "../assets/2024-Icons-HP-Hero-HW-Video-Desktop-3.mp4";
 import { Button } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
 function ControlledCarousel() {
   return (
@@ -26,18 +27,20 @@ function ControlledCarousel() {
             <h3>Welcome To 宝石店</h3>
             <h6>Where To Make Your Dream Jewelry</h6>
           </div>
-          <Button
-            variant="outline-light fw-bold"
-            style={{
-              backgroundColor: "#707070",
-              borderColor: "#707070",
-              width: "150px",
-              borderRadius: "22px",
-              height: "40px",
-            }}
-          >
-            Create Jewelry
-          </Button>
+          <Link to="/order_page">
+            <Button
+              variant="outline-light fw-bold"
+              style={{
+                backgroundColor: "#707070",
+                borderColor: "#707070",
+                width: "150px",
+                borderRadius: "22px",
+                height: "40px",
+              }}
+            >
+              Create Jewelry
+            </Button>
+          </Link>
         </Carousel.Caption>
       </Carousel.Item>
     </Carousel>

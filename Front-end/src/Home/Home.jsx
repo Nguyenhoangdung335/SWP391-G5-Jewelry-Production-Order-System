@@ -10,6 +10,7 @@ import Snowfall from "../assets/snowfall.jpg";
 import { LiaShippingFastSolid } from "react-icons/lia";
 import { RiCustomerServiceLine } from "react-icons/ri";
 import { MdOutlineCleaningServices } from "react-icons/md";
+import { Link } from "react-router-dom";
 
 const HoverDiv = ({ children }) => {
   const [isHover, setIsHover] = useState(false);
@@ -91,17 +92,19 @@ function Home() {
                   mollit anim id est laborum.
                 </p>
               </div>
-              <Button
-                variant="outline-dark fw-bold"
-                className="mt-2 mb-2"
-                style={{
-                  width: "150px",
-                  borderRadius: "22px",
-                  height: "40px",
-                }}
-              >
-                Get Started
-              </Button>
+              <Link to="/order_page">
+                <Button
+                  variant="outline-dark fw-bold"
+                  className="mt-2 mb-2"
+                  style={{
+                    width: "150px",
+                    borderRadius: "22px",
+                    height: "40px",
+                  }}
+                >
+                  Get Started
+                </Button>
+              </Link>
             </Col>
             <Col md={6}>
               <img
@@ -119,51 +122,55 @@ function Home() {
         <div>
           <Row>
             <Col md={6}>
-              <div className="mb-2 mt-2" style={{ position: "relative" }}>
-                <HoverDiv>
-                  <img
-                    src={AndieNecklace}
-                    alt="A Woman Wearing A Necklace"
-                    width="100%"
-                    height="100%"
-                  />
-                </HoverDiv>
-                <div
-                  style={{
-                    position: "absolute",
-                    transform: "translate(-50%, -50%)",
-                    top: "50%",
-                    left: "50%",
-                  }}
-                >
-                  <h2 className="fw-bold text-white">Custom Your Own</h2>
+              <Link to="/order_page">
+                <div className="mb-2 mt-2" style={{ position: "relative" }}>
+                  <HoverDiv>
+                    <img
+                      src={AndieNecklace}
+                      alt="A Woman Wearing A Necklace"
+                      width="100%"
+                      height="100%"
+                    />
+                  </HoverDiv>
+                  <div
+                    style={{
+                      position: "absolute",
+                      transform: "translate(-50%, -50%)",
+                      top: "50%",
+                      left: "50%",
+                    }}
+                  >
+                    <h2 className="fw-bold text-white">Custom Your Own</h2>
+                  </div>
                 </div>
-              </div>
+              </Link>
             </Col>
             <Col md={6}>
-              <div className="mb-2 mt-2" style={{ position: "relative" }}>
-                <HoverDiv>
-                  <img
-                    src={SabriannaRing}
-                    alt="Ruby Ring"
-                    width="100%"
-                    height="100%"
-                  />
-                </HoverDiv>
+              <Link to="/collections_page">
+                <div className="mb-2 mt-2" style={{ position: "relative" }}>
+                  <HoverDiv>
+                    <img
+                      src={SabriannaRing}
+                      alt="Ruby Ring"
+                      width="100%"
+                      height="100%"
+                    />
+                  </HoverDiv>
 
-                <div
-                  style={{
-                    position: "absolute",
-                    transform: "translate(-50%, -50%)",
-                    top: "50%",
-                    left: "50%",
-                  }}
-                >
-                  <h2 className="fw-bold text-white">
-                    Use Available Templates
-                  </h2>
+                  <div
+                    style={{
+                      position: "absolute",
+                      transform: "translate(-50%, -50%)",
+                      top: "50%",
+                      left: "50%",
+                    }}
+                  >
+                    <h2 className="fw-bold text-white">
+                      Use Available Templates
+                    </h2>
+                  </div>
                 </div>
-              </div>
+              </Link>
             </Col>
           </Row>
         </div>
