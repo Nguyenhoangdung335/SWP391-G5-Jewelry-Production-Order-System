@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
+import './index.css';
 
 const ChatComponent = () => {
     const [stompClient, setStompClient] = useState(null);
