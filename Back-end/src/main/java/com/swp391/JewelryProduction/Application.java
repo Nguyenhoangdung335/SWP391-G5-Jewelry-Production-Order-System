@@ -7,6 +7,7 @@ import com.swp391.JewelryProduction.enums.Role;
 import com.swp391.JewelryProduction.pojos.Account;
 import com.swp391.JewelryProduction.pojos.UserInfo;
 import com.swp391.JewelryProduction.repositories.AccountRepository;
+import com.swp391.JewelryProduction.websocket.listener.GlobalEntityListener;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,6 +88,8 @@ public class Application   {
 								.phoneNumber("0916320563")
 						.build());
 				accountRepository.save(acc);
+			logger.info("Acc00001 Added");
+
 
 				acc = Account.builder()
 						.email("dungnhse180163@fpt.edu.vn")
@@ -169,6 +172,8 @@ public class Application   {
 					.phoneNumber("0916320563")
 					.build());
 				accountRepository.save(acc);
+
+				GlobalEntityListener.setInitializedDone();
 		};
 	}
 }
