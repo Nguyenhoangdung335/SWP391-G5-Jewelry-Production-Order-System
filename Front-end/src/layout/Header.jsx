@@ -212,10 +212,11 @@ export default function Header() {
               </Nav.Link>
             </>
           )}
-
-          <Button style={{ borderRadius: "22px", width: "150px" }}>
-            Design Jewelry
-          </Button>
+          <Link to="/order_page">
+            <Button style={{ borderRadius: "22px", width: "150px" }}>
+              Design Jewelry
+            </Button>
+          </Link>
         </Nav>
       </Container>
     </Navbar>
