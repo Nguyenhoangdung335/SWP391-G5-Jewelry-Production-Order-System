@@ -7,61 +7,56 @@ const baseUrl = "http://localhost:8080/api/v1/crawls";
 function LivePrice() {
   const [data, setData] = useState([]);
 
-  // useEffect(() => {
-  //   const controller = new AbortController();
-  //   const signal = controller.signal;
-  //   const fetchData = () => {
-  //     fetchEventSource(`${baseUrl}`, {
-  //       method: "GET",
-  //       headers: {
-  //         // Accept: "text/event-stream",
-  //         'Content-Type': 'application/json',
-  //       },
-  //       signal: signal,
-  //       onopen(res) {
-  //         if (res.ok && res.status === 200) {
-  //           // Status should be a number
-  //           console.log("connection made", res);
-  //         } else if (
-  //           res.status >= 400 &&
-  //           res.status < 500 &&
-  //           res.status !== 429
-  //         ) {
-  //           console.log("Client side error", res);
-  //         }
-  //       },
-  //       onmessage(event) {
-  //         console.log(event.data);
-  //         const parsedData = JSON.parse(event.data);
-  //         setData((data) => [...data, parsedData]);
-  //       },
-  //       onclose() {
-  //         console.log("Connection closed by the server");
-  //       },
-  //       onerror(err) {
-  //         console.log("There was an error from the server: " + err);
-  //       },
-  //     });
-  //   };
-  //   fetchData();
-  //   return () => {
-  //     controller.abort();
-  //     console.log("Connection aborted");
-  //   };
-  // }, [baseUrl]);
-
   useEffect(() => {
     const eventSource = new EventSource(baseUrl);
-    eventSource.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      console.log('Received event:', data);
-      if (data.event === 'live') {
-        // Update state with the new price updates
-        console.log(data);
-      } else if (data.event === 'heartbeat') {
-        // Handle heartbeat event if needed
-        console.log('Received heartbeat');
+
+    // Close SSE when the page unloads (e.g., user navigates away or closes the tab)
+    window.addEventListener("beforeunload", function () {
+      if (eventSource) {
+        console.log("SSE close");
+        eventSource.close();
       }
+    });
+
+    // Also handle single page application navigation
+    window.addEventListener("popstate", function () {
+      if (eventSource) {
+        console.log("SSE close");
+        eventSource.close();
+      }
+    });
+
+    // You might also handle other events like page visibility changes
+    document.addEventListener("visibilitychange", function () {
+      if (document.visibilityState === "hidden" && eventSource) {
+        console.log("SSE close");
+        eventSource.close();
+      }
+    });
+
+    eventSource.onopen = (event) => {};
+
+    eventSource.addEventListener("live", (event) => {
+      setData(JSON.parse(event.data));
+    });
+
+    eventSource.addEventListener("heartbeat", (event) => {
+      console.log("Heartbeat");
+    });
+
+    // eventSource.onmessage = (event) => {
+    //   console.log("The connection has been established");
+    //   if (event.data) {
+    //     console.log(event.data)
+    //     setData(JSON.parse(event));
+    //   }
+    // };
+    eventSource.onerror = (event) => {
+      console.log("There an error in the connection");
+    };
+
+    return () => {
+      eventSource.close();
     };
   }, []);
 
@@ -77,16 +72,17 @@ function LivePrice() {
           </tr>
         </thead>
         <tbody>
-          {data.map((dataItem) => {
-            // console.log("jklksdj", dataItem);
-            return (
-              <tr key={dataItem.id}>
-                <td>{dataItem.name}</td>
-                <td>{dataItem.price}</td>
-                <td>{dataItem.crawlTime}</td>
-              </tr>
-            );
-          })}
+          {data &&
+            data.map((dataItem) => {
+              return (
+                <tr key={dataItem.id}>
+                  <td>{dataItem.id}</td>
+                  <td>{dataItem.name}</td>
+                  <td>{dataItem.price}</td>
+                  <td>{dataItem.crawlTime}</td>
+                </tr>
+              );
+            })}
         </tbody>
       </Table>
     </Container>

@@ -29,10 +29,7 @@ function ControlledCarousel() {
           </div>
           <Link to="/order_page">
             <Button
-              variant="outline-light fw-bold"
               style={{
-                backgroundColor: "#707070",
-                borderColor: "#707070",
                 width: "150px",
                 borderRadius: "22px",
                 height: "40px",
