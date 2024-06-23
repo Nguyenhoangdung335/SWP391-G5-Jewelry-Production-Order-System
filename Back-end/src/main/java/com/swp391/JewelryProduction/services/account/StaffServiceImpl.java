@@ -33,9 +33,23 @@ public class StaffServiceImpl implements StaffService{
 
     @Override
     public Staff findStaffById(String staffId) {
-        if(staffRepository.findById(staffId).isPresent()) {
-            return staffRepository.findById(staffId).get();
-        } else throw new ObjectNotFoundException("Staff with ID: " + staffId +"not found");
+        return staffRepository
+                .findStaffById(staffId)
+                .orElseThrow(
+                        () -> new ObjectNotFoundException("Staff with ID: " + staffId +"not found")
+                );
+    }
+
+    @Override
+    public Staff findStaffByIdWithRole(String staffId, Role role) {
+        Staff staff = staffRepository
+                .findStaffById(staffId)
+                .orElseThrow(
+                        () -> new ObjectNotFoundException("Staff with ID: " + staffId +" not found")
+                );
+        if (!staff.getRole().equals(role))
+            throw new ObjectNotFoundException("Staff with ID "+staffId+" with role "+role+" not found");
+        return staff;
     }
 
     @Transactional
@@ -65,10 +79,6 @@ public class StaffServiceImpl implements StaffService{
                 .role(accountDTO.getRole())
                 .status(accountDTO.getStatus())
                 .userInfo(accountDTO.getUserInfo())
-                .pastOrder(accountDTO.getPastOrder())
-                .sendingReports(accountDTO.getSendingReports())
-                .notifications(accountDTO.getNotifications())
-                .currentOrder(accountDTO.getCurrentOrder())
                 .workStatus(workStatus)
                 .build();
     }

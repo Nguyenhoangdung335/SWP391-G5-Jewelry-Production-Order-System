@@ -14,6 +14,8 @@ public interface StaffService {
 
     Staff findStaffById(String staffId);
 
+    Staff findStaffByIdWithRole(String staffId, Role role);
+
     Staff updateStaff(AccountDTO accountDTO, WorkStatus workStatus);
 
     Staff createStaff(AccountDTO accountDTO, WorkStatus workStatus);
