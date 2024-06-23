@@ -1,12 +1,16 @@
 import React, { useState } from "react";
-import { Space, Table, Tag, Button, Modal, Form, Input, Select } from "antd";
-import { IoIosArrowDown } from "react-icons/io";
+import { Table, Button, Modal, Form, FormControl } from "react-bootstrap";
 import { FiPlus } from "react-icons/fi";
+import { FaCaretDown } from "react-icons/fa";
 
 export default function EmployeeManager() {
-  const [filterRole, setFilterRole] = useState(null);
+  const [filterRole, setFilterRole] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [deleteUser, setDeleteUser] = useState(null);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   const handleFilterChange = (event) => {
     const selectedValue = event.target.value;
@@ -29,54 +33,26 @@ export default function EmployeeManager() {
     setSelectedUser(null);
   };
 
-  const columns = [
-    {
-      title: <span style={{ fontSize: 20, fontWeight: 400 }}>ID</span>,
-      dataIndex: "id",
-      key: "id",
-    },
-    {
-      title: <span style={{ fontSize: 20, fontWeight: 400 }}>Role</span>,
-      dataIndex: "role",
-      key: "role",
-    },
-    {
-      title: <span style={{ fontSize: 20, fontWeight: 400 }}>Name</span>,
-      dataIndex: "name",
-      key: "name",
-    },
-    {
-      title: <span style={{ fontSize: 20, fontWeight: 400 }}>Gmail</span>,
-      dataIndex: "gmail",
-      key: "gmail",
-    },
-    {
-      title: <span style={{ fontSize: 20, fontWeight: 400 }}>Phone</span>,
-      dataIndex: "phone",
-      key: "phone",
-    },
-    {
-      title: <span style={{ fontSize: 20, fontWeight: 400 }}>Status</span>,
-      key: "status",
-      dataIndex: "status",
-      render: (text) => (
-        <Tag color={text === "active" ? "green" : "red"}>
-          {text.charAt(0).toUpperCase() + text.slice(1)}
-        </Tag>
-      ),
-    },
-    {
-      title: <span style={{ fontSize: 20, fontWeight: 400 }}>Action</span>,
-      key: "action",
-      render: (_, record) => (
-        <Space size="middle">
-          <span style={{ cursor: "pointer", color: "blue" }}>Delete</span>
-          <span style={{ margin: "0 5px" }}>|</span>
-          <span style={{ cursor: "pointer", color: "blue" }} onClick={() => handleEdit(record)}>Edit</span>
-        </Space>
-      ),
-    },
-  ];
+  const handleDeleteClick = (record) => {
+    setDeleteUser(record);
+    setDeleteModalVisible(true);
+  };
+
+  const handleConfirmDelete = () => {
+    console.log("Deleting user:", deleteUser);
+    // Implement the deletion logic here
+    setDeleteModalVisible(false);
+    setDeleteUser(null);
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteModalVisible(false);
+    setDeleteUser(null);
+  };
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
 
   const data = [
     { id: "AD_0001", role: "Admin", name: "Tran Mai Quang Khai", gmail: "khaitmq@gmail.com", phone: "0867406725", status: "active" },
@@ -95,9 +71,92 @@ export default function EmployeeManager() {
     ? data.filter((item) => item.role.toLowerCase() === filterRole.toLowerCase())
     : data;
 
+  const paginatedData = filteredData.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+
+  const styles = {
+    paginationContainer: {
+      display: "flex",
+      justifyContent: "flex-end",
+      alignItems: "center",
+      marginTop: "20px",
+    },
+    paginationButton: {
+      borderRadius: "50%",
+      width: "40px",
+      height: "40px",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      margin: "0 5px",
+      border: "1px solid #ddd",
+      backgroundColor: "#f8f9fa",
+      cursor: "pointer",
+    },
+    paginationButtonActive: {
+      backgroundColor: "#6c757d",
+      color: "#fff",
+    },
+    paginationButtonDisabled: {
+      backgroundColor: "#e9ecef",
+      color: "#6c757d",
+      cursor: "not-allowed",
+    },
+  };
+
   return (
     <div style={{ padding: "3%" }}>
-      <p style={{ margin: 0, fontSize: 24, fontWeight: 'bold' }}>Welcome, K!</p>
+      <style jsx>{`
+        .add-employee-button {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 10px;
+          background-color: #6c757d;
+          border: none;
+          color: #e0d7ea;
+          padding: 8px 16px;
+          border-radius: 5px;
+          transition: background-color 0.3s;
+        }
+        .add-employee-button:hover {
+          background-color: #007bff;
+        }
+        .role-filter-button {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 5px 10px;
+          background-color: rgba(101, 101, 101, 1);
+          color: white;
+          font-size: 20px;
+          border-radius: 5px;
+          border: none;
+          cursor: pointer;
+          position: relative;
+          transition: background-color 0.3s;
+        }
+        .role-filter-button:hover {
+          background-color: #007bff;
+        }
+        .role-filter-select {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          opacity: 0;
+          cursor: pointer;
+        }
+        .role-filter-caret {
+          margin-left: auto;
+        }
+      `}</style>
+      <p style={{ margin: 0, fontSize: 24, fontWeight: "bold" }}>Welcome, K!</p>
       <p style={{ fontSize: 16 }}>Employee Manager</p>
       <div
         style={{
@@ -115,38 +174,24 @@ export default function EmployeeManager() {
             gap: 20,
           }}
         >
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              padding: "5px 10px",
-              backgroundColor: "rgba(101, 101, 101, 1)",
-              gap: 7,
-              borderRadius: 5,
-            }}
-          >
-            <p style={{ margin: 0, fontSize: 20, color: "white" }}>
-              Role Filter
-            </p>
-            <select
+          <div className="role-filter-button">
+            <span>Role Filter</span>
+            <span style={{ color: "rgba(255, 139, 55, 1)" }}>
+              {filterRole || "All"}
+            </span>
+            <FaCaretDown className="role-filter-caret" />
+            <FormControl
+              as="select"
               value={filterRole}
               onChange={handleFilterChange}
-              style={{
-                margin: 0,
-                fontSize: 20,
-                color: "rgba(255, 139, 55, 1)",
-                backgroundColor: "transparent",
-                border: "none",
-                outline: "none",
-              }}
+              className="role-filter-select"
             >
               <option value="">All</option>
               <option value="Admin">Admin</option>
               <option value="Manager">Manager</option>
               <option value="Sales Staff">Sales Staff</option>
               <option value="Contribution">Contribution</option>
-            </select>
+            </FormControl>
           </div>
         </div>
         <div
@@ -157,67 +202,140 @@ export default function EmployeeManager() {
             gap: 20,
           }}
         >
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: "5px 20px",
-              backgroundColor: "rgba(101, 101, 101, 1)",
-              gap: 10,
-              borderRadius: 5,
-            }}
+          <Button
+            variant="secondary"
+            className="add-employee-button"
           >
             <FiPlus color="rgba(224, 215, 234, 1)" />
-            <p style={{ margin: 0, fontSize: 20, color: "white" }}>
-              Add Employee
-            </p>
-          </div>
+            Add Employee
+          </Button>
         </div>
       </div>
-      <Table
-        columns={columns}
-        dataSource={filteredData}
-        pagination={{ pageSize: 10 }}
-      />
-      <Modal
-        title="Edit Employees"
-        visible={isModalVisible}
-        onCancel={handleCancel}
-        footer={null}
-      >
-        {selectedUser && (
-          <Form
-            layout="vertical"
-            initialValues={selectedUser}
-            onFinish={handleSave}
+      <Table striped bordered hover>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Role</th>
+            <th>Name</th>
+            <th>Gmail</th>
+            <th>Phone</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {paginatedData.map((item) => (
+            <tr key={item.id}>
+              <td>{item.id}</td>
+              <td>{item.role}</td>
+              <td>{item.name}</td>
+              <td>{item.gmail}</td>
+              <td>{item.phone}</td>
+              <td>
+                <span className={`badge ${item.status === "active" ? "bg-success" : "bg-danger"}`}>
+                  {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
+                </span>
+              </td>
+              <td>
+                <Button variant="link" onClick={() => handleEdit(item)}>
+                  Edit
+                </Button>
+                <span style={{ margin: "0 5px" }}>|</span>
+                <Button variant="link" onClick={() => handleDeleteClick(item)}>
+                  Delete
+                </Button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+
+      <div style={styles.paginationContainer}>
+        <div
+          style={{ ...styles.paginationButton, ...(currentPage === 1 ? styles.paginationButtonDisabled : {}) }}
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
+          &lt;
+        </div>
+        {[...Array(totalPages).keys()].map((page) => (
+          <div
+            key={page + 1}
+            style={{
+              ...styles.paginationButton,
+              ...(page + 1 === currentPage ? styles.paginationButtonActive : {})
+            }}
+            onClick={() => handlePageChange(page + 1)}
           >
-            <Form.Item label="ID" name="id">
-              <Input disabled />
-            </Form.Item>
-            <Form.Item label="Role" name="role">
-              <Input />
-            </Form.Item>
-            <Form.Item label="Name" name="name">
-              <Input />
-            </Form.Item>
-            <Form.Item label="Gmail" name="gmail">
-              <Input />
-            </Form.Item>
-            <Form.Item label="Phone" name="phone">
-              <Input />
-            </Form.Item>
-            <Form.Item>
-              <Button type="primary" htmlType="submit">
+            {page + 1}
+          </div>
+        ))}
+        <div
+          style={{ ...styles.paginationButton, ...(currentPage === totalPages ? styles.paginationButtonDisabled : {}) }}
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+        >
+          &gt;
+        </div>
+      </div>
+
+      <Modal show={isModalVisible} onHide={handleCancel}>
+        <Modal.Header closeButton>
+          <Modal.Title>Edit Employee</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedUser && (
+            <Form onSubmit={handleSave}>
+              <Form.Group>
+                <Form.Label>ID</Form.Label>
+                <FormControl
+                  type="text"
+                  defaultValue={selectedUser.id}
+                  disabled
+                />
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>Role</Form.Label>
+                <FormControl type="text" defaultValue={selectedUser.role} />
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>Name</Form.Label>
+                <FormControl type="text" defaultValue={selectedUser.name} />
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>Gmail</Form.Label>
+                <FormControl type="email" defaultValue={selectedUser.gmail} />
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>Phone</Form.Label>
+                <FormControl type="text" defaultValue={selectedUser.phone} />
+              </Form.Group>
+              <Button variant="primary" type="submit">
                 Save changes
               </Button>
-              <Button onClick={handleCancel} style={{ marginLeft: 8 }}>
+              <Button variant="secondary" onClick={handleCancel} style={{ marginLeft: 8 }}>
                 Back
               </Button>
-            </Form.Item>
-          </Form>
-        )}
+            </Form>
+          )}
+        </Modal.Body>
+      </Modal>
+
+      <Modal show={deleteModalVisible} onHide={handleCancelDelete}>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Delete</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Are you sure you want to delete this employee?</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCancelDelete}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={handleConfirmDelete}>
+            Delete
+          </Button>
+        </Modal.Footer>
       </Modal>
     </div>
   );
