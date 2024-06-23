@@ -1,56 +1,19 @@
 import React, { useState } from "react";
-import { Space, Table, Tag, Modal, Button } from "antd";
-import { IoIosArrowDown } from "react-icons/io";
-import { FiPlus } from "react-icons/fi";
+import { Table, Modal, Button } from "react-bootstrap";
 
 export default function OrderManager() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   const columns = [
-    {
-      title: <span style={{ fontSize: 20, fontWeight: 400 }}>OrderID</span>,
-      dataIndex: "orderId",
-      key: "orderId",
-      render: (text) => <span>{text}</span>,
-    },
-    {
-      title: <span style={{ fontSize: 20, fontWeight: 400 }}>CustomerID</span>,
-      dataIndex: "customerID",
-      key: "customerID",
-      style: { fontSize: "18px" },
-    },
-    {
-      title: <span style={{ fontSize: 20, fontWeight: 400 }}>Date</span>,
-      dataIndex: "date",
-      key: "date",
-    },
-    {
-      title: <span style={{ fontSize: 20, fontWeight: 400 }}>Total</span>,
-      key: "total",
-      dataIndex: "total",
-    },
-    {
-      title: <span style={{ fontSize: 20, fontWeight: 400 }}>Status</span>,
-      key: "status",
-      dataIndex: "status",
-      render: (_, record) => (
-        <Space size="middle">
-          {record.status === "paid" ? (
-            <Tag color="green">Paid</Tag>
-          ) : (
-            <Tag color="red">Unpaid</Tag>
-          )}
-        </Space>
-      ),
-    },
-    {
-      title: <span style={{ fontSize: 20, fontWeight: 400 }}>Detail</span>,
-      key: "detail",
-      render: (_, record) => (
-        <Button onClick={() => showDetail(record)}>Show Detail</Button>
-      ),
-    },
+    { title: "OrderID", dataIndex: "orderId" },
+    { title: "CustomerID", dataIndex: "customerID" },
+    { title: "Date", dataIndex: "date" },
+    { title: "Total", dataIndex: "total" },
+    { title: "Status", dataIndex: "status" },
+    { title: "Detail", dataIndex: "detail" },
   ];
 
   const data = [
@@ -104,17 +67,52 @@ export default function OrderManager() {
     },
   ];
 
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const paginatedData = data.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   const showDetail = (order) => {
     setSelectedOrder(order);
     setIsModalVisible(true);
   };
 
-  const handleOk = () => {
-    setIsModalVisible(false);
-  };
+  const handleClose = () => setIsModalVisible(false);
 
-  const handleCancel = () => {
-    setIsModalVisible(false);
+  const totalPages = Math.ceil(data.length / itemsPerPage);
+
+  const styles = {
+    paginationContainer: {
+      display: "flex",
+      justifyContent: "flex-end",
+      alignItems: "center",
+      marginTop: "20px",
+    },
+    paginationButton: {
+      borderRadius: "50%",
+      width: "40px",
+      height: "40px",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      margin: "0 5px",
+      border: "1px solid #ddd",
+      backgroundColor: "#f8f9fa",
+      cursor: "pointer",
+    },
+    paginationButtonActive: {
+      backgroundColor: "#6c757d",
+      color: "#fff",
+    },
+    paginationButtonDisabled: {
+      backgroundColor: "#e9ecef",
+      color: "#6c757d",
+      cursor: "not-allowed",
+    },
   };
 
   return (
@@ -124,28 +122,90 @@ export default function OrderManager() {
       </p>
       <p style={{ fontSize: 16 }}>Order</p>
 
-      <Table
-        columns={columns}
-        dataSource={data}
-        pagination={{ pageSize: 10 }}
-      />
+      <Table striped bordered hover>
+        <thead>
+          <tr>
+            {columns.map((col) => (
+              <th key={col.dataIndex}>{col.title}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {paginatedData.map((order) => (
+            <tr key={order.orderId}>
+              <td>{order.orderId}</td>
+              <td>{order.customerID}</td>
+              <td>{order.date}</td>
+              <td>{order.total}</td>
+              <td>
+                <span
+                  className={`badge ${
+                    order.status === "paid" ? "bg-success" : "bg-danger"
+                  }`}
+                >
+                  {order.status === "paid" ? "Paid" : "Unpaid"}
+                </span>
+              </td>
+              <td>
+                <Button variant="primary" onClick={() => showDetail(order)}>
+                  Show Detail
+                </Button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
 
-      <Modal
-        title="Order Details"
-        visible={isModalVisible}
-        onOk={handleOk}
-        onCancel={handleCancel}
-      >
-        {selectedOrder && (
-          <div>
-            <p><strong>Order ID:</strong> {selectedOrder.orderId}</p>
-            <p><strong>Customer ID:</strong> {selectedOrder.customerID}</p>
-            <p><strong>Date:</strong> {selectedOrder.date}</p>
-            <p><strong>Total:</strong> {selectedOrder.total}</p>
-            <p><strong>Status:</strong> {selectedOrder.status}</p>
-            <p><strong>Details:</strong> Details of the order go here...</p>
+      <div style={styles.paginationContainer}>
+        <div
+          style={{ ...styles.paginationButton, ...(currentPage === 1 ? styles.paginationButtonDisabled : {}) }}
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
+          &lt;
+        </div>
+        {[...Array(totalPages).keys()].map((page) => (
+          <div
+            key={page + 1}
+            style={{
+              ...styles.paginationButton,
+              ...(page + 1 === currentPage ? styles.paginationButtonActive : {})
+            }}
+            onClick={() => handlePageChange(page + 1)}
+          >
+            {page + 1}
           </div>
-        )}
+        ))}
+        <div
+          style={{ ...styles.paginationButton, ...(currentPage === totalPages ? styles.paginationButtonDisabled : {}) }}
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+        >
+          &gt;
+        </div>
+      </div>
+
+      <Modal show={isModalVisible} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Order Details</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedOrder && (
+            <div>
+              <p><strong>Order ID:</strong> {selectedOrder.orderId}</p>
+              <p><strong>Customer ID:</strong> {selectedOrder.customerID}</p>
+              <p><strong>Date:</strong> {selectedOrder.date}</p>
+              <p><strong>Total:</strong> {selectedOrder.total}</p>
+              <p><strong>Status:</strong> {selectedOrder.status}</p>
+              <p><strong>Details:</strong> Details of the order go here...</p>
+            </div>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+        </Modal.Footer>
       </Modal>
     </div>
   );
