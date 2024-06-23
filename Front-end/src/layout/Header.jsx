@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { IoSearchCircle } from "react-icons/io5";
 import { IoNotificationsOutline } from "react-icons/io5";
 import { GoPerson } from "react-icons/go";
-import { Button, Container, Nav, Navbar } from "react-bootstrap";
+import { Button, Container, Nav, NavLink, Navbar } from "react-bootstrap";
 import { Dropdown } from "antd";
 import { jwtDecode } from "jwt-decode";
 import { useAuth } from "../provider/AuthProvider";
@@ -186,11 +186,33 @@ export default function Header() {
           </Nav.Link>
         </Nav>
         <Nav className="gap-1">
-          <Nav.Link>
-            <Link to="/login" className="nav-item">
-              Login
-            </Link>
-          </Nav.Link>
+          {role !== "GUEST" && (
+            <>
+              <NavLink>
+                <IoNotificationsOutline size={30} color="black" />
+              </NavLink>
+              <NavLink>
+                <Dropdown
+                  menu={{
+                    items,
+                  }}
+                  placement="bottomLeft"
+                >
+                  <GoPerson size={30} color="black" />
+                </Dropdown>
+              </NavLink>
+            </>
+          )}
+          {role === "GUEST" && (
+            <>
+              <Nav.Link>
+                <Link to="/login" className="nav-item">
+                  Login
+                </Link>
+              </Nav.Link>
+            </>
+          )}
+
           <Button style={{ borderRadius: "22px", width: "150px" }}>
             Design Jewelry
           </Button>
