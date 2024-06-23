@@ -5,9 +5,11 @@ import com.swp391.JewelryProduction.enums.AccountStatus;
 import com.swp391.JewelryProduction.enums.Gender;
 import com.swp391.JewelryProduction.enums.Role;
 import com.swp391.JewelryProduction.pojos.Account;
+import com.swp391.JewelryProduction.pojos.Staff;
 import com.swp391.JewelryProduction.pojos.UserInfo;
 import com.swp391.JewelryProduction.repositories.AccountRepository;
-import com.swp391.JewelryProduction.websocket.listener.GlobalEntityListener;
+//import com.swp391.JewelryProduction.websocket.listener.GlobalEntityListener;
+import com.swp391.JewelryProduction.repositories.StaffRepository;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,7 +71,7 @@ public class Application   {
 
 
 	@Bean
-	public CommandLineRunner commandLineRunner (AccountRepository accountRepository) {
+	public CommandLineRunner commandLineRunner (AccountRepository accountRepository, StaffRepository staffRepository) {
 		return args -> {
 				logger.info("Application start");
 				Account acc = Account.builder()
@@ -131,8 +133,9 @@ public class Application   {
 					accountRepository.save(acc);
 				}
 
+			Staff staff;
 			for (int i = 0; i < 15; i++) {
-				acc = Account.builder()
+				staff = Staff.builder()
 						.email(faker.internet().safeEmailAddress())
 						.password(passwordEncoder.encode(faker.internet().password()))
 						.dateCreated(LocalDateTime.now().plusWeeks(rand.nextLong(10)).plusDays(rand.nextLong(31)))
@@ -143,7 +146,7 @@ public class Application   {
 						)
 						.status(AccountStatus.ACTIVE)
 						.build();
-				acc.setUserInfo(UserInfo.builder()
+				staff.setUserInfo(UserInfo.builder()
 						.firstName(faker.name().firstName())
 						.lastName(faker.name().lastName())
 						.gender(Gender.values()[rand.nextInt(1)])
@@ -153,7 +156,7 @@ public class Application   {
 								.toLocalDate())
 						.phoneNumber(faker.phoneNumber().phoneNumber())
 						.build());
-				accountRepository.save(acc);
+				staffRepository.save(staff);
 			}
 
 				acc = Account.builder()
@@ -173,7 +176,7 @@ public class Application   {
 					.build());
 				accountRepository.save(acc);
 
-				GlobalEntityListener.setInitializedDone();
+//				GlobalEntityListener.setInitializedDone();
 		};
 	}
 }
