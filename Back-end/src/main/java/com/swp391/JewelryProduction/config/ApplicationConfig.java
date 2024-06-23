@@ -70,12 +70,6 @@ public class ApplicationConfig {
             mapper.skip(Account::setNotifications); // Handle notifications separately
         });
 
-        modelMapper.typeMap(Account.class, AccountDTO.class).addMappings(mapper -> {
-            mapper.skip(AccountDTO::setPastOrder); // Handle pastOrder separately
-            mapper.skip(AccountDTO::setSendingReports); // Handle sendingReports separately
-            mapper.skip(AccountDTO::setNotifications); // Handle notifications separately
-        });
-
         return modelMapper;
     }
 
