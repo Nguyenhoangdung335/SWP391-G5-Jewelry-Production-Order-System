@@ -118,6 +118,8 @@ public class Order {
     public void setSaleStaff (Staff saleStaff) {
         this.saleStaff = saleStaff;
         staffOrderHistory.add(StaffOrderHistory.builder()
+                .staffID(saleStaff.getId())
+                .orderID(id)
                 .staff(saleStaff)
                 .order(this)
                 .startDate(LocalDateTime.now())
@@ -128,6 +130,8 @@ public class Order {
     public void setDesignStaff (Staff designStaff) {
         this.designStaff = designStaff;
         staffOrderHistory.add(StaffOrderHistory.builder()
+                .staffID(designStaff.getId())
+                .orderID(id)
                 .staff(designStaff)
                 .order(this)
                 .startDate(LocalDateTime.now())
@@ -135,10 +139,12 @@ public class Order {
         );
     }
 
-    public void setProductionStaff (Staff saleStaff) {
-        this.saleStaff = saleStaff;
+    public void setProductionStaff (Staff productionStaff) {
+        this.productionStaff = productionStaff;
         staffOrderHistory.add(StaffOrderHistory.builder()
-                .staff(saleStaff)
+                .staffID(productionStaff.getId())
+                .orderID(id)
+                .staff(productionStaff)
                 .order(this)
                 .startDate(LocalDateTime.now())
                 .build()
