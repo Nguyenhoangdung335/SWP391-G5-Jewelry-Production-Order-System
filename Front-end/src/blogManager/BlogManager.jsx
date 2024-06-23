@@ -1,16 +1,19 @@
 import React, { useState } from "react";
-import { Table } from "antd";
+import { Table, Button, Modal } from "react-bootstrap";
 import { FiPlus } from "react-icons/fi";
-import Button from "react-bootstrap/Button";
-import Modal from "react-bootstrap/Modal";
 import { Editor } from "@tinymce/tinymce-react";
+import { useNavigate } from "react-router-dom";
 
 export default function BlogManager() {
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [currentBlog, setCurrentBlog] = useState(null);
   const [deleteBlog, setDeleteBlog] = useState(null);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
   const [blogs, setBlogs] = useState([
     {
       id: "BL_0001",
@@ -85,50 +88,69 @@ export default function BlogManager() {
     setDeleteBlog(null);
   };
 
-  const columns = [
-    {
-      title: <span style={{ fontSize: 20, fontWeight: 400 }}>Id</span>,
-      dataIndex: "id",
-      key: "id",
-    },
-    {
-      title: <span style={{ fontSize: 20, fontWeight: 400 }}>Title</span>,
-      dataIndex: "title",
-      key: "title",
-    },
-    {
-      title: <span style={{ fontSize: 20, fontWeight: 400 }}>Tag</span>,
-      dataIndex: "tag",
-      key: "tag",
-    },
-    {
-      title: <span style={{ fontSize: 20, fontWeight: 400 }}>Action</span>,
-      key: "action",
-      render: (_, record) => (
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <span
-            style={{ cursor: "pointer", color: "blue" }}
-            onClick={() => handleDeleteClick(record)}
-          >
-            Delete
-          </span>
-          <span style={{ margin: "0 8px" }}>|</span>
-          <span
-            style={{ cursor: "pointer", color: "blue" }}
-            onClick={() => handleEditClick(record)}
-          >
-            Edit
-          </span>
-        </div>
-      ),
-    },
-  ];
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const paginatedBlogs = blogs.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const totalPages = Math.ceil(blogs.length / itemsPerPage);
 
   const tags =
-    "engagement rings trends cleaning gemstones cleaning gold jewelry cleaning platinum jewelry cleaning silver jewelry custom jewelry";
+    "#engagement #rings #trends #cleaning #gemstones #cleaning #gold #jewelry #cleaning #platinum #jewelry #cleaning #silver #jewelry #custom #jewelry";
+
+  const styles = {
+    paginationContainer: {
+      display: "flex",
+      justifyContent: "flex-end",
+      alignItems: "center",
+      marginTop: "20px",
+    },
+    paginationButton: {
+      borderRadius: "50%",
+      width: "40px",
+      height: "40px",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      margin: "0 5px",
+      border: "1px solid #ddd",
+      backgroundColor: "#f8f9fa",
+      cursor: "pointer",
+    },
+    paginationButtonActive: {
+      backgroundColor: "#6c757d",
+      color: "#fff",
+    },
+    paginationButtonDisabled: {
+      backgroundColor: "#e9ecef",
+      color: "#6c757d",
+      cursor: "not-allowed",
+    },
+  };
 
   return (
     <div style={{ padding: "3%" }}>
+      <style jsx>{`
+        .new-blog-button {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+          padding: 5px 20px;
+          background-color: rgba(101, 101, 101, 1);
+          gap: 10px;
+          border-radius: 5px;
+          cursor: pointer;
+          transition: background-color 0.3s;
+        }
+        .new-blog-button:hover {
+          background-color: #007bff;
+        }
+      `}</style>
       <Modal size="lg" show={open} onHide={() => setOpen(false)}>
         <Modal.Header closeButton>
           <Modal.Title>{isEditing ? "Edit Blog" : "New Blog"}</Modal.Title>
@@ -137,13 +159,13 @@ export default function BlogManager() {
           <div className="mb-3">
             <div className="text-sm mb-1 pl-1">Title</div>
             <textarea
-              className="w-full rounded-lg px-2 py-2"
+              className="form-control"
               defaultValue={isEditing ? currentBlog?.title : ""}
             ></textarea>
           </div>
           <div className="mb-3">
             <div className="text-sm mb-1 pl-1">Tags</div>
-            <select className="rounded-lg pr-5 pl-2 py-2 w-1/3">
+            <select className="form-select">
               {tags.split(" ").map((tag) => (
                 <option
                   key={tag}
@@ -157,7 +179,7 @@ export default function BlogManager() {
           <div className="mb-3">
             <div className="text-sm mb-1 pl-1">Content</div>
             <Editor
-              className="w-full rounded-lg px-5 py-2"
+              className="form-control"
               apiKey="rxzla8t3gi19lqs86mqzx01taekkxyk5yyaavvy8rwz0wi83"
               init={{
                 plugins:
@@ -175,6 +197,13 @@ export default function BlogManager() {
           </Button>
           <Button variant="primary" onClick={() => setOpen(false)}>
             Save Changes
+          </Button>
+          <Button
+            variant="dark"
+            onClick={() => navigate("/order_page")}
+            style={{ marginLeft: "auto" }}
+          >
+            Create Your Dream Jewelry.
           </Button>
         </Modal.Footer>
       </Modal>
@@ -218,23 +247,71 @@ export default function BlogManager() {
               setCurrentBlog(null);
               setOpen(true);
             }}
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: "5px 20px",
-              backgroundColor: "rgba(101, 101, 101, 1)",
-              gap: 10,
-              borderRadius: 5,
-            }}
+            className="new-blog-button"
           >
             <FiPlus color="rgba(224, 215, 234, 1)" />
             <p style={{ margin: 0, fontSize: 20, color: "white" }}>New Blog</p>
           </div>
         </div>
       </div>
-      <Table columns={columns} dataSource={blogs} pagination={{ pageSize: 10 }} />
+      <Table striped bordered hover>
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>Title</th>
+            <th>Tag</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {paginatedBlogs.map((blog) => (
+            <tr key={blog.id}>
+              <td>{blog.id}</td>
+              <td>{blog.title}</td>
+              <td>{blog.tag}</td>
+              <td>
+                <div className="d-flex align-items-center">
+                  <Button variant="link" onClick={() => handleEditClick(blog)}>
+                    Edit
+                  </Button>
+                  <span>|</span>
+                  <Button variant="link" onClick={() => handleDeleteClick(blog)}>
+                    Delete
+                  </Button>
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+      <div style={styles.paginationContainer}>
+        <div
+          style={{ ...styles.paginationButton, ...(currentPage === 1 ? styles.paginationButtonDisabled : {}) }}
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
+          &lt;
+        </div>
+        {[...Array(totalPages).keys()].map((page) => (
+          <div
+            key={page + 1}
+            style={{
+              ...styles.paginationButton,
+              ...(page + 1 === currentPage ? styles.paginationButtonActive : {})
+            }}
+            onClick={() => handlePageChange(page + 1)}
+          >
+            {page + 1}
+          </div>
+        ))}
+        <div
+          style={{ ...styles.paginationButton, ...(currentPage === totalPages ? styles.paginationButtonDisabled : {}) }}
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+        >
+          &gt;
+        </div>
+      </div>
     </div>
   );
 }
