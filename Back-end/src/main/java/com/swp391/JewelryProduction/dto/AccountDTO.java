@@ -31,14 +31,4 @@ public class AccountDTO{
     private Role role;
     private AccountStatus status;
     private UserInfo userInfo;
-    private List<Order> pastOrder;
-    private List<Report> sendingReports;
-    private List<Notification> notifications;
-    private Order currentOrder;
-
-    public Order getCurrentOrder () {
-        if (pastOrder != null)
-            currentOrder = pastOrder.getLast();
-        return currentOrder;
-    }
 }
