@@ -9,27 +9,22 @@ import com.swp391.JewelryProduction.pojos.Order;
 import com.swp391.JewelryProduction.pojos.Quotation;
 import com.swp391.JewelryProduction.pojos.QuotationItem;
 import com.swp391.JewelryProduction.repositories.QuotationRepository;
-import com.swp391.JewelryProduction.services.account.AccountService;
 import com.swp391.JewelryProduction.services.account.StaffService;
-import com.swp391.JewelryProduction.services.email.EmailService;
 import com.swp391.JewelryProduction.services.order.OrderService;
 import com.swp391.JewelryProduction.util.Response;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.StateMachinePersist;
-import org.springframework.statemachine.persist.StateMachinePersister;
 import org.springframework.statemachine.service.StateMachineService;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -68,7 +63,7 @@ public class OrderController {
 
     @PostMapping("/{orderId}/detail/assign-staff")
     public ResponseEntity<Response> assignStaff(@PathVariable("orderId") String orderId, @RequestBody StaffGroup staffGroup) throws MessagingException {
-        Order order = orderService.AssignStaff(orderId, staffGroup);
+        Order order = orderService.assignStaff(orderId, staffGroup);
         return Response.builder()
                 .status(HttpStatus.OK)
                 .message("Assign Staffs successfully for order "+order.getId())

@@ -2,10 +2,7 @@ package com.swp391.JewelryProduction.pojos;
 
 import com.swp391.JewelryProduction.enums.WorkStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;
@@ -19,7 +16,8 @@ import java.util.List;
 @DiscriminatorValue("1")
 public class Staff extends Account{
     @Enumerated(EnumType.STRING)
-    private WorkStatus workStatus;
+    @Builder.Default
+    private WorkStatus workStatus = WorkStatus.FREE;
 
     @OneToMany(
             mappedBy = "staff",

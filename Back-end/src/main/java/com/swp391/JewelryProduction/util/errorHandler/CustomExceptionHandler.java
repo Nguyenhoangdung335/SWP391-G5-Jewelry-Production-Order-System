@@ -115,8 +115,9 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
         return Response.builder()
                 .status(HttpStatus.BAD_REQUEST)
-                .message("ObjectNotFoundException is throw")
-                .response("Error", errorMsg)
+                .message(errorMsg)
+                .response("Error", ex.getClass().getCanonicalName())
+                .response("Cause", ex.getCause())
                 .buildEntity();
     }
 
@@ -132,8 +133,9 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
         return Response.builder()
                 .status(HttpStatus.BAD_REQUEST)
-                .message("ObjectExistsException is throw")
-                .response("Error", errorMsg)
+                .message(errorMsg)
+                .response("Error", ex.getClass().getCanonicalName())
+                .response("Cause", ex.getCause())
                 .buildEntity();
     }
 
@@ -162,7 +164,8 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return Response.builder()
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .message(ex.getLocalizedMessage())
-                .response("Internal Server Error", "Error occurred")
+                .response("Error", ex.getClass().getCanonicalName())
+                .response("Cause", ex.getCause())
                 .buildEntity(new HttpHeaders());
     }
 }

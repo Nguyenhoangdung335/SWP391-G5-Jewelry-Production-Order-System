@@ -3,6 +3,7 @@ package com.swp391.JewelryProduction.services.order;
 import com.swp391.JewelryProduction.dto.RequestDTOs.StaffGroup;
 import com.swp391.JewelryProduction.enums.OrderEvent;
 import com.swp391.JewelryProduction.enums.OrderStatus;
+import com.swp391.JewelryProduction.enums.Role;
 import com.swp391.JewelryProduction.pojos.Account;
 import com.swp391.JewelryProduction.pojos.Order;
 import com.swp391.JewelryProduction.repositories.OrderRepository;
@@ -67,21 +68,21 @@ public class OrderServiceImpl implements OrderService {
 
     @Transactional
     @Override
-    public Order AssignStaff(String orderId, StaffGroup staffs) {
+    public Order assignStaff(String orderId, StaffGroup staffs) {
         Order order = this.findOrderById(orderId);
         order.setSaleStaff(
-                staffService.findStaffById(
-                        staffs.getSaleStaffID()
+                staffService.findStaffByIdWithRole(
+                        staffs.getSaleStaffID(), Role.SALE_STAFF
                 )
         );
         order.setDesignStaff(
-                staffService.findStaffById(
-                        staffs.getSaleStaffID()
+                staffService.findStaffByIdWithRole(
+                        staffs.getDesignStaffID(), Role.DESIGN_STAFF
                 )
         );
         order.setProductionStaff(
-                staffService.findStaffById(
-                        staffs.getSaleStaffID()
+                staffService.findStaffByIdWithRole(
+                        staffs.getProductionStaffID(), Role.PRODUCTION_STAFF
                 )
         );
         order = this.updateOrder(order);
