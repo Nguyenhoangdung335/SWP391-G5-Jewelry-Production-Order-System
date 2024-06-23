@@ -1,0 +1,27 @@
+/* Header animation */
+
+.nav-item {
+  color: black;
+  position: relative;
+  text-decoration: none;
+  opacity: 0.5;
+}
+
+.nav-item:hover {
+  opacity: 1;
+}
+.nav-item::before {
+  transition: 300ms;
+  position: absolute;
+  height: 3px;
+  content: "";
+  background-color: black;
+}
+
+.nav-item-ltr::before {
+  width: 0%;
+}
+
+.nav-item-ltr:hover::before {
+  width: 100%;
+}
