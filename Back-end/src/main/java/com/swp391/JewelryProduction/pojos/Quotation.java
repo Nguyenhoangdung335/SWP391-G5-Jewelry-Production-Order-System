@@ -46,11 +46,11 @@ public class Quotation {
     private LocalDate expiredDate;
 
     @OneToMany(mappedBy = "quotation", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JsonManagedReference
+    @JsonManagedReference("Quotation-Items")
     private List<QuotationItem> quotationItems;
 
     @OneToOne(mappedBy = "quotation", fetch = FetchType.LAZY)
-    @JsonBackReference
+    @JsonBackReference("Order-Quotation")
     private Order order;
 
     public Double getTotalPrice () {

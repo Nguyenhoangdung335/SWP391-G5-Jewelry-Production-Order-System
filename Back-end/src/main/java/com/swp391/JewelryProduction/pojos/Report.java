@@ -48,7 +48,7 @@ public class Report {
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @JsonManagedReference
+    @JsonBackReference("Order-Report")
     @ManyToOne
     @JoinColumn(name = "order_id")
     private Order reportingOrder;

@@ -61,7 +61,7 @@ public class Order {
     @ToString.Include
     @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "quotation_id")
-    @JsonManagedReference
+    @JsonManagedReference("Order-Quotation")
     private Quotation quotation;
     @ToString.Include
     @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
@@ -81,7 +81,7 @@ public class Order {
     @OneToOne(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Product product;
 
-    @JsonBackReference
+    @JsonManagedReference("Order-Report")
     @OneToMany(mappedBy = "reportingOrder", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Report> relatedReports;
     @Transient
