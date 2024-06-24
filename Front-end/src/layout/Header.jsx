@@ -30,7 +30,7 @@ export default function Header() {
     {
       key: "1",
       label: (
-        <Link to="/" style={{ textDecoration: "none" }}>
+        <Link to="/user_setting_page" style={{ textDecoration: "none" }}>
           Profile
         </Link>
       ),
@@ -38,20 +38,28 @@ export default function Header() {
     {
       key: "2",
       label: (
-        <Link to="/" style={{ textDecoration: "none" }}>
-          Setting
+        <Link to="/user_setting_page/order_history_page" style={{ textDecoration: "none" }}>
+          Order History
         </Link>
       ),
     },
     {
       key: "3",
       label: (
+        <Link to="/user_setting_page/notification_page" style={{ textDecoration: "none" }}>
+          Notification
+        </Link>
+      ),
+    },
+    {
+      key: "4",
+      label: (
         <Link
           to="/login"
           style={{ textDecoration: "none" }}
           onClick={handleLogout}
         >
-          Sign out
+          Logout
         </Link>
       ),
     },
@@ -175,7 +183,7 @@ export default function Header() {
 
           <Nav.Link>
             <Link to="/live_price_page" className="nav-item nav-item-ltr">
-              Live Price
+              Gold Price
             </Link>
           </Nav.Link>
 

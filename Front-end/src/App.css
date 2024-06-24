@@ -25,3 +25,37 @@
 .nav-item-ltr:hover::before {
   width: 100%;
 }
+
+/* side bar animation */
+
+.side-bar-item {
+  position: relative;
+  background-color: white;
+  opacity: 0.75;
+  margin-right: 10%;
+}
+
+.side-bar-item:hover {
+  background-color: rgb(233, 233, 233);
+  opacity: 1;
+}
+
+.side-bar-item::before {
+  transition: 300ms linear;
+  position: absolute;
+  -webkit-transition: 300ms linear;
+  -moz-transition: 300ms linear;
+  -ms-transition: 300ms linear;
+  -o-transition: 300ms linear;
+  content: "";
+  width: 3px;
+  background-color: black;
+}
+
+.side-bar-ltr::before {
+  height: 0%;
+}
+
+.side-bar-ltr:hover::before {
+  height: 100%;
+}
