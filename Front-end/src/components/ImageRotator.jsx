@@ -26,34 +26,33 @@ const responsive = {
 
 export default function ImageRotator() {
   return (
-    
-      <Carousel
-        responsive={responsive}
-        centerMode={false}
-        draggable={false}
-        arrows={false}
-        swipeable={false}
-        infinite={true}
-        pauseOnHover
-        autoPlaySpeed={3000}
-        autoPlay={true}
-        containerClass=" carousel-container"
-      >
-        <div className="card">
-          <img className="product--image" src={Snowfall} alt="product " />
-        </div>
-        <div className="card ">
-          <img className="product--image" src={Snowfall} alt="product " />
-        </div>
-        <div className="card ">
-          <img className="product--image" src={Snowfall} alt="product " />
-        </div>
-        <div className="card">
-          <img className="product--image" src={Snowfall} alt="product " />
-        </div>
-        <div className="card ">
-          <img className="product--image" src={Snowfall} alt="product " />
-        </div>
-      </Carousel>
+    <Carousel
+      responsive={responsive}
+      centerMode={false}
+      draggable={false}
+      arrows={false}
+      swipeable={false}
+      infinite={true}
+      pauseOnHover
+      autoPlaySpeed={3000}
+      autoPlay={true}
+      containerClass=" carousel-container"
+    >
+      <div className="card">
+        <img className="product--image" src={Snowfall} alt="product " />
+      </div>
+      <div className="card ">
+        <img className="product--image" src={Snowfall} alt="product " />
+      </div>
+      <div className="card ">
+        <img className="product--image" src={Snowfall} alt="product " />
+      </div>
+      <div className="card">
+        <img className="product--image" src={Snowfall} alt="product " />
+      </div>
+      <div className="card ">
+        <img className="product--image" src={Snowfall} alt="product " />
+      </div>
+    </Carousel>
   );
 }
