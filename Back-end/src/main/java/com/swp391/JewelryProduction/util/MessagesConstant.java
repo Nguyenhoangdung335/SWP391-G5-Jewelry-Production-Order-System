@@ -19,7 +19,7 @@ import java.util.List;
 public class MessagesConstant {
     private String customerName;
     @Builder.Default
-    private String companyName = "Dung";
+    private String companyName = "Jewelry Custom Store";
     @Builder.Default
     private String companyContact = "jewelryshop.business@gmail.com";
     private String title;
@@ -90,29 +90,29 @@ public class MessagesConstant {
             return description = String.format(
                     """
                     Dear %s,
-                   
-                    I am pleased to inform you that you have been assigned to the order id %s 
+                   \s
+                    I am pleased to inform you that you have been assigned to the order id %s\s
                     as one of the team members responsible for fulfilling the customer's order.
-                    Your expertise and skills will be valuable assets in delivering a high-quality solution 
+                    Your expertise and skills will be valuable assets in delivering a high-quality solution\s
                     to our client.
-                    
+                   \s
                     As part of the project team, your responsibilities will include:
-                    
+                   \s
                     %s
-                   
-                    Your involvement in this project will commence on %s and is expected to be 
-                    completed by %s. Please review the project scope and timeline carefully and 
+                   \s
+                    Your involvement in this project will commence on %s and is expected to be\s
+                    completed by %s. Please review the project scope and timeline carefully and\s
                     ensure that you understand your role and responsibilities.
-                    
-                    If you have any questions or concerns, please do not hesitate to reach out to me or the 
+                   \s
+                    If you have any questions or concerns, please do not hesitate to reach out to me or the\s
                     project lead. I expect your full cooperation and commitment to delivering exceptional results.
-                    
-                    Congratulations on this assignment, and I look forward to seeing your contributions to 
+                   \s
+                    Congratulations on this assignment, and I look forward to seeing your contributions to\s
                     the project's success.
-                    
+                   \s
                     Best regards,
                     Manager
-                    """,
+                   \s""",
                     assignedStaff.getUserInfo().getFirstName(), order.getId(),
                     builder.toString(), startDate, endDate
             );
@@ -145,10 +145,41 @@ public class MessagesConstant {
         }
     }
 
+    public class OrderCancelMessage {
+        public String title () {
+            return title = "Your Order have been canceled";
+        }
+
+        public String description (List<String> reasons, Order order) {
+            StringBuilder builder = new StringBuilder();
+            reasons.forEach(res -> builder.append(" - ").append(res).append(". \n"));
+
+            return description = String.format(
+                    """
+                    Dear %s,
+    
+                    I am sorry to inform that your order of ID %s have been cancelled. \
+                    Our team has reviewed your submission and was determined that your order has violated the following\
+                    company policy: \
+                    \s
+                    %s
+                    \s
+                    If you have any questions or concerns, please do not hesitate to reach out to us at %s. Thank you \
+                    for your patience and cooperation.
+    
+                    Best regards,
+                    %s
+                    """,
+                    customerName, order.getId(), builder.toString(), companyContact, companyName
+            );
+        }
+    }
+
     public MessagesConstant createRequestApprovedMessage (String customerName) {
         if (customerName == null) return null;
         RequestApprovedMessage requestApprovedMessage = new RequestApprovedMessage();
         return MessagesConstant.builder()
+                .customerName(customerName)
                 .title(requestApprovedMessage.title())
                 .description(requestApprovedMessage.description())
                 .build();
@@ -158,6 +189,7 @@ public class MessagesConstant {
         if (customerName == null) return null;
         RequestDeclinedMessage requestDeclinedMessage = new RequestDeclinedMessage();
         return MessagesConstant.builder()
+                .customerName(customerName)
                 .title(requestDeclinedMessage.title())
                 .description(requestDeclinedMessage.description())
                 .build();
@@ -170,6 +202,15 @@ public class MessagesConstant {
         return MessagesConstant.builder()
                 .title(messageBuilder.title(order.getOwner().getUserInfo()))
                 .description(messageBuilder.description(assignedStaff, order, responsibilities))
+                .build();
+    }
+
+    public MessagesConstant createOrderCancelMessage(String customerName, List<String> reasons, Order order) {
+        OrderCancelMessage orderCancelMessage = new OrderCancelMessage();
+        return MessagesConstant.builder()
+                .customerName(customerName)
+                .title(orderCancelMessage.title())
+                .description(orderCancelMessage.description(reasons, order))
                 .build();
     }
 }
