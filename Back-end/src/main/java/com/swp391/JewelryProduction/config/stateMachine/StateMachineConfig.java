@@ -70,7 +70,7 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
                 .state(OrderStatus.DESIGN)
                 .state(OrderStatus.PRODUCTION)
                 .state(OrderStatus.TRANSPORT)
-//                .state(OrderStatus.CANCEL)
+                .state(OrderStatus.CANCEL)
 //                .history(OrderStatus.ORDER_RESTORED, StateConfigurer.History.DEEP)          //History state for reverting back
                 .end(OrderStatus.ORDER_COMPLETED)                                           //End state for finalize the order
 
@@ -83,7 +83,7 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
                                 .state(OrderStatus.REQ_APPROVED, actionAndGuardConfiguration.approvedAction(), null)
                                 .state(OrderStatus.REQ_DECLINED, actionAndGuardConfiguration.declinedAction(), null)
                         .state(OrderStatus.AWAIT_ASSIGN_STAFF)
-                        .state(OrderStatus.IN_EXCHANGING, actionAndGuardConfiguration.createChatRoomAction(), null)
+                        .state(OrderStatus.IN_EXCHANGING, actionAndGuardConfiguration.notifySaleStaffAction(), null)
 
                 .and()
                     .withStates()
