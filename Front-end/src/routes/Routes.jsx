@@ -22,7 +22,7 @@ import EmployeeManager from "../employeeManager/EmployeeManager";
 import ProtectedRoute from "./ProtectedRoute";
 import LivePrice from "../Home/LivePrice";
 import ProductManager from "../productManager/ProductManager";
-import ChatComponent from "../chat/Chat";
+import MainChat from "../chat/MainChat";
 import UserInfo from "../user_settings/UserInfo";
 import SettingPageLayout from "../layout/SettingLayout";
 import OrderHistory from "../user_settings/OrderHistory";
@@ -42,7 +42,7 @@ function RouteMap() {
         <Route path="/collections_page" element={<Collections />} />
         <Route path="/blogs_page" element={<Blogs />} />
         <Route path="/live_price_page" element={<LivePrice />} />
-        {/* <Route path="/chat" element={<ChatComponent />} /> */}
+        <Route path="/chat" element={<MainChat />} />
         <Route path="/about_page" element={<About />} />
         <Route
           path="/order_page"
@@ -112,8 +112,14 @@ function RouteMap() {
       </Route>
       <Route path="/user_setting_page" element={<SettingPageLayout />}>
         <Route index element={<UserInfo />} />
-        <Route path="/user_setting_page/order_history_page" element={<OrderHistory />} />
-        <Route path="/user_setting_page/notification_page" element={<NotificationPage />} />
+        <Route
+          path="/user_setting_page/order_history_page"
+          element={<OrderHistory />}
+        />
+        <Route
+          path="/user_setting_page/notification_page"
+          element={<NotificationPage />}
+        />
       </Route>
     </Routes>
   );

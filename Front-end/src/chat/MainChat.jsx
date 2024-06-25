@@ -7,7 +7,7 @@ import ChatArea from './ChatArea';
 import MessageForm from './MessageForm';
 
 const axiosInstance = axios.create({
-    baseURL: 'http://localhost:8083',
+    baseURL: 'http://localhost:8080',
     // other default options like headers, etc.
 });
 
