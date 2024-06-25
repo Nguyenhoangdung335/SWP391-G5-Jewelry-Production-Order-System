@@ -1,15 +1,17 @@
-package com.swp391.JewelryProduction.util;
+package com.swp391.JewelryProduction.config.stateMachine;
 
 import com.swp391.JewelryProduction.enums.OrderEvent;
 import com.swp391.JewelryProduction.enums.OrderStatus;
-import lombok.RequiredArgsConstructor;
+import com.swp391.JewelryProduction.pojos.Order;
+import com.swp391.JewelryProduction.services.order.OrderService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.statemachine.StateMachine;
-import org.springframework.statemachine.StateMachinePersist;
 import org.springframework.statemachine.service.StateMachineService;
 import org.springframework.statemachine.state.State;
 import org.springframework.statemachine.state.StateMachineState;
 import org.springframework.util.ObjectUtils;
 
+@Slf4j
 public class StateMachineUtil {
     private static StateMachine<OrderStatus, OrderEvent> currentStateMachine;
 
@@ -36,5 +38,22 @@ public class StateMachineUtil {
             currentStateMachine.startReactively().block();
         }
         return currentStateMachine;
+    }
+
+    public static StateMachine<OrderStatus, OrderEvent> instantiateStateMachine(
+            Order order,
+            OrderService orderService,
+            StateMachineService<OrderStatus, OrderEvent> stateMachineService) {
+        String orderId = order.getId();
+        StateMachine<OrderStatus, OrderEvent> stateMachine = stateMachineService.acquireStateMachine(orderId, true);
+        stateMachine.getExtendedState().getVariables().put("orderID", orderId);
+        stateMachine.getStateMachineAccessor()
+                .doWithAllRegions(
+                        region -> region.addStateMachineInterceptor(new StateMachineInterceptor(orderService)
+                        )
+                );
+        stateMachine.startReactively().block();
+        log.info("State machine started successfully. Current state: " + stateMachine.getState().getId());
+        return stateMachine;
     }
 }
