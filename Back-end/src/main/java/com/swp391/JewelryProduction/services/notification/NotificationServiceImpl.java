@@ -4,7 +4,9 @@ import com.swp391.JewelryProduction.dto.ResponseDTOs.NotificationResponse;
 import com.swp391.JewelryProduction.pojos.Account;
 import com.swp391.JewelryProduction.pojos.Notification;
 import com.swp391.JewelryProduction.repositories.NotificationRepository;
+import com.swp391.JewelryProduction.services.email.EmailService;
 import com.swp391.JewelryProduction.util.exceptions.ObjectNotFoundException;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.codec.ServerSentEvent;
@@ -22,54 +24,8 @@ import java.util.UUID;
 @Slf4j
 public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepository notificationRepository;
-//
-//    private final ModelMapper modelMapper;
-//    private final Flux<ServerSentEvent<Notification>> notificationFlux = Flux.push(this::generateNotifications);
-//
-//
-//
-//    private ServerSentEvent<Notification> generateNotification(AccountDTO account, Report report, Order order) {
-//        Notification newNotification = Notification.builder()
-//                .account(modelMapper.map(account, Account.class))
-//                .report(report)
-//                .order(order)
-//                .build();
-//
-//        return ServerSentEvent.<Notification>builder()
-//                .event(EVENT_NAME)
-//                .data(newNotification)
-//                .build();
-//    }
-//
-//    private void generateNotifications(FluxSink<ServerSentEvent<Notification>> sink) {
-//        Flux.interval(Duration.ofSeconds(2))
-//                .map(i -> generateNotification())
-//                .doOnNext(serverSentEvent -> {
-//                    sink.next(serverSentEvent); // Sending notifications to the global Flux via its FluxSink
-//                    log.info("Sent for {}", serverSentEvent.data().getId());
-//                })
-//                .doFinally(signalType -> log.info("Notification flux closed")) // Logging the closure of our generator
-//                .takeWhile(notification -> !sink.isCancelled()) // We generate messages until the global Flux is closed
-//                .subscribe();
-//    }
-//
-//    private <T> Flux<ServerSentEvent<Notification>> keepAlive(Duration duration, Flux<T> data, String id) {
-//        Flux<ServerSentEvent<T>> heartBeat = Flux.interval(duration)
-//                .map(e -> ServerSentEvent.<T>builder()
-//                    .comment("keep alive for: " + id)
-//                    .build()
-//                )
-//                .doFinally(signalType -> log.info("Heartbeat closed for id: {}", id));
-//        return Flux.<ServerSentEvent<Notification>>merge(heartBeat, data);
-//    }
-//
-//    public Flux<ServerSentEvent<Notification>> subscribe(String id) {
-//        return keepAlive(Duration.ofSeconds(3),
-//                notificationFlux.filter(notification ->
-//                        notification.data() == null ||
-//                        notification.data().getAccount().getId().equals(id)),
-//                id);
-//    }
+    private final EmailService emailService;
+
     //<editor-fold desc="MVC Service methods" defaultstate="collapsed">
     @Override
     public List<Notification> findAllByReceiver_Id(String receiverId) {
@@ -107,15 +63,6 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public Notification updateStatusToRead(UUID id) {
-        Notification notification = notificationRepository
-                .findById(id)
-                .orElseThrow(NullPointerException::new);
-        notification.setRead(true);
-        return notificationRepository.save(notification);
-    }
-
-    @Override
     public void clearAllNotifications() {
         notificationRepository.deleteAll();
     }
@@ -126,11 +73,24 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public Notification createNotification(Notification notification, boolean isOption) {
+    public Notification createNotification(Notification notification) throws MessagingException {
+        return this.createNotification(notification, false);
+    }
+
+    @Override
+    public Notification createNotification(Notification notification, boolean isOption) throws MessagingException {
+        return this.createNotification(notification, isOption, false);
+    }
+
+    @Override
+    public Notification createNotification(Notification notification, boolean isOption, boolean sendEmail) throws MessagingException {
         notification.setDelivered(false);
         notification.setRead(false);
         notification.setOption(isOption);
-        return notificationRepository.save(notification);
+        notification = notificationRepository.save(notification);
+        if (sendEmail)
+            emailService.sendMailFromNotification(notification);
+        return notification;
     }
 
     //</editor-fold>

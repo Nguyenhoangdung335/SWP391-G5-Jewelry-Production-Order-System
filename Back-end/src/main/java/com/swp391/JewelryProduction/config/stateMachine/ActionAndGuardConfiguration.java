@@ -11,6 +11,7 @@ import com.swp391.JewelryProduction.services.order.OrderService;
 import com.swp391.JewelryProduction.services.report.ReportService;
 import com.swp391.JewelryProduction.util.MessagesConstant;
 import com.swp391.JewelryProduction.util.exceptions.MissingContextVariableException;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -21,12 +22,17 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.guard.Guard;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.swp391.JewelryProduction.util.StateMachineUtil.getCurrentState;
@@ -34,6 +40,7 @@ import static com.swp391.JewelryProduction.util.StateMachineUtil.getCurrentState
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
+@Transactional(propagation = Propagation.REQUIRES_NEW)
 public class ActionAndGuardConfiguration implements ApplicationContextAware {
     private ApplicationContext applicationContext;
 
@@ -73,21 +80,8 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
             NotificationService notificationService = applicationContext.getBean(NotificationService.class);
             AccountService accountService = applicationContext.getBean(AccountService.class);
 
-            String orderID = context.getExtendedState().get("orderID", String.class);
-            Integer reportID = context.getExtendedState().get("reportID", Integer.class);
-
-            if (orderID == null) {
-                String errorMsg = String.format("orderID is missing, state: %s", context.getSource());
-                log.error(errorMsg);
-                throw new MissingContextVariableException(errorMsg);
-            } else if (reportID == null) {
-                String errorMsg = String.format("reportID is missing, state: %s", context.getSource());
-                log.error(errorMsg);
-                throw new MissingContextVariableException(errorMsg);
-            }
-
-            Order order = orderService.findOrderById(orderID);
-            Report report = reportService.findReportByID(reportID);
+            Order order = getOrder(context, orderService);
+            Report report = getReport(context, reportService);
 
             List<Account> managers = accountService
                     .findAllByRole(Role.MANAGER)
@@ -102,7 +96,11 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
                                 .build();
                 report.getNotifications().add(notification);
                 order.getNotifications().add(notification);
-                notification = notificationService.createNotification(notification, true);
+                try {
+                    notification = notificationService.createNotification(notification, true, true);
+                } catch (MessagingException e) {
+                    throw new RuntimeException(e);
+                }
                 log.info("Notification with id {} of order id {} sent to user {} of role {}",
                         notification.getId(), order.getId(), manager.getId(), manager.getRole()
                 );
@@ -115,23 +113,30 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
     @Bean
     public Action<OrderStatus, OrderEvent> notifyCustomerApprovalAction() {
         return context -> {
+            log.info("\tnotifyCustomerApprovalAction is called\t\n");
+
             OrderService orderService = applicationContext.getBean(OrderService.class);
             ReportService reportService = applicationContext.getBean(ReportService.class);
             NotificationService notificationService = applicationContext.getBean(NotificationService.class);
 
-            Order order = orderService.findOrderById(context.getExtendedState().get("orderID", String.class));
-            Report report = reportService.findReportByID(context.getExtendedState().get("reportID", Integer.class));
+            Order order = getOrder(context, orderService);
+            Report report = getReport(context, reportService);
             Account owner = order.getOwner();
 
-            Notification notification = notificationService.createNotification(Notification.builder()
-                            .receiver(owner)
-                            .report(report)
-                            .order(order)
-                            .build(),
-                    true
-            );
-            log.info("Notification with id {} of order id {} sent to customer with id {} and email {}",
-                    notification.getId(), order.getId(), owner.getId(), owner.getEmail()
+            Notification notification = Notification.builder()
+                    .receiver(owner)
+                    .report(report)
+                    .order(order)
+                    .build();
+            report.getNotifications().add(notification);
+            order.getNotifications().add(notification);
+            try {
+                notification = notificationService.createNotification(notification, true, true);
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
+            log.info("Notification with id {} of order id {} sent to owner {}",
+                    notification.getId(), order.getId(), owner.getId()
             );
         };
     }
@@ -139,6 +144,13 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
     @Bean
     public Action<OrderStatus, OrderEvent> notifySaleStaffAction() {
         return context -> {
+            log.info("\tnotifySaleStaffAction is called\t");
+
+            OrderService orderService = applicationContext.getBean(OrderService.class);
+            NotificationService notificationService = applicationContext.getBean(NotificationService.class);
+            String orderID = context.getExtendedState().get("orderID", String.class);
+
+
             String notifyMessage = context.getExtendedState().get("message", String.class);
             //Notify logic using NotificationService
             log.info(notifyMessage);
@@ -148,28 +160,28 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
     @Bean
     public Action<OrderStatus, OrderEvent> notifyDesignStaffAction() {
         return context -> {
-            OrderService orderService = applicationContext.getBean(OrderService.class);
-            ReportService reportService = applicationContext.getBean(ReportService.class);
-            NotificationService notificationService = applicationContext.getBean(NotificationService.class);
-
-            Order order = orderService.findOrderById(context.getExtendedState().get("orderID", String.class));
-            Staff designStaff = order.getDesignStaff();
-
-            String title = String.format("Work assignment for order %s", order.getId());
-            String description = String.format("You have been assigned to the order %s", order.getId());
-
-            Report report = reportService.createNormalReport(order, title, description);
-
-            Notification notification = notificationService.createNotification(Notification.builder()
-                            .receiver(designStaff)
-                            .report(report)
-                            .order(order)
-                            .build(),
-                    true
-            );
-            log.info("Notification with id {} of order id {} sent to design staff of id {} with email {}",
-                    notification.getId(), order.getId(), designStaff.getId(), designStaff.getEmail()
-            );
+//            OrderService orderService = applicationContext.getBean(OrderService.class);
+//            ReportService reportService = applicationContext.getBean(ReportService.class);
+//            NotificationService notificationService = applicationContext.getBean(NotificationService.class);
+//
+//            Order order = orderService.findOrderById(context.getExtendedState().get("orderID", String.class));
+//            Staff designStaff = order.getDesignStaff();
+//
+//            String title = String.format("Work assignment for order %s", order.getId());
+//            String description = String.format("You have been assigned to the order %s", order.getId());
+//
+//            Report report = reportService.createNormalReport(order, title, description);
+//
+//            Notification notification = notificationService.createNotification(Notification.builder()
+//                            .receiver(designStaff)
+//                            .report(report)
+//                            .order(order)
+//                            .build(),
+//                    true
+//            );
+//            log.info("Notification with id {} of order id {} sent to design staff of id {} with email {}",
+//                    notification.getId(), order.getId(), designStaff.getId(), designStaff.getEmail()
+//            );
         };
     }
 
@@ -194,9 +206,8 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
     @Bean
     public Action<OrderStatus, OrderEvent> approvedAction () {
         return context -> {
-            OrderService orderService = applicationContext.getBean(OrderService.class);
+            log.info("approvedAction called during transition from {} to {}",context.getTransition().getSource(), context.getTransition().getTarget());
 
-            Order order = orderService.findOrderById(context.getExtendedState().get("orderID", String.class));
             StateMachine<OrderStatus, OrderEvent> stateMachine = context.getStateMachine();
             Message<OrderEvent> message;
 
@@ -218,7 +229,7 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
                 case OrderStatus.DELIVERED_CONFIRMED ->
                         message = MessageBuilder.withPayload(OrderEvent.DELIVERED_APPROVE).build();
                 default ->
-                        throw new RuntimeException("Unexpected state machine state " + context.getStateMachine().getState());
+                        throw new RuntimeException("Unexpected state machine state " + context.getStateMachine().getState().getId());
             }
             stateMachine.sendEvent(Mono.just(message)).subscribe();
         };
@@ -227,9 +238,8 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
     @Bean
     public Action<OrderStatus, OrderEvent> declinedAction() {
         return context -> {
-            OrderService orderService = applicationContext.getBean(OrderService.class);
+            log.info("declinedAction called during transition from {} to {}",context.getTransition().getSource(), context.getTransition().getTarget());
 
-            Order order = orderService.findOrderById(context.getExtendedState().get("orderID", String.class));
             StateMachine<OrderStatus, OrderEvent> stateMachine = context.getStateMachine();
             Message<OrderEvent> message;
 
@@ -251,7 +261,7 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
                 case OrderStatus.DELIVERED_DENIED ->
                         message = MessageBuilder.withPayload(OrderEvent.DELIVERED_DENY).build();
                 default ->
-                        throw new RuntimeException("Unexpected state machine state " + context.getStateMachine().getState());
+                        throw new RuntimeException("Unexpected state machine state " + context.getStateMachine().getState().getId());
             }
             stateMachine.sendEvent(Mono.just(message)).subscribe();
         };
@@ -264,21 +274,28 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
             ReportService reportService = applicationContext.getBean(ReportService.class);
             NotificationService notificationService = applicationContext.getBean(NotificationService.class);
 
-            Order order = orderService.findOrderById(context.getExtendedState().get("orderID", String.class));
+            Order order = getOrder(context, orderService);
+            Account owner = order.getOwner();
+            List<String> cancelReasons = Arrays.asList("You have not completed the transaction in time, thus rendering your order invalid.", "Your request is deemed to be inappropriate.");
+            MessagesConstant message = messagesConstant.createOrderCancelMessage(owner.getUserInfo().getFirstName(), cancelReasons, order);
 
-            String title = String.format("Your order %s have been cancelled", order.getId());
-            String description = String.format("We are sorry to announce that your order %s have been cancelled", order.getId());
+            Report report = reportService.createNormalReport(order, message.getTitle(), message.getDescription());
+            Notification notification = Notification.builder()
+                    .report(report)
+                    .order(order)
+                    .receiver(order.getOwner())
+                    .build();
+            report.getNotifications().add(notification);
+            order.getRelatedReports().add(report);
+            order.getNotifications().add(notification);
 
-            Report report = reportService.createNormalReport(order, title, description);
+            try {
+                notification = notificationService.createNotification(notification);
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
 
-            Notification notification = notificationService.createNotification(
-                    Notification.builder()
-                            .report(report)
-                            .order(order)
-                            .receiver(order.getOwner())
-                            .build(),
-                    false
-            );
+            log.info("Notification cancel order id {} of owner id {}", order.getId(), owner.getId());
         };
     }
 
@@ -348,9 +365,11 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
             order.getRelatedReports().add(report);
             order.getNotifications().add(notification);
 
-//            order = orderService.updateOrder(order);
-            notificationService.createNotification(notification, false);
-//            reportService.updateReport(report);
+            try {
+                notificationService.createNotification(notification, false);
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
             log.info("Notification approved message for owner id {}", order.getOwner().getId());
         };
     }
@@ -362,18 +381,16 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
 
             OrderService orderService = applicationContext.getBean(OrderService.class);
             NotificationService notificationService = applicationContext.getBean(NotificationService.class);
+            ReportService reportService = applicationContext.getBean(ReportService.class);
 
             Order order = orderService.findOrderById(context.getExtendedState().get("orderID", String.class));
             MessagesConstant declinedMessage = messagesConstant.createRequestDeclinedMessage(order.getOwner().getUserInfo().getFirstName());
 
-            Report report = Report.builder()
-                    .sender(null)
-                    .reportingOrder(order)
-                    .createdDate(LocalDateTime.now())
-                    .type(ReportType.NONE)
-                    .title(declinedMessage.getTitle())
-                    .description(declinedMessage.getDescription())
-                    .build();
+            Report report = reportService.createNormalReport(
+                    order,
+                    declinedMessage.getTitle(),
+                    declinedMessage.getDescription()
+            );
             Notification notification = Notification.builder()
                     .report(report)
                     .order(order)
@@ -382,8 +399,12 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
             report.getNotifications().add(notification);
             order.getRelatedReports().add(report);
             order.getNotifications().add(notification);
-            order = orderService.updateOrder(order);
-            notification = notificationService.createNotification(notification, false);
+
+            try {
+                notificationService.createNotification(notification, false);
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
             log.info("Notification declined message for owner id {}", order.getOwner());
         };
     }
@@ -394,5 +415,26 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
 
         };
     }
+
+    private Order getOrder (StateContext<OrderStatus, OrderEvent> context, OrderService orderService) {
+        String orderID = context.getExtendedState().get("orderID", String.class);
+        if (orderID == null) {
+            String errorMsg = String.format("orderID is missing, state: %s", context.getSource());
+            log.error(errorMsg);
+            throw new MissingContextVariableException(errorMsg);
+        }
+        return orderService.findOrderById(orderID);
+    }
+
+    private Report getReport (StateContext<OrderStatus, OrderEvent> context, ReportService reportService) {
+        Integer reportID = context.getExtendedState().get("reportID", Integer.class);
+        if (reportID == null) {
+            String errorMsg = String.format("reportID is missing, state: %s", context.getSource());
+            log.error(errorMsg);
+            throw new MissingContextVariableException(errorMsg);
+        }
+        return reportService.findReportByID(reportID);
+    }
+
     //</editor-fold>
 }

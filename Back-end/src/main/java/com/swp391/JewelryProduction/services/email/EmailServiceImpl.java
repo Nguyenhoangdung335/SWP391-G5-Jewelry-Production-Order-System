@@ -2,19 +2,16 @@ package com.swp391.JewelryProduction.services.email;
 
 import com.paypal.api.payments.Payment;
 import com.paypal.api.payments.Sale;
+import com.swp391.JewelryProduction.pojos.Account;
+import com.swp391.JewelryProduction.pojos.Notification;
+import com.swp391.JewelryProduction.pojos.Report;
 import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-
-import java.util.Properties;
 
 @Slf4j
 @Service
@@ -28,17 +25,6 @@ public class EmailServiceImpl implements EmailService {
 
     @Value("${mail.smtp.user}")
     private String senderEmail;
-//
-//
-//    @Autowired
-//    public EmailServiceImpl(JavaMailSender javaMailSender) {
-//
-//        this.session = Session.getDefaultInstance(System.getProperties(), new Authenticator() {
-//            protected PasswordAuthentication getPasswordAuthentication() {
-//                return new PasswordAuthentication(senderEmail, smtpPassword);
-//            }
-//        });
-//    }
 
     @Override
     public void sendLinkEmail(
@@ -68,7 +54,6 @@ public class EmailServiceImpl implements EmailService {
             String toEmail,
             String otpCode
     ) throws MessagingException {
-
         MimeMessage mimeMessage = new MimeMessage(session);
         mimeMessage.setFrom(new InternetAddress(senderEmail));
         mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(toEmail));
@@ -78,6 +63,26 @@ public class EmailServiceImpl implements EmailService {
                 "We have received a request to use " + toEmail + " to create an account on our website. Please use this code to verify your email eligibility.",
                 String.format(otpText, otpCode),
                 "The OTP code will expire in 2 minutes. For your security, please do not share it with anyone. This information can only be seen by you."
+        ), "text/html; charset=utf-8");
+        Transport.send(mimeMessage);
+    }
+
+    @Override
+    public void sendMailFromNotification(
+            Notification notification
+    ) throws MessagingException {
+        Report report = notification.getReport();
+        Account receiver = notification.getReceiver();
+
+        MimeMessage mimeMessage = new MimeMessage(session);
+        mimeMessage.setFrom(new InternetAddress(senderEmail));
+        mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(receiver.getEmail()));
+        mimeMessage.setSubject(report.getTitle());
+        mimeMessage.setContent(getForm(
+                report.getTitle(),
+                "",
+                report.getDescription(),
+                ""
         ), "text/html; charset=utf-8");
         Transport.send(mimeMessage);
     }

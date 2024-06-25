@@ -29,7 +29,7 @@ public class QuotationItem {
 
     @ManyToOne
     @JoinColumn(name = "quotation_id")
-    @JsonBackReference
+    @JsonBackReference("Quotation-Items")
     private Quotation quotation;
 
     public Integer getItemID () {

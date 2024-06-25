@@ -22,7 +22,6 @@ import java.util.List;
 public class PushNotificationController {
     private final NotificationService notificationService;
     private final AccountService accountService;
-    private final ModelMapper modelMapper;
 
     @GetMapping("/{accountID}")
     public Flux<ServerSentEvent<List<NotificationResponse>>> notify (@PathVariable("accountID") String accountID) {

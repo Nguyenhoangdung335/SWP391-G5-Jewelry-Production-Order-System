@@ -61,8 +61,8 @@ function LivePrice() {
   }, []);
 
   return (
-    <Container fluid className="pt-2 pb-2">
-      <Table bordered hover>
+    <Container className="pt-5 pb-4 w-75">
+      <Table bordered hover >
         <thead>
           <tr>
             <th>ID</th>
@@ -77,7 +77,7 @@ function LivePrice() {
               return (
                 <tr key={dataItem.id}>
                   <td>{dataItem.id}</td>
-                  <td>{dataItem.name}</td>
+                  <td>Gold / {dataItem.name}</td>
                   <td>{dataItem.price}</td>
                   <td>{dataItem.crawlTime}</td>
                 </tr>
