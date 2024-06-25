@@ -198,26 +198,9 @@ body {
     display: none;
 }
 
-a.logout {
+.logout {
     color: #fff;
     text-decoration: none;
-}
-
-.status-container {
-    display: flex;
-    align-items: center;
-}
-
-.status-container span {
-    margin-left: 5px;
-}
-
-.online {
-    color: green;
-}
-
-.offline {
-    color: grey;
 }
 
 .uploaded-image {
@@ -225,4 +208,12 @@ a.logout {
     height: auto;
     border-radius: 5px;
     margin-top: 5px;
+}
+
+.role-select-list {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background-color: #3498db; /* Same background as the users-list */
+    padding: 10px;
 }
