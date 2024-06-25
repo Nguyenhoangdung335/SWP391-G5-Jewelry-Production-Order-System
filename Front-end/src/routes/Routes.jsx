@@ -42,7 +42,7 @@ function RouteMap() {
         <Route path="/collections_page" element={<Collections />} />
         <Route path="/blogs_page" element={<Blogs />} />
         <Route path="/live_price_page" element={<LivePrice />} />
-         <Route path="/chat" element={<ChatComponent />}  />
+        <Route path="/chat" element={<ChatComponent />} />
         <Route path="/about_page" element={<About />} />
         <Route
           path="/order_page"
@@ -52,13 +52,13 @@ function RouteMap() {
             </ProtectedRoute>
           }
         />
-      </Route>
+      </Route >
       <Route
         path="/userManager"
         element={
-          <ProtectedRoute>
-            <UserManagerLayout />
-          </ProtectedRoute>
+          //<ProtectedRoute>
+          <UserManagerLayout />
+          //</ProtectedRoute>
         }
       >
         <Route
@@ -72,50 +72,56 @@ function RouteMap() {
         <Route
           path="/userManager/client_manager"
           element={
-            <ProtectedRoute roles={["ADMIN"]}>
-              <ClientManager />
-            </ProtectedRoute>
+            //<ProtectedRoute roles={["ADMIN"]}>
+            <ClientManager />
+            //</ProtectedRoute>
           }
         />
         <Route
           path="/userManager/orders_manager"
           element={
-            <ProtectedRoute roles={["ADMIN"]}>
-              <OrderManager />
-            </ProtectedRoute>
+            //<ProtectedRoute roles={["ADMIN"]}>
+            <OrderManager />
+            //</ProtectedRoute>
           }
         />
         <Route
           path="/userManager/blogs_manager"
           element={
-            <ProtectedRoute roles={["ADMIN"]}>
-              <BlogManager />
-            </ProtectedRoute>
+            //<ProtectedRoute roles={["ADMIN"]}>
+            <BlogManager />
+            //</ProtectedRoute>
           }
         />
         <Route
           path="/userManager/employees_manager"
           element={
-            <ProtectedRoute>
-              <EmployeeManager />
-            </ProtectedRoute>
+            //<ProtectedRoute>
+            <EmployeeManager />
+            //</ProtectedRoute>
           }
         />
         <Route
           path="/userManager/products_manager"
           element={
-            <ProtectedRoute roles={["manager", "production", "design", "sale"]}>
-              <ProductManager />
-            </ProtectedRoute>
+            //<ProtectedRoute roles={["manager", "production", "design", "sale"]}>
+            <ProductManager />
+            //</ProtectedRoute>
           }
         />
       </Route>
       <Route path="/user_setting_page" element={<SettingPageLayout />}>
         <Route index element={<UserInfo />} />
-        <Route path="/user_setting_page/order_history_page" element={<OrderHistory />} />
-        <Route path="/user_setting_page/notification_page" element={<NotificationPage />} />
+        <Route
+          path="/user_setting_page/order_history_page"
+          element={<OrderHistory />}
+        />
+        <Route
+          path="/user_setting_page/notification_page"
+          element={<NotificationPage />}
+        />
       </Route>
-    </Routes>
+    </Routes >
   );
 }
 

@@ -46,7 +46,7 @@ public class Account{
 
     @ToString.Include
     @EqualsAndHashCode.Include
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @ToString.Include

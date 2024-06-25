@@ -20,7 +20,7 @@ public class ProductController {
         return Response.builder()
                 .status(HttpStatus.OK)
                 .message("Request send successfully.")
-                .response("product-list", productService.findAll())
+                .response("productList", productService.findAll())
                 .buildEntity();
     }
 
@@ -47,7 +47,15 @@ public class ProductController {
         return Response.builder()
                 .status(HttpStatus.OK)
                 .message("Request send successfully.")
-                .response("product-specification", productService.save(specs))
+                .response("productSpecification", productService.save(specs))
+                .buildEntity();
+    }
+
+    @GetMapping("/get-all/specification")
+    public ResponseEntity<Response> getALlSpecification () {
+        return Response.builder()
+                .message("Request send successfully")
+                .response("list", productService.findAllSpecification())
                 .buildEntity();
     }
 }

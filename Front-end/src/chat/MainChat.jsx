@@ -7,8 +7,8 @@ import ChatArea from './ChatArea';
 import MessageForm from './MessageForm';
 import serverUrl from "../reusable/ServerUrl";
 import './index.css'
-import {useAuth} from "../provider/AuthProvider";
-import {jwtDecode} from "jwt-decode";
+import { useAuth } from "../provider/AuthProvider";
+import { jwtDecode } from "jwt-decode";
 
 const axiosInstance = axios.create({
     baseURL: serverUrl,
@@ -16,7 +16,7 @@ const axiosInstance = axios.create({
 });
 
 const ChatComponent = () => {
-    const {token} = useAuth();
+    const { token } = useAuth();
     const decodedToken = jwtDecode(token);
 
     const [stompClient, setStompClient] = useState(null);
@@ -274,7 +274,7 @@ const ChatComponent = () => {
                 nbrMsg.textContent = (parseInt(nbrMsg.textContent) || 0) + 1;
             }
         }
-    }, [selectedUserIdRef,userId]);
+    }, [selectedUserIdRef, userId]);
 
     const handleImageUpload = async (event) => {
         const imageFile = event.target.files[0];
@@ -393,8 +393,8 @@ const ChatComponent = () => {
                                 </select>
                             </div>
                             <UserList users={connectedUsers}
-                                      onSelectUser={userItemClick}
-                                      currentUser={currentUser}
+                                onSelectUser={userItemClick}
+                                currentUser={currentUser}
                             />
                         </div>
                         <div>
@@ -403,8 +403,8 @@ const ChatComponent = () => {
                     </div>
                     <div className="chat-area">
                         <ChatArea messages={messages}
-                                  ref={chatAreaRef}
-                                  userId={userId}
+                            ref={chatAreaRef}
+                            userId={userId}
                         />
                         <MessageForm
                             ref={messageFormRef}

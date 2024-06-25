@@ -32,23 +32,6 @@ public class NotificationController {
                 .buildEntity();
     }
 
-//    @PostMapping("/create")
-//    public ResponseEntity<Response> createNotification (Notification notification) {
-//        return Response.builder()
-//                .status(HttpStatus.OK)
-//                .message("Notification saved successfully")
-//                .response("notification-list", notificationService.saveNotification(notification))
-//                .buildEntity();
-//    }
-
-//    @PatchMapping("/read/{notificationID}")
-//    public ResponseEntity<Response> changeStatusToRead (@PathVariable("notificationID") UUID notificationID) {
-//        return Response.builder()
-//                .message("Notification change status to read")
-//                .response(String.valueOf(notificationID), notificationService.updateStatusToRead(notificationID))
-//                .buildEntity();
-//    }
-
     @GetMapping("/get/{notificationId}")
     public ResponseEntity<Response> getNotification(@PathVariable("notificationId") UUID notificationId) {
         return Response.builder()

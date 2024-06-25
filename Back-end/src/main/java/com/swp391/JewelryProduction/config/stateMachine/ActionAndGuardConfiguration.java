@@ -2,7 +2,6 @@ package com.swp391.JewelryProduction.config.stateMachine;
 
 import com.swp391.JewelryProduction.enums.OrderEvent;
 import com.swp391.JewelryProduction.enums.OrderStatus;
-import com.swp391.JewelryProduction.enums.ReportType;
 import com.swp391.JewelryProduction.enums.Role;
 import com.swp391.JewelryProduction.pojos.*;
 import com.swp391.JewelryProduction.services.account.AccountService;
@@ -26,16 +25,14 @@ import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.guard.Guard;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.swp391.JewelryProduction.util.StateMachineUtil.getCurrentState;
+import static com.swp391.JewelryProduction.config.stateMachine.StateMachineUtil.getCurrentState;
 
 @Slf4j
 @Configuration
@@ -67,6 +64,22 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
             return successful != null && successful;
         };
     }
+
+//    public Guard<OrderStatus, OrderEvent> checkAppropriateApprovalActionGuard () {
+//        return context -> {
+//            log.info("checkAppropriateApprovalActionGuard is called before transition to state {}", context.getTransition().getSource());
+//
+//            StateMachine<OrderStatus, OrderEvent> stateMachine = context.getStateMachine();
+//            Message<OrderEvent> message;
+//
+//            switch (getCurrentState(context.getStateMachine()).getId()) {
+//                case OrderStatus.
+//                default ->
+//                        throw new RuntimeException("Unexpected state machine state " + context.getStateMachine().getState().getId());
+//            }
+//            stateMachine.sendEvent(Mono.just(message)).subscribe();
+//        }
+//    }
     //</editor-fold>
 
     //<editor-fold desc="ACTION BEAN" defaultstate="collapsed">
@@ -84,7 +97,7 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
             Report report = getReport(context, reportService);
 
             List<Account> managers = accountService
-                    .findAllByRole(Role.MANAGER)
+                    .findAllByRole(Role.MANAGER, 10)
                     .stream()
                     .toList();
 
@@ -105,8 +118,7 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
                         notification.getId(), order.getId(), manager.getId(), manager.getRole()
                 );
             });
-//            reportService.updateReport(report);
-//            orderService.updateOrder(order);
+//            context.getExtendedState().getVariables().put("acceptedBy", "manager");
         };
     }
 
@@ -147,13 +159,38 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
             log.info("\tnotifySaleStaffAction is called\t");
 
             OrderService orderService = applicationContext.getBean(OrderService.class);
+            ReportService reportService = applicationContext.getBean(ReportService.class);
             NotificationService notificationService = applicationContext.getBean(NotificationService.class);
-            String orderID = context.getExtendedState().get("orderID", String.class);
 
+            Order order = getOrder(context, orderService);
+            Staff saleStaff = order.getSaleStaff();
 
-            String notifyMessage = context.getExtendedState().get("message", String.class);
+            List<String> responsibilities = Arrays.asList(
+                    "Engage with the customer, provide them with sufficient support about their order",
+                    "Be vigilant during work hours",
+                    "Provide a satisfied quotation"
+            );
+            MessagesConstant message = messagesConstant.createStaffAssignedMessage(order,  saleStaff, responsibilities);
+            Report report = reportService.createNormalReport(order, message.getTitle(), message.getDescription());
+            Notification notification = Notification.builder()
+                    .order(order)
+                    .report(report)
+                    .receiver(saleStaff)
+                    .build();
+            report.getNotifications().add(notification);
+            order.getNotifications().add(notification);
+            order.getRelatedReports().add(report);
+
+            try {
+                notification = notificationService.createNotification(notification, false, true);
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
+
             //Notify logic using NotificationService
-            log.info(notifyMessage);
+            log.info("Notification with id {} has been sent ot sale staff with id {} for order {}",
+                    notification.getId(), saleStaff.getId(), order.getId()
+            );
         };
     }
 

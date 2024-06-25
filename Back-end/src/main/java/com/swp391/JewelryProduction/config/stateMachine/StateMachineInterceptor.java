@@ -13,8 +13,6 @@ import org.springframework.statemachine.state.State;
 import org.springframework.statemachine.support.StateMachineInterceptorAdapter;
 import org.springframework.statemachine.transition.Transition;
 
-import static com.swp391.JewelryProduction.util.StateMachineUtil.getCurrentState;
-
 @Slf4j
 @RequiredArgsConstructor
 public class StateMachineInterceptor extends StateMachineInterceptorAdapter<OrderStatus, OrderEvent> {
@@ -52,7 +50,8 @@ public class StateMachineInterceptor extends StateMachineInterceptorAdapter<Orde
 
     @Override
     public StateContext<OrderStatus, OrderEvent> preTransition(StateContext<OrderStatus, OrderEvent> stateContext) {
-        log.info("Pre Transition: Transition = {}, State Machine Id = {}", stateContext.getTransition(), stateContext.getStateMachine().getId());
+        log.info("Pre Transition: Transition = {}, State Machine Id = {}",
+                stateContext.getTransition(), stateContext.getStateMachine().getId());
         return stateContext;
     }
 

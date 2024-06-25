@@ -6,6 +6,7 @@ import com.swp391.JewelryProduction.services.order.OrderService;
 import com.swp391.JewelryProduction.services.report.ReportService;
 import com.swp391.JewelryProduction.util.Response;
 import com.swp391.JewelryProduction.util.exceptions.ObjectExistsException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ public class ReportController {
 
     @PostMapping("/{accountId}/{productSpecId}/create/request")
     public ResponseEntity<Response> createRequest(
-            @RequestBody ReportRequest request,
+            @Valid @RequestBody ReportRequest request,
             @PathVariable("productSpecId") String specId,
             @PathVariable("accountId") String accountId)
     {
@@ -39,7 +40,7 @@ public class ReportController {
 
     @PostMapping("/{accountId}/{orderId}/create/quote")
     public ResponseEntity<Response> createQuoteReport(
-            @RequestBody ReportRequest quoteReport,
+            @Valid @RequestBody ReportRequest quoteReport,
             @PathVariable("accountId") String accountId,
             @PathVariable("orderId") String orderId)
     {
@@ -54,7 +55,7 @@ public class ReportController {
 
     @PostMapping("/{accountId}/{orderId}/create/design")
     public ResponseEntity<Response> createDesignReport(
-            @RequestBody ReportRequest designReport,
+            @Valid @RequestBody ReportRequest designReport,
             @PathVariable("accountId") String accountId,
             @PathVariable("orderId") String orderId)
     {
