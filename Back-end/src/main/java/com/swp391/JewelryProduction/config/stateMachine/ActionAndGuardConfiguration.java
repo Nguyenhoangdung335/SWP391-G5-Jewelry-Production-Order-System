@@ -97,7 +97,7 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
             Report report = getReport(context, reportService);
 
             List<Account> managers = accountService
-                    .findAllByRole(Role.MANAGER)
+                    .findAllByRole(Role.MANAGER, 10)
                     .stream()
                     .toList();
 

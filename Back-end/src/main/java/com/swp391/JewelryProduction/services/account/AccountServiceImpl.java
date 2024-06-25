@@ -7,10 +7,13 @@ import com.swp391.JewelryProduction.pojos.Account;
 import com.swp391.JewelryProduction.pojos.UserInfo;
 import com.swp391.JewelryProduction.repositories.AccountRepository;
 import com.swp391.JewelryProduction.repositories.UserInfoRepository;
+import com.swp391.JewelryProduction.util.exceptions.ObjectExistsException;
 import com.swp391.JewelryProduction.util.exceptions.ObjectNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -76,16 +79,16 @@ public class AccountServiceImpl implements AccountService {
         return accountRepository.findAccountByRole(role).isPresent() ?  accountRepository.findAccountByRole(role).get() : null;
     }
 
-    @Override
-    public List<Account> findAllByRole(Role role) {
-        return accountRepository.findAllByRole(role);
-    }
+//    @Override
+//    public List<Account> findAllByRole(Role role) {
+//        return accountRepository.findAllByRole(role);
+//    }
     //</editor-fold>
 
     //<editor-fold desc="UPDATE METHODS" defaultstate="collapsed">
     @Transactional
     @Override
-    public Account updateAccount(AccountDTO accountDTO) {
+    public Account updateAccountPassword(AccountDTO accountDTO) {
         Account updatedAcc = accountRepository.findByEmail(accountDTO.getEmail()).orElseThrow(() -> new ObjectNotFoundException("Account with email "+accountDTO.getEmail()+" does not exist"));
         log.info("Old Password: " +updatedAcc.getPassword());
         String.format("Old password: %s \nNew Password: %s", updatedAcc.getPassword(), accountDTO.getPassword());
@@ -172,5 +175,59 @@ public class AccountServiceImpl implements AccountService {
                 .orElseThrow(() -> new ObjectNotFoundException("Account with id "+accountId+" does not exist."));
         return acc.getCurrentOrder() != null;
     }
+    //</editor-fold>
+
+    //<editor-fold desc="ADMIN" defaultstate="collapsed">
+    @Override
+    public Page<Account> findAllByRole(Role role, int offset) {
+        return accountRepository.findAllByRole(role, PageRequest.of(offset, 5));
+    }
+
+    @Transactional
+    @Override
+    public Account createAccount(AccountDTO accountDTO) {
+        if(accountRepository.findByEmail(accountDTO.getEmail().toLowerCase()).isPresent())
+            throw new RuntimeException("Email is already existed.");
+        return accountRepository.save(setAccount(accountDTO));
+    }
+
+    @Transactional
+    @Override
+    public Account updateAccount(AccountDTO accountDTO) {
+        List<Account> list = accountRepository.findAllByEmail(accountDTO.getEmail());
+        if (list.isEmpty() || list.stream().anyMatch(account -> account.getId().equals(accountDTO.getId())))
+            return accountRepository.save(setAccount(accountDTO));
+        else
+            throw new ObjectExistsException("Account with email " + accountDTO.getEmail() + " already exists");
+    }
+
+    @Transactional
+    @Override
+    public void deleteAccount(AccountDTO accountDTO) {
+        accountRepository.delete(setAccount(accountDTO));
+    }
+
+    public Account setAccount(AccountDTO accountDTO) {
+        Account account = Account.builder()
+                .id(accountDTO.getId())
+                .dateCreated(accountDTO.getDateCreated())
+                .status(accountDTO.getStatus())
+                .email(accountDTO.getEmail().toLowerCase())
+                .password(passwordEncoder.encode(accountDTO.getPassword()))
+                .role(accountDTO.getRole())
+                .build();
+        account.setUserInfo(UserInfo.builder()
+                        .address(accountDTO.getUserInfo().getAddress())
+                        .account(account)
+                        .phoneNumber(accountDTO.getUserInfo().getPhoneNumber())
+                        .gender(accountDTO.getUserInfo().getGender())
+                        .lastName(accountDTO.getUserInfo().getLastName())
+                        .firstName(accountDTO.getUserInfo().getFirstName())
+                        .id(account.getId())
+                        .birthDate(accountDTO.getUserInfo().getBirthDate())
+                .build());
+        return account;
+    }
+
     //</editor-fold>
 }

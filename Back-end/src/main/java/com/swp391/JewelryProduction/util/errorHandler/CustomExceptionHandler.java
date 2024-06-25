@@ -163,6 +163,25 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
                 .buildEntity();
     }
 
+//    @Override
+//    protected ResponseEntity<Object> handleExceptionInternal(
+//            Exception ex,
+//            Object body,
+//            HttpHeaders headers,
+//            HttpStatusCode statusCode,
+//            WebRequest request)
+//    {
+//
+//        Response res = Response.builder()
+//                .statusCode(statusCode.value())
+//                .status(HttpStatus.valueOf(statusCode.value()))
+//                .message(ex.getLocalizedMessage())
+//                .response("Error", ex.getClass().getCanonicalName())
+//                .response("Cause", (ex.getCause() == null)? null: ex.getCause().getLocalizedMessage())
+//                .build();
+//        return ResponseEntity.status(res.getStatus()).body(res);
+//    }
+
     @ExceptionHandler({ Exception.class })
     public ResponseEntity<Response> handleAll(Exception ex, WebRequest request) {
 
@@ -172,7 +191,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .message(ex.getLocalizedMessage())
                 .response("Error", ex.getClass().getCanonicalName())
-                .response("Cause", ex.getCause().getLocalizedMessage())
+                .response("Cause", (ex.getCause() == null)? null: ex.getCause().getLocalizedMessage())
                 .buildEntity(new HttpHeaders());
     }
 }
