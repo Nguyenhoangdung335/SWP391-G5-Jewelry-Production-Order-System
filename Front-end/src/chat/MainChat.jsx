@@ -15,7 +15,7 @@ const axiosInstance = axios.create({
     // other default options like headers, etc.
 });
 
-const ChatComponent = () => {
+const Chat = () => {
     const { token } = useAuth();
     const decodedToken = jwtDecode(token);
 
