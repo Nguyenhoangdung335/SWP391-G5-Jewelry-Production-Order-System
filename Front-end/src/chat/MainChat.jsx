@@ -5,13 +5,20 @@ import axios from 'axios';
 import UserList from './UserList';
 import ChatArea from './ChatArea';
 import MessageForm from './MessageForm';
+import serverUrl from "../reusable/ServerUrl";
+import './index.css'
+import {useAuth} from "../provider/AuthProvider";
+import {jwtDecode} from "jwt-decode";
 
 const axiosInstance = axios.create({
-    baseURL: 'http://localhost:8083',
+    baseURL: serverUrl,
     // other default options like headers, etc.
 });
 
 const ChatComponent = () => {
+    const {token} = useAuth();
+    const decodedToken = jwtDecode(token);
+
     const [stompClient, setStompClient] = useState(null);
     const [currentUser, setCurrentUser] = useState(null);
     const [userId, setUserId] = useState(null);
@@ -19,12 +26,11 @@ const ChatComponent = () => {
     const [selectedUserId, setSelectedUserId] = useState(null);
     const [connectedUsers, setConnectedUsers] = useState([]);
     const [messages, setMessages] = useState([]);
+    const [tokens] = useState(decodedToken);
 
     const selectedUserIdRef = useRef(null);
 
-    const usernamePageRef = useRef(null);
     const chatPageRef = useRef(null);
-    const usernameFormRef = useRef(null);
     const messageFormRef = useRef(null);
     const messageInputRef = useRef(null);
     const imageInputRef = useRef(null);
@@ -33,216 +39,164 @@ const ChatComponent = () => {
     const roleSelectRef = useRef(null);
 
     useEffect(() => {
+        if (tokens) {
+            const user = {
+                id: tokens.id,
+                name: tokens.first_name,
+                role: tokens.role,
+                saleStaff: null,  // Placeholder, will fetch below
+            };
 
-        window.addEventListener('beforeunload', onLogout);
+            setCurrentUser(user);
+            setUserId(user.id);
 
+            axiosInstance.get(`/${tokens.id}/sale-staff`)
+                .then(response => {
+                    const saleStaff = response.data;
+                    setCurrentUser(prevUser => ({ ...prevUser, saleStaff }));
+                    setUserSaleStaff(saleStaff);
+                })
+                .catch(error => {
+                    console.error('Error fetching sale staff:', error);
+                });
+
+        }
+        console.log(tokens);
+    }, [tokens]);
+
+    useEffect(() => {
+        if (currentUser && currentUser.id && !stompClient) {
+            initializeWebSocket();
+        }
+    }, [currentUser, stompClient]);
+
+    const initializeWebSocket = () => {
+        console.log('Initializing WebSocket...');
+        const socket = new SockJS(serverUrl + '/ws', null, { withCredentials: true });
+        const client = new Client({
+            webSocketFactory: () => socket,
+            onConnect: () => {
+                console.log('Connected to WebSocket');
+                console.log('stompClient:', client); // Check client here
+                console.log('currentUser:', currentUser); // Check currentUser here
+                console.log('userId:', userId); // Check userId here
+
+                client.subscribe(`/user/${userId}/queue/messages`, onMessageReceived);
+                client.subscribe(`/topic/public`, onMessageReceived);
+
+                const connectedUserFullnameElement = document.querySelector('#connected-user-fullname');
+                if (connectedUserFullnameElement) {
+                    connectedUserFullnameElement.textContent = currentUser.name;
+                } else {
+                    console.warn("Element with ID 'connected-user-fullname' not found in the DOM.");
+                }
+
+                findAndDisplayConnectedUsers();
+                fetchUnreadMessages();
+            },
+            onStompError: onError,
+        });
+
+        setStompClient(client); // Set stompClient state
+        console.log('Setting stompClient...');
+        client.activate(); // Activate WebSocket connection
+        console.log('Activating WebSocket connection...');
+    };
+
+    useEffect(() => {
         return () => {
-            window.removeEventListener('beforeunload', onLogout);
-
             if (stompClient) {
                 stompClient.publish({
                     destination: "/app/user.disconnectUser",
                     body: JSON.stringify({ id: userId }),
                 });
                 stompClient.deactivate();
+                setStompClient(null);
             }
         };
     }, [stompClient, userId]);
 
-    useEffect(() => {
-        if (stompClient) {
-            stompClient.onConnect = onConnected;
-            stompClient.onStompError = onError;
-            stompClient.activate();
-        }
-    }, [onConnected, stompClient]);
+    const onError = useCallback((error) => {
+        console.error('WebSocket error:', error.message);
+    }, []);
 
-    useEffect(() => {
-        selectedUserIdRef.current = selectedUserId;
-        if (selectedUserId !== null) {
-            fetchAndDisplayUserChat();
-        }
-    }, [selectedUserId]);
-
-    const connect = useCallback(async (event) => {
-        event.preventDefault();
-        const enteredUserId = usernameFormRef.current.querySelector('#id').value.trim();
-        if (!enteredUserId) {
-            alert('Please enter a user ID.');
-            return;
-        }
+    const fetchUnreadMessages = useCallback(async () => {
         try {
-            const [saleStaffResponse, userResponse] = await Promise.all([
-                axiosInstance.get(`/${enteredUserId}/sale-staff`),
-                axiosInstance.get(`/user/check/${enteredUserId}`)
-            ]);
-            setUserSaleStaff(saleStaffResponse.data);
-            setCurrentUser(userResponse.data);
-            setUserId(userResponse.data.id);
-            onUserFound(userResponse.data);
+            const response = await axiosInstance.get(`/unread-messages/${userId}`);
+            const unreadMessages = response.data;
+            unreadMessages.forEach(message => {
+                const notifiedUser = document.querySelector(`#${message.senderId}`);
+                if (notifiedUser) {
+                    const nbrMsg = notifiedUser.querySelector('.nbr-msg');
+                    nbrMsg.classList.remove('hidden');
+                    nbrMsg.textContent = (parseInt(nbrMsg.textContent) || 0) + 1;
+                }
+            });
         } catch (error) {
-            handleConnectError(error);
-        }
-    }, []);
-
-    const onUserFound = useCallback(() => {
-        usernamePageRef.current.classList.add('hidden');
-        chatPageRef.current.classList.remove('hidden');
-
-        const socket = new SockJS('http://localhost:8083/ws', null, { withCredentials: true });
-        const client = new Client({
-            webSocketFactory: () => socket,
-            onConnect: onConnected,
-            onStompError: onError,
-        });
-        setStompClient(client);
-        client.activate();
-    }, []);
-
-    async function onConnected() {
-        console.log('Connected to WebSocket');
-        console.log('stompClient value:', stompClient);
-
-        if (stompClient) {
-            // Subscribe to necessary channels
-            stompClient.subscribe(`/user/${userId}/queue/messages`, onMessageReceived);
-            stompClient.subscribe(`/topic/public`, onMessageReceived);
-
-            // Perform operations that depend on stompClient being ready
-            document.querySelector('#connected-user-fullname').textContent = currentUser.name;
-            await findAndDisplayConnectedUsers();
-            await fetchUnreadMessages();
-        } else {
-            console.error('stompClient is null in onConnected. WebSocket connection may not be properly established.');
-        }
-    }
-
-    async function fetchUnreadMessages() {
-        try {
-            const unreadMessagesResponse = await axiosInstance.get(`/unread-messages/${userId}`);
-            const unreadMessages = unreadMessagesResponse.data;
-            if (unreadMessages && unreadMessages.length > 0) {
-                unreadMessages.forEach(message => {
-                    const notifiedUser = document.querySelector(`#${message.senderId}`);
-                    if (notifiedUser) {
-                        const nbrMsg = notifiedUser.querySelector('.nbr-msg');
-                        if (nbrMsg) {
-                            nbrMsg.classList.remove('hidden');
-                            nbrMsg.textContent = parseInt(nbrMsg.textContent) + 1;
-                        }
-                    }
-                });
-            } else {
+            if (error.response?.status === 204) {
                 console.log('No unread messages found.');
-            }
-        } catch (error) {
-            if (error.response && error.response.status === 204) {
-                console.log('No content found for unread messages.');
             } else {
                 console.error('Failed to fetch unread messages:', error.message);
             }
         }
-    }
+    }, [userId]);
 
-    async function findAndDisplayConnectedUsers() {
+    const findAndDisplayConnectedUsers = useCallback(async () => {
         if (currentUser) {
             try {
                 if (currentUser.role === "CUSTOMER") {
-                    roleSelectListRef.current.classList.add('hidden');
-                    if (userSaleStaff !== "") {
+                    if (roleSelectListRef.current) {
+                        roleSelectListRef.current.classList.add('hidden');
+                    }
+                    if (userSaleStaff) {  // Check if userSaleStaff is not null
                         const response = await axiosInstance.get(`/user/check/${userSaleStaff}`);
                         const user = response.data;
                         await renderConnectedUsers([user]);
                     }
                 } else {
-                    roleSelectListRef.current.classList.remove('hidden');
-                    const response = await axiosInstance.get(`/users/${roleSelectRef.current.value}`);
-                    const users = response.data;
-                    await renderConnectedUsers(users.filter(user => user.id !== userId));
+                    if (roleSelectListRef.current) {
+                        roleSelectListRef.current.classList.remove('hidden');
+                    }
+                    const roleSelectValue = roleSelectRef.current ? roleSelectRef.current.value : null;
+                    if (roleSelectValue) {
+                        const response = await axiosInstance.get(`/users/${roleSelectValue}`);
+                        const users = response.data;
+                        await renderConnectedUsers(users.filter(user => user.id !== userId));
+                    }
                 }
             } catch (error) {
                 console.error('Error fetching and displaying connected users:', error);
             }
         }
-    }
+    }, [currentUser, userSaleStaff, userId, roleSelectRef]);
 
-    function renderConnectedUsers(users) {
+    const renderConnectedUsers = (users) => {
         setConnectedUsers(users);
-    }
+    };
 
     const onRoleChange = useCallback(() => {
         findAndDisplayConnectedUsers().then(() => {
             chatAreaRef.current?.classList.add('hidden');
+            fetchUnreadMessages().then();
         });
     }, [findAndDisplayConnectedUsers]);
 
-    function markMessagesAsRead(recipientId) {
+    const markMessagesAsRead = useCallback(async (recipientId) => {
         try {
-            axiosInstance.post(`/mark-messages-as-read/${recipientId}`);
+            await axiosInstance.post(`/mark-messages-as-read/${recipientId}`);
             console.log(`Messages for ${recipientId} marked as read.`);
         } catch (error) {
             console.error(`Failed to mark messages as read for ${recipientId}:`, error.message);
         }
-    }
+    }, []);
 
-    function userItemClick(event) {
-        document.querySelectorAll('.user-item').forEach(item => {
-            item.classList.remove('active');
-        });
-        messageFormRef.current.classList.remove('hidden');
-
-        const clickedUser = event.currentTarget;
-        console.log("ClickedUser: ", clickedUser);
-        clickedUser.classList.add('active');
-
-        setSelectedUserId(clickedUser.getAttribute('id'));
-
-        markMessagesAsRead(userId);
-
-        const nbrMsg = clickedUser.querySelector('.nbr-msg');
-        nbrMsg.classList.add('hidden');
-        nbrMsg.textContent = '0';
-    }
-
-    function displayMessage(senderId, content) {
-        try {
-            if (!content) {
-                console.warn('Content is empty or undefined. Skipping display.');
-                return;
-            }
-
-            const messageContainer = document.createElement('div');
-            messageContainer.classList.add('message');
-            if (senderId === userId) {
-                messageContainer.classList.add('sender');
-            } else {
-                messageContainer.classList.add('receiver');
-            }
-
-            let messageElement;
-            if (typeof content === 'string' && content.startsWith('https://')) {
-                messageElement = document.createElement('img');
-                messageElement.src = content;
-                messageElement.alt = 'Uploaded image';
-                messageElement.classList.add('uploaded-image');
-            } else {
-                messageElement = document.createElement('p');
-                messageElement.textContent = content;
-            }
-
-            messageContainer.appendChild(messageElement);
-            if (chatAreaRef.current) {
-                chatAreaRef.current.appendChild(messageContainer);
-                chatAreaRef.current.scrollTop = chatAreaRef.current.scrollHeight;
-            } else {
-                console.warn('chatAreaRef.current is null or undefined. Unable to append message.');
-            }
-        } catch (error) {
-            console.error('Error displaying message:', error);
+    useEffect(() => {
+        if (selectedUserId !== null) {
+            fetchAndDisplayUserChat();
         }
-    }
+    }, [selectedUserId]);
 
-    async function fetchAndDisplayUserChat() {
+    const fetchAndDisplayUserChat = useCallback(async () => {
         if (selectedUserId) {
             try {
                 const response = await axiosInstance.get(`/messages/${userId}/${selectedUserId}`);
@@ -267,7 +221,45 @@ const ChatComponent = () => {
                 }
             }
         }
-    }
+    }, [selectedUserId, userId]);
+
+    const userItemClick = useCallback((event) => {
+        document.querySelectorAll('.user-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        messageFormRef.current.classList.remove('hidden');
+
+        const clickedUser = event.currentTarget;
+        console.log("ClickedUser: ", clickedUser);
+        clickedUser.classList.add('active');
+
+        setSelectedUserId(clickedUser.getAttribute('id'));
+
+        markMessagesAsRead(clickedUser.getAttribute('id'));
+
+        const nbrMsg = clickedUser.querySelector('.nbr-msg');
+        nbrMsg.classList.add('hidden');
+        nbrMsg.textContent = '0';
+    }, [markMessagesAsRead]);
+
+    const sendMessage = useCallback(() => {
+        const messageContent = messageInputRef.current.value.trim();
+        if (messageContent && stompClient && stompClient.connected) {
+            const chatMessage = {
+                senderId: userId,
+                recipientId: selectedUserId,
+                content: messageContent,
+                timestamp: new Date()
+            };
+            stompClient.publish({
+                destination: "/app/chat",
+                body: JSON.stringify(chatMessage),
+            });
+            console.log('Message sent:', chatMessage);
+            messageInputRef.current.value = '';
+            setMessages(prevMessages => [...prevMessages, chatMessage]);
+        }
+    }, [stompClient, userId, selectedUserId]);
 
     const onMessageReceived = useCallback((payload) => {
         const message = JSON.parse(payload.body);
@@ -282,27 +274,7 @@ const ChatComponent = () => {
                 nbrMsg.textContent = (parseInt(nbrMsg.textContent) || 0) + 1;
             }
         }
-    }, [userId]);
-
-
-    const sendMessage = useCallback(() => {
-        const messageContent = messageInputRef.current.value.trim();
-        if (messageContent && stompClient && stompClient.connected) {
-            const chatMessage = {
-                senderId: userId,
-                recipientId: selectedUserIdRef.current,
-                content: messageContent,
-                timestamp: new Date(),
-            };
-            stompClient.publish({
-                destination: "/app/chat",
-                body: JSON.stringify(chatMessage),
-            });
-            console.log('Message sent:', chatMessage);
-            messageInputRef.current.value = '';
-            setMessages(prevMessages => [...prevMessages, chatMessage]);
-        }
-    }, [stompClient, userId, selectedUserId]);
+    }, [selectedUserIdRef,userId]);
 
     const handleImageUpload = async (event) => {
         const imageFile = event.target.files[0];
@@ -316,7 +288,7 @@ const ChatComponent = () => {
                 const resizedImageFile = await resizeImage(imageFile);
                 formData.append('file', resizedImageFile);
 
-                const response = await axios.post('http://localhost:8083/chat/upload', formData, {
+                const response = await axiosInstance.post('/chat/upload', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }
@@ -379,82 +351,61 @@ const ChatComponent = () => {
         });
     };
 
-    function handleConnectError(error) {
-        if (error.response) {
-            if (error.response.status === 404) {
-                alert('User not found. Please enter a valid user ID.');
-            } else if (error.response.status === 500) {
-                alert('Server error. Please try again later.');
-            }
-        } else {
-            console.error('Error connecting user:', error.message);
-            alert('Failed to connect user. Please try again later.');
-        }
-    }
-
     const onLogout = useCallback(() => {
-        if (stompClient) {
-            stompClient.publish({
-                destination: "/app/user.disconnectUser",
-                body: JSON.stringify({ id: userId }),
-            });
-            stompClient.deactivate();
-        }
-        setStompClient(null);
+        setStompClient((prevClient) => {
+            if (prevClient) {
+                prevClient.publish({
+                    destination: "/app/user.disconnectUser",
+                    body: JSON.stringify({ id: userId }),
+                });
+                // Do not deactivate stompClient here, leave it active
+            }
+            return prevClient; // Return the unchanged stompClient
+        });
+
         setCurrentUser(null);
         setUserId(null);
         setUserSaleStaff(null);
         setSelectedUserId(null);
         setConnectedUsers([]);
         setMessages([]);
-        usernamePageRef.current.classList.remove('hidden');
-        chatPageRef.current.classList.add('hidden');
-    }, [stompClient, userId]);
+    }, [userId]);
 
-    const onError = useCallback((error) => {
-        console.error('WebSocket error:', error.message);
-    }, []);
+    // useEffect(() => {
+    //     selectedUserIdRef.current = selectedUserId;
+    //     if (selectedUserId !== null) {
+    //         fetchAndDisplayUserChat();
+    //     }
+    // }, [selectedUserId]);
 
     return (
-        <div>
-            <div ref={usernamePageRef} id="username-page">
-                <div className="username-page-container">
-                    <h1 className="title">Chat App</h1>
-                    <form ref={usernameFormRef} name="usernameForm" onSubmit={connect}>
-                        <div className="form-group">
-                            <input type="text" id="id" placeholder="Enter your ID" autoComplete="off" className="form-control" required />
-                        </div>
-                        <div className="form-group">
-                            <button type="submit" className="accent username-submit">Start Chatting</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <div ref={chatPageRef} id="chat-page" className="hidden">
+        <div className="container mt-5">
+            <div ref={chatPageRef} id="chat-page">
                 <div className="chat-container">
                     <div className="users-list">
                         <div className="users-list-container">
-
-                        <div ref={roleSelectListRef} className="role-select-list hidden">
-                            <select id="role-select" ref={roleSelectRef} onChange={onRoleChange}>
-                                <option value="CUSTOMER">Customer</option>
-                                <option value="STAFF">Staff</option>
-                                <option value="MANAGER">Manager</option>
-                            </select>
-                        </div>
-                        <UserList users={connectedUsers} onSelectUser={userItemClick}/>
+                            <div ref={roleSelectListRef} className="role-select-list hidden">
+                                <select id="role-select" ref={roleSelectRef} onChange={onRoleChange} className="form-select mb-3">
+                                    <option value="CUSTOMER">Customer</option>
+                                    <option value="STAFF">Staff</option>
+                                    <option value="MANAGER">Manager</option>
+                                    <option value="ADMIN">Admin</option>
+                                </select>
+                            </div>
+                            <UserList users={connectedUsers}
+                                      onSelectUser={userItemClick}
+                                      currentUser={currentUser}
+                            />
                         </div>
                         <div>
                             <p id="connected-user-fullname"></p>
-                            <button className="logout" onClick={onLogout}>Logout</button>
                         </div>
                     </div>
                     <div className="chat-area">
-                    <ChatArea messages={messages}
-                              ref={chatAreaRef}
-                              userId={userId}
-                    />
+                        <ChatArea messages={messages}
+                                  ref={chatAreaRef}
+                                  userId={userId}
+                        />
                         <MessageForm
                             ref={messageFormRef}
                             messageInputRef={messageInputRef}
@@ -467,6 +418,6 @@ const ChatComponent = () => {
             </div>
         </div>
     );
-}
+};
 
 export default ChatComponent;

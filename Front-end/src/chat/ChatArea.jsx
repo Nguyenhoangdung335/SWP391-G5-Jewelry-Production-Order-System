@@ -13,7 +13,7 @@ const ChatArea = React.forwardRef(({ messages, userId }, ref ) => {
             {messages.map((message, index) => (
                 <div key={index} className={`message ${message.senderId === userId ? 'sender' : 'receiver'}`}>
                     {message.content.startsWith('https://') ? (
-                        <img src={message.content} alt="Uploaded" className="uploaded-image" />
+                        <img src={message.content} alt="Uploaded" className="uploaded-image img-fluid" />
                     ) : (
                         <p>{message.content}</p>
                     )}

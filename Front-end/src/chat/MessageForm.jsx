@@ -11,16 +11,17 @@ const MessageForm = React.forwardRef(({ sendMessage, handleImageUpload, messageI
 
     return (
         <form ref={ref} onSubmit={onSubmit} id="messageForm" name="messageForm" className="hidden">
-            <div className="message-input">
+            <div className="message-input d-flex">
                 <input
                     autoComplete="off"
                     type="text"
                     id="message"
+                    className="form-control me-2"
                     placeholder="Type your message..."
                     ref={messageInputRef}
                 />
-                <input onChange={handleImageUpload} type="file" id="imageInput" accept="image/*" ref={imageInputRef} />
-                <button type="submit">Send</button>
+                <input onChange={handleImageUpload} type="file" id="imageInput" accept="image/*" ref={imageInputRef} className="form-control me-2" />
+                <button type="submit" className="btn btn-primary">Send</button>
             </div>
         </form>
     );
