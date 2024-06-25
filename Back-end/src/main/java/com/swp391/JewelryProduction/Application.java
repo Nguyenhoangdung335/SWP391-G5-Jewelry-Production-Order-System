@@ -3,12 +3,14 @@ package com.swp391.JewelryProduction;
 import com.github.javafaker.Faker;
 import com.swp391.JewelryProduction.enums.AccountStatus;
 import com.swp391.JewelryProduction.enums.Gender;
+import com.swp391.JewelryProduction.enums.OrderStatus;
 import com.swp391.JewelryProduction.enums.Role;
-import com.swp391.JewelryProduction.pojos.Account;
-import com.swp391.JewelryProduction.pojos.Staff;
-import com.swp391.JewelryProduction.pojos.UserInfo;
+import com.swp391.JewelryProduction.pojos.*;
+import com.swp391.JewelryProduction.pojos.designPojos.Product;
 import com.swp391.JewelryProduction.repositories.AccountRepository;
 //import com.swp391.JewelryProduction.websocket.listener.GlobalEntityListener;
+import com.swp391.JewelryProduction.repositories.OrderRepository;
+import com.swp391.JewelryProduction.repositories.ProductRepository;
 import com.swp391.JewelryProduction.repositories.StaffRepository;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -71,35 +73,16 @@ public class Application   {
 
 
 	@Bean
-	public CommandLineRunner commandLineRunner (AccountRepository accountRepository, StaffRepository staffRepository) {
+	public CommandLineRunner commandLineRunner (AccountRepository accountRepository, StaffRepository staffRepository, OrderRepository orderRepository, ProductRepository productRepository) {
 		return args -> {
-				logger.info("Application start");
-				Account acc = Account.builder()
-						.email("nguyenhoangdung335@gmail.com")
-						.password(passwordEncoder.encode("#Dung111004"))
-						.dateCreated(LocalDateTime.now())
-						.role(Role.ADMIN)
-						.status(AccountStatus.ACTIVE)
-						.build();
-				acc.setUserInfo(UserInfo.builder()
-								.firstName("Dung")
-								.lastName("Nguyen Hoang")
-								.gender(Gender.MALE)
-								.address("Vinhomes")
-								.birthDate(LocalDate.parse("2004-10-11"))
-								.phoneNumber("0916320563")
-						.build());
-				accountRepository.save(acc);
-			logger.info("Acc00001 Added");
-
-
-				acc = Account.builder()
-						.email("dungnhse180163@fpt.edu.vn")
-						.password(passwordEncoder.encode("#Dung111004"))
-						.dateCreated(LocalDateTime.now())
-						.role(Role.MANAGER)
-						.status(AccountStatus.ACTIVE)
-						.build();
+			logger.info("Application start");
+			Account acc = Account.builder()
+					.email("nguyenhoangdung335@gmail.com")
+					.password(passwordEncoder.encode("#Dung111004"))
+					.dateCreated(LocalDateTime.now())
+					.role(Role.ADMIN)
+					.status(AccountStatus.ACTIVE)
+					.build();
 			acc.setUserInfo(UserInfo.builder()
 					.firstName("Dung")
 					.lastName("Nguyen Hoang")
@@ -108,30 +91,49 @@ public class Application   {
 					.birthDate(LocalDate.parse("2004-10-11"))
 					.phoneNumber("0916320563")
 					.build());
-				accountRepository.save(acc);
+			accountRepository.save(acc);
+			logger.info("Acc00001 Added");
 
-				Faker faker = new Faker();
-				Random rand = new Random();
-				for (int i = 0; i < 10; i++) {
-					acc = Account.builder()
-							.email(faker.internet().safeEmailAddress())
-							.password(passwordEncoder.encode(faker.internet().password()))
-							.dateCreated(LocalDateTime.now().plusWeeks(rand.nextLong(10)).plusDays(rand.nextLong(31)))
-							.role(Role.CUSTOMER)
-							.status(AccountStatus.ACTIVE)
-							.build();
-					acc.setUserInfo(UserInfo.builder()
-							.firstName(faker.name().firstName())
-							.lastName(faker.name().lastName())
-							.gender(Gender.values()[rand.nextInt(1)])
-							.address(faker.address().fullAddress())
-							.birthDate(faker.date().birthday(10, 80).toInstant()
-									.atZone(ZoneId.systemDefault())
-									.toLocalDate())
-							.phoneNumber(faker.phoneNumber().phoneNumber())
-							.build());
-					accountRepository.save(acc);
-				}
+
+			acc = Account.builder()
+					.email("dungnhse180163@fpt.edu.vn")
+					.password(passwordEncoder.encode("#Dung111004"))
+					.dateCreated(LocalDateTime.now())
+					.role(Role.MANAGER)
+					.status(AccountStatus.ACTIVE)
+					.build();
+			acc.setUserInfo(UserInfo.builder()
+					.firstName("Dung")
+					.lastName("Nguyen Hoang")
+					.gender(Gender.MALE)
+					.address("Vinhomes")
+					.birthDate(LocalDate.parse("2004-10-11"))
+					.phoneNumber("0916320563")
+					.build());
+			accountRepository.save(acc);
+
+			Faker faker = new Faker();
+			Random rand = new Random();
+			for (int i = 0; i < 10; i++) {
+				acc = Account.builder()
+						.email(faker.internet().safeEmailAddress())
+						.password(passwordEncoder.encode(faker.internet().password()))
+						.dateCreated(LocalDateTime.now().plusWeeks(rand.nextLong(10)).plusDays(rand.nextLong(31)))
+						.role(Role.CUSTOMER)
+						.status(AccountStatus.ACTIVE)
+						.build();
+				acc.setUserInfo(UserInfo.builder()
+						.firstName(faker.name().firstName())
+						.lastName(faker.name().lastName())
+						.gender(Gender.values()[rand.nextInt(1)])
+						.address(faker.address().fullAddress())
+						.birthDate(faker.date().birthday(10, 80).toInstant()
+								.atZone(ZoneId.systemDefault())
+								.toLocalDate())
+						.phoneNumber(faker.phoneNumber().phoneNumber())
+						.build());
+				accountRepository.save(acc);
+			}
 
 			Staff staff;
 			for (int i = 0; i < 15; i++) {
@@ -159,13 +161,13 @@ public class Application   {
 				staffRepository.save(staff);
 			}
 
-				acc = Account.builder()
-						.email("tranmaiquangkhai@gmail.com")
-						.password(passwordEncoder.encode("Khai1@"))
-						.dateCreated(LocalDateTime.now())
-						.role(Role.ADMIN)
-						.status(AccountStatus.ACTIVE)
-						.build();
+			acc = Account.builder()
+					.email("tranmaiquangkhai@gmail.com")
+					.password(passwordEncoder.encode("Khai1@"))
+					.dateCreated(LocalDateTime.now())
+					.role(Role.ADMIN)
+					.status(AccountStatus.ACTIVE)
+					.build();
 			acc.setUserInfo(UserInfo.builder()
 					.firstName("Khai")
 					.lastName("Tran Mai Quang")
@@ -174,9 +176,33 @@ public class Application   {
 					.birthDate(LocalDate.parse("2004-10-11"))
 					.phoneNumber("0916320563")
 					.build());
-				accountRepository.save(acc);
+			accountRepository.save(acc);
 
-//				GlobalEntityListener.setInitializedDone();
+//			GlobalEntityListener.setInitializedDone();
+
+			for(int  i = 0; i < 10; i ++) {
+				Order order = Order.builder()
+						.budget(Double.parseDouble(faker.commerce().price()))
+						.createdDate(LocalDateTime.now())
+						.name(faker.commerce().productName())
+						.status(OrderStatus.REQUESTING)
+						.build();
+				order.setQuotation(Quotation.builder()
+								.createdDate(LocalDate.now())
+								.expiredDate(LocalDate.now().plusDays(rand.nextInt(10)))
+								.title(order.getName())
+								.build());
+				order.setDesign(Design.builder()
+								.designLink(faker.internet().url())
+								.build());
+				orderRepository.save(order);
+
+				Product product = Product.builder()
+						.order(order)
+						.description(faker.lorem().sentence())
+						.build();
+				productRepository.save(product);
+			}
 		};
 	}
 }
