@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -84,8 +85,8 @@ public class MessagesConstant {
         public String description (Staff assignedStaff, Order order, List<String> responsibilities) {
             StringBuilder builder = new StringBuilder();
             responsibilities.forEach(res -> builder.append(" - ").append(res).append(". \n"));
-            LocalDateTime startDate = assignedStaff.getHistory().getLast().getStartDate();
-            LocalDateTime endDate = startDate.plusMonths(1).plusWeeks(2);
+            LocalDate startDate = LocalDate.now();
+            LocalDate endDate = startDate.plusMonths(1).plusWeeks(2);
 
             return description = String.format(
                     """
