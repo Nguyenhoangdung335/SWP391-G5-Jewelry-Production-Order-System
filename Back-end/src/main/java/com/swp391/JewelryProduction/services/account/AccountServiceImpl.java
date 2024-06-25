@@ -7,6 +7,7 @@ import com.swp391.JewelryProduction.pojos.Account;
 import com.swp391.JewelryProduction.pojos.UserInfo;
 import com.swp391.JewelryProduction.repositories.AccountRepository;
 import com.swp391.JewelryProduction.repositories.UserInfoRepository;
+import com.swp391.JewelryProduction.security.model.User;
 import com.swp391.JewelryProduction.util.exceptions.ObjectExistsException;
 import com.swp391.JewelryProduction.util.exceptions.ObjectNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -162,12 +163,12 @@ public class AccountServiceImpl implements AccountService {
     //</editor-fold>
 
     //<editor-fold desc="DELETE METHODS" defaultstate="collapsed">
-    @Transactional
-    @Override
-    public void deleteAccount(String accountID) {
-        Account acc = accountRepository.findById(accountID).orElseThrow(() -> new ObjectNotFoundException("Account with id " + accountID + " not found, can't be deleted"));
-        accountRepository.delete(acc);
-    }
+//    @Transactional
+//    @Override
+//    public void deleteAccount(String accountID) {
+//        Account acc = accountRepository.findById(accountID).orElseThrow(() -> new ObjectNotFoundException("Account with id " + accountID + " not found, can't be deleted"));
+//        accountRepository.delete(acc);
+//    }
 
     @Override
     public boolean checkCurrentOrderExist(String accountId) {
@@ -203,8 +204,8 @@ public class AccountServiceImpl implements AccountService {
 
     @Transactional
     @Override
-    public void deleteAccount(AccountDTO accountDTO) {
-        accountRepository.delete(setAccount(accountDTO));
+    public void deleteAccount(String accountId) {
+        accountRepository.delete(accountRepository.findById(accountId).orElseThrow(() -> new ObjectNotFoundException("Account with id " + accountId + " not found")));
     }
 
     public Account setAccount(AccountDTO accountDTO) {
@@ -216,16 +217,22 @@ public class AccountServiceImpl implements AccountService {
                 .password(passwordEncoder.encode(accountDTO.getPassword()))
                 .role(accountDTO.getRole())
                 .build();
-        account.setUserInfo(UserInfo.builder()
-                        .address(accountDTO.getUserInfo().getAddress())
-                        .account(account)
-                        .phoneNumber(accountDTO.getUserInfo().getPhoneNumber())
-                        .gender(accountDTO.getUserInfo().getGender())
-                        .lastName(accountDTO.getUserInfo().getLastName())
-                        .firstName(accountDTO.getUserInfo().getFirstName())
-                        .id(account.getId())
-                        .birthDate(accountDTO.getUserInfo().getBirthDate())
-                .build());
+        if(accountDTO.getUserInfo() != null) {
+            account.setUserInfo(UserInfo.builder()
+                    .address(accountDTO.getUserInfo().getAddress())
+                    .account(account)
+                    .phoneNumber(accountDTO.getUserInfo().getPhoneNumber())
+                    .gender(accountDTO.getUserInfo().getGender())
+                    .lastName(accountDTO.getUserInfo().getLastName())
+                    .firstName(accountDTO.getUserInfo().getFirstName())
+                    .id(account.getId())
+                    .birthDate(accountDTO.getUserInfo().getBirthDate())
+                    .build());
+        } else {
+            account.setUserInfo(UserInfo.builder()
+                    .id(account.getId())
+                    .build());
+        }
         return account;
     }
 

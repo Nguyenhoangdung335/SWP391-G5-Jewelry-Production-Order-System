@@ -181,6 +181,9 @@ public class Application   {
 //			GlobalEntityListener.setInitializedDone();
 
 			for(int  i = 0; i < 10; i ++) {
+				Product product = Product.builder()
+						.description(faker.lorem().sentence())
+						.build();
 				Order order = Order.builder()
 						.budget(Double.parseDouble(faker.commerce().price()))
 						.createdDate(LocalDateTime.now())
@@ -195,12 +198,8 @@ public class Application   {
 				order.setDesign(Design.builder()
 								.designLink(faker.internet().url())
 								.build());
+				product.setOrder(order);
 				orderRepository.save(order);
-
-				Product product = Product.builder()
-						.order(order)
-						.description(faker.lorem().sentence())
-						.build();
 				productRepository.save(product);
 			}
 		};

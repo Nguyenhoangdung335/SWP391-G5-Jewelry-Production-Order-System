@@ -1,17 +1,23 @@
 package com.swp391.JewelryProduction.services.order;
 
+import com.swp391.JewelryProduction.dto.OrderDTO;
 import com.swp391.JewelryProduction.dto.RequestDTOs.StaffGroup;
 import com.swp391.JewelryProduction.enums.OrderEvent;
 import com.swp391.JewelryProduction.enums.OrderStatus;
 import com.swp391.JewelryProduction.enums.Role;
 import com.swp391.JewelryProduction.pojos.Account;
+import com.swp391.JewelryProduction.pojos.Design;
 import com.swp391.JewelryProduction.pojos.Order;
+import com.swp391.JewelryProduction.pojos.Quotation;
+import com.swp391.JewelryProduction.pojos.designPojos.Product;
 import com.swp391.JewelryProduction.repositories.OrderRepository;
 import com.swp391.JewelryProduction.services.account.AccountService;
 import com.swp391.JewelryProduction.services.account.StaffService;
 import com.swp391.JewelryProduction.util.exceptions.ObjectNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.service.StateMachineService;
@@ -19,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
@@ -97,4 +104,35 @@ public class OrderServiceImpl implements OrderService {
 
         return order;
     }
+
+    //<editor-fold desc="ADMIN" defaultstate="collapsed>
+    @Override
+    public Page<Order> findAll(int offset) {
+        return orderRepository.findAll(PageRequest.of(offset, 5));
+    }
+
+    @Transactional
+    @Override
+    public Order updateOrder(OrderDTO orderDTO) {
+        return orderRepository.save(setOrder(orderDTO));
+    }
+
+    @Transactional
+    @Override
+    public void deleteOrder(String orderId) {
+        orderRepository.delete(orderRepository.findById(orderId).orElseThrow(() -> new ObjectNotFoundException("Order not found")));
+    }
+
+    public Order setOrder(OrderDTO orderDTO) {
+        Order order = Order.builder()
+                .id(orderDTO.getId())
+                .budget(orderDTO.getBudget())
+                .createdDate(orderDTO.getCreatedDate())
+                .name(orderDTO.getName())
+                .status(orderDTO.getStatus())
+                .build();
+        return order;
+    }
+    //</editor-fold>
+
 }

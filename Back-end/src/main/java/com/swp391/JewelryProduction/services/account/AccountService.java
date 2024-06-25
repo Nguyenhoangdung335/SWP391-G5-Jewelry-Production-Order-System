@@ -12,7 +12,6 @@ import java.util.List;
 public interface AccountService {
     List<Account> findAllAccounts();
     Account updateAccountPassword(AccountDTO accountDTO);
-    void deleteAccount(String accountId);
     Account saveAccountIfNew(AccountDTO accountDTO);
     Account saveUserInfo(UserInfo info, String email);
     Account findAccountById(String accountId);
@@ -24,12 +23,8 @@ public interface AccountService {
     Account findAccountByRole(Role role);
     void saveAccountPassword(AccountDTO accountDTO, String newPassword);
     boolean checkCurrentOrderExist(String accountId);
-
-
-    //<editor-fold desc="ADMIN" defaultstate="collapsed">
     Page<Account> findAllByRole(Role role, int offset);
     Account createAccount(AccountDTO accountDTO);
-    void deleteAccount(AccountDTO accountDTO);
+    void deleteAccount(String accountId);
     Account updateAccount(AccountDTO accountDTO);
-    //</editor-fold>
 }

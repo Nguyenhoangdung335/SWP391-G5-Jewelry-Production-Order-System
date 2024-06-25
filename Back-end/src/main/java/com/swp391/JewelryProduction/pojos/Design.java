@@ -1,5 +1,6 @@
 package com.swp391.JewelryProduction.pojos;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.swp391.JewelryProduction.util.IdGenerator;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -36,5 +37,6 @@ public class Design {
     private String designLink;
 
     @OneToOne(mappedBy = "design")
+    @JsonBackReference("Order-Design")
     private Order order;
 }

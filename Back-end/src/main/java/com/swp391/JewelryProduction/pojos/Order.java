@@ -66,6 +66,7 @@ public class Order {
     @ToString.Include
     @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "design_id")
+    @JsonManagedReference("Order-Design")
     private Design design;
 
     @OneToMany(
@@ -78,7 +79,10 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Notification> notifications;
 
-    @OneToOne(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ToString.Include
+    @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinColumn(name = "product_id")
+    @JsonManagedReference("Order-Product")
     private Product product;
 
     @JsonManagedReference("Order-Report")

@@ -17,10 +17,7 @@ public interface AccountRepository extends JpaRepository<Account, String> {
     boolean existsByEmail(String email);
     Optional<Account> findAccountByRole(Role role);
     Optional<Staff> findStaffByRoleAndWorkStatus(Role role, WorkStatus workStatus);
-
-    //<editor-fold desc="ADMIN" defaultstate="collapsed">
     Page<Account> findAllByRole(Role role, PageRequest pageRequest);
     Optional<Account> findByEmail(String email);
     List<Account> findAllByEmail(String email);
-    //</editor-fold>
 }

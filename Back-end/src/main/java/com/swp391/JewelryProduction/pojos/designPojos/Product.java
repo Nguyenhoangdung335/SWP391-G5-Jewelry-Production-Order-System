@@ -1,5 +1,6 @@
 package com.swp391.JewelryProduction.pojos.designPojos;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.swp391.JewelryProduction.pojos.Order;
 import com.swp391.JewelryProduction.util.IdGenerator;
 import jakarta.persistence.*;
@@ -33,8 +34,10 @@ public class Product {
     private String description;
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "specification_id")
     private ProductSpecification specification;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "product", fetch = FetchType.LAZY)
+    @JsonBackReference("Order-Product")
     private Order order;
 }
