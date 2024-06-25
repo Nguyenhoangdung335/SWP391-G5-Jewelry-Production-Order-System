@@ -4,6 +4,7 @@ import com.swp391.JewelryProduction.util.Response;
 import com.swp391.JewelryProduction.util.exceptions.MissingContextVariableException;
 import com.swp391.JewelryProduction.util.exceptions.ObjectExistsException;
 import com.swp391.JewelryProduction.util.exceptions.ObjectNotFoundException;
+import jakarta.mail.MessagingException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.View;
@@ -40,19 +42,24 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
             HttpStatusCode status,
             WebRequest request
     ) {
-        List<String> errors = new ArrayList<String>();
-        for (FieldError error : ex.getBindingResult().getFieldErrors()) {
-            errors.add(error.getField() + ": " + error.getDefaultMessage());
-        }
-        for (ObjectError error : ex.getBindingResult().getGlobalErrors()) {
-            errors.add(error.getObjectName() + ": " + error.getDefaultMessage());
-        }
-        errors.forEach(log::error);
+        Map<String, Object> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+        String message = (errors.size() == 1)?
+                "The following field is not valid":
+                "The following fields are not valid";
 
-        ApiError apiError =
-                new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), errors);
+        Response res = Response.builder()
+                .status(HttpStatus.BAD_REQUEST)
+                .message(message)
+                .responseList(errors)
+                .build();
+
         return handleExceptionInternal(
-                ex, apiError, headers, apiError.getStatus(), request);
+                ex, res, headers, res.getStatus(), request);
     }
 
     @Override
@@ -165,7 +172,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .message(ex.getLocalizedMessage())
                 .response("Error", ex.getClass().getCanonicalName())
-                .response("Cause", ex.getCause())
+                .response("Cause", ex.getCause().getLocalizedMessage())
                 .buildEntity(new HttpHeaders());
     }
 }
