@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import useScrollSnap from "react-use-scroll-snap";
 import imgTesla from "../assets/imgTesla.png";
 import Oppenheimer from "../assets/Oppenheimer.png";
 import hoden from "../assets/hoden.png";
@@ -24,182 +23,147 @@ export default function About() {
     };
   }, []);
 
-  useScrollSnap({
-    ref: scrollRef,
-    duration: 100, // Set the duration to 100ms for faster scrolling
-    delay: 0,      // Set the delay to 0 for no delay between scroll snaps
-    enabled: scrollActivated,
-  });
+  const styles = {
+    container: {
+      padding: "6% 0%",
+      overflowX: "hidden",
+      scrollBehavior: "smooth",
+      backgroundColor: "#f5f5f5",
+      fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+    },
+    section: {
+      height: "100vh",
+      display: "flex",
+      alignItems: "center",
+    },
+    textCenter: {
+      textAlign: "center",
+    },
+    imgFull: {
+      width: "100%",
+      borderRadius: "8px",
+      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+    },
+    paddingX2: {
+      paddingLeft: "2%",
+      paddingRight: "2%",
+    },
+    paddingX6: {
+      paddingLeft: "6%",
+      paddingRight: "6%",
+    },
+    headerText: {
+      fontSize: 36,
+      fontWeight: 700,
+      color: "#333",
+    },
+    subHeaderText: {
+      fontSize: 24,
+      fontStyle: "italic",
+      fontWeight: 400,
+      marginBottom: "2%",
+      color: "#555",
+    },
+    borderedText: {
+      borderBottom: "1px solid #ddd",
+      paddingBottom: "4%",
+      color: "#666",
+    },
+    missionContainer: {
+      marginTop: "6%",
+      marginLeft: "6%",
+      marginRight: "6%",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    missionHeader: {
+      fontSize: 50,
+      fontWeight: 700,
+      borderBottom: "1px solid #ddd",
+      width: "100%",
+      paddingBottom: "1%",
+      textAlign: "center",
+      color: "#333",
+    },
+    missionText: {
+      margin: "3% 0%",
+      padding: "0 3%",
+      textAlign: "center",
+      color: "#666",
+    },
+    missionImg: {
+      width: "950px",
+      height: "440px",
+      borderRadius: "8px",
+      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+    },
+    button: {
+      backgroundColor: "#007BFF",
+      color: "#fff",
+      padding: "10px 20px",
+      borderRadius: "5px",
+      border: "none",
+      cursor: "pointer",
+      fontSize: "16px",
+      transition: "background-color 0.3s",
+    },
+    buttonHover: {
+      backgroundColor: "#0056b3",
+    },
+  };
 
   return (
-    <div
-      ref={scrollRef}
-      style={{
-        padding: "6% 0%",
-        overflowX: "hidden",
-      }}
-      className="d-flex w-100 flex-column justify-content-center"
-    >
-      <div
-        style={{ height: "100vh"}}
-        className="row mt-5"
-      >
+    <div ref={scrollRef} style={styles.container}>
+      <div style={styles.section} className="row mt-5">
         <div className="col-6">
-          <img
-            style={{ width: "100%", height: "100%" }}
-            src={imgTesla}
-            alt="Tesla image"
-          />
+          <img style={{ ...styles.imgFull, height: "75vh" }} src={imgTesla} alt="Tesla image" />
         </div>
-        <div
-          style={{ paddingLeft: "2%", paddingRight: "6%" }}
-          className="col-6 d-flex flex-column justify-content-center"
-        >
-          <p style={{ fontSize: 36, fontWeight: 700 }}>Nikola Tesla</p>
-          <p
-            style={{
-              fontSize: 24,
-              fontStyle: "italic",
-              fontWeight: 400,
-              marginBottom: "2%",
-            }}
-          >
+        <div style={styles.paddingX6} className="col-6 d-flex flex-column justify-content-center">
+          <p style={styles.headerText}>Nikola Tesla</p>
+          <p style={styles.subHeaderText}>
             Founder of 宝石店 & Lead Designer
           </p>
-          <p
-            style={{
-              borderBottom: "1px solid black",
-              paddingBottom: "4%",
-            }}
-          >
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat. Duis aute irure dolor in
-            reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-            pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-            culpa qui officia deserunt mollit anim id est laborum.
+          <p style={styles.borderedText}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
           </p>
         </div>
       </div>
-      <div style={{ height: "100vh" }} className="row mt-5">
-        <div
-          style={{ paddingLeft: "6%", paddingRight: "2%" }}
-          className="col-6 d-flex flex-column justify-content-center"
-        >
-          <p style={{ fontSize: 36, fontWeight: 700 }}>Robert Oppenheimer</p>
-          <p
-            style={{
-              fontSize: 24,
-              fontStyle: "italic",
-              fontWeight: 400,
-              marginBottom: "2%",
-            }}
-          >
+      <div style={styles.section} className="row mt-5">
+        <div style={styles.paddingX6} className="col-6 d-flex flex-column justify-content-center">
+          <p style={styles.headerText}>Robert Oppenheimer</p>
+          <p style={styles.subHeaderText}>
             Co-Founder of 宝石店 & Sale Manager
           </p>
-          <p
-            style={{
-              borderBottom: "1px solid black",
-              paddingBottom: "4%",
-            }}
-          >
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat. Duis aute irure dolor in
-            reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-            pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-            culpa qui officia deserunt mollit anim id est laborum.
+          <p style={styles.borderedText}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
           </p>
         </div>
         <div className="col-6">
-          <img
-            style={{
-              width: "100%",
-              height: "100%",
-              paddingLeft: "2%",
-            }}
-            src={Oppenheimer}
-            alt="Oppenheimer image"
-          />
+          <img style={{ ...styles.imgFull, paddingLeft: "2%", height: "75vh" }} src={Oppenheimer} alt="Oppenheimer image" />
         </div>
       </div>
-      <div style={{ height: "100vh" }} className="row mt-5">
+      <div style={styles.section} className="row mt-5">
         <div className="col-6">
-          <img
-            style={{ width: "100%", height: "100%" }}
-            src={hoden}
-            alt="Black hole image"
-          />
+          <img style={{ ...styles.imgFull, height: "75vh" }} src={hoden} alt="Black hole image" />
         </div>
-        <div
-          style={{ paddingLeft: "2%", paddingRight: "6%" }}
-          className="col-6 d-flex flex-column justify-content-center"
-        >
-          <p style={{ fontSize: 36, fontWeight: 700 }}>Black Hole</p>
-          <p
-            style={{
-              fontSize: 24,
-              fontStyle: "italic",
-              fontWeight: 400,
-              marginBottom: "2%",
-            }}
-          >
+        <div style={styles.paddingX6} className="col-6 d-flex flex-column justify-content-center">
+          <p style={styles.headerText}>Black Hole</p>
+          <p style={styles.subHeaderText}>
             Nothing & Operations Lead
           </p>
-          <p
-            style={{
-              borderBottom: "1px solid black",
-              paddingBottom: "4%",
-            }}
-          >
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat. Duis aute irure dolor in
-            reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-            pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-            culpa qui officia deserunt mollit anim id est laborum.
+          <p style={styles.borderedText}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
           </p>
         </div>
       </div>
-      <div
-        style={{
-          marginTop: "6%",
-          marginLeft: "6%",
-          marginRight: "6%",
-        }}
-        className="w-full flex-column d-flex justify-content-center align-items-center"
-      >
-        <p
-          style={{
-            fontSize: 50,
-            fontWeight: 700,
-            borderBottom: "1px solid black",
-            width: "100%",
-            paddingBottom: "1%",
-          }}
-          className="text-center"
-        >
-          Our Mission
+      <div style={styles.missionContainer}>
+        <p style={styles.missionHeader}>Our Mission</p>
+        <p style={styles.missionText}>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
         </p>
-        <p
-          style={{
-            margin: "3% 0%",
-            padding: "0 3%",
-            textAlign: "center",
-          }}
-        >
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-          minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-          aliquip ex ea commodo consequat. Duis aute irure dolor in
-          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-          pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-          culpa qui officia deserunt mollit anim id est laborum.
-        </p>
-        <img style={{ width: "950px", height: "440px" }} src={ourMission} />
+        <img style={styles.missionImg} src={ourMission} alt="Our Mission" />
       </div>
     </div>
   );
