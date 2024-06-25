@@ -22,7 +22,7 @@ import EmployeeManager from "../employeeManager/EmployeeManager";
 import ProtectedRoute from "./ProtectedRoute";
 import LivePrice from "../Home/LivePrice";
 import ProductManager from "../productManager/ProductManager";
-import MainChat from "../chat/MainChat";
+import Chat from "../chat/MainChat";
 import UserInfo from "../user_settings/UserInfo";
 import SettingPageLayout from "../layout/SettingLayout";
 import OrderHistory from "../user_settings/OrderHistory";
@@ -42,7 +42,7 @@ function RouteMap() {
         <Route path="/collections_page" element={<Collections />} />
         <Route path="/blogs_page" element={<Blogs />} />
         <Route path="/live_price_page" element={<LivePrice />} />
-        <Route path="/chat" element={<MainChat />} />
+        <Route path="/chat" element={<Chat />} />
         <Route path="/about_page" element={<About />} />
         <Route
           path="/order_page"
@@ -52,12 +52,12 @@ function RouteMap() {
             </ProtectedRoute>
           }
         />
-      </Route>
+      </Route >
       <Route
         path="/userManager"
         element={
           //<ProtectedRoute>
-            <UserManagerLayout />
+          <UserManagerLayout />
           //</ProtectedRoute>
         }
       >
@@ -73,7 +73,7 @@ function RouteMap() {
           path="/userManager/client_manager"
           element={
             //<ProtectedRoute roles={["ADMIN"]}>
-              <ClientManager />
+            <ClientManager />
             //</ProtectedRoute>
           }
         />
@@ -81,7 +81,7 @@ function RouteMap() {
           path="/userManager/orders_manager"
           element={
             //<ProtectedRoute roles={["ADMIN"]}>
-              <OrderManager />
+            <OrderManager />
             //</ProtectedRoute>
           }
         />
@@ -89,7 +89,7 @@ function RouteMap() {
           path="/userManager/blogs_manager"
           element={
             //<ProtectedRoute roles={["ADMIN"]}>
-              <BlogManager />
+            <BlogManager />
             //</ProtectedRoute>
           }
         />
@@ -97,7 +97,7 @@ function RouteMap() {
           path="/userManager/employees_manager"
           element={
             //<ProtectedRoute>
-              <EmployeeManager />
+            <EmployeeManager />
             //</ProtectedRoute>
           }
         />
@@ -105,7 +105,7 @@ function RouteMap() {
           path="/userManager/products_manager"
           element={
             //<ProtectedRoute roles={["manager", "production", "design", "sale"]}>
-              <ProductManager />
+            <ProductManager />
             //</ProtectedRoute>
           }
         />
@@ -121,7 +121,7 @@ function RouteMap() {
           element={<NotificationPage />}
         />
       </Route>
-    </Routes>
+    </Routes >
   );
 }
 
