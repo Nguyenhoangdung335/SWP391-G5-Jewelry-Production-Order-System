@@ -23,6 +23,11 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public List<ProductSpecification> findAllSpecification () {
+        return productSpecificationRepository.findAll();
+    }
+
+    @Override
     public ProductSpecification findProductSpecificationById(int id) {
         return productSpecificationRepository.
                 findById(id)
