@@ -28,7 +28,7 @@ public class Report {
 
     @ToString.Include
     @EqualsAndHashCode.Include
-    @Column(length = 1024)
+    @Column(length = 2048)
     private String description;
 
     @ToString.Include
