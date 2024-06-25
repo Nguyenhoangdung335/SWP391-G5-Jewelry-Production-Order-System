@@ -22,7 +22,7 @@ import EmployeeManager from "../employeeManager/EmployeeManager";
 import ProtectedRoute from "./ProtectedRoute";
 import LivePrice from "../Home/LivePrice";
 import ProductManager from "../productManager/ProductManager";
-import ChatComponent from "../chat/MainChat";
+import Chat from "../chat/MainChat";
 import UserInfo from "../user_settings/UserInfo";
 import SettingPageLayout from "../layout/SettingLayout";
 import OrderHistory from "../user_settings/OrderHistory";
@@ -42,7 +42,7 @@ function RouteMap() {
         <Route path="/collections_page" element={<Collections />} />
         <Route path="/blogs_page" element={<Blogs />} />
         <Route path="/live_price_page" element={<LivePrice />} />
-        <Route path="/chat" element={<ChatComponent />} />
+        <Route path="/chat" element={<Chat />} />
         <Route path="/about_page" element={<About />} />
         <Route
           path="/order_page"
