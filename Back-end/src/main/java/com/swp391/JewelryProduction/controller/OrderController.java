@@ -18,15 +18,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.statemachine.StateMachine;
-import org.springframework.statemachine.StateMachinePersist;
 import org.springframework.statemachine.service.StateMachineService;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.Random;
+
+import static com.swp391.JewelryProduction.config.stateMachine.StateMachineUtil.getStateMachine;
 
 @RestController
 @RequestMapping("api/order")
@@ -35,10 +35,8 @@ public class OrderController {
     private final OrderService orderService;
     private final StaffService staffService;
     private final QuotationRepository quotationRepository;
+    private final StateMachineService<OrderStatus, OrderEvent> stateMachineService;
 
-    private StateMachineService<OrderStatus, OrderEvent> stateMachineService;
-    private StateMachinePersist<OrderStatus, OrderEvent, String> stateMachinePersist;
-    private StateMachine<OrderStatus, OrderEvent> currentStateMachine;
 
     @GetMapping("/list")
     public ResponseEntity<Response> list() {
@@ -77,7 +75,7 @@ public class OrderController {
         order.setQuotation(quotation);
         orderService.updateOrder(order);
 
-        StateMachine<OrderStatus, OrderEvent> stateMachine = getStateMachine(orderId);
+        StateMachine<OrderStatus, OrderEvent> stateMachine = getStateMachine(orderId, stateMachineService);
         stateMachine.sendEvent(
                 Mono.just(MessageBuilder.
                         withPayload(OrderEvent.QUO_MANA_PROCESS)
@@ -97,7 +95,7 @@ public class OrderController {
         order.setDesign(design);
         orderService.updateOrder(order);
 
-        StateMachine<OrderStatus, OrderEvent> stateMachine = getStateMachine(orderId);
+        StateMachine<OrderStatus, OrderEvent> stateMachine = getStateMachine(orderId, stateMachineService);
         stateMachine.sendEvent(
                 Mono.just(MessageBuilder.
                         withPayload(OrderEvent.DES_MANA_PROCESS)
@@ -140,18 +138,5 @@ public class OrderController {
         return Response.builder()
                 .response("quotation", quotationRepository.save(quotation))
                 .buildEntity();
-    }
-
-    private synchronized StateMachine<OrderStatus, OrderEvent> getStateMachine(String machineId) throws RuntimeException {
-        if (currentStateMachine == null) {
-            currentStateMachine = stateMachineService.acquireStateMachine(machineId);
-            currentStateMachine.startReactively().block();
-        } else if (!ObjectUtils.nullSafeEquals(currentStateMachine.getId(), machineId)) {
-            stateMachineService.releaseStateMachine(currentStateMachine.getId());
-            currentStateMachine.stopReactively().block();
-            currentStateMachine = stateMachineService.acquireStateMachine(machineId);
-            currentStateMachine.startReactively().block();
-        }
-        return currentStateMachine;
     }
 }

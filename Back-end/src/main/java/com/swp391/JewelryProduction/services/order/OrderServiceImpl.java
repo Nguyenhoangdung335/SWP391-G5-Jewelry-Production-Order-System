@@ -23,7 +23,7 @@ import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
-import static com.swp391.JewelryProduction.util.StateMachineUtil.getStateMachine;
+import static com.swp391.JewelryProduction.config.stateMachine.StateMachineUtil.getStateMachine;
 
 @Service
 @RequiredArgsConstructor

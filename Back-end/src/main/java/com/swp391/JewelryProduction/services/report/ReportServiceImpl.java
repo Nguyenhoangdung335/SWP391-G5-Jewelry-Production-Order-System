@@ -2,7 +2,6 @@ package com.swp391.JewelryProduction.services.report;
 
 import com.swp391.JewelryProduction.config.stateMachine.StateMachineInterceptor;
 import com.swp391.JewelryProduction.dto.RequestDTOs.ReportRequest;
-import com.swp391.JewelryProduction.enums.ConfirmedState;
 import com.swp391.JewelryProduction.enums.OrderEvent;
 import com.swp391.JewelryProduction.enums.OrderStatus;
 import com.swp391.JewelryProduction.enums.ReportType;
@@ -19,20 +18,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.statemachine.StateMachine;
-import org.springframework.statemachine.StateMachinePersist;
 import org.springframework.statemachine.service.StateMachineService;
 import org.springframework.statemachine.state.State;
-import org.springframework.statemachine.state.StateMachineState;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.LinkedList;
 
-import static com.swp391.JewelryProduction.util.StateMachineUtil.getCurrentState;
-import static com.swp391.JewelryProduction.util.StateMachineUtil.getStateMachine;
+import static com.swp391.JewelryProduction.config.stateMachine.StateMachineUtil.*;
 
 @Service
 @RequiredArgsConstructor
@@ -66,7 +61,7 @@ public class ReportServiceImpl implements ReportService {
         order.setRelatedReports(new LinkedList<>(Arrays.asList(requestReport)));
         requestReport = reportRepository.save(requestReport);
 
-        StateMachine<OrderStatus, OrderEvent> stateMachine = instantiateStateMachine(order);
+        StateMachine<OrderStatus, OrderEvent> stateMachine = instantiateStateMachine(order, orderService, stateMachineService);
         stateMachine.getExtendedState().getVariables().put("reportID", requestReport.getId());
         stateMachine.sendEvent(
                 Mono.just(MessageBuilder
@@ -90,7 +85,7 @@ public class ReportServiceImpl implements ReportService {
         order.getRelatedReports().add(quote);
         orderService.updateOrder(order);
 
-        StateMachine<OrderStatus, OrderEvent> stateMachine = instantiateStateMachine(order);
+        StateMachine<OrderStatus, OrderEvent> stateMachine = getStateMachine(order.getId(), stateMachineService);
         stateMachine.sendEvent(Mono.just(MessageBuilder
                 .withPayload(OrderEvent.QUO_MANA_PROCESS).build())
         ).subscribe();
@@ -111,7 +106,7 @@ public class ReportServiceImpl implements ReportService {
         order.getRelatedReports().add(design);
         orderService.updateOrder(order);
 
-        StateMachine<OrderStatus, OrderEvent> stateMachine = instantiateStateMachine(order);
+        StateMachine<OrderStatus, OrderEvent> stateMachine = getStateMachine(order.getId(), stateMachineService);
         stateMachine.sendEvent(Mono.just(MessageBuilder
                 .withPayload(OrderEvent.DES_MANA_PROCESS).build())
         ).subscribe();
@@ -169,17 +164,5 @@ public class ReportServiceImpl implements ReportService {
         };
     }
 
-    private StateMachine<OrderStatus, OrderEvent> instantiateStateMachine (Order order) {
-        String orderId = order.getId();
-        StateMachine<OrderStatus, OrderEvent> stateMachine = stateMachineService.acquireStateMachine(orderId, true);
-        stateMachine.getExtendedState().getVariables().put("orderID", orderId);
-        stateMachine.getStateMachineAccessor()
-                .doWithAllRegions(
-                        region -> region.addStateMachineInterceptor(new StateMachineInterceptor(orderService)
-                        )
-                );
-        stateMachine.startReactively().block();
-        log.info("State machine started successfully. Current state: " + stateMachine.getState().getId());
-        return stateMachine;
-    }
+
 }
