@@ -56,9 +56,9 @@ function RouteMap() {
       <Route
         path="/userManager"
         element={
-          <ProtectedRoute>
+          //<ProtectedRoute>
             <UserManagerLayout />
-          </ProtectedRoute>
+          //</ProtectedRoute>
         }
       >
         <Route
@@ -72,41 +72,41 @@ function RouteMap() {
         <Route
           path="/userManager/client_manager"
           element={
-            <ProtectedRoute roles={["ADMIN"]}>
+            //<ProtectedRoute roles={["ADMIN"]}>
               <ClientManager />
-            </ProtectedRoute>
+            //</ProtectedRoute>
           }
         />
         <Route
           path="/userManager/orders_manager"
           element={
-            <ProtectedRoute roles={["ADMIN"]}>
+            //<ProtectedRoute roles={["ADMIN"]}>
               <OrderManager />
-            </ProtectedRoute>
+            //</ProtectedRoute>
           }
         />
         <Route
           path="/userManager/blogs_manager"
           element={
-            <ProtectedRoute roles={["ADMIN"]}>
+            //<ProtectedRoute roles={["ADMIN"]}>
               <BlogManager />
-            </ProtectedRoute>
+            //</ProtectedRoute>
           }
         />
         <Route
           path="/userManager/employees_manager"
           element={
-            <ProtectedRoute>
+            //<ProtectedRoute>
               <EmployeeManager />
-            </ProtectedRoute>
+            //</ProtectedRoute>
           }
         />
         <Route
           path="/userManager/products_manager"
           element={
-            <ProtectedRoute roles={["manager", "production", "design", "sale"]}>
+            //<ProtectedRoute roles={["manager", "production", "design", "sale"]}>
               <ProductManager />
-            </ProtectedRoute>
+            //</ProtectedRoute>
           }
         />
       </Route>
