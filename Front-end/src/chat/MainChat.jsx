@@ -44,7 +44,7 @@ const Chat = () => {
                 id: tokens.id,
                 name: tokens.first_name,
                 role: tokens.role,
-                saleStaff: null,  // Placeholder, will fetch below
+                saleStaff: null,
             };
 
             setCurrentUser(user);
@@ -86,13 +86,13 @@ const Chat = () => {
 
                 const connectedUserFullnameElement = document.querySelector('#connected-user-fullname');
                 if (connectedUserFullnameElement) {
-                    connectedUserFullnameElement.textContent = currentUser.name;
+                    connectedUserFullnameElement.textContent = currentUser.role + ": " + currentUser.name;
                 } else {
                     console.warn("Element with ID 'connected-user-fullname' not found in the DOM.");
                 }
 
-                findAndDisplayConnectedUsers();
-                fetchUnreadMessages();
+                findAndDisplayConnectedUsers().then();
+                fetchUnreadMessages().then();
             },
             onStompError: onError,
         });
@@ -282,7 +282,7 @@ const Chat = () => {
             try {
                 const formData = new FormData();
                 formData.append('senderId', userId);
-                formData.append('recipientId', selectedUserIdRef.current);
+                formData.append('recipientId', selectedUserId);
                 formData.append('message', messageInputRef.current.value);
 
                 const resizedImageFile = await resizeImage(imageFile);
@@ -297,7 +297,7 @@ const Chat = () => {
                 const imageURL = response.data;
                 const imageMessage = {
                     senderId: userId,
-                    recipientId: selectedUserIdRef.current,
+                    recipientId: selectedUserId,
                     content: imageURL,
                     timestamp: new Date(),
                 };
@@ -305,6 +305,7 @@ const Chat = () => {
 
                 messageInputRef.current.value = '';
                 imageInputRef.current.value = '';
+                console.log("Uploaded image: ", imageMessage);
             } catch (error) {
                 console.error('Error uploading image:', error);
                 alert('Failed to upload image. Please try again later.');
@@ -351,25 +352,25 @@ const Chat = () => {
         });
     };
 
-    const onLogout = useCallback(() => {
-        setStompClient((prevClient) => {
-            if (prevClient) {
-                prevClient.publish({
-                    destination: "/app/user.disconnectUser",
-                    body: JSON.stringify({ id: userId }),
-                });
-                // Do not deactivate stompClient here, leave it active
-            }
-            return prevClient; // Return the unchanged stompClient
-        });
-
-        setCurrentUser(null);
-        setUserId(null);
-        setUserSaleStaff(null);
-        setSelectedUserId(null);
-        setConnectedUsers([]);
-        setMessages([]);
-    }, [userId]);
+    // const onLogout = useCallback(() => {
+    //     setStompClient((prevClient) => {
+    //         if (prevClient) {
+    //             prevClient.publish({
+    //                 destination: "/app/user.disconnectUser",
+    //                 body: JSON.stringify({ id: userId }),
+    //             });
+    //             // Do not deactivate stompClient here, leave it active
+    //         }
+    //         return prevClient; // Return the unchanged stompClient
+    //     });
+    //
+    //     setCurrentUser(null);
+    //     setUserId(null);
+    //     setUserSaleStaff(null);
+    //     setSelectedUserId(null);
+    //     setConnectedUsers([]);
+    //     setMessages([]);
+    // }, [userId]);
 
     // useEffect(() => {
     //     selectedUserIdRef.current = selectedUserId;

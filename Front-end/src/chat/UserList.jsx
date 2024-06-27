@@ -1,4 +1,5 @@
 import React from 'react';
+import UserIcon from './img/user_icon.png'
 
 const UserList = React.memo(({ users, onSelectUser, currentUser  }) => {
     return (
@@ -12,7 +13,7 @@ const UserList = React.memo(({ users, onSelectUser, currentUser  }) => {
                     }
                     return (
                         <li key={user.id} className="list-group-item user-item" id={user.id} onClick={(event) => onSelectUser(event)}>
-                            <img src="../img/user_icon.png" alt={user.id} className="rounded-circle me-2" />
+                            <img src={UserIcon} alt={user.id} className="rounded-circle me-2" />
                             <span>{user.name}</span>
                             <span className="nbr-msg hidden">0</span>
                         </li>
