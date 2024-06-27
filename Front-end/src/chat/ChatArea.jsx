@@ -9,7 +9,7 @@ const ChatArea = React.forwardRef(({ messages, userId }, ref ) => {
     }, [messages]);
 
     return (
-        <div className="chat-area" id="chat-messages" ref={ref}>
+        <div className="chat-area hidden" id="chat-messages" ref={ref}>
             {messages.map((message, index) => (
                 <div key={index} className={`message ${message.senderId === userId ? 'sender' : 'receiver'}`}>
                     {message.content.startsWith('https://') ? (

@@ -22,6 +22,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    /*align-items: center;*/
 }
 
 .users-list-container {
@@ -50,6 +51,7 @@
     background-color: white;
     opacity: 0.75;
     margin-right: 10%;
+    justify-content: center;
 }
 
 .user-item:hover {
@@ -215,25 +217,22 @@
     display: none;
 }
 
-.logout {
-    color: #fff;
-    text-decoration: none;
-}
-
 .uploaded-image {
-    max-width: 100%;
-    height: auto;
+    max-width: 250px;
+    max-height: 250px;
     border-radius: 5px;
-    margin-top: 5px;
+    object-fit: cover;
 }
 
 .role-select-list {
     position: sticky;
     top: 0;
     z-index: 1;
-    background-color: #3498db; /* Same background as the users-list */
+    background-color: #3498db;
+    /* Same background as the users-list */
     padding: 10px;
     color: white;
+    width: 94%;
 }
 
 .nav-item {

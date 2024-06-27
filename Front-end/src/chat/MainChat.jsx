@@ -118,6 +118,13 @@ const Chat = () => {
         };
     }, [stompClient, userId]);
 
+    useEffect(() => {
+        selectedUserIdRef.current = selectedUserId;
+        if (selectedUserId !== null) {
+            fetchAndDisplayUserChat().then();
+        }
+    }, [selectedUserId]);
+
     const onError = useCallback((error) => {
         console.error('WebSocket error:', error.message);
     }, []);
@@ -225,7 +232,7 @@ const Chat = () => {
         }
     }, [selectedUserId, userId]);
 
-    const userItemClick = useCallback((event) => {
+    const userItemClick = useCallback( (event) => {
         document.querySelectorAll('.user-item').forEach(item => {
             item.classList.remove('active');
         });
@@ -237,7 +244,7 @@ const Chat = () => {
 
         setSelectedUserId(clickedUser.getAttribute('id'));
 
-        markMessagesAsRead(clickedUser.getAttribute('id'));
+        markMessagesAsRead(clickedUser.getAttribute('id')).then();
 
         const nbrMsg = clickedUser.querySelector('.nbr-msg');
         nbrMsg.classList.add('hidden');
@@ -265,7 +272,8 @@ const Chat = () => {
 
     const onMessageReceived = useCallback((payload) => {
         const message = JSON.parse(payload.body);
-        if (message.senderId === selectedUserIdRef.current || message.recipientId === userId) {
+        if (message.senderId === selectedUserIdRef.current && message.recipientId === userId) {
+            console.log("Received: ", message);
             setMessages(prevMessages => [...prevMessages, message]);
             chatAreaRef.current?.classList.remove('hidden');
         } else {
@@ -276,7 +284,7 @@ const Chat = () => {
                 nbrMsg.textContent = (parseInt(nbrMsg.textContent) || 0) + 1;
             }
         }
-    }, [selectedUserIdRef, userId]);
+    }, [selectedUserId, userId]);
 
     const handleImageUpload = async (event) => {
         const imageFile = event.target.files[0];
