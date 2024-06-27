@@ -6,7 +6,7 @@ import UserList from './UserList';
 import ChatArea from './ChatArea';
 import MessageForm from './MessageForm';
 import serverUrl from "../reusable/ServerUrl";
-import './index.css'
+import './chat.css'
 import { useAuth } from "../provider/AuthProvider";
 import { jwtDecode } from "jwt-decode";
 
@@ -39,6 +39,7 @@ const Chat = () => {
     const roleSelectRef = useRef(null);
 
     useEffect(() => {
+        console.log("Initialize web socket");
         if (tokens) {
             const user = {
                 id: tokens.id,
@@ -65,6 +66,7 @@ const Chat = () => {
     }, [tokens]);
 
     useEffect(() => {
+        console.log("Initialize web socket");
         if (currentUser && currentUser.id && !stompClient) {
             initializeWebSocket();
         }
@@ -380,6 +382,8 @@ const Chat = () => {
     // }, [selectedUserId]);
 
     return (
+        // <></>
+
         <div className="container mt-5">
             <div ref={chatPageRef} id="chat-page">
                 <div className="chat-container">

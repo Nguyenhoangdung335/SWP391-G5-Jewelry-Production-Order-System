@@ -143,7 +143,8 @@ public class RegistrationController {
     @PostMapping("/update-password")
     public ResponseEntity<Response> updatePassword (
             @RequestBody AccountDTO account) {
-        Account updatedAcc = accountService.updateAccount(account);
+        Account updatedAcc = accountService.updateAccountPassword(
+                account);
         if (updatedAcc == null) throw new RuntimeException();
         return Response.builder()
                 .message("Password updated successfully for account with email "+account.getEmail()+", please log in again.")

@@ -47,84 +47,77 @@ export default function Login() {
   };
 
   return (
-    <div
-    // style={{
-    //   backgroundImage: `url(${BlueDiamond})`,
-    //   backgroundRepeat: "no-repeat",
-    //   backgroundSize: "cover",
-    // }}
+    <Container
+      style={{
+        paddingTop: "5%",
+        paddingBottom: "5%",
+      }}
+      className="d-flex justify-content-center align-items-center"
     >
-      <Container
+      <div
+        className="p-4"
         style={{
-          paddingTop: "5%",
-          paddingBottom: "5%",
+          width: "30%",
+          backgroundColor: "rgba(217, 217, 217, 0.7)",
+          borderRadius: 20,
         }}
-        className="d-flex justify-content-center align-items-center"
       >
-        <div
-          className="p-4"
-          style={{
-            width: "30%",
-            backgroundColor: "rgba(217, 217, 217, 0.7)",
-            borderRadius: 20,
-          }}
-        >
-          <h2 className="text-center mb-4">Sign in</h2>
-          <Form noValidate validated={validated} onSubmit={handleSubmit}>
-            <Form.Group className="mb-3">
-              <Form.Label>Email:</Form.Label>
-              <Form.Control
-                required
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="border-1"
-                style={{ borderColor: "#000", borderRadius: 10 }}
-              />
-              <Form.Control.Feedback type="invalid">
-                Please provide a valid email.
-              </Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Password:</Form.Label>
-              <Form.Control
-                required
-                type="password"
-                placeholder="Password"
-                className="border-1"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                style={{ borderColor: "#000", borderRadius: 10 }}
-              />
-              <Form.Control.Feedback type="invalid">
-                Please provide a password.
-              </Form.Control.Feedback>
-              <div className="text-end mt-2">
-                <Link
-                  to="/reset_password"
-                  className="text-muted text-decoration-none"
-                >
-                  Forget password
-                </Link>
-              </div>
-            </Form.Group>
-            <div className="d-flex justify-content-center mb-3">
-              <Button
-                type="submit"
-                className="w-75 border-1"
-                style={{
-                  backgroundColor: "rgba(201, 201, 201, 1)",
-                  borderColor: "#000",
-                  color: "#000",
-                  borderRadius: 10,
-                }}
+        <h2 className="text-center mb-4">Sign in</h2>
+        <Form noValidate validated={validated} onSubmit={handleSubmit}>
+          <Form.Group className="mb-3">
+            <Form.Label>Email:</Form.Label>
+            <Form.Control
+              required
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="border-1"
+              style={{ borderColor: "#000", borderRadius: 10 }}
+            />
+            <Form.Control.Feedback type="invalid">
+              Please provide a valid email.
+            </Form.Control.Feedback>
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label>Password:</Form.Label>
+            <Form.Control
+              required
+              type="password"
+              placeholder="Password"
+              className="border-1"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              style={{ borderColor: "#000", borderRadius: 10 }}
+            />
+            <Form.Control.Feedback type="invalid">
+              Please provide a password.
+            </Form.Control.Feedback>
+            <div className="text-end mt-2">
+              <Link
+                to="/reset_password"
+                className="text-muted text-decoration-none"
               >
-                Sign in
-              </Button>
+                Forget password
+              </Link>
             </div>
-          </Form>
-          {/* <div className="d-flex align-items-center my-3">
+          </Form.Group>
+          <div className="d-flex justify-content-center mb-3">
+            <Button
+              type="submit"
+              className="w-75 border-1"
+              style={{
+                backgroundColor: "rgba(201, 201, 201, 1)",
+                borderColor: "#000",
+                color: "#000",
+                borderRadius: 10,
+              }}
+            >
+              Sign in
+            </Button>
+          </div>
+        </Form>
+        {/* <div className="d-flex align-items-center my-3">
             <div style={{ flex: 1, height: "1px", backgroundColor: "#000" }} />
             <span className="mx-3 text-muted">Or</span>
             <div style={{ flex: 1, height: "1px", backgroundColor: "#000" }} />
@@ -137,14 +130,13 @@ export default function Login() {
               <FaGithub />
             </Button>
           </div> */}
-          <p className="text-center text-muted">
-            Don’t have an account?{" "}
-            <Link to="/signup" className="text-decoration-underline text-muted">
-              Sign up
-            </Link>
-          </p>
-        </div>
-      </Container>
-    </div>
+        <p className="text-center text-muted">
+          Don’t have an account?{" "}
+          <Link to="/signup" className="text-decoration-underline text-muted">
+            Sign up
+          </Link>
+        </p>
+      </div>
+    </Container>
   );
 }

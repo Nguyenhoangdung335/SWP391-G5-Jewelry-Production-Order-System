@@ -1,21 +1,7 @@
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f0f0f0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    flex-direction: column;
-}
-
 .chat-container {
     display: flex;
-    max-width: 800px;
-    min-width: 1200px;
-    min-height: 600px;
-    max-height: 600px;
+    width: 1200px;
+    height: 600px;
     margin: 20px;
     border: 1px solid #ccc;
     background-color: #fff;
@@ -40,7 +26,7 @@ body {
 
 .users-list-container {
     height: 100%;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 .users-list h2 {
@@ -57,6 +43,7 @@ body {
 .user-item {
     display: flex;
     align-items: center;
+    padding: 10px;
     margin-bottom: 8px;
     cursor: pointer;
     position: relative;
@@ -89,8 +76,6 @@ body {
 .user-item.active {
     background-color: #cdebff;
     color: #4f4f4f;
-    padding: 10px;
-    border-radius: 5px;
 }
 
 .user-item img {
@@ -120,19 +105,23 @@ body {
     border-bottom-right-radius: 8px;
 }
 
-.message {
-    margin-bottom: 5px;
-    border-radius: 5px;
-}
-
 #chat-messages {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    overflow-y: scroll;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.message {
+    margin-bottom: 10px;
+    border-radius: 5px;
+    padding: 8px;
 }
 
 .message p {
-    padding: 0 12px;
+    margin: 0;
+    padding: 8px 12px;
     border-radius: 15px;
     word-wrap: break-word;
 }
@@ -142,9 +131,12 @@ body {
     background-color: #f8fa6f;
     color: white;
     padding: 5px;
-    width: 10px;
     border-radius: 50%;
-    height: 10px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
 }
 
 .sender {
@@ -160,8 +152,8 @@ body {
 }
 
 .message-input {
-    margin-top: auto;
     display: flex;
+    margin-top: auto;
 }
 
 .message-input input {
@@ -239,8 +231,9 @@ body {
     position: sticky;
     top: 0;
     z-index: 1;
-    background-color: white;
+    background-color: #3498db; /* Same background as the users-list */
     padding: 10px;
+    color: white;
 }
 
 .nav-item {
