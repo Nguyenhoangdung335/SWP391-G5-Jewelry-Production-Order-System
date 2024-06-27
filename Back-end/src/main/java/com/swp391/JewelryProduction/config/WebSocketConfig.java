@@ -1,6 +1,7 @@
 package com.swp391.JewelryProduction.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
@@ -21,10 +22,10 @@ import java.util.List;
 
 @Configuration
 @EnableWebSocketMessageBroker
+
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private static final Logger logger = LoggerFactory.getLogger(WebSocketConfig.class);
-    private final String allowedWebSocketOrigins = "http://localhost:3000";
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
@@ -36,7 +37,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
-                .setAllowedOrigins(allowedWebSocketOrigins)
+                .setAllowedOrigins("http://localhost:3000")
                 .withSockJS();
     }
 
@@ -55,7 +56,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void configureClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(new ChannelInterceptor() {
             @Override
-            public Message<?> preSend(Message<?> message, MessageChannel channel) {
+            public Message<?> preSend(@NotNull Message<?> message, @NotNull MessageChannel channel) {
                 logger.info("Outbound message: {}", message);
                 return message;
             }

@@ -15,6 +15,7 @@ import reactor.core.scheduler.Schedulers;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -57,8 +58,17 @@ public class    CrawlDataService implements ICrawlDataService {
                 log.warn("Executor was abruptly shut down. " + droppedTasks.size() + " tasks will not be executed.");
             }
 
-            materialRepository.saveAll(materials);
-            log.info("Finished crawling data!");
+            for (Material material : materials) {
+                Optional<Material> existingMaterialOpt = materialRepository.findByName(material.getName());
+                if (existingMaterialOpt.isPresent()) {
+                    Material existingMaterial = existingMaterialOpt.get();
+                    existingMaterial.setPrice(material.getPrice());
+                    existingMaterial.setCrawlTime(material.getCrawlTime());
+                    materialRepository.save(existingMaterial);
+                } else {
+                    materialRepository.save(material);
+                }
+            }            log.info("Finished crawling data!");
 
         } catch (InterruptedException e) {
             log.error("Crawling was interrupted", e);

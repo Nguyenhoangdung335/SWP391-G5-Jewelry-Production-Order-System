@@ -10,9 +10,11 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -26,45 +28,6 @@ import java.util.concurrent.ExecutionException;
 public class UserService {
 
     private static final String USER_COLLECTION_NAME = "users";
-    private static final Logger log = LoggerFactory.getLogger(UserService.class);
-    private final AccountService accountService;
-
-    @Transactional
-    @EventListener(ApplicationReadyEvent.class)
-    public void syncUsersToFirestore() {
-        Firestore db = FirestoreClient.getFirestore();
-        CollectionReference usersCollection = db.collection(USER_COLLECTION_NAME);
-        List<Account> accounts = accountService.findAllAccounts(); // Lấy tất cả các tài khoản từ SQL
-
-        for (Account account : accounts) {
-            // Tạo document với ID là ID của tài khoản từ SQL
-            DocumentReference docRef = usersCollection.document(account.getId());
-
-            // Chuẩn bị dữ liệu cho Firestore document
-            Map<String, Object> userData = new HashMap<>();
-            userData.put("id", account.getId());
-            userData.put("name", (account.getUserInfo() == null)?
-                    account.getEmail():
-                    account.getUserInfo().getFirstName()
-            );
-            userData.put("role", account.getRole().toString());
-            Order currentOrder = account.getCurrentOrder();
-            if (currentOrder != null) {
-                Staff saleStaff = currentOrder.getSaleStaff();
-                if (saleStaff != null) {
-                    userData.put("saleStaff", saleStaff.getId());
-                }
-            }
-
-            ApiFuture<WriteResult> result = docRef.set(userData);
-            try {
-                result.get();
-                log.info("Syncing user {} to Firestore {}", account.getId(), docRef.getId());
-            } catch (InterruptedException | ExecutionException e) {
-                System.err.println("Error writing document: " + e);
-            }
-        }
-    }
 
     public void disconnect(User user) {
         Firestore db = FirestoreClient.getFirestore();
@@ -132,10 +95,4 @@ public class UserService {
             throw new RuntimeException("User not found");
         }
     }
-
-//    @Scheduled(fixedRate = 60000) // Đồng bộ hóa mỗi 1 phút
-    public void syncData() {
-        syncUsersToFirestore();
-    }
-
 }
