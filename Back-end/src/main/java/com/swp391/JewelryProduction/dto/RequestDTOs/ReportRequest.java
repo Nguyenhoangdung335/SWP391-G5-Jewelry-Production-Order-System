@@ -5,6 +5,7 @@ import com.swp391.JewelryProduction.util.CustomValidator.EnumNameValidator;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,5 +29,6 @@ public class ReportRequest {
     //Contain id for Specification id, Quotation id, Design id
     @NotEmpty(message = "The request must contain the contentID, must assign the id for either Specification id, quotation id, or design id")
     @NotBlank(message = "The request contentID must not be blank, must assign the id for either Specification id, quotation id, or design id")
+    @Pattern(regexp = "^(QUO|DES)\\d{5}$|\\d+", message = "The report content ID must start with PRO, QUO, or DES followed by exactly 5 digits")
     private String reportContentID;
 }
