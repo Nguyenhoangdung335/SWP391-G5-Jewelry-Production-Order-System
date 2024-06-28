@@ -1,7 +1,9 @@
 package com.swp391.JewelryProduction.services.design;
 
 import com.swp391.JewelryProduction.dto.DesignDTO;
+import com.swp391.JewelryProduction.pojos.Design;
 import com.swp391.JewelryProduction.repositories.DesignRepository;
+import com.swp391.JewelryProduction.util.exceptions.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,14 +13,32 @@ import java.util.List;
 public class DesignServiceImpl implements DesignService {
     private DesignRepository designRepository;
 
-    @Autowired
-    public DesignServiceImpl(DesignRepository designRepository) {
-        this.designRepository = designRepository;
+    @Override
+    public List<Design> findAll() {
+        return designRepository.findAll();
     }
 
     @Override
-    public List<DesignDTO> findAllDesigns() {
-//        return designRepository.findAll().stream().map(design -> mapToDesignDTO(design)).collect(Collectors.toList());
-        return null;
+    public Design findById(String id) {
+        return designRepository
+                .findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException("Design of id "+id+" does not exist"));
+    }
+
+    @Override
+    public Design update(Design design) {
+        Design updateDesign = this.findById(design.getId());
+        return designRepository.save(design);
+    }
+
+    @Override
+    public void deleteById(String id) {
+        Design design = this.findById(id);
+        designRepository.delete(design);
+    }
+
+    @Override
+    public Design save(Design design) {
+        return designRepository.save(design);
     }
 }
