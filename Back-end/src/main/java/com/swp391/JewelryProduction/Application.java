@@ -92,7 +92,6 @@ public class Application   {
 					.phoneNumber("0916320563")
 					.build());
 			accountRepository.save(acc);
-			logger.info("Acc00001 Added");
 
 
 			acc = Account.builder()
@@ -112,14 +111,14 @@ public class Application   {
 					.build());
 			accountRepository.save(acc);
 
-			acc = Account.builder()
+			Staff saleStaff = Staff.builder()
 					.email("nguyenhoangd335@gmail.com")
 					.password(passwordEncoder.encode("#Dung111004"))
 					.dateCreated(LocalDateTime.now())
 					.role(Role.SALE_STAFF)
 					.status(AccountStatus.ACTIVE)
 					.build();
-			acc.setUserInfo(UserInfo.builder()
+			saleStaff.setUserInfo(UserInfo.builder()
 					.firstName("Dung")
 					.lastName("Nguyen Hoang")
 					.gender(Gender.MALE)
@@ -127,7 +126,7 @@ public class Application   {
 					.birthDate(LocalDate.parse("2004-10-11"))
 					.phoneNumber("0916320563")
 					.build());
-			accountRepository.save(acc);
+			staffRepository.save(saleStaff);
 
 			Faker faker = new Faker();
 			Random rand = new Random();
