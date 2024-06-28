@@ -71,7 +71,7 @@ public class Account{
 
     @ToString.Include
     @EqualsAndHashCode.Include
-    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(nullable = false)
     @PrimaryKeyJoinColumn
     private UserInfo userInfo;
@@ -102,12 +102,6 @@ public class Account{
     public void addSendingReport(Report report) {
         report.setSender(this);
         this.getSendingReports().add(report);
-    }
-
-    public Order getCurrentOrder() {
-        if (pastOrder != null && !pastOrder.isEmpty())
-            currentOrder = pastOrder.get(pastOrder.size() - 1);
-        return currentOrder;
     }
 
     public void setUserInfo (UserInfo userInfo) {
