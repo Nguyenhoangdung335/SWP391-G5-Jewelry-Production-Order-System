@@ -1,10 +1,11 @@
 package com.swp391.JewelryProduction.pojos.designPojos;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -37,4 +38,9 @@ public class ProductSpecification {
     private String shape;
 
     private String gemstoneWeight;
+
+    @ToString.Exclude
+    @JsonManagedReference("Product-Specification")
+    @OneToMany(mappedBy = "specification", fetch = FetchType.EAGER)
+    private List<Product> products;
 }

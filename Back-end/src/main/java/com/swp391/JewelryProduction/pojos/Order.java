@@ -12,8 +12,10 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+import org.modelmapper.internal.bytebuddy.dynamic.scaffold.MethodGraph;
 
 import java.time.LocalDateTime;
+import java.util.LinkedList;
 import java.util.List;
 
 @Data
@@ -74,10 +76,12 @@ public class Order {
             cascade = {CascadeType.MERGE, CascadeType.DETACH, CascadeType.REMOVE},
             fetch = FetchType.LAZY
     )
-    private List<StaffOrderHistory> staffOrderHistory;
+    @Builder.Default
+    private List<StaffOrderHistory> staffOrderHistory = new LinkedList<>();
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Notification> notifications;
+    @Builder.Default
+    private List<Notification> notifications = new LinkedList<>();
 
     @ToString.Include
     @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
@@ -87,7 +91,8 @@ public class Order {
 
     @JsonManagedReference("Order-Report")
     @OneToMany(mappedBy = "reportingOrder", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Report> relatedReports;
+    @Builder.Default
+    private List<Report> relatedReports = new LinkedList<>();
     @Transient
     private Staff saleStaff;
     @Transient
