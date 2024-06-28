@@ -47,12 +47,12 @@ public class ProductController {
         return Response.builder()
                 .status(HttpStatus.OK)
                 .message("Request send successfully.")
-                .response("productSpecification", productService.save(specs))
+                .response("productSpecification", productService.saveSpecification(specs))
                 .buildEntity();
     }
 
     @GetMapping("/get-all/specification")
-    public ResponseEntity<Response> getALlSpecification () {
+    public ResponseEntity<Response> getAllSpecification () {
         return Response.builder()
                 .message("Request send successfully")
                 .response("list", productService.findAllSpecification())
