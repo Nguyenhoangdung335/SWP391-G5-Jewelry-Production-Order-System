@@ -97,7 +97,7 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
             Report report = getReport(context, reportService);
 
             List<Account> managers = accountService
-                    .findAllByRole(Role.MANAGER, 10)
+                    .findAllByRole(Role.MANAGER, 0)
                     .stream()
                     .toList();
 
@@ -150,6 +150,74 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
             log.info("Notification with id {} of order id {} sent to owner {}",
                     notification.getId(), order.getId(), owner.getId()
             );
+        };
+    }
+
+    @Bean
+    public Action<OrderStatus, OrderEvent> notifyRequestApprovedAction() {
+        return context -> {
+            log.info("notifyRequestApprovedAction called");
+
+            OrderService orderService = applicationContext.getBean(OrderService.class);
+            NotificationService notificationService = applicationContext.getBean(NotificationService.class);
+            ReportService reportService = applicationContext.getBean(ReportService.class);
+
+            Order order = orderService.findOrderById(context.getExtendedState().get("orderID", String.class));
+            MessagesConstant approvedMessage = messagesConstant.createRequestApprovedMessage(order.getOwner().getUserInfo().getFirstName());
+
+            Report report = reportService.createNormalReport(
+                    order,
+                    approvedMessage.getTitle(),
+                    approvedMessage.getDescription()
+            );
+            Notification notification = Notification.builder()
+                    .report(report)
+                    .order(order)
+                    .receiver(order.getOwner())
+                    .build();
+            report.getNotifications().add(notification);
+            order.getRelatedReports().add(report);
+            order.getNotifications().add(notification);
+
+            try {
+                notificationService.createNotification(notification, false, true);
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
+            log.info("Notification approved message for owner id {}", order.getOwner().getId());
+        };
+    }
+
+    @Bean
+    public Action<OrderStatus, OrderEvent> notifyCancelAction() {
+        return context -> {
+            OrderService orderService = applicationContext.getBean(OrderService.class);
+            ReportService reportService = applicationContext.getBean(ReportService.class);
+            NotificationService notificationService = applicationContext.getBean(NotificationService.class);
+
+            Order order = getOrder(context, orderService);
+            Account owner = order.getOwner();
+            owner.setCurrentOrder(null);
+            List<String> cancelReasons = Arrays.asList("You have not completed the transaction in time, thus rendering your order invalid.", "Your request is deemed to be inappropriate.");
+            MessagesConstant message = messagesConstant.createOrderCancelMessage(owner.getUserInfo().getFirstName(), cancelReasons, order);
+
+            Report report = reportService.createNormalReport(order, message.getTitle(), message.getDescription());
+            Notification notification = Notification.builder()
+                    .report(report)
+                    .order(order)
+                    .receiver(order.getOwner())
+                    .build();
+            report.getNotifications().add(notification);
+            order.getRelatedReports().add(report);
+            order.getNotifications().add(notification);
+
+            try {
+                notification = notificationService.createNotification(notification);
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
+
+            log.info("Notification cancel order id {} of owner id {}", order.getId(), owner.getId());
         };
     }
 
@@ -305,38 +373,6 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
     }
 
     @Bean
-    public Action<OrderStatus, OrderEvent> notifyCancelAction() {
-        return context -> {
-            OrderService orderService = applicationContext.getBean(OrderService.class);
-            ReportService reportService = applicationContext.getBean(ReportService.class);
-            NotificationService notificationService = applicationContext.getBean(NotificationService.class);
-
-            Order order = getOrder(context, orderService);
-            Account owner = order.getOwner();
-            List<String> cancelReasons = Arrays.asList("You have not completed the transaction in time, thus rendering your order invalid.", "Your request is deemed to be inappropriate.");
-            MessagesConstant message = messagesConstant.createOrderCancelMessage(owner.getUserInfo().getFirstName(), cancelReasons, order);
-
-            Report report = reportService.createNormalReport(order, message.getTitle(), message.getDescription());
-            Notification notification = Notification.builder()
-                    .report(report)
-                    .order(order)
-                    .receiver(order.getOwner())
-                    .build();
-            report.getNotifications().add(notification);
-            order.getRelatedReports().add(report);
-            order.getNotifications().add(notification);
-
-            try {
-                notification = notificationService.createNotification(notification);
-            } catch (MessagingException e) {
-                throw new RuntimeException(e);
-            }
-
-            log.info("Notification cancel order id {} of owner id {}", order.getId(), owner.getId());
-        };
-    }
-
-    @Bean
     public Action<OrderStatus, OrderEvent> notifyCustomerTransactionAction() {
         return context -> {
 
@@ -373,41 +409,6 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
     public Action<OrderStatus, OrderEvent> notifyRestoreOrderAction() {
         return context -> {
 
-        };
-    }
-
-    @Bean
-    public Action<OrderStatus, OrderEvent> notifyRequestApprovedAction() {
-        return context -> {
-            log.info("notifyRequestApprovedAction called");
-
-            OrderService orderService = applicationContext.getBean(OrderService.class);
-            NotificationService notificationService = applicationContext.getBean(NotificationService.class);
-            ReportService reportService = applicationContext.getBean(ReportService.class);
-
-            Order order = orderService.findOrderById(context.getExtendedState().get("orderID", String.class));
-            MessagesConstant approvedMessage = messagesConstant.createRequestApprovedMessage(order.getOwner().getUserInfo().getFirstName());
-
-            Report report = reportService.createNormalReport(
-                    order,
-                    approvedMessage.getTitle(),
-                    approvedMessage.getDescription()
-            );
-            Notification notification = Notification.builder()
-                    .report(report)
-                    .order(order)
-                    .receiver(order.getOwner())
-                    .build();
-            report.getNotifications().add(notification);
-            order.getRelatedReports().add(report);
-            order.getNotifications().add(notification);
-
-            try {
-                notificationService.createNotification(notification, false);
-            } catch (MessagingException e) {
-                throw new RuntimeException(e);
-            }
-            log.info("Notification approved message for owner id {}", order.getOwner().getId());
         };
     }
 

@@ -112,6 +112,23 @@ public class Application   {
 					.build());
 			accountRepository.save(acc);
 
+			acc = Account.builder()
+					.email("nguyenhoangd335@gmail.com")
+					.password(passwordEncoder.encode("#Dung111004"))
+					.dateCreated(LocalDateTime.now())
+					.role(Role.SALE_STAFF)
+					.status(AccountStatus.ACTIVE)
+					.build();
+			acc.setUserInfo(UserInfo.builder()
+					.firstName("Dung")
+					.lastName("Nguyen Hoang")
+					.gender(Gender.MALE)
+					.address("Vinhomes")
+					.birthDate(LocalDate.parse("2004-10-11"))
+					.phoneNumber("0916320563")
+					.build());
+			accountRepository.save(acc);
+
 			Faker faker = new Faker();
 			Random rand = new Random();
 			for (int i = 0; i < 10; i++) {
@@ -198,9 +215,9 @@ public class Application   {
 				order.setDesign(Design.builder()
 								.designLink(faker.internet().url())
 								.build());
+				order.setProduct(product);
 				product.setOrder(order);
 				orderRepository.save(order);
-				productRepository.save(product);
 			}
 		};
 	}
