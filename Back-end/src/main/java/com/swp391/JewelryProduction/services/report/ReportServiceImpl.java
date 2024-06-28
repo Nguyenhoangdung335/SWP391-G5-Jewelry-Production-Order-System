@@ -5,12 +5,12 @@ import com.swp391.JewelryProduction.dto.RequestDTOs.ReportRequest;
 import com.swp391.JewelryProduction.enums.OrderEvent;
 import com.swp391.JewelryProduction.enums.OrderStatus;
 import com.swp391.JewelryProduction.enums.ReportType;
-import com.swp391.JewelryProduction.pojos.Account;
-import com.swp391.JewelryProduction.pojos.Order;
-import com.swp391.JewelryProduction.pojos.Report;
+import com.swp391.JewelryProduction.pojos.*;
+import com.swp391.JewelryProduction.pojos.designPojos.Product;
 import com.swp391.JewelryProduction.repositories.ReportRepository;
 import com.swp391.JewelryProduction.services.account.AccountService;
 import com.swp391.JewelryProduction.services.order.OrderService;
+import com.swp391.JewelryProduction.services.product.ProductService;
 import com.swp391.JewelryProduction.util.exceptions.ObjectNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +26,7 @@ import reactor.core.publisher.Mono;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 
 import static com.swp391.JewelryProduction.config.stateMachine.StateMachineUtil.*;
 
@@ -46,8 +47,9 @@ public class ReportServiceImpl implements ReportService {
         return reportRepository.save(report);
     }
 
+    @Transactional
     @Override
-    public Report createRequest(ReportRequest report, Order order) {
+    public Report createRequest(ReportRequest report, Order order, Product product) {
         Account sender = accountService.findAccountById(report.getSenderId());
         Report requestReport = Report.builder()
                         .reportingOrder(order)
@@ -58,10 +60,13 @@ public class ReportServiceImpl implements ReportService {
                         .sender(sender)
                         .reportingOrder(order)
                         .build();
-        order.setRelatedReports(new LinkedList<>(Arrays.asList(requestReport)));
+        order.getRelatedReports().add(requestReport);
+        order.setProduct(product);
         requestReport = reportRepository.save(requestReport);
+        product.setOrder(order);
+        order = orderService.updateOrder(order);
 
-        StateMachine<OrderStatus, OrderEvent> stateMachine = instantiateStateMachine(order, orderService, stateMachineService);
+        StateMachine<OrderStatus, OrderEvent> stateMachine = getStateMachine(order.getId(), stateMachineService);
         stateMachine.getExtendedState().getVariables().put("reportID", requestReport.getId());
         stateMachine.sendEvent(
                 Mono.just(MessageBuilder
@@ -73,29 +78,34 @@ public class ReportServiceImpl implements ReportService {
 
     @Transactional
     @Override
-    public Report createQuotationReport(ReportRequest report, Order order) {
+    public Report createQuotationReport(ReportRequest report, Order order, Quotation quotation) {
+        Account acc = accountService.findAccountById(report.getSenderId());
         Report quote = Report.builder()
                 .reportingOrder(order)
                 .title(report.getTitle())
                 .description(report.getDescription())
                 .createdDate(LocalDateTime.now())
                 .type(ReportType.QUOTATION)
-                .sender(modelMapper.map(accountService.findAccountById(report.getSenderId()), Account.class))
+                .sender(acc)
                 .build();
         order.getRelatedReports().add(quote);
-        orderService.updateOrder(order);
+        order.setQuotation(quotation);
+        quote = reportRepository.save(quote);
+        quotation.setOrder(order);
+        order = orderService.updateOrder(order);
 
         StateMachine<OrderStatus, OrderEvent> stateMachine = getStateMachine(order.getId(), stateMachineService);
+        stateMachine.getExtendedState().getVariables().put("reportID", quote.getId());
         stateMachine.sendEvent(Mono.just(MessageBuilder
-                .withPayload(OrderEvent.QUO_MANA_PROCESS).build())
+                .withPayload(OrderEvent.QUO_FINISH).build())
         ).subscribe();
         return quote;
     }
 
     @Transactional
     @Override
-    public Report createDesignReport(ReportRequest report, Order order) {
-        Report design = Report.builder()
+    public Report createDesignReport(ReportRequest report, Order order, Design design) {
+        Report designReport = Report.builder()
                 .reportingOrder(order)
                 .title(report.getTitle())
                 .description(report.getDescription())
@@ -103,14 +113,18 @@ public class ReportServiceImpl implements ReportService {
                 .type(ReportType.DESIGN)
                 .sender(modelMapper.map(accountService.findAccountById(report.getSenderId()), Account.class))
                 .build();
-        order.getRelatedReports().add(design);
+        order.getRelatedReports().add(designReport);
+        order.setDesign(design);
+        designReport = reportRepository.save(designReport);
+        design.setOrder(order);
         orderService.updateOrder(order);
 
         StateMachine<OrderStatus, OrderEvent> stateMachine = getStateMachine(order.getId(), stateMachineService);
+        stateMachine.getExtendedState().getVariables().put("reportID", designReport.getId());
         stateMachine.sendEvent(Mono.just(MessageBuilder
-                .withPayload(OrderEvent.DES_MANA_PROCESS).build())
+                .withPayload(OrderEvent.DES_FINISH).build())
         ).subscribe();
-        return design;
+        return designReport;
     }
 
     @Override
