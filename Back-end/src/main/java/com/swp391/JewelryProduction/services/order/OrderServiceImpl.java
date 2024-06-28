@@ -31,6 +31,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static com.swp391.JewelryProduction.config.stateMachine.StateMachineUtil.getStateMachine;
+import static com.swp391.JewelryProduction.config.stateMachine.StateMachineUtil.instantiateStateMachine;
 
 @Service
 @RequiredArgsConstructor
@@ -49,15 +50,19 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order saveNewOrder(String accountId) {
+        Account owner = modelMapper.map(accountService.findAccountById(accountId), Account.class);
+
         Order order = Order.builder()
                 .status(OrderStatus.REQUESTING)
-                .owner(modelMapper.map(accountService.findAccountById(accountId), Account.class))
+                .owner(owner)
                 .createdDate(LocalDateTime.now())
                 .relatedReports(new LinkedList<>())
                 .notifications(new LinkedList<>())
                 .staffOrderHistory(new LinkedList<>())
                 .build();
+        owner.setCurrentOrder(order);
         order = orderRepository.save(order);
+        instantiateStateMachine(order, this, stateMachineService);
 
         return order;
     }
