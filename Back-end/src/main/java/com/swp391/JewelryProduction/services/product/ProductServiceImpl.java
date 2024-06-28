@@ -23,6 +23,15 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public Product findById(String productId) {
+        return productRepository.
+                findById(productId).
+                orElseThrow(
+                        () -> new ObjectNotFoundException("Product id "+productId+" cannot be found")
+                );
+    }
+
+    @Override
     public List<ProductSpecification> findAllSpecification () {
         return productSpecificationRepository.findAll();
     }
@@ -51,7 +60,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Transactional
     @Override
-    public ProductSpecification save(ProductSpecification specs) {
+    public ProductSpecification saveSpecification(ProductSpecification specs) {
         for(ProductSpecification proSpecs : productSpecificationRepository.findAll()) {
             if(proSpecs.equals(specs)) return proSpecs;
         }

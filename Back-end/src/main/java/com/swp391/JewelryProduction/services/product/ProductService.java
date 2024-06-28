@@ -7,11 +7,11 @@ import java.util.List;
 
 public interface ProductService {
     List<Product> findAll();
-
-    List<ProductSpecification> findAllSpecification();
-
-    ProductSpecification findProductSpecificationById(int id);
+    Product findById (String productId);
     Product saveProduct(Product product);
     void deleteProduct(String id);
-    ProductSpecification save(ProductSpecification specs);
+
+    List<ProductSpecification> findAllSpecification();
+    ProductSpecification findProductSpecificationById(int id);
+    ProductSpecification saveSpecification(ProductSpecification specs);
 }
