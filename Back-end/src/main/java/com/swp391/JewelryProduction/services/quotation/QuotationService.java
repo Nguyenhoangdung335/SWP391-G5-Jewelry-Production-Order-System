@@ -9,6 +9,8 @@ import java.util.Optional;
 public interface QuotationService {
     Quotation findQuotationByOrderId(String orderId);
     Quotation saveQuotation(Quotation quotation);
+    Quotation findById (String id);
+
     void deleteQuotation(Quotation quotation);
     void deleteQuotationByID (String quotationID);
     List<Quotation> findAllQuotations();

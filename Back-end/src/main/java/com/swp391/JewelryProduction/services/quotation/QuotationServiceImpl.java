@@ -2,6 +2,7 @@ package com.swp391.JewelryProduction.services.quotation;
 
 import com.swp391.JewelryProduction.pojos.Quotation;
 import com.swp391.JewelryProduction.repositories.QuotationRepository;
+import com.swp391.JewelryProduction.util.exceptions.ObjectNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +26,13 @@ public class QuotationServiceImpl implements QuotationService {
     @Override
     public Quotation saveQuotation(Quotation quotation) {
         return quotationRepository.save(quotation);
+    }
+
+    @Override
+    public Quotation findById(String id) {
+        return quotationRepository
+                .findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException("Quotation of id "+id+" cannot be found"));
     }
 
     @Override
