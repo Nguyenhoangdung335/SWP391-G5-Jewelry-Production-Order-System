@@ -11,6 +11,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
 import java.time.LocalDate;
+import java.util.LinkedList;
 import java.util.List;
 
 @Data
@@ -47,7 +48,8 @@ public class Quotation {
 
     @OneToMany(mappedBy = "quotation", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonManagedReference("Quotation-Items")
-    private List<QuotationItem> quotationItems;
+    @Builder.Default
+    private List<QuotationItem> quotationItems = new LinkedList<>();
 
     @OneToOne(mappedBy = "quotation", fetch = FetchType.LAZY)
     @JsonBackReference("Order-Quotation")

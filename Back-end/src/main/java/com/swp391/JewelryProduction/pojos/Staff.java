@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.util.LinkedList;
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
@@ -25,5 +26,6 @@ public class Staff extends Account{
             fetch = FetchType.LAZY,
             orphanRemoval = true
     )
-    private List<StaffOrderHistory> history;
+    @Builder.Default
+    private List<StaffOrderHistory> history = new LinkedList<>();
 }

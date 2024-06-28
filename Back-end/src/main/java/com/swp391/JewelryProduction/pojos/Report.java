@@ -8,6 +8,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 @Entity
@@ -57,7 +58,8 @@ public class Report {
     @EqualsAndHashCode.Exclude
     @JsonBackReference
     @OneToMany(mappedBy = "report", fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<Notification> notifications;
+    @Builder.Default
+    private List<Notification> notifications = new LinkedList<>();
 
     public List<Notification> getNotifications () {
         if (notifications == null) notifications = new ArrayList<>();
