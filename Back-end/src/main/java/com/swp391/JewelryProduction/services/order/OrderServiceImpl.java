@@ -136,6 +136,29 @@ public class OrderServiceImpl implements OrderService {
                 .name(orderDTO.getName())
                 .status(orderDTO.getStatus())
                 .build();
+        if(orderDTO.getProduct() != null) {
+            order.setProduct(Product.builder()
+                            .id(orderDTO.getProduct().getId())
+                            .name(orderDTO.getProduct().getName())
+                            .description(orderDTO.getProduct().getDescription())
+                            .order(order)
+                    .build());
+        }
+        if(orderDTO.getQuotation() != null) {
+            order.setQuotation(Quotation.builder()
+                    .id(orderDTO.getQuotation().getId())
+                    .title(orderDTO.getQuotation().getTitle())
+                    .createdDate(orderDTO.getQuotation().getCreatedDate())
+                    .expiredDate(orderDTO.getQuotation().getExpiredDate())
+                    .build());
+        }
+        if(orderDTO.getDesign() != null) {
+            order.setDesign(Design.builder()
+                    .id(orderDTO.getDesign().getId())
+                    .designLink(orderDTO.getDesign().getDesignLink())
+                    .lastUpdated(orderDTO.getDesign().getLastUpdated())
+                    .build());
+        }
         return order;
     }
     //</editor-fold>

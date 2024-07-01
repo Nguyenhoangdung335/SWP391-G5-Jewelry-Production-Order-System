@@ -16,8 +16,8 @@ public class OrderDTO {
     private String name;
     private double budget;
     private LocalDateTime createdDate;
-    private String quotationId;
-    private String designId;
+    private Quotation quotation;
+    private Design design;
     private OrderStatus status;
-    private String productId;
+    private Product product;
 }

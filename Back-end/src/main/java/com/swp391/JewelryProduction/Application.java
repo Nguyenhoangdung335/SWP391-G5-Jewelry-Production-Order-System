@@ -92,6 +92,7 @@ public class Application   {
 					.phoneNumber("0916320563")
 					.build());
 			accountRepository.save(acc);
+			logger.info("Acc00001 Added");
 
 
 			acc = Account.builder()
@@ -111,14 +112,14 @@ public class Application   {
 					.build());
 			accountRepository.save(acc);
 
-			Staff saleStaff = Staff.builder()
+			acc = Account.builder()
 					.email("nguyenhoangd335@gmail.com")
 					.password(passwordEncoder.encode("#Dung111004"))
 					.dateCreated(LocalDateTime.now())
 					.role(Role.SALE_STAFF)
 					.status(AccountStatus.ACTIVE)
 					.build();
-			saleStaff.setUserInfo(UserInfo.builder()
+			acc.setUserInfo(UserInfo.builder()
 					.firstName("Dung")
 					.lastName("Nguyen Hoang")
 					.gender(Gender.MALE)
@@ -126,7 +127,7 @@ public class Application   {
 					.birthDate(LocalDate.parse("2004-10-11"))
 					.phoneNumber("0916320563")
 					.build());
-			staffRepository.save(saleStaff);
+			accountRepository.save(acc);
 
 			Faker faker = new Faker();
 			Random rand = new Random();
@@ -206,17 +207,23 @@ public class Application   {
 						.name(faker.commerce().productName())
 						.status(OrderStatus.REQUESTING)
 						.build();
+				order.setProduct(Product.builder()
+						.name(order.getName())
+						.description(faker.lorem().sentence())
+						.order(order)
+						.build());
 				order.setQuotation(Quotation.builder()
-								.createdDate(LocalDate.now())
-								.expiredDate(LocalDate.now().plusDays(rand.nextInt(10)))
-								.title(order.getName())
-								.build());
+						.createdDate(LocalDate.now())
+						.expiredDate(LocalDate.now().plusDays(rand.nextInt(10)))
+						.title(order.getName())
+						.order(order)
+						.build());
 				order.setDesign(Design.builder()
-								.designLink(faker.internet().url())
-								.build());
-				order.setProduct(product);
-				product.setOrder(order);
-				orderRepository.save(order);
+						.lastUpdated(LocalDateTime.now())
+						.designLink(faker.internet().url())
+						.order(order)
+						.build());
+                orderRepository.save(order);
 			}
 		};
 	}
