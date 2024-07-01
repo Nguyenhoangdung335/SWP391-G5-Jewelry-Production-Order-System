@@ -7,6 +7,7 @@ import com.swp391.JewelryProduction.dto.Blog;
 import com.swp391.JewelryProduction.pojos.Account;
 import com.swp391.JewelryProduction.pojos.Order;
 import com.swp391.JewelryProduction.pojos.Staff;
+import com.swp391.JewelryProduction.pojos.StaffOrderHistory;
 import com.swp391.JewelryProduction.services.account.AccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -65,13 +67,14 @@ public class FirestoreService {
         writeResult.get();
     }
 
-//    @EventListener(ApplicationReadyEvent.class)
+    @EventListener(ApplicationReadyEvent.class)
+//    @Scheduled(fixedRate = 60000)
     @Async
     public void syncUsersToFirestore() {
         Firestore db = FirestoreClient.getFirestore();
         List<Account> accounts;
         try {
-            accounts = accountService.findAllAccounts(); // Fetch all accounts
+            accounts = accountService.getAllAccounts(); // Fetch all accounts
         } catch (Exception e) {
             throw new RuntimeException("Failed to fetch accounts from SQL", e);
         }
@@ -89,13 +92,24 @@ public class FirestoreService {
         userData.put("name", (account.getUserInfo() == null) ? account.getEmail() : account.getUserInfo().getFirstName());
         userData.put("role", account.getRole().toString());
 
+        Hibernate.initialize(account.getPastOrder());
+
         List<Order> orders = account.getPastOrder();
-        log.info(orders.toString());
         if (orders != null && !orders.isEmpty()) {
             Order currentOrder = orders.get(orders.size() - 1); // Get the last order
-            Staff saleStaff = currentOrder.getSaleStaff();
-            if (saleStaff != null) {
-                userData.put("saleStaff", saleStaff.getId());
+            Hibernate.initialize(currentOrder.getStaffOrderHistory()); // Initialize staff history
+
+            // Access staff from the last order's staff history
+            StaffOrderHistory staffOrderHistory = currentOrder.getStaffOrderHistory().stream()
+                    .filter(history -> history.getOrder().getId().equals(currentOrder.getId()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (staffOrderHistory != null) {
+                Staff staff = staffOrderHistory.getStaff();
+                if (staff != null) {
+                    userData.put("saleStaff", staff.getId()); // Assuming saleStaff here
+                }
             }
         }
 

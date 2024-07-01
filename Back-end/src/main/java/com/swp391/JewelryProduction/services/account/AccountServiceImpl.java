@@ -4,6 +4,8 @@ import com.swp391.JewelryProduction.dto.AccountDTO;
 import com.swp391.JewelryProduction.enums.AccountStatus;
 import com.swp391.JewelryProduction.enums.Role;
 import com.swp391.JewelryProduction.pojos.Account;
+import com.swp391.JewelryProduction.pojos.Order;
+import com.swp391.JewelryProduction.pojos.StaffOrderHistory;
 import com.swp391.JewelryProduction.pojos.UserInfo;
 import com.swp391.JewelryProduction.repositories.AccountRepository;
 import com.swp391.JewelryProduction.repositories.UserInfoRepository;
@@ -22,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -33,6 +37,36 @@ public class AccountServiceImpl implements AccountService {
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
     private final UserInfoRepository userInfoRepository;
+
+    @Override
+    public List<Account> getAllAccounts() {
+        List<Account> accounts = accountRepository.findAllAccounts();
+        List<String> accountIds = accounts.stream().map(Account::getId).collect(Collectors.toList());
+
+        if (!accountIds.isEmpty()) {
+            List<Order> orders = accountRepository.findOrdersByAccountIds(accountIds);
+            List<String> orderIds = orders.stream().map(Order::getId).collect(Collectors.toList());
+
+            if (!orderIds.isEmpty()) {
+                List<StaffOrderHistory> histories = accountRepository.findHistoriesByOrderIds(orderIds);
+                Map<String, List<StaffOrderHistory>> historiesByOrderId = histories.stream()
+                        .collect(Collectors.groupingBy(history -> history.getOrder().getId()));
+
+                for (Order order : orders) {
+                    order.setStaffOrderHistory(historiesByOrderId.get(order.getId()));
+                }
+            }
+
+            Map<String, List<Order>> ordersByAccountId = orders.stream()
+                    .collect(Collectors.groupingBy(order -> order.getOwner().getId()));
+
+            for (Account account : accounts) {
+                account.setPastOrder(ordersByAccountId.get(account.getId()));
+            }
+        }
+
+        return accounts;
+    }
 
     //<editor-fold desc="GET METHODS" defaultstate="collapsed">
     @Override

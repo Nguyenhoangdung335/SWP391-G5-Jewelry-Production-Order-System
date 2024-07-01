@@ -1,6 +1,5 @@
 package com.swp391.JewelryProduction.pojos;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -12,7 +11,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
-import org.modelmapper.internal.bytebuddy.dynamic.scaffold.MethodGraph;
 
 import java.time.LocalDateTime;
 import java.util.LinkedList;

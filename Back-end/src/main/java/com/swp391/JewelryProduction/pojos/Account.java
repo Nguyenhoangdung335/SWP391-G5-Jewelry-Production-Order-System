@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.swp391.JewelryProduction.enums.AccountStatus;
 import com.swp391.JewelryProduction.enums.Role;
 import com.swp391.JewelryProduction.util.IdGenerator;
+import com.swp391.JewelryProduction.websocket.listener.GlobalEntityListener;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -20,6 +21,7 @@ import java.util.List;
 @NoArgsConstructor
 @SuperBuilder
 @Entity
+@EntityListeners(GlobalEntityListener.class)
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "is_staff", columnDefinition = "bit")
 @DiscriminatorValue("0")
@@ -102,6 +104,12 @@ public class Account{
     public void addSendingReport(Report report) {
         report.setSender(this);
         this.getSendingReports().add(report);
+    }
+
+    public Order getCurrentOrder() {
+        if (pastOrder != null && !pastOrder.isEmpty())
+            return currentOrder = pastOrder.get(pastOrder.size() - 1);
+        return null;
     }
 
     public void setUserInfo (UserInfo userInfo) {

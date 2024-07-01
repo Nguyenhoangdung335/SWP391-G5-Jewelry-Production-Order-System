@@ -23,24 +23,17 @@ public class UserController {
     private final SimpMessagingTemplate messagingTemplate;
 
     @GetMapping("/user/check/{userId}")
-    public ResponseEntity<Response> checkUser(@PathVariable String userId) throws Exception {
+    public ResponseEntity<User> checkUser(@PathVariable String userId) throws Exception {
         try {
             User existingUser = userService.findUserById(userId);
             if (existingUser != null) {
                 messagingTemplate.convertAndSend("/topic/public", existingUser);
-                return Response.builder()
-                        .status(HttpStatus.OK)
-                        .response("user", existingUser)
-                        .buildEntity();
+                return ResponseEntity.ok(existingUser);
             } else {
-                return Response.builder()
-                        .status(HttpStatus.BAD_REQUEST)
-                        .buildEntity();
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
             }
         } catch (Exception e) {
-            return Response.builder()
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .buildEntity();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 

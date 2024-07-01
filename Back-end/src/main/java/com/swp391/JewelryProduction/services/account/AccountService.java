@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import java.util.List;
 
 public interface AccountService {
+    List<Account> getAllAccounts();
     List<Account> findAllAccounts();
     Account updateAccountPassword(AccountDTO accountDTO);
     Account saveAccountIfNew(AccountDTO accountDTO);
