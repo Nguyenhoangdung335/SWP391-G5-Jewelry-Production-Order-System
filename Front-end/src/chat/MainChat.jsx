@@ -12,7 +12,6 @@ import { jwtDecode } from "jwt-decode";
 
 const axiosInstance = axios.create({
     baseURL: serverUrl,
-    // other default options like headers, etc.
 });
 
 const Chat = () => {
@@ -22,7 +21,6 @@ const Chat = () => {
     const [stompClient, setStompClient] = useState(null);
     const [currentUser, setCurrentUser] = useState(null);
     const [userId, setUserId] = useState(null);
-    const [userSaleStaff, setUserSaleStaff] = useState(null);
     const [selectedUserId, setSelectedUserId] = useState(null);
     const [connectedUsers, setConnectedUsers] = useState([]);
     const [messages, setMessages] = useState([]);
@@ -39,49 +37,35 @@ const Chat = () => {
     const roleSelectRef = useRef(null);
 
     useEffect(() => {
-        console.log("Initialize web socket");
         if (tokens) {
             const user = {
                 id: tokens.id,
                 name: tokens.first_name,
                 role: tokens.role,
-                saleStaff: null,
             };
 
             setCurrentUser(user);
-            setUserId(user.id);
-
-            axiosInstance.get(`/${tokens.id}/sale-staff`)
-                .then(response => {
-                    const saleStaff = response.data;
-                    setCurrentUser(prevUser => ({ ...prevUser, saleStaff }));
-                    setUserSaleStaff(saleStaff);
-                })
-                .catch(error => {
-                    console.error('Error fetching sale staff:', error);
-                });
+            setUserId(tokens.id);
 
         }
-        console.log(tokens);
     }, [tokens]);
 
     useEffect(() => {
-        console.log("Initialize web socket");
-        if (currentUser && currentUser.id && !stompClient) {
+        if (currentUser && !stompClient) {
             initializeWebSocket();
         }
     }, [currentUser, stompClient]);
 
-    const initializeWebSocket = () => {
+    const initializeWebSocket = useCallback(() => {
         console.log('Initializing WebSocket...');
         const socket = new SockJS(serverUrl + '/ws', null, { withCredentials: true });
         const client = new Client({
             webSocketFactory: () => socket,
             onConnect: () => {
                 console.log('Connected to WebSocket');
-                console.log('stompClient:', client); // Check client here
-                console.log('currentUser:', currentUser); // Check currentUser here
-                console.log('userId:', userId); // Check userId here
+                console.log('stompClient:', client);
+                console.log('currentUser:', currentUser);
+                console.log('userId:', userId);
 
                 client.subscribe(`/user/${userId}/queue/messages`, onMessageReceived);
                 client.subscribe(`/topic/public`, onMessageReceived);
@@ -93,30 +77,28 @@ const Chat = () => {
                     console.warn("Element with ID 'connected-user-fullname' not found in the DOM.");
                 }
 
-                findAndDisplayConnectedUsers().then();
-                fetchUnreadMessages().then();
+                findAndDisplayConnectedUsers();
+                fetchUnreadMessages();
             },
             onStompError: onError,
         });
 
-        setStompClient(client); // Set stompClient state
+        setStompClient(client);
         console.log('Setting stompClient...');
-        client.activate(); // Activate WebSocket connection
+        client.activate();
         console.log('Activating WebSocket connection...');
-    };
 
-    useEffect(() => {
         return () => {
             if (stompClient) {
-                stompClient.publish({
-                    destination: "/app/user.disconnectUser",
-                    body: JSON.stringify({ id: userId }),
-                });
+                // stompClient.publish({
+                //     destination: "/app/user.disconnectUser",
+                //     body: JSON.stringify({ id: userId }),
+                // });
                 stompClient.deactivate();
                 setStompClient(null);
             }
         };
-    }, [stompClient, userId]);
+    }, [currentUser, userId, stompClient]);
 
     useEffect(() => {
         selectedUserIdRef.current = selectedUserId;
@@ -152,13 +134,15 @@ const Chat = () => {
 
     const findAndDisplayConnectedUsers = useCallback(async () => {
         if (currentUser) {
+            const response = await axiosInstance.get(`/${userId}/sale-staff`);
+            const saleStaff = response.data;
             try {
                 if (currentUser.role === "CUSTOMER") {
                     if (roleSelectListRef.current) {
                         roleSelectListRef.current.classList.add('hidden');
                     }
-                    if (userSaleStaff) {  // Check if userSaleStaff is not null
-                        const response = await axiosInstance.get(`/user/check/${userSaleStaff}`);
+                    if (saleStaff) {  // Check if userSaleStaff is not null
+                        const response = await axiosInstance.get(`/user/check/${saleStaff}`);
                         const user = response.data;
                         await renderConnectedUsers([user]);
                     }
@@ -177,7 +161,7 @@ const Chat = () => {
                 console.error('Error fetching and displaying connected users:', error);
             }
         }
-    }, [currentUser, userSaleStaff, userId, roleSelectRef]);
+    }, [currentUser, userId, roleSelectRef]);
 
     const renderConnectedUsers = (users) => {
         setConnectedUsers(users);
