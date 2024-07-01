@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, Modal, Form, FormControl, Row, Col } from "react-bootstrap";
+import { Table, Button, Modal, Form, FormControl, Row, Col,
+} from "react-bootstrap";
 import { FiPlus } from "react-icons/fi";
 import { FaCaretDown } from "react-icons/fa";
 import axios from "axios";
+import { roles } from "../data/data";
+import { Icon } from "@iconify/react/dist/iconify.js";
 
 export default function EmployeeManager() {
   const [filterRole, setFilterRole] = useState("");
@@ -61,10 +64,8 @@ export default function EmployeeManager() {
         address: form.address.value,
       },
     };
-    
-    const newData = data.map((item) =>
-      item.id === values.id ? values : item
-    );
+
+    const newData = data.map((item) => (item.id === values.id ? values : item));
     setData(newData);
     setIsModalVisible(false);
     setSelectedUser(null);
@@ -209,9 +210,7 @@ export default function EmployeeManager() {
           margin-left: auto;
         }
       `}</style>
-      <p style={{ margin: 0, fontSize: 24, fontWeight: "bold" }}>
-        Welcome, K!
-      </p>
+      <p style={{ margin: 0, fontSize: 24, fontWeight: "bold" }}>Welcome, K!</p>
       <p style={{ fontSize: 16 }}>Employee Manager</p>
       <div
         style={{
@@ -221,34 +220,18 @@ export default function EmployeeManager() {
           marginBottom: "2%",
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            gap: 20,
-          }}
-        >
-          <div className="role-filter-button">
-            <span>Role Filter</span>
-            <span style={{ color: "rgba(255, 139, 55, 1)" }}>
-              {filterRole || "All"}
-            </span>
-            <FaCaretDown className="role-filter-caret" />
-            <FormControl
-              as="select"
-              value={filterRole}
-              onChange={handleFilterChange}
-              className="role-filter-select"
-            >
-              <option value="">All</option>
-              <option value="Admin">Admin</option>
-              <option value="Manager">Manager</option>
-              <option value="Sales Staff">Sales Staff</option>
-              <option value="Contribution">Contribution</option>
-            </FormControl>
+        <div className="rounded-lg bg-neutral-500 text-white pl-3 flex items-center">
+          <div>Role Filter</div>
+          <select className="bg-neutral-500 inline-block text-orange-500 w-44">
+            {roles.map((role) => (
+              <option className="bg-white text-black">{role.name} </option>
+            ))}
+          </select>
+          <div className="relative right-6 pb-2">
+          <Icon  icon="fa:sort-down" />
           </div>
         </div>
+        
         <div
           style={{
             display: "flex",
@@ -266,7 +249,9 @@ export default function EmployeeManager() {
             Add Employee
           </Button>
         </div>
+        
       </div>
+
       <Table striped bordered hover>
         <thead>
           <tr>
@@ -284,11 +269,17 @@ export default function EmployeeManager() {
             <tr key={item.id}>
               <td>{item.id}</td>
               <td>{item.role}</td>
-              <td>{item.userInfo.firstName} {item.userInfo.lastName}</td>
+              <td>
+                {item.userInfo.firstName} {item.userInfo.lastName}
+              </td>
               <td>{item.email}</td>
               <td>{item.userInfo.phoneNumber}</td>
               <td>
-                <span className={`badge ${item.status === "ACTIVE" ? "bg-success" : "bg-danger"}`}>
+                <span
+                  className={`badge ${
+                    item.status === "ACTIVE" ? "bg-success" : "bg-danger"
+                  }`}
+                >
                   {item.status}
                 </span>
               </td>
@@ -322,7 +313,9 @@ export default function EmployeeManager() {
             key={page + 1}
             style={{
               ...styles.paginationButton,
-              ...(page + 1 === currentPage ? styles.paginationButtonActive : {}),
+              ...(page + 1 === currentPage
+                ? styles.paginationButtonActive
+                : {}),
             }}
             onClick={() => handlePageChange(page + 1)}
           >
@@ -332,7 +325,9 @@ export default function EmployeeManager() {
         <div
           style={{
             ...styles.paginationButton,
-            ...(currentPage === totalPages ? styles.paginationButtonDisabled : {}),
+            ...(currentPage === totalPages
+              ? styles.paginationButtonDisabled
+              : {}),
           }}
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
@@ -455,7 +450,10 @@ export default function EmployeeManager() {
         </Modal.Footer>
       </Modal>
 
-      <Modal show={isAddModalVisible} onHide={() => setIsAddModalVisible(false)}>
+      <Modal
+        show={isAddModalVisible}
+        onHide={() => setIsAddModalVisible(false)}
+      >
         <Modal.Header closeButton>
           <Modal.Title>Add Employee</Modal.Title>
         </Modal.Header>

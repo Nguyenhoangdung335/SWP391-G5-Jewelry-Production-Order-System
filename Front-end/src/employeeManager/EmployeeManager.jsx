@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Table, Button, Modal, Form, FormControl } from "react-bootstrap";
 import { FiPlus } from "react-icons/fi";
 import { FaCaretDown } from "react-icons/fa";
+import { roles } from "../data/data";
+import { Icon } from "@iconify/react/dist/iconify.js";
 
 export default function EmployeeManager() {
   const [filterRole, setFilterRole] = useState("");
@@ -174,25 +176,18 @@ export default function EmployeeManager() {
             gap: 20,
           }}
         >
-          <div className="role-filter-button">
-            <span>Role Filter</span>
-            <span style={{ color: "rgba(255, 139, 55, 1)" }}>
-              {filterRole || "All"}
-            </span>
-            <FaCaretDown className="role-filter-caret" />
-            <FormControl
-              as="select"
-              value={filterRole}
-              onChange={handleFilterChange}
-              className="role-filter-select"
-            >
-              <option value="">All</option>
-              <option value="Admin">Admin</option>
-              <option value="Manager">Manager</option>
-              <option value="Sales Staff">Sales Staff</option>
-              <option value="Contribution">Contribution</option>
-            </FormControl>
+          
+          <div className="rounded-lg bg-neutral-500 text-white pl-3 flex items-center">
+          <div>Role Filter</div>
+          <select className="bg-neutral-500 inline-block text-orange-500 w-44">
+            {roles.map((role) => (
+              <option className="bg-white text-black">{role.name} </option>
+            ))}
+          </select>
+          <div className="relative right-6 pb-2">
+          <Icon  icon="fa:sort-down" />
           </div>
+        </div>
         </div>
         <div
           style={{

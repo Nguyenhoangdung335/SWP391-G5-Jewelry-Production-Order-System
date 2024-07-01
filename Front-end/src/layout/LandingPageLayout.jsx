@@ -14,6 +14,7 @@ export default function LandingPageLayout() {
     setIsHover(false);
   };
   return (
+    <div className="container">
     <div className="d-flex flex-column ">
       <Header />
 
@@ -54,5 +55,7 @@ export default function LandingPageLayout() {
 
       <Footer />
     </div>
+    </div>
+
   );
 }

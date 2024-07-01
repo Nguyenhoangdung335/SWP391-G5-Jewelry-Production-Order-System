@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Table, Button, Badge, Container, Row, Col, Pagination } from "react-bootstrap";
+import { Table, Button, Badge, Container, Row, Col } from "react-bootstrap";
 import { HiOutlineUserGroup } from "react-icons/hi";
 import { IoMdCart } from "react-icons/io";
 import { LiaUser } from "react-icons/lia";
@@ -197,9 +197,6 @@ export default function DashboardManager() {
     },
   ];
 
-  const totalPagesClient = Math.ceil(dataClient.length / itemsPerPage);
-  const totalPagesOrder = Math.ceil(dataOrder.length / itemsPerPage);
-
   const paginatedDataClient = dataClient.slice(
     (currentPageClients - 1) * itemsPerPage,
     currentPageClients * itemsPerPage
@@ -212,38 +209,6 @@ export default function DashboardManager() {
 
   return (
     <Container fluid style={{ padding: "3%" }}>
-      <style>
-        {`
-          .pagination-circle .page-link {
-            border-radius: 50% !important;
-            margin: 0 4px;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-          }
-
-          .pagination-circle .page-item.active .page-link {
-            background-color: #6c757d;
-            border-color: #6c757d;
-            color: white;
-          }
-
-          .pagination-circle .page-item .page-link {
-            color: #6c757d;
-          }
-
-          .pagination-circle .page-link:hover {
-            background-color: #6c757d;
-            color: white;
-          }
-
-          .pagination-circle .page-link:focus {
-            box-shadow: none;
-          }
-        `}
-      </style>
       <p style={{ margin: 0, fontSize: 24 }} className="fw-bolder">
         Welcome, K!
       </p>
@@ -474,27 +439,6 @@ export default function DashboardManager() {
                 ))}
               </tbody>
             </Table>
-            <div className="d-flex justify-content-end">
-              <Pagination className="pagination-circle">
-                <Pagination.Prev
-                  onClick={() => setCurrentPageOrders(currentPageOrders - 1)}
-                  disabled={currentPageOrders === 1}
-                />
-                {[...Array(totalPagesOrder).keys()].map((page) => (
-                  <Pagination.Item
-                    key={page + 1}
-                    active={page + 1 === currentPageOrders}
-                    onClick={() => setCurrentPageOrders(page + 1)}
-                  >
-                    {page + 1}
-                  </Pagination.Item>
-                ))}
-                <Pagination.Next
-                  onClick={() => setCurrentPageOrders(currentPageOrders + 1)}
-                  disabled={currentPageOrders === totalPagesOrder}
-                />
-              </Pagination>
-            </div>
           </div>
         </Col>
       </Row>
@@ -534,27 +478,6 @@ export default function DashboardManager() {
           ))}
         </tbody>
       </Table>
-      <div className="d-flex justify-content-end">
-        <Pagination className="pagination-circle">
-          <Pagination.Prev
-            onClick={() => setCurrentPageClients(currentPageClients - 1)}
-            disabled={currentPageClients === 1}
-          />
-          {[...Array(totalPagesClient).keys()].map((page) => (
-            <Pagination.Item
-              key={page + 1}
-              active={page + 1 === currentPageClients}
-              onClick={() => setCurrentPageClients(page + 1)}
-            >
-              {page + 1}
-            </Pagination.Item>
-          ))}
-          <Pagination.Next
-            onClick={() => setCurrentPageClients(currentPageClients + 1)}
-            disabled={currentPageClients === totalPagesClient}
-          />
-        </Pagination>
-      </div>
     </Container>
   );
 }
