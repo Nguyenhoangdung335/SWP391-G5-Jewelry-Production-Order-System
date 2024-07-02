@@ -51,6 +51,13 @@ const Chat = () => {
     }, [tokens]);
 
     useEffect(() => {
+        selectedUserIdRef.current = selectedUserId;
+        if (selectedUserId !== null) {
+            fetchAndDisplayUserChat().then();
+        }
+    }, [selectedUserId]);
+
+    useEffect(() => {
         if (currentUser && !stompClient) {
             initializeWebSocket();
         }
@@ -99,13 +106,6 @@ const Chat = () => {
             }
         };
     }, [currentUser, userId, stompClient]);
-
-    useEffect(() => {
-        selectedUserIdRef.current = selectedUserId;
-        if (selectedUserId !== null) {
-            fetchAndDisplayUserChat().then();
-        }
-    }, [selectedUserId]);
 
     const onError = useCallback((error) => {
         console.error('WebSocket error:', error.message);
@@ -183,12 +183,6 @@ const Chat = () => {
         }
     }, []);
 
-    useEffect(() => {
-        if (selectedUserId !== null) {
-            fetchAndDisplayUserChat();
-        }
-    }, [selectedUserId]);
-
     const fetchAndDisplayUserChat = useCallback(async () => {
         if (selectedUserId) {
             try {
@@ -237,7 +231,7 @@ const Chat = () => {
 
     const sendMessage = useCallback(() => {
         const messageContent = messageInputRef.current.value.trim();
-        if (messageContent && stompClient && stompClient.connected) {
+        if (stompClient && stompClient.connected) {
             const chatMessage = {
                 senderId: userId,
                 recipientId: selectedUserId,
@@ -249,7 +243,6 @@ const Chat = () => {
                 body: JSON.stringify(chatMessage),
             });
             console.log('Message sent:', chatMessage);
-            messageInputRef.current.value = '';
             setMessages(prevMessages => [...prevMessages, chatMessage]);
         }
     }, [stompClient, userId, selectedUserId]);
@@ -366,16 +359,7 @@ const Chat = () => {
     //     setMessages([]);
     // }, [userId]);
 
-    // useEffect(() => {
-    //     selectedUserIdRef.current = selectedUserId;
-    //     if (selectedUserId !== null) {
-    //         fetchAndDisplayUserChat();
-    //     }
-    // }, [selectedUserId]);
-
     return (
-        // <></>
-
         <div className="container mt-5">
             <div ref={chatPageRef} id="chat-page">
                 <div className="chat-container">

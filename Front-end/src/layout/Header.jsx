@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { IoSearchCircle } from "react-icons/io5";
+import {IoChatbubbleOutline, IoSearchCircle} from "react-icons/io5";
 import { IoNotificationsOutline } from "react-icons/io5";
 import { GoPerson } from "react-icons/go";
 import { Button, Container, Nav, NavLink, Navbar } from "react-bootstrap";
@@ -196,6 +196,11 @@ export default function Header() {
         <Nav className="gap-1">
           {role !== "GUEST" && (
             <>
+              <NavLink>
+                <Link to="/chat" style={{ textDecoration: "none" }}>
+                  <IoChatbubbleOutline size={30} color="black" />
+                </Link>
+              </NavLink>
               <NavLink>
                 <IoNotificationsOutline size={30} color="black" />
               </NavLink>

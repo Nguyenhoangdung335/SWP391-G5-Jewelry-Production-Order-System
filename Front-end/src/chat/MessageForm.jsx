@@ -4,7 +4,7 @@ const MessageForm = React.forwardRef(({ sendMessage, handleImageUpload, messageI
     const onSubmit = useCallback((event) => {
         event.preventDefault();
         if (messageInputRef.current && messageInputRef.current.value.trim()) {
-            sendMessage(messageInputRef.current.value.trim());
+            sendMessage();
             messageInputRef.current.value = '';
         }
     }, [sendMessage, messageInputRef]);
