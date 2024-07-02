@@ -54,6 +54,7 @@
     ]
   },
   "devDependencies": {
+    "@iconify/react": "^5.0.1",
     "dotenv": "^16.4.5",
     "webpack": "^5.92.0",
     "webpack-cli": "^5.1.4"
