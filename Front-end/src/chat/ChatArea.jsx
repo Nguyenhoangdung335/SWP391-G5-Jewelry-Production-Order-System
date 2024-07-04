@@ -19,17 +19,27 @@ const ChatArea = React.forwardRef(({ messages, userId }, ref) => {
         setModalOpen(false);
     };
 
+    const isImageUrl = (url) => {
+        return url.endsWith("alt=media");
+    };
+
     return (
         <div className="chat-area hidden" id="chat-messages" ref={ref}>
             {messages.map((message, index) => (
                 <div key={index} className={`message ${message.senderId === userId ? 'sender' : 'receiver'}`}>
                     {message.content.startsWith('https://') ? (
-                        <img
-                            src={message.content}
-                            alt="Uploaded"
-                            className="uploaded-image img-fluid"
-                            onClick={() => handleImageClick(message.content)}
-                        />
+                        isImageUrl(message.content) ? (
+                            <img
+                                src={message.content}
+                                alt="Uploaded"
+                                className="uploaded-image img-fluid"
+                                onClick={() => handleImageClick(message.content)}
+                            />
+                        ) : (
+                            <a href={message.content} target="_blank" rel="noopener noreferrer">
+                                {message.content}
+                            </a>
+                        )
                     ) : (
                         <p>{message.content}</p>
                     )}
@@ -37,9 +47,12 @@ const ChatArea = React.forwardRef(({ messages, userId }, ref) => {
             ))}
             {modalOpen && (
                 <div className="modal-overlay" onClick={closeModal}>
-                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                        <img src={modalImage} alt="Enlarged" className="modal-image" />
-                        <button className="close-button" onClick={closeModal}>Close</button>
+                    <div className="modal-content">
+                        <img 
+                            src={modalImage}
+                            alt="Enlarged"
+                            className="modal-image"
+                            onClick={(e) => e.stopPropagation()}/>
                     </div>
                 </div>
             )}
