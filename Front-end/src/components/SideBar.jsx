@@ -2,14 +2,6 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../provider/AuthProvider";
 
-function LinkAnimation({ children }) {
-  const [state, setState] = useState(false);
-
-  const handleClick = () => {};
-
-  return <div onClick={handleClick}>{children}</div>;
-}
-
 function SideBar() {
   const { setToken } = useAuth();
 

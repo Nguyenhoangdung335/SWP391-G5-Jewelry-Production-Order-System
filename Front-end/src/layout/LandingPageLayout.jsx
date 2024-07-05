@@ -14,7 +14,6 @@ export default function LandingPageLayout() {
     setIsHover(false);
   };
   return (
-    <div className="container">
     <div className="d-flex flex-column ">
       <Header />
 
@@ -33,7 +32,7 @@ export default function LandingPageLayout() {
               bottom: "0",
               right: "0",
               margin: "15px",
-              opacity: isHover? "0.5":"0.25",
+              opacity: isHover ? "0.5" : "0.25",
             }}
           ></div>
           <div
@@ -45,7 +44,7 @@ export default function LandingPageLayout() {
               bottom: "0",
               right: "0",
               margin: "0px 28px 24px 0px",
-              opacity: isHover? "0.75":"0.5",
+              opacity: isHover ? "0.75" : "0.5",
             }}
           >
             <FaArrowUp />
@@ -55,7 +54,5 @@ export default function LandingPageLayout() {
 
       <Footer />
     </div>
-    </div>
-
   );
 }

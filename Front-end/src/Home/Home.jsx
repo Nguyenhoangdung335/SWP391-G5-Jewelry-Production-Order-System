@@ -156,7 +156,6 @@ function Home() {
                       height="100%"
                     />
                   </HoverDiv>
-
                   <div
                     style={{
                       position: "absolute",
