@@ -23,11 +23,10 @@ function OrderHistory() {
   const getNotification = data.map((i) => {
     return (
       <>
-        <tr>
-          <td>{i.time}</td>
-          <td>{i.type}</td>
-          <td>{i.from}</td>
-          <td>{i.title}</td>
+        <tr key={i.id}>
+          <td>{i.name}</td>
+          <td>{i.createdDate}</td>
+          <td>{i.budget}</td>
           <td>{i.status}</td>
         </tr>
       </>
