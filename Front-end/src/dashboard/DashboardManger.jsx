@@ -3,12 +3,53 @@ import { Table, Button, Badge, Container, Row, Col } from "react-bootstrap";
 import { HiOutlineUserGroup } from "react-icons/hi";
 import { IoMdCart } from "react-icons/io";
 import { LiaUser } from "react-icons/lia";
+import { useEffect } from "react";
 import LineChartComponent from "../chart/LineChart";
+import axios from "axios";
+
 
 export default function DashboardManager() {
   const [currentPageClients, setCurrentPageClients] = useState(1);
   const [currentPageOrders, setCurrentPageOrders] = useState(1);
+  const [order, setOrder] = useState([]);
+  // const [info, setInfo] = useState([]);
   const itemsPerPage = 3;
+
+
+  useEffect(() => {
+    async function fetchOrder() {
+      try {
+        const response = await axios.get("http://localhost:8080/api/order/list");
+        if (response.data.status === "OK") {
+          const orderList = response.data.responseList["order-list"]; 
+          setOrder(orderList); 
+        } else {
+          console.error("Failed to fetch orders:", response.data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      }
+    }
+    fetchOrder();
+  }, []); 
+  
+  // useEffect(() => {
+  //   async function fetchInfo() {
+  //     try {
+  //       const response = await axios.get("http://localhost:8080/actuator/info");
+  //       if (response.data.status === "OK") {
+  //         const info = response.data
+  //         console.log(info);
+  //         setInfo(info)
+  //       } else {
+  //         console.error("Failed to fetch info:", response.data.message);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching info:", error);
+  //     }
+  //   }
+  //   fetchInfo();
+  // }, []); 
 
   const columnsClient = [
     {
@@ -133,17 +174,17 @@ export default function DashboardManager() {
       render: (text) => <span>{text}</span>,
     },
     {
-      title: <span style={{ fontSize: 20, fontWeight: 400 }}>CustomerID</span>,
+      title: <span style={{ fontSize: 20, fontWeight: 400 }}>Name</span>,
       dataIndex: "customerID",
       key: "customerID",
     },
     {
-      title: <span style={{ fontSize: 20, fontWeight: 400 }}>Date</span>,
+      title: <span style={{ fontSize: 20, fontWeight: 400 }}>Budget</span>,
       dataIndex: "date",
       key: "date",
     },
     {
-      title: <span style={{ fontSize: 20, fontWeight: 400 }}>Total</span>,
+      title: <span style={{ fontSize: 20, fontWeight: 400 }}>totalPrice</span>,
       key: "total",
       dataIndex: "total",
     },
@@ -159,50 +200,13 @@ export default function DashboardManager() {
     },
   ];
 
-  const dataOrder = [
-    {
-      orderId: "ID_0001",
-      customerID: "CL_0009",
-      date: "11/6/1994",
-      total: "$1200",
-      status: "unpaid",
-    },
-    {
-      orderId: "ID_0001",
-      customerID: "CL_0009",
-      date: "11/6/1994",
-      total: "$1200",
-      status: "paid",
-    },
-    {
-      orderId: "ID_0001",
-      customerID: "CL_0009",
-      date: "11/6/1994",
-      total: "$1200",
-      status: "unpaid",
-    },
-    {
-      orderId: "ID_0001",
-      customerID: "CL_0009",
-      date: "11/6/1994",
-      total: "$1200",
-      status: "paid",
-    },
-    {
-      orderId: "ID_0001",
-      customerID: "CL_0009",
-      date: "11/6/1994",
-      total: "$1200",
-      status: "unpaid",
-    },
-  ];
 
   const paginatedDataClient = dataClient.slice(
     (currentPageClients - 1) * itemsPerPage,
     currentPageClients * itemsPerPage
   );
 
-  const paginatedDataOrder = dataOrder.slice(
+  const paginatedDataOrder = order.slice(
     (currentPageOrders - 1) * itemsPerPage,
     currentPageOrders * itemsPerPage
   );
@@ -320,7 +324,7 @@ export default function DashboardManager() {
               }}
             >
               <p style={{ margin: 0, fontSize: 17, fontWeight: 400 }}>Orders</p>
-              <p style={{ margin: 0, fontSize: 20, fontWeight: 500 }}>56</p>
+              <p style={{ margin: 0, fontSize: 20, fontWeight: 500 }}>{order.length}</p>
             </div>
           </div>
         </Col>
@@ -425,11 +429,11 @@ export default function DashboardManager() {
               </thead>
               <tbody>
                 {paginatedDataOrder.map((row) => (
-                  <tr key={row.orderId}>
-                    <td>{row.orderId}</td>
-                    <td>{row.customerID}</td>
-                    <td>{row.date}</td>
-                    <td>{row.total}</td>
+                  <tr key={row.id}>
+                    <td>{row.id}</td>
+                    <td>{row.name}</td>
+                    <td>{row.budget}</td>
+                    <td>{row.quotation.totalPrice}</td>
                     <td>
                       <Badge bg={row.status === "paid" ? "success" : "danger"}>
                         {row.status.charAt(0).toUpperCase() + row.status.slice(1)}
