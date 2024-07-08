@@ -11,7 +11,12 @@ import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring6.SpringTemplateEngine;
+
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -26,6 +31,9 @@ public class EmailServiceImpl implements EmailService {
     @Value("${mail.smtp.user}")
     private String senderEmail;
 
+    private final SpringTemplateEngine templateEngine;
+
+    @Async
     @Override
     public void sendLinkEmail(
             String toEmail,
@@ -49,6 +57,7 @@ public class EmailServiceImpl implements EmailService {
         Transport.send(mimeMessage);
     }
 
+    @Async
     @Override
     public void sendOtpTextEmail(
             String toEmail,
@@ -67,6 +76,24 @@ public class EmailServiceImpl implements EmailService {
         Transport.send(mimeMessage);
     }
 
+    @Async
+    @Override
+    public void sendReceiptEmail(String toEmail, String subject, Map<String, Object> templateModel) throws MessagingException {
+        Context context = new Context();
+        context.setVariables(templateModel);
+
+        String htmlBody = templateEngine.process("emailReceipt", context);
+
+        MimeMessage message = new MimeMessage(session);
+        message.setFrom(new InternetAddress(senderEmail));
+        message.addRecipient(Message.RecipientType.TO, new InternetAddress(toEmail));
+        message.setSubject(subject);
+        message.setContent(htmlBody, "text/html; charset=utf-8");
+
+        Transport.send(message);
+    }
+
+    @Async
     @Override
     public void sendMailFromNotification(
             Notification notification
@@ -368,4 +395,6 @@ public class EmailServiceImpl implements EmailService {
                 "</body>" +
                 "</html>";
     }
+
+
 }
