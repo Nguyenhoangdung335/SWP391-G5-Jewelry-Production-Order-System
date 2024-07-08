@@ -270,7 +270,6 @@ const Chat = () => {
                 const formData = new FormData();
                 formData.append('senderId', userId);
                 formData.append('recipientId', selectedUserId);
-                formData.append('message', messageInputRef.current.value);
 
                 const resizedImageFile = await resizeImage(imageFile);
                 formData.append('file', resizedImageFile);
@@ -386,6 +385,7 @@ const Chat = () => {
                         <ChatArea messages={messages}
                             ref={chatAreaRef}
                             userId={userId}
+                                  handleImageUpload={handleImageUpload}
                         />
                         <MessageForm
                             ref={messageFormRef}
