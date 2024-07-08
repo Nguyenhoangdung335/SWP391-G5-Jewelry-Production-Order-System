@@ -3,6 +3,7 @@ package com.swp391.JewelryProduction.services.notification;
 import com.swp391.JewelryProduction.dto.ResponseDTOs.NotificationResponse;
 import com.swp391.JewelryProduction.pojos.Account;
 import com.swp391.JewelryProduction.pojos.Notification;
+import com.swp391.JewelryProduction.pojos.Report;
 import com.swp391.JewelryProduction.repositories.NotificationRepository;
 import com.swp391.JewelryProduction.services.email.EmailService;
 import com.swp391.JewelryProduction.util.exceptions.ObjectNotFoundException;
@@ -29,14 +30,7 @@ public class NotificationServiceImpl implements NotificationService {
     //<editor-fold desc="MVC Service methods" defaultstate="collapsed">
     @Override
     public List<Notification> findAllByReceiver_Id(String receiverId) {
-        return notificationRepository.findAllByReceiver_Id(receiverId);
-    }
-
-    @Override
-    public Notification findById(UUID id) {
-        if(notificationRepository.findById(id).isPresent()) {
-            return notificationRepository.findById(id).get();
-        } else return null;
+        return notificationRepository.findAllByReceiverId(receiverId);
     }
 
     @Override
@@ -126,14 +120,18 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private NotificationResponse mappedToResponse(Notification notif) {
+        Report relatedReport = notif.getReport();
+
         return NotificationResponse.builder()
                 .id(notif.getId())
-                .reportID(notif.getReport().getId())
-                .reportTitle(notif.getReport().getTitle())
-                .reportDescription(notif.getReport().getDescription())
-                .reportCreatedDate(notif.getReport().getCreatedDate())
-                .reportType(notif.getReport().getType())
-                .reportSenderID(notif.getReport().getSender().getId())
+                .reportID(relatedReport.getId())
+                .reportTitle(relatedReport.getTitle())
+                .reportDescription(relatedReport.getDescription())
+                .reportCreatedDate(relatedReport.getCreatedDate())
+                .reportType(relatedReport.getType())
+                .reportSenderID((relatedReport.getSender() == null)?
+                        "":
+                        relatedReport.getSender().getId())
                 .orderID(notif.getOrder().getId())
                 .receiverID(notif.getReceiver().getId())
                 .delivered(true)

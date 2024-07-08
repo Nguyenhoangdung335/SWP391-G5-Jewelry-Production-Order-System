@@ -24,7 +24,6 @@ public interface NotificationService {
 
     Flux<ServerSentEvent<List<NotificationResponse>>> subscribeNotificationStream(Account receiver);
     List<Notification> findAllByReceiver_Id(String receiverId);
-    Notification findById(UUID id);
     void deleteNotification(UUID id);
 
 }
