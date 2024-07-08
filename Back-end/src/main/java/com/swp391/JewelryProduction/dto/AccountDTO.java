@@ -6,6 +6,7 @@ import com.swp391.JewelryProduction.pojos.Notification;
 import com.swp391.JewelryProduction.pojos.Order;
 import com.swp391.JewelryProduction.pojos.Report;
 import com.swp391.JewelryProduction.pojos.UserInfo;
+import com.swp391.JewelryProduction.util.CustomValidator.EnumNameValidator;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
@@ -28,7 +29,9 @@ public class AccountDTO{
     @NotEmpty(message = "Password cannot by empty")
     private String password;
     private LocalDateTime dateCreated;
+    @EnumNameValidator(regexp = "CUSTOMER|SALE_STAFF|DESIGN_STAFF|PRODUCTION_STAFF|MANAGER|ADMIN", message = "Role is not valid")
     private Role role;
+    @EnumNameValidator(regexp = "ACTIVE|INACTIVE|DELETED|LOCKED", message = "Status is not valid")
     private AccountStatus status;
     private UserInfo userInfo;
 }
