@@ -13,6 +13,15 @@ import org.springframework.util.ObjectUtils;
 
 @Slf4j
 public class StateMachineUtil {
+    public static class Keywords {
+        public static final String ORDER_ID = "orderID";
+        public static final String REPORT_ID = "reportID";
+        public static final String REPORT_APPROVAL = "isApproved";
+        public static final String TRANSACTIONS_ID = "transactionId";
+        public static final String SALE_ID = "saleId";
+        public static final String TRANSACTION_CHOICE = "choice";
+    }
+
     private static StateMachine<OrderStatus, OrderEvent> currentStateMachine;
 
     public static State<OrderStatus, OrderEvent> getCurrentState (StateMachine<OrderStatus, OrderEvent> stateMachine) {
@@ -46,7 +55,7 @@ public class StateMachineUtil {
             StateMachineService<OrderStatus, OrderEvent> stateMachineService) {
         String orderId = order.getId();
         StateMachine<OrderStatus, OrderEvent> stateMachine = stateMachineService.acquireStateMachine(orderId, true);
-        stateMachine.getExtendedState().getVariables().put("orderID", orderId);
+        stateMachine.getExtendedState().getVariables().put(Keywords.ORDER_ID, orderId);
         stateMachine.getStateMachineAccessor()
                 .doWithAllRegions(
                         region -> region.addStateMachineInterceptor(new StateMachineInterceptor(orderService)

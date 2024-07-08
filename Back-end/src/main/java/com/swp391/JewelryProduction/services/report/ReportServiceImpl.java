@@ -1,6 +1,5 @@
 package com.swp391.JewelryProduction.services.report;
 
-import com.swp391.JewelryProduction.config.stateMachine.StateMachineInterceptor;
 import com.swp391.JewelryProduction.dto.RequestDTOs.ReportRequest;
 import com.swp391.JewelryProduction.enums.OrderEvent;
 import com.swp391.JewelryProduction.enums.OrderStatus;
@@ -10,7 +9,6 @@ import com.swp391.JewelryProduction.pojos.designPojos.Product;
 import com.swp391.JewelryProduction.repositories.ReportRepository;
 import com.swp391.JewelryProduction.services.account.AccountService;
 import com.swp391.JewelryProduction.services.order.OrderService;
-import com.swp391.JewelryProduction.services.product.ProductService;
 import com.swp391.JewelryProduction.util.exceptions.ObjectNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -24,11 +22,9 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 
 import static com.swp391.JewelryProduction.config.stateMachine.StateMachineUtil.*;
+import static com.swp391.JewelryProduction.config.stateMachine.StateMachineUtil.Keywords.*;
 
 @Service
 @RequiredArgsConstructor
@@ -67,7 +63,7 @@ public class ReportServiceImpl implements ReportService {
         order = orderService.updateOrder(order);
 
         StateMachine<OrderStatus, OrderEvent> stateMachine = getStateMachine(order.getId(), stateMachineService);
-        stateMachine.getExtendedState().getVariables().put("reportID", requestReport.getId());
+        stateMachine.getExtendedState().getVariables().put(REPORT_ID, requestReport.getId());
         stateMachine.sendEvent(
                 Mono.just(MessageBuilder
                         .withPayload(OrderEvent.REQ_RECEIVED)
@@ -95,7 +91,7 @@ public class ReportServiceImpl implements ReportService {
         order = orderService.updateOrder(order);
 
         StateMachine<OrderStatus, OrderEvent> stateMachine = getStateMachine(order.getId(), stateMachineService);
-        stateMachine.getExtendedState().getVariables().put("reportID", quote.getId());
+        stateMachine.getExtendedState().getVariables().put(REPORT_ID, quote.getId());
         stateMachine.sendEvent(Mono.just(MessageBuilder
                 .withPayload(OrderEvent.QUO_FINISH).build())
         ).subscribe();
@@ -120,7 +116,7 @@ public class ReportServiceImpl implements ReportService {
         orderService.updateOrder(order);
 
         StateMachine<OrderStatus, OrderEvent> stateMachine = getStateMachine(order.getId(), stateMachineService);
-        stateMachine.getExtendedState().getVariables().put("reportID", designReport.getId());
+        stateMachine.getExtendedState().getVariables().put(REPORT_ID, designReport.getId());
         stateMachine.sendEvent(Mono.just(MessageBuilder
                 .withPayload(OrderEvent.DES_FINISH).build())
         ).subscribe();
@@ -134,7 +130,7 @@ public class ReportServiceImpl implements ReportService {
         State<OrderStatus, OrderEvent> currentState = getCurrentState(stateMachine);
 
         log.info("Handling Response: Current state {}", currentState.getId());
-        stateMachine.getExtendedState().getVariables().put("isApproved", isApproved);
+        stateMachine.getExtendedState().getVariables().put(REPORT_APPROVAL, isApproved);
         OrderEvent triggerEvent = getApprovalEvent(currentState.getId());
 
         stateMachine.sendEvent(Mono.just(MessageBuilder.withPayload(triggerEvent).build())).subscribe();
@@ -157,7 +153,11 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public Report findReportByID(Integer id) {
-        return reportRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException("Order of id " + id + " cannot be found"));
+        return reportRepository
+                .findById(id)
+                .orElseThrow(
+                        () -> new ObjectNotFoundException("Order of id " + id + " cannot be found")
+                );
     }
 
     @Override
