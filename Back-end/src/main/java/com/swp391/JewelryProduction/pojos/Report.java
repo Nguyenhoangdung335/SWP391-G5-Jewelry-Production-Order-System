@@ -1,7 +1,6 @@
 package com.swp391.JewelryProduction.pojos;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.*;
 import com.swp391.JewelryProduction.enums.ReportType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -16,6 +15,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id"
+)
 public class Report {
     @ToString.Include
     @EqualsAndHashCode.Exclude
@@ -41,6 +44,7 @@ public class Report {
     @Enumerated(EnumType.STRING)
     private ReportType type;
 
+    @JsonIgnore
     @ToString.Include
     @EqualsAndHashCode.Include
     @ManyToOne(fetch = FetchType.EAGER)
@@ -54,9 +58,9 @@ public class Report {
     @JoinColumn(name = "order_id")
     private Order reportingOrder;
 
+    @JsonIgnore
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @JsonBackReference
     @OneToMany(mappedBy = "report", fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
     @Builder.Default
     private List<Notification> notifications = new LinkedList<>();

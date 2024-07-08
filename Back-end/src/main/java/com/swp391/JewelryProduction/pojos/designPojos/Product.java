@@ -39,6 +39,8 @@ public class Product {
     private String id;
     private String name;
     private String description;
+    @Column(length = 1024)
+    private String imageURL;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JsonBackReference("Product-Specification")

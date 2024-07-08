@@ -1,5 +1,8 @@
 package com.swp391.JewelryProduction.pojos;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.swp391.JewelryProduction.util.embeddedID.StaffOrderID;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -28,11 +31,12 @@ public class StaffOrderHistory {
     @Column(name = "end_date")
     private LocalDateTime endDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @MapsId
     @JoinColumn(name = "staff_id")
     private Staff staff;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId
     @JoinColumn(name = "order_id")

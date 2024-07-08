@@ -1,5 +1,6 @@
 package com.swp391.JewelryProduction.pojos;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.swp391.JewelryProduction.enums.WorkStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -20,6 +21,7 @@ public class Staff extends Account{
     @Builder.Default
     private WorkStatus workStatus = WorkStatus.FREE;
 
+    @JsonIgnore
     @OneToMany(
             mappedBy = "staff",
             cascade = {CascadeType.MERGE, CascadeType.DETACH, CascadeType.REMOVE},

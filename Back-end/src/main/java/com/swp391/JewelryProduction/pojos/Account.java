@@ -1,6 +1,8 @@
 package com.swp391.JewelryProduction.pojos;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.swp391.JewelryProduction.enums.AccountStatus;
 import com.swp391.JewelryProduction.enums.Role;
@@ -51,6 +53,7 @@ public class Account{
     @Column(nullable = false, unique = true)
     private String email;
 
+    @JsonIgnore
     @ToString.Include
     @EqualsAndHashCode.Include
     @Column(nullable = false)
@@ -82,23 +85,27 @@ public class Account{
     @EqualsAndHashCode.Exclude
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner", cascade = CascadeType.REMOVE)
     @Builder.Default
+    @JsonIgnore
     private List<Order> pastOrder = new LinkedList<>();
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "sender", fetch = FetchType.LAZY)
     @Builder.Default
+    @JsonIgnore
     private List<Report> sendingReports = new LinkedList<>();
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "receiver", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @Builder.Default
+    @JsonIgnore
     private List<Notification> notifications = new LinkedList<>();
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @Transient
+    @JsonIgnoreProperties
     private Order currentOrder;
 
     public void addSendingReport(Report report) {
