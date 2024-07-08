@@ -26,18 +26,16 @@ public class ChatController {
     private final SimpMessagingTemplate messagingTemplate;
     private final ChatMessageService chatMessageService;
 
-    @Autowired
-    private ImageService imageService;
+    private final ImageService imageService;
 
     @PostMapping("/chat/upload")
     public ResponseEntity<String> handleImageMessage(
             @RequestParam("file") MultipartFile file,
             @RequestParam("senderId") String senderId,
-            @RequestParam("recipientId") String recipientId,
-            @RequestParam(value = "message", required = false) String message
+            @RequestParam("recipientId") String recipientId
     ) {
         try {
-            String imageUrl = imageService.uploadImage(file);
+            String imageUrl = imageService.uploadImage(file,"chat-images");
 
             // Create and save the chat message
             ChatMessage chatMessage = new ChatMessage();
