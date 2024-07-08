@@ -4,14 +4,16 @@ import com.swp391.JewelryProduction.dto.DesignDTO;
 import com.swp391.JewelryProduction.pojos.Design;
 import com.swp391.JewelryProduction.repositories.DesignRepository;
 import com.swp391.JewelryProduction.util.exceptions.ObjectNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class DesignServiceImpl implements DesignService {
-    private DesignRepository designRepository;
+    private final DesignRepository designRepository;
 
     @Override
     public List<Design> findAll() {

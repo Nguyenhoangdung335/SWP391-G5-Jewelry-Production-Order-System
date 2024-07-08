@@ -99,6 +99,16 @@
     font-weight: bold;
 }
 
+.user-item span.nbr-msg {
+    margin-left: 10px;
+    background-color: #f8fa6f;
+    color: white;
+    padding: 5px;
+    width: 10px;
+    border-radius: 50%;
+    height: 10px;
+}
+
 .role-select-list {
     position: sticky;
     top: 0;
@@ -146,6 +156,10 @@
     border-bottom-right-radius: 8px;
 }
 
+.chat-area.drag-over {
+    border: 2px dashed #3498db;
+}
+
 .message {
     margin-bottom: 5px;
     border-radius: 5px;
@@ -159,7 +173,7 @@
 
 .message p {
     margin-top: 12px;
-    padding: 0 12px;
+    padding: 0 10px;
     border-radius: 15px;
     word-wrap: break-word;
 }
@@ -170,16 +184,6 @@
     padding: 0 12px;
     border-radius: 15px;
     word-wrap: break-word;
-}
-
-.user-item span.nbr-msg {
-    margin-left: 10px;
-    background-color: #f8fa6f;
-    color: white;
-    padding: 5px;
-    width: 10px;
-    border-radius: 50%;
-    height: 10px;
 }
 
 .sender {
