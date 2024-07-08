@@ -1,6 +1,7 @@
 package com.swp391.JewelryProduction.pojos;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.swp391.JewelryProduction.enums.OrderStatus;
@@ -63,12 +64,20 @@ public class Order {
     @JoinColumn(name = "quotation_id")
     @JsonManagedReference("Order-Quotation")
     private Quotation quotation;
+
     @ToString.Include
     @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "design_id")
     @JsonManagedReference("Order-Design")
     private Design design;
 
+    @ToString.Include
+    @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinColumn(name = "transaction_id")
+    @JsonManagedReference("Order-Transactions")
+    private Transactions transactions;
+
+    @JsonIgnore
     @OneToMany(
             mappedBy = "order",
             cascade = {CascadeType.MERGE, CascadeType.DETACH, CascadeType.REMOVE},
@@ -77,8 +86,10 @@ public class Order {
     @Builder.Default
     private List<StaffOrderHistory> staffOrderHistory = new LinkedList<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
+    @JsonManagedReference("Order-Notification")
     private List<Notification> notifications = new LinkedList<>();
 
     @ToString.Include
