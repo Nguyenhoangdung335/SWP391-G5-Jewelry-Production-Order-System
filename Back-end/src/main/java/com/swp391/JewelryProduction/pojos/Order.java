@@ -98,6 +98,13 @@ public class Order {
     @JsonManagedReference("Order-Product")
     private Product product;
 
+    @ToString.Include
+    @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinColumn(name = "warranty_id")
+    @JsonManagedReference("Order-Warranty")
+    private Warranty warranty;
+
+
     @JsonManagedReference("Order-Report")
     @OneToMany(mappedBy = "reportingOrder", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @Builder.Default
