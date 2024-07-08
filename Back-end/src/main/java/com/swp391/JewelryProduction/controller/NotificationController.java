@@ -28,7 +28,7 @@ public class NotificationController {
         return Response.builder()
                 .status(HttpStatus.OK)
                 .message("Request send successfully.")
-                .response("notification-list", notificationService.findAllByReceiver_Id(receiverId))
+                .response("notificationList", notificationService.findAllByReceiver_Id(receiverId))
                 .buildEntity();
     }
 

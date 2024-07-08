@@ -52,10 +52,10 @@ public class OrderController {
         return Response.builder()
                 .status(HttpStatus.OK)
                 .message("Request sent successfully")
-                .response("order-detail", orderService.findOrderById(orderId))
-                .response("sale-staffs", staffService.findAllByRole(Role.SALE_STAFF))
-                .response("design-staffs", staffService.findAllByRole(Role.DESIGN_STAFF))
-                .response("production-staffs", staffService.findAllByRole(Role.PRODUCTION_STAFF))
+                .response("orderDetail", orderService.findOrderById(orderId))
+                .response("saleStaffs", staffService.findAllByRole(Role.SALE_STAFF))
+                .response("designStaffs", staffService.findAllByRole(Role.DESIGN_STAFF))
+                .response("productionStaffs", staffService.findAllByRole(Role.PRODUCTION_STAFF))
                 .buildEntity();
     }
 
