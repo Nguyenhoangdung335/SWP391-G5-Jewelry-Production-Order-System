@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const ChatArea = React.forwardRef(({ messages, userId }, ref) => {
+const ChatArea = React.forwardRef(({ messages, userId, handleImageUpload }, ref) => {
     const [modalOpen, setModalOpen] = useState(false);
     const [modalImage, setModalImage] = useState("");
 
@@ -23,8 +23,32 @@ const ChatArea = React.forwardRef(({ messages, userId }, ref) => {
         return url.endsWith("alt=media");
     };
 
+    const handleDrop = (event) => {
+        event.preventDefault();
+        const files = event.dataTransfer.files;
+        if (files.length > 0) {
+            handleImageUpload({ target: { files } });
+        }
+        ref.current.classList.remove('drag-over');
+    };
+
+    const handleDragOver = (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        ref.current.classList.add('drag-over');
+    };
+
+    const handleDragLeave = (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        ref.current.classList.remove('drag-over');
+    };
+
     return (
-        <div className="chat-area hidden" id="chat-messages" ref={ref}>
+        <div className="chat-area hidden" id="chat-messages" ref={ref}
+             onDrop={handleDrop}
+             onDragOver={handleDragOver}
+             onDragLeave={handleDragLeave}>
             {messages.map((message, index) => (
                 <div key={index} className={`message ${message.senderId === userId ? 'sender' : 'receiver'}`}>
                     {message.content.startsWith('https://') ? (

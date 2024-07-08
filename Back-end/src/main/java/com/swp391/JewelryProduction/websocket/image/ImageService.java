@@ -12,7 +12,7 @@ import java.util.UUID;
 @Service
 public class ImageService {
 
-    public String uploadImage(MultipartFile file) throws IOException {
+    public String uploadImage(MultipartFile file, String folder) throws IOException {
         // Lấy bucket mặc định từ Firebase Storage
         Bucket bucket = StorageClient.getInstance().bucket();
 
@@ -22,7 +22,7 @@ public class ImageService {
         }
 
         // Tạo tên file với đường dẫn "folder" chat-images
-        String fileName = "chat-images/" + generateFileName(file.getOriginalFilename());
+        String fileName = folder + "/" + generateFileName(file.getOriginalFilename());
 
         // Tạo blob từ file và lưu vào bucket
         Blob blob = bucket.create(fileName, file.getBytes(), file.getContentType());
