@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.UUID;
 
 public interface NotificationRepository extends JpaRepository<Notification, UUID> {
-    List<Notification> findAllByReceiver_Id(String receiverId);
     List<Notification> findAllByReceiverAndDeliveredFalse (Account receiver);
     List<Notification> findAllByReceiver (Account receiver);
+    List<Notification> findAllByReceiverId (String receiverId);
     void deleteAllByReceiver (Account receiver);
 }
