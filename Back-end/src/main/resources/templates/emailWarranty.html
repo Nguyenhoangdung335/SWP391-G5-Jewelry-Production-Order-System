@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Warranty</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="warranty-container">
+    <header>
+        <h1>Product Warranty</h1>
+        <p>Effective Date: </p>
+        <p th:text="${issuedDate}"/>
+    </header>
+
+    <section class="introduction">
+        <h2>Introduction</h2>
+        <p>
+            Thank you for purchasing our product. This document outlines the warranty coverage provided by our company. Please read it carefully to understand your rights and responsibilities under this warranty.
+        </p>
+    </section>
+
+    <section class="terms">
+        <h2>Warranty Coverage</h2>
+        <p th:text="${terms}"></p>
+    </section>
+
+    <section class="period">
+        <h2>Warranty Period : </h2>
+        <p>
+            This warranty is valid from the issued date until </p><p th:text="${expiredDate}"></p><p>. Warranty service must be requested within this period to be eligible for coverage.
+        </p>
+    </section>
+    <section class="description">
+        <h2>Description</h2>
+        <p th:text="${desciption}"></p>
+    </section>
+
+    <section class="contact-info">
+        <h2>Contact Information</h2>
+        <p>
+            For further assistance, please contact our customer service team:
+        </p>
+        <ul>
+            <li>Email: support@example.com</li>
+            <li>Phone: 123-456-7890</li>
+            <li>Address: 123 Warranty Lane, Service City, SC 12345</li>
+        </ul>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 Your Company Name. All Rights Reserved.</p>
+    </footer>
+</div>
+</body>
+</html>
