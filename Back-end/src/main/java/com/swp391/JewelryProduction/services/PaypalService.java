@@ -3,7 +3,12 @@ package com.swp391.JewelryProduction.services;
 import com.paypal.api.payments.*;
 import com.paypal.base.rest.APIContext;
 import com.paypal.base.rest.PayPalRESTException;
+import com.swp391.JewelryProduction.enums.OrderEvent;
+import com.swp391.JewelryProduction.enums.OrderStatus;
+import com.swp391.JewelryProduction.pojos.Order;
+import com.swp391.JewelryProduction.services.transaction.TransactionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.statemachine.service.StateMachineService;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -15,6 +20,7 @@ import java.util.Locale;
 public class PaypalService {
 
     private final APIContext apiContext;
+    private final TransactionService transactionService;
 
     public Payment makePayment(
             Double total,
@@ -23,7 +29,8 @@ public class PaypalService {
             String intent,
             String description,
             String cancelURL,
-            String successURL
+            String successURL,
+            Order order
     ) throws PayPalRESTException {
 
         Amount amount = new Amount();
@@ -55,7 +62,11 @@ public class PaypalService {
         payment.setTransactions(transactions);
         payment.setRedirectUrls(redirectUrls);
 
-        return payment.create(apiContext);
+        payment = payment.create(apiContext);
+
+        transactionService.createTransaction(payment, order);
+
+        return payment;
     }
 
     public Payment executePayment (
@@ -67,8 +78,11 @@ public class PaypalService {
 
         PaymentExecution execution = new PaymentExecution();
         execution.setPayerId(payerID);
+        payment = payment.execute(apiContext, execution);
 
-        return payment.execute(apiContext, execution);
+        transactionService.updateTransactionsStateByPayment(payment);
+
+        return payment;
     }
 
     public Payment getPaymentDetails(String paymentId) throws PayPalRESTException {
