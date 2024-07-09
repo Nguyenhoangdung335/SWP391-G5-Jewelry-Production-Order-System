@@ -11,6 +11,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -44,5 +45,12 @@ public class AccountController {
         return Response.builder()
                 .response("account", updatedAcc)
                 .buildEntity();
+    }
+
+    @GetMapping("/{accountId}/check-current-order")
+    public ResponseEntity<Boolean> checkExistCurrentOrder (
+            @PathVariable("accountId") String accountId
+    ) {
+        return ResponseEntity.ok(accountService.checkCurrentOrderExist(accountId));
     }
 }
