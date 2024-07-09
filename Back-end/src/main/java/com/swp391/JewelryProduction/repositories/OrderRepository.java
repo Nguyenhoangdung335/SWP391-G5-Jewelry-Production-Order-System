@@ -16,7 +16,7 @@ public interface OrderRepository extends JpaRepository<Order, String> {
     @Override
     Optional<Order> findById(@NotNull String s);
 
-    @Query(value = "SELECT * FROM Orders WHERE MONTH(date_created) = :month AND YEAR(date_created) = :year", nativeQuery = true)
+    @Query(value = "SELECT * FROM dbo.[order] WHERE MONTH(date_created) = :month AND YEAR(date_created) = :year", nativeQuery = true)
     List<Order> findAllByMonthAndYear(@Param("month") int month, @Param("year") int year);
     List<Order> findAllByOwnerId (String ownerId);
 }
