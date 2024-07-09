@@ -4,6 +4,7 @@ import { FiPlus } from "react-icons/fi";
 import { FaBox } from "react-icons/fa";
 import { useAuth } from "../provider/AuthProvider";
 import axios from "axios";
+import ServerUrl from "../reusable/ServerUrl";
 
 export default function ProductManager() {
     const { account } = useAuth();
@@ -19,7 +20,7 @@ export default function ProductManager() {
     useEffect(() => {
         axios({
             method: "GET",
-            url: `http://localhost:8080/api/product/get-product-list`,
+            url: `${ServerUrl}/api/product/get-product-list`,
             headers: { "Content-Type": "application/json" },
         })
             .then((res) => {

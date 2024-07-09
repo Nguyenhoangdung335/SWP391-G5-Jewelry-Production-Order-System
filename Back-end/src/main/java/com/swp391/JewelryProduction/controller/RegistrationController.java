@@ -1,6 +1,7 @@
 package com.swp391.JewelryProduction.controller;
 
 import com.swp391.JewelryProduction.dto.AccountDTO;
+import com.swp391.JewelryProduction.dto.RequestDTOs.RegistrationRequest;
 import com.swp391.JewelryProduction.dto.UserInfoDTO;
 import com.swp391.JewelryProduction.pojos.Account;
 import com.swp391.JewelryProduction.pojos.UserInfo;
@@ -37,22 +38,22 @@ public class RegistrationController {
 
     @PostMapping("/register")
     public ResponseEntity<Response> register(
-            @Valid @RequestBody AccountDTO accountDTO,
+            @Valid @RequestBody RegistrationRequest request,
             BindingResult bindingResult
     ) {
         ResponseEntity<Response> errorMsg = getResponseError(bindingResult);
         if (errorMsg != null) return errorMsg;
 
-        if (accountService.saveAccountIfNew(accountDTO) == null)
+        if (accountService.saveAccountIfNew(request) == null)
             return Response.builder()
                     .status(HttpStatus.BAD_REQUEST)
                     .message("Register account unsuccessfully.")
                     .response("Reason", "Account already exists")
                     .buildEntity();
-        String otp = authenticationService.generateOTP(accountDTO.getEmail());
+        String otp = authenticationService.generateOTP(request.getEmail());
         log.info("OTP code: " + otp);
         try {
-            emailService.sendOtpTextEmail(accountDTO.getEmail(), otp);
+            emailService.sendOtpTextEmail(request.getEmail(), otp);
         } catch (MessagingException e) { throw new RuntimeException(e); }
 
         return Response.builder()
@@ -97,11 +98,11 @@ public class RegistrationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Response> login (@Valid @RequestBody AccountDTO account, BindingResult bindingResult) {
+    public ResponseEntity<Response> login (@Valid @RequestBody RegistrationRequest request, BindingResult bindingResult) {
         ResponseEntity<Response> errorMsg = getResponseError(bindingResult);
         if (errorMsg != null) return errorMsg;
 
-        String jwtToken = authenticationService.authenticate(account);
+        String jwtToken = authenticationService.authenticate(request);
         return Response.builder()
                 .status(HttpStatus.OK)
                 .message("Login successfully")
@@ -142,11 +143,11 @@ public class RegistrationController {
 
     @PostMapping("/update-password")
     public ResponseEntity<Response> updatePassword (
-            @RequestBody AccountDTO account) {
-        Account updatedAcc = accountService.updateAccountPassword(account);
+            @RequestBody RegistrationRequest request) {
+        Account updatedAcc = accountService.updateAccountPassword(request);
         if (updatedAcc == null) throw new RuntimeException();
         return Response.builder()
-                .message("Password updated successfully for account with email "+account.getEmail()+", please log in again.")
+                .message("Password updated successfully for account with email "+request.getEmail()+", please log in again.")
                 .buildEntity();
     }
 

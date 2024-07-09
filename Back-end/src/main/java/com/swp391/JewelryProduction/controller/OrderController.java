@@ -109,34 +109,13 @@ public class OrderController {
                 .buildEntity();
     }
 
-    @GetMapping("/test-quote")
-    public ResponseEntity<Response> testQuotation() {
-        Random rand = new Random();
-        Quotation newQuote = Quotation.builder()
-                .createdDate(LocalDate.now())
-                .expiredDate(LocalDate.now().plusMonths(5))
-                .title("Test Quotation")
-                .quotationItems(new LinkedList<>())
-                .build();
-        for (int i = 0; i < 5; i++) {
-            QuotationItem item = QuotationItem.builder()
-                    .quotation(newQuote)
-                    .name("Item " + i)
-                    .quantity(rand.nextInt(5))
-                    .unitPrice(rand.nextDouble(10, 100))
-                    .build();
-            item.setTotalPrice(item.getQuantity() * item.getUnitPrice());
-            newQuote.getQuotationItems().add(item);
-        }
+    @GetMapping("/account/{accountId}")
+    public ResponseEntity<Response> getOrderByAccountId(
+            @PathVariable("accountId") String accountId
+    ) {
         return Response.builder()
-                .response("quotation", quotationRepository.save(newQuote))
-                .buildEntity();
-    }
-
-    @PostMapping("/test-quote")
-    public ResponseEntity<Response> testPostQuotation(@RequestBody Quotation quotation) {
-        return Response.builder()
-                .response("quotation", quotationRepository.save(quotation))
+                .message("Request sent successfully")
+                .response("orders", orderService.findOrderByAccountId(accountId))
                 .buildEntity();
     }
 }

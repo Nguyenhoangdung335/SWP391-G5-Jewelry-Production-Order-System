@@ -7,8 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,4 +18,5 @@ public interface OrderRepository extends JpaRepository<Order, String> {
 
     @Query(value = "SELECT * FROM Orders WHERE MONTH(date_created) = :month AND YEAR(date_created) = :year", nativeQuery = true)
     List<Order> findAllByMonthAndYear(@Param("month") int month, @Param("year") int year);
+    List<Order> findAllByOwnerId (String ownerId);
 }

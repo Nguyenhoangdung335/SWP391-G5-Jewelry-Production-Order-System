@@ -1,6 +1,7 @@
 package com.swp391.JewelryProduction.pojos.designPojos;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -39,8 +40,8 @@ public class ProductSpecification {
 
     private String gemstoneWeight;
 
+    @JsonIgnore
     @ToString.Exclude
-    @JsonManagedReference("Product-Specification")
     @OneToMany(mappedBy = "specification", fetch = FetchType.EAGER)
     private List<Product> products;
 }

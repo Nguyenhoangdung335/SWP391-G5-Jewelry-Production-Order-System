@@ -137,6 +137,11 @@ public class OrderServiceImpl implements OrderService {
         return totalRevenue;
     }
 
+    @Override
+    public List<Order> findOrderByAccountId(String accountId) {
+        return orderRepository.findAllByOwnerId(accountId);
+    }
+
     public Order setOrder(OrderDTO orderDTO) {
         Order order = Order.builder()
                 .id(orderDTO.getId())
