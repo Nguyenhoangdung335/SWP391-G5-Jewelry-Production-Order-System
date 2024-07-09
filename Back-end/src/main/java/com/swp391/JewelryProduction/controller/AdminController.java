@@ -57,7 +57,11 @@ public class AdminController {
             @PathVariable("offset") int offset,
             @RequestParam(defaultValue = "5") int elementPerPage
     ) {
-        Page<Account> accountPage = accountService.findAllByRole(role, offset, elementPerPage);
+        Page<Account> accountPage;
+        if (role.equals(Role.ALL))
+            accountPage = accountService.findAll(offset, elementPerPage);
+        else
+            accountPage = accountService.findAllByRole(role, offset, elementPerPage);
 
         return Response.builder()
                 .status(HttpStatus.OK)
