@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<Order, String> {
@@ -12,4 +13,5 @@ public interface OrderRepository extends JpaRepository<Order, String> {
     @EntityGraph( attributePaths = {"staffOrderHistory", "quotation", "design", "product", "transactions", "warranty"} )
     @Override
     Optional<Order> findById(@NotNull String s);
+    List<Order> findAllByOwnerId (String ownerId);
 }
