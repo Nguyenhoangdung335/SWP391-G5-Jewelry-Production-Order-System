@@ -104,6 +104,11 @@ public class    CrawlDataService implements ICrawlDataService {
                         .id(String.valueOf(list.size()))  // Use priceData size as ID
                         .event("live")
                         .data(list)
+                        .build())
+                .startWith(ServerSentEvent.<List<Material>>builder()
+                        .id(String.valueOf(list.size()))
+                        .event("live")
+                        .data(list)
                         .build());
     }
 

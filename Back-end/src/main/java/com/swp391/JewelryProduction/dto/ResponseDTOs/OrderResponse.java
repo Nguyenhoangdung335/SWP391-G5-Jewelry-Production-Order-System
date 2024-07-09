@@ -15,6 +15,7 @@ public class OrderResponse {
     private String name;
     private double budget;
     private LocalDateTime createdDate;
+    private LocalDateTime completedDate;
     private OrderStatus status;
     private String imageURL;
 }

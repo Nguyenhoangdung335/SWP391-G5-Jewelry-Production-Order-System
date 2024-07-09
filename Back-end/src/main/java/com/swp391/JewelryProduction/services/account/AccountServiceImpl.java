@@ -235,6 +235,16 @@ public class AccountServiceImpl implements AccountService {
         return accountRepository.findAllByRole(role, PageRequest.of(offset, elementsPerPage));
     }
 
+    @Override
+    public Page<Account> findAll(int offset) {
+        return findAll(offset, 5);
+    }
+
+    @Override
+    public Page<Account> findAll(int offset, int elementPerPage) {
+        return accountRepository.findAll(PageRequest.of(offset, elementPerPage));
+    }
+
     @Transactional
     @Override
     public Account createAccount(AccountDTO accountDTO) {

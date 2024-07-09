@@ -6,5 +6,6 @@ public enum Role {
     DESIGN_STAFF,
     PRODUCTION_STAFF,
     MANAGER,
-    ADMIN
+    ADMIN,
+    ALL
 }
