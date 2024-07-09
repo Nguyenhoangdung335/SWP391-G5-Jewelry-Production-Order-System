@@ -52,7 +52,7 @@ public class Order {
     @Column(name = "date_created", nullable = false)
     private LocalDateTime createdDate;
     @ToString.Include
-    @Column(name = "date_completed", nullable = false)
+    @Column(name = "date_completed")
     private LocalDateTime completedDate;
     @ToString.Include
     @Enumerated(EnumType.STRING)

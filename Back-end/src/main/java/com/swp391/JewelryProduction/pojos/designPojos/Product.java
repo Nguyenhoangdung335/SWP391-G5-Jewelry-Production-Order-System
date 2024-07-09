@@ -7,10 +7,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.swp391.JewelryProduction.pojos.Order;
 import com.swp391.JewelryProduction.util.IdGenerator;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
@@ -46,6 +43,7 @@ public class Product {
     @JsonBackReference("Product-Specification")
     private ProductSpecification specification;
 
+    @ToString.Exclude
     @OneToOne(mappedBy = "product", fetch = FetchType.LAZY)
     @JsonBackReference("Order-Product")
     private Order order;

@@ -31,6 +31,7 @@ import java.util.List;
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "id"
 )
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Account{
     @ToString.Include
     @EqualsAndHashCode.Include

@@ -3,10 +3,7 @@ package com.swp391.JewelryProduction.pojos;
 import com.fasterxml.jackson.annotation.*;
 import com.swp391.JewelryProduction.util.IdGenerator;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
@@ -51,6 +48,7 @@ public class Quotation {
     @Builder.Default
     private List<QuotationItem> quotationItems = new LinkedList<>();
 
+    @ToString.Exclude
     @OneToOne(mappedBy = "quotation", fetch = FetchType.LAZY)
     @JsonBackReference("Order-Quotation")
     private Order order;

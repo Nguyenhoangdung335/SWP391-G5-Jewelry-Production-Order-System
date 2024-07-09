@@ -10,6 +10,7 @@ import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -84,13 +85,18 @@ public class EmailServiceImpl implements EmailService {
 
         String htmlBody = templateEngine.process("emailReceipt", context);
 
-        MimeMessage message = new MimeMessage(session);
-        message.setFrom(new InternetAddress(senderEmail));
-        message.addRecipient(Message.RecipientType.TO, new InternetAddress(toEmail));
-        message.setSubject(subject);
-        message.setContent(htmlBody, "text/html; charset=utf-8");
+        Transport.send(createMessage(toEmail, subject, htmlBody));
+    }
 
-        Transport.send(message);
+    @Async
+    @Override
+    public void sendInvoiceEmail(String toEmail, String subject, Map<String, Object> templateModel) throws MessagingException {
+        Context context = new Context();
+        context.setVariables(templateModel);
+
+        String htmlBody = templateEngine.process("emailInvoice", context);
+
+        Transport.send(createMessage(toEmail, subject, htmlBody));
     }
 
     @Async
@@ -378,7 +384,7 @@ public class EmailServiceImpl implements EmailService {
                 "</html>";
     }
 
-    public String generateReceiptHtml(Payment payment, Sale sale) {
+    public String generateReceiptHtml(@NotNull Payment payment, Sale sale) {
         // Generate a simple HTML receipt
         return "<html>" +
                 "<head><title>Payment Receipt</title></head>" +
@@ -396,5 +402,12 @@ public class EmailServiceImpl implements EmailService {
                 "</html>";
     }
 
-
+    private MimeMessage createMessage (String toEmail, String subject, String content) throws MessagingException{
+        MimeMessage message = new MimeMessage(session);
+        message.setFrom(new InternetAddress(senderEmail));
+        message.addRecipient(Message.RecipientType.TO, new InternetAddress(toEmail));
+        message.setSubject(subject);
+        message.setContent(content, "text/html; charset=utf-8");
+        return message;
+    }
 }

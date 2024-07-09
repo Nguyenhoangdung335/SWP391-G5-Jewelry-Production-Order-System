@@ -21,11 +21,10 @@ public class StaffServiceImpl implements StaffService{
 
     @Override
     public List<Staff> findAllStaff() {
-        return staffRepository.findAll().stream()
-                .filter(account -> account.getRole().name().toLowerCase().contains("staff"))
-                .collect(Collectors.toList());
+        return staffRepository.findAll();
     }
 
+    @Transactional
     @Override
     public List<Staff> findAllByRole(Role role) {
         return staffRepository.findAllByRole(role);

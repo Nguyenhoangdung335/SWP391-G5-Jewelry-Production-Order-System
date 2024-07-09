@@ -13,5 +13,8 @@ public interface EmailService {
     @Async
     void sendReceiptEmail(String toEmail, String subject, Map<String, Object> templateModel) throws MessagingException;
 
+    @Async
+    void sendInvoiceEmail(String toEmail, String subject, Map<String, Object> templateModel) throws MessagingException;
+
     void sendMailFromNotification (Notification notification) throws MessagingException;
 }

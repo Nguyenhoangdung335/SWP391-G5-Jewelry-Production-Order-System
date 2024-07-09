@@ -153,14 +153,14 @@ public class Application   {
 			}
 
 			Staff staff;
-			for (int i = 0; i < 15; i++) {
+			for (int i = 0; i < 20; i++) {
 				staff = Staff.builder()
 						.email(faker.internet().safeEmailAddress())
 						.password(passwordEncoder.encode(faker.internet().password()))
 						.dateCreated(LocalDateTime.now().plusWeeks(rand.nextLong(10)).plusDays(rand.nextLong(31)))
 						.role(
-								(i < 10)?
-										(i< 5)? Role.SALE_STAFF: Role.DESIGN_STAFF
+								(i < 13)?
+										(i< 6)? Role.SALE_STAFF: Role.DESIGN_STAFF
 										: Role.PRODUCTION_STAFF
 						)
 						.status(AccountStatus.ACTIVE)
