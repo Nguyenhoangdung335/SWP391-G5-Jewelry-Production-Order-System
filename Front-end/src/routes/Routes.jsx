@@ -27,6 +27,7 @@ import UserInfo from "../user_settings/UserInfo";
 import SettingPageLayout from "../layout/SettingLayout";
 import OrderHistory from "../user_settings/OrderHistory";
 import NotificationPage from "../user_settings/Notification";
+import OrderDetail from "../user_settings/detailpage/OrderDetail";
 
 function RouteMap() {
   return (
@@ -49,6 +50,14 @@ function RouteMap() {
           element={
             <ProtectedRoute roles={["CUSTOMER"]}>
               <OrderPage1 />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/order_detail_page"
+          element={
+            <ProtectedRoute>
+              <OrderDetail />
             </ProtectedRoute>
           }
         />

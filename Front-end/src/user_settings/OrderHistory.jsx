@@ -32,7 +32,7 @@ function OrderHistory() {
     return (
       <Col className="p-4" md={4} key={i.id}>
         <Link
-          to="/"
+          to="/order_detail_page"
           state={i.id}
           className=" link-opacity-50-hover text-decoration-none"
         >
