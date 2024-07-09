@@ -40,7 +40,6 @@ public class Product {
     private String imageURL;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JsonBackReference("Product-Specification")
     private ProductSpecification specification;
 
     @ToString.Exclude
