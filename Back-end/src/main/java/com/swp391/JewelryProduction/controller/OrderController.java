@@ -115,7 +115,7 @@ public class OrderController {
     ) {
         return Response.builder()
                 .message("Request sent successfully")
-                .response("orders", orderService.findOrderByAccountId(accountId))
+                .response("orders", orderService.findOrderByAccountId(accountId).stream().map(orderService::mappedToResponse).toList())
                 .buildEntity();
     }
 }

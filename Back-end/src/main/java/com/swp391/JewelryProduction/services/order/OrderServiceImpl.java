@@ -2,6 +2,7 @@ package com.swp391.JewelryProduction.services.order;
 
 import com.swp391.JewelryProduction.dto.OrderDTO;
 import com.swp391.JewelryProduction.dto.RequestDTOs.StaffGroup;
+import com.swp391.JewelryProduction.dto.ResponseDTOs.OrderResponse;
 import com.swp391.JewelryProduction.enums.OrderEvent;
 import com.swp391.JewelryProduction.enums.OrderStatus;
 import com.swp391.JewelryProduction.enums.Role;
@@ -133,7 +134,25 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.findAllByOwnerId(accountId);
     }
 
-    public Order setOrder(OrderDTO orderDTO) {
+    @Override
+    public OrderResponse mappedToResponse(Order order) {
+        String imageURL = null;
+        if (order.getProduct() != null && order.getProduct().getImageURL() != null)
+            imageURL = order.getProduct().getImageURL();
+        else if (order.getDesign() != null && order.getDesign().getDesignLink() != null)
+            imageURL = order.getDesign().getDesignLink();
+
+        return OrderResponse.builder()
+                .id(order.getId())
+                .budget(order.getBudget())
+                .name(order.getName())
+                .createdDate(order.getCreatedDate())
+                .status(order.getStatus())
+                .imageURL(imageURL)
+                .build();
+    }
+
+    private Order setOrder(OrderDTO orderDTO) {
         Order order = Order.builder()
                 .id(orderDTO.getId())
                 .budget(orderDTO.getBudget())
