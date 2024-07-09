@@ -25,8 +25,6 @@ public class AccountDTO{
     @Pattern(regexp = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message = "Email is invalid")
     @NotEmpty(message = "Email cannot be empty")
     private String email;
-    @Pattern(regexp = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$", message = "Password is invalid")
-    @NotEmpty(message = "Password cannot by empty")
     private String password;
     private LocalDateTime dateCreated;
     @EnumNameValidator(regexp = "CUSTOMER|SALE_STAFF|DESIGN_STAFF|PRODUCTION_STAFF|MANAGER|ADMIN", message = "Role is not valid")
