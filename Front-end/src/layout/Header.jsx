@@ -143,16 +143,7 @@ export default function Header() {
                 </Link>
               </NavLink>
               <NavLink>
-                <div>
-                  <IoNotificationsOutline size={30} color="black" />
-                  <Badge
-                    style={{ fontSize: "8px", translate: "-15px -10px" }}
-                    pill
-                    bg="danger"
-                  >
-                    3
-                  </Badge>
-                </div>
+                <IoNotificationsOutline size={30} color="black" />
               </NavLink>
               <NavLink>
                 <Dropdown

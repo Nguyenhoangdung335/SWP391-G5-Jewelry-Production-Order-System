@@ -15,6 +15,7 @@ function SideBar() {
       style={{
         backgroundColor: "white",
         height: "100vh",
+        width: "100%",
         boxShadow: " 1px 0 10px -3px",
       }}
     >

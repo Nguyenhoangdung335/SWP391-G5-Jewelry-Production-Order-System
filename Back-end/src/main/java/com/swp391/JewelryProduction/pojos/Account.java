@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.swp391.JewelryProduction.enums.AccountStatus;
+import com.swp391.JewelryProduction.enums.OrderStatus;
 import com.swp391.JewelryProduction.enums.Role;
 import com.swp391.JewelryProduction.util.IdGenerator;
 import com.swp391.JewelryProduction.websocket.listener.GlobalEntityListener;
@@ -54,7 +55,6 @@ public class Account{
     @Column(nullable = false, unique = true)
     private String email;
 
-    @JsonIgnore
     @ToString.Include
     @EqualsAndHashCode.Include
     @Column(nullable = false)
@@ -115,8 +115,12 @@ public class Account{
     }
 
     public Order getCurrentOrder() {
-        if (pastOrder != null && !pastOrder.isEmpty())
-            return currentOrder = pastOrder.get(pastOrder.size() - 1);
+        if (pastOrder != null && !pastOrder.isEmpty()) {
+            Order latestOrder = pastOrder.get(pastOrder.size() - 1);
+            if (latestOrder.getStatus().equals(OrderStatus.ORDER_COMPLETED))
+                return null;
+            return latestOrder;
+        }
         return null;
     }
 

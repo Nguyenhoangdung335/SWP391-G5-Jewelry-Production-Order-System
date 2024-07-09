@@ -136,6 +136,14 @@ public class AccountServiceImpl implements AccountService {
         return accountRepository.save(updatedAcc);
     }
 
+    @Override
+    public Account updateAccountInfo(UserInfo info, String accountId) {
+        Account account = this.findAccountById(accountId);
+        info = userInfoRepository.save(info);
+        account.setUserInfo(info);
+        return account;
+    }
+
     @Transactional
     @Override
     public Account updateAccountStatusActive(String email) {
@@ -239,10 +247,27 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Account updateAccount(AccountDTO accountDTO) {
         List<Account> list = accountRepository.findAllByEmail(accountDTO.getEmail());
-        if (list.isEmpty() || list.stream().anyMatch(account -> account.getId().equals(accountDTO.getId())))
+        if (list.isEmpty() || list.stream().anyMatch(account -> account.getId().equals(accountDTO.getId()))) {
+            // Fetch the existing account from the database
+            Account existingAccount = accountRepository.findById(accountDTO.getId())
+                    .orElseThrow(() -> new ObjectNotFoundException("Account not found"));
+
+            // Check if the password is changed
+            if (!accountDTO.getPassword().equals(existingAccount.getPassword())) {
+                System.out.println("Is not matched");
+                // Encode the new password
+                accountDTO.setPassword(passwordEncoder.encode(accountDTO.getPassword()));
+            } else {
+                System.out.println("Is matched");
+                // Retain the old password
+                accountDTO.setPassword(existingAccount.getPassword());
+            }
+
+            // Save the updated account
             return accountRepository.save(setAccount(accountDTO));
-        else
+        } else {
             throw new ObjectExistsException("Account with email " + accountDTO.getEmail() + " already exists");
+        }
     }
 
     @Override
@@ -255,8 +280,6 @@ public class AccountServiceImpl implements AccountService {
     public void deleteAccount(String accountId) {
         accountRepository.delete(accountRepository.findById(accountId).orElseThrow(() -> new ObjectNotFoundException("Account with id " + accountId + " not found")));
     }
-
-
 
     public Account setAccount(AccountDTO accountDTO) {
         Account account = Account.builder()

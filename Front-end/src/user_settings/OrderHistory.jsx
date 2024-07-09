@@ -1,51 +1,58 @@
 import { useEffect, useState } from "react";
-import { Container, Table } from "react-bootstrap";
+import { Badge, Card, Col, Container, Row, Table } from "react-bootstrap";
 import { useAuth } from "../provider/AuthProvider";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import ServerUrl from "../reusable/ServerUrl";
+import { Link } from "react-router-dom";
+import snowfall from "../assets/snowfall.jpg";
 
 function OrderHistory() {
-  const [data, setData] = useState();
+  const [data, setData] = useState([]);
   const { token } = useAuth();
 
   useEffect(() => {
     if (token) {
       const decodedToken = jwtDecode(token);
-
-      axios({
+      axios(`${ServerUrl}/api/order/account/${decodedToken.id}`, {
         method: "GET",
-        url: `${ServerUrl}/api/notification/${decodedToken.id}/get-all`,
         headers: { "Content-Type": "Application/json" },
-      }).then((res) => setData(res.data));
+      }).then((res) => setData(res.data.responseList.orders));
     }
-  });
-  const getNotification = data.map((i) => {
+  }, [token]);
+
+  console.log(data);
+
+  if (!data) {
+    // Handle loading state or error
+    return <div>Loading...</div>;
+  }
+
+  const getOrder = data.map((i) => {
     return (
-      <>
-        <tr key={i.id}>
-          <td>{i.name}</td>
-          <td>{i.createdDate}</td>
-          <td>{i.budget}</td>
-          <td>{i.status}</td>
-        </tr>
-      </>
+      <Col className="p-4" md={4} key={i.id}>
+        <Link
+          to="/"
+          state={i.id}
+          className=" link-opacity-50-hover text-decoration-none"
+        >
+          <Card className=" link-opacity-50-hover" style={{ width: "20rem" }}>
+            <Card.Img variant="top" src={snowfall} alt="Order Image" />
+            <Card.Body>
+              <Card.Title className="fw-semibold" style={{ height: "50px" }}>{i.name}</Card.Title>
+              <Card.Text>{i.budget} $</Card.Text>
+              <Card.Text>{i.createdDate}</Card.Text>
+              <Badge>{i.status}</Badge>
+            </Card.Body>
+          </Card>
+        </Link>
+      </Col>
     );
   });
+
   return (
     <Container>
-      <Table className="mt-3" hover>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Created Date</th>
-            <th>Budget</th>
-            <th>Status</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>{/* {getNotification} */}</tbody>
-      </Table>
+      <Row className="mt-4">{getOrder}</Row>
     </Container>
   );
 }

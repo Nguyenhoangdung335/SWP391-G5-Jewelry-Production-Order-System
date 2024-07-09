@@ -57,6 +57,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
                 .message(message)
                 .responseList(errors)
                 .build();
+        log.error(errors.toString());
 
         return handleExceptionInternal(
                 ex, res, headers, res.getStatus(), request);

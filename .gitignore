@@ -68,3 +68,4 @@ Back-end/src/main/resources/keys.env
 /Front-end/node_modules
 
 /Front-end/server.env
+*.env

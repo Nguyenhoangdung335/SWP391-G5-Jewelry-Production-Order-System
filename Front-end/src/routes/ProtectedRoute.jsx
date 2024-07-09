@@ -7,7 +7,6 @@ const ProtectedRoute = ({ children, roles, ...rest }) => {
   const { token } = useAuth();
   let decodedToken;
 
-  console.log(token);
   if (token) {
     decodedToken = jwtDecode(token);
   }

@@ -52,19 +52,20 @@ function RouteMap() {
             </ProtectedRoute>
           }
         />
-      </Route >
-      <Route
-        path="/userManager"
-        element={
-          //<ProtectedRoute>
-          <UserManagerLayout />
-          //</ProtectedRoute>
-        }
-      >
+      </Route>
+      <Route path="/userManager" element={<UserManagerLayout />}>
         <Route
           index
           element={
-            <ProtectedRoute roles={["ADMIN"]}>
+            <ProtectedRoute
+              roles={[
+                "ADMIN",
+                "MANAGER",
+                "PRODUCTION_STAFF",
+                "DESIGN_STAFF",
+                "SALE_STAFF",
+              ]}
+            >
               <DashboardManger />
             </ProtectedRoute>
           }
@@ -72,56 +73,111 @@ function RouteMap() {
         <Route
           path="/userManager/client_manager"
           element={
-            //<ProtectedRoute roles={["ADMIN"]}>
-            <ClientManager />
-            //</ProtectedRoute>
+            <ProtectedRoute
+              roles={[
+                "ADMIN",
+                "MANAGER",
+                "PRODUCTION_STAFF",
+                "DESIGN_STAFF",
+                "SALE_STAFF",
+              ]}
+            >
+              <ClientManager />
+            </ProtectedRoute>
           }
         />
         <Route
           path="/userManager/orders_manager"
           element={
-            //<ProtectedRoute roles={["ADMIN"]}>
-            <OrderManager />
-            //</ProtectedRoute>
+            <ProtectedRoute
+              roles={[
+                "ADMIN",
+                "MANAGER",
+                "PRODUCTION_STAFF",
+                "DESIGN_STAFF",
+                "SALE_STAFF",
+              ]}
+            >
+              <OrderManager />
+            </ProtectedRoute>
           }
         />
         <Route
           path="/userManager/blogs_manager"
           element={
-            //<ProtectedRoute roles={["ADMIN"]}>
-            <BlogManager />
-            //</ProtectedRoute>
+            <ProtectedRoute
+              roles={[
+                "ADMIN",
+                "MANAGER",
+                "PRODUCTION_STAFF",
+                "DESIGN_STAFF",
+                "SALE_STAFF",
+              ]}
+            >
+              <BlogManager />
+            </ProtectedRoute>
           }
         />
         <Route
           path="/userManager/employees_manager"
           element={
-            //<ProtectedRoute>
-            <EmployeeManager />
-            //</ProtectedRoute>
+            <ProtectedRoute
+              roles={[
+                "ADMIN",
+                "MANAGER",
+                "PRODUCTION_STAFF",
+                "DESIGN_STAFF",
+                "SALE_STAFF",
+              ]}
+            >
+              <EmployeeManager />
+            </ProtectedRoute>
           }
         />
         <Route
           path="/userManager/products_manager"
           element={
-            //<ProtectedRoute roles={["manager", "production", "design", "sale"]}>
-            <ProductManager />
-            //</ProtectedRoute>
+            <ProtectedRoute
+              roles={[
+                "ADMIN",
+                "MANAGER",
+                "PRODUCTION_STAFF",
+                "DESIGN_STAFF",
+                "SALE_STAFF",
+              ]}
+            >
+              <ProductManager />
+            </ProtectedRoute>
           }
         />
       </Route>
       <Route path="/user_setting_page" element={<SettingPageLayout />}>
-        <Route index element={<UserInfo />} />
+        <Route
+          index
+          element={
+            <ProtectedRoute>
+              <UserInfo />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/user_setting_page/order_history_page"
-          element={<OrderHistory />}
+          element={
+            <ProtectedRoute>
+              <OrderHistory />
+            </ProtectedRoute>
+          }
         />
         <Route
           path="/user_setting_page/notification_page"
-          element={<NotificationPage />}
+          element={
+            <ProtectedRoute>
+              <NotificationPage />
+            </ProtectedRoute>
+          }
         />
       </Route>
-    </Routes >
+    </Routes>
   );
 }
 

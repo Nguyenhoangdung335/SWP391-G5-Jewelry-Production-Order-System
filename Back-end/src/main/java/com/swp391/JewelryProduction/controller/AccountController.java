@@ -2,6 +2,7 @@ package com.swp391.JewelryProduction.controller;
 
 import com.swp391.JewelryProduction.dto.AccountDTO;
 import com.swp391.JewelryProduction.pojos.Account;
+import com.swp391.JewelryProduction.pojos.UserInfo;
 import com.swp391.JewelryProduction.services.account.AccountService;
 import com.swp391.JewelryProduction.util.Response;
 import jakarta.validation.Valid;
@@ -34,14 +35,12 @@ public class AccountController {
     @PutMapping("/{accountId}")
     public ResponseEntity<Response> updateInfo (
             @PathVariable("accountId")
-            @NotBlank @NotEmpty
-            @Pattern(regexp = "^(ACC)\\d{5}$|\\d+", message = "The accountID is not valid")
-            @Valid
             String accountId,
-            AccountDTO accountDTO
-    ) {
-        accountDTO.setId(accountId);
-        Account updatedAcc = accountService.updateAccount(accountDTO);
+            @RequestBody UserInfo userInfo
+            ) {
+        Account updatedAcc = accountService.findAccountById(accountId);
+        updatedAcc = accountService.saveUserInfo(userInfo, updatedAcc.getEmail());
+        System.out.println("Test 2");
         return Response.builder()
                 .response("account", updatedAcc)
                 .buildEntity();
