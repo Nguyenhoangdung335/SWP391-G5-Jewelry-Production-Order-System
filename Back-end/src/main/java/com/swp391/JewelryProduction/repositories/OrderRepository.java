@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<Order, String> {
     @NotNull
-    @EntityGraph( attributePaths = {"staffOrderHistory"} )
+    @EntityGraph( attributePaths = {"staffOrderHistory", "quotation", "design", "product", "transactions", "warranty"} )
     @Override
     Optional<Order> findById(@NotNull String s);
 }
