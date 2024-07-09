@@ -11,12 +11,14 @@ import { useAuth } from "../provider/AuthProvider";
 export default function NavBar() {
   return (
     <>
-      <h1
-        className="display-4 px-5 "
-        style={{ fontSize: "2.5rem", color: "white", textAlign: "center" }}
-      >
-        宝石店
-      </h1>
+      <Link to="/" style={{ textDecoration: "none" }}>
+        <h1
+          className="display-4 px-5"
+          style={{ fontSize: "2.5rem", color: "white", textAlign: "center" }}
+        >
+          宝石店
+        </h1>
+      </Link>
       <div style={{ marginTop: "10%" }} className="d-flex flex-column gap-3 ">
         <NavLink
           style={({ isActive }) => ({
