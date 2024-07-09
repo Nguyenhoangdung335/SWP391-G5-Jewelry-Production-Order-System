@@ -3,10 +3,12 @@ package com.swp391.JewelryProduction.controller;
 import com.swp391.JewelryProduction.dto.AccountDTO;
 import com.swp391.JewelryProduction.dto.OrderDTO;
 import com.swp391.JewelryProduction.enums.Role;
+import com.swp391.JewelryProduction.pojos.Account;
 import com.swp391.JewelryProduction.services.account.AccountService;
 import com.swp391.JewelryProduction.services.order.OrderService;
 import com.swp391.JewelryProduction.util.Response;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -48,11 +50,19 @@ public class AdminController {
 
     //<editor-fold desc="CLIENTS/EMPLOYEES" defaultstate="collapsed>
     @GetMapping("/get/{role}/{offset}")
-    public ResponseEntity<Response> getAccountByRole(@PathVariable("role") Role role, @PathVariable("offset") int offset) {
+    public ResponseEntity<Response> getAccountByRole(
+            @PathVariable("role") Role role,
+            @PathVariable("offset") int offset,
+            @RequestParam(defaultValue = "5") int elementPerPage
+    ) {
+        Page<Account> accountPage = accountService.findAllByRole(role, offset, elementPerPage);
+
         return Response.builder()
                 .status(HttpStatus.OK)
                 .message("Request sent successfully")
-                .response(role + "_list",accountService.findAllByRole(role, offset))
+                .response("accounts", accountPage.getContent())
+                .response("totalPages", accountPage.getTotalPages())
+                .response("totalElements", accountPage.getTotalElements())
                 .buildEntity();
     }
     @PostMapping("/create/account")
