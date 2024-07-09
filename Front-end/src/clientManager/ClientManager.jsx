@@ -1,38 +1,43 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, Modal, Form, FormControl, Row, Col,
-} from "react-bootstrap";
+import { Table, Button, Modal, Form, Row, Col } from "react-bootstrap";
 import { FiPlus } from "react-icons/fi";
-import { FaCaretDown } from "react-icons/fa";
 import axios from "axios";
 import { roles } from "../data/data";
-import { Icon } from "@iconify/react/dist/iconify.js";
+import { Icon } from "@iconify/react";
+import ServerUrl from "../reusable/ServerUrl";
 
 export default function EmployeeManager() {
-  const [filterRole, setFilterRole] = useState("");
+  const [filterRole, setFilterRole] = useState("CUSTOMER");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [deleteUser, setDeleteUser] = useState(null);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const itemsPerPage = 5;
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    axios({
-      method: "GET",
-      url: "http://localhost:8080/api/admin/get/CUSTOMER",
-      headers: { "Content-Type": "application/json" },
-    })
-      .then((res) => {
-        setData(res.data.responseList.CUSTOMER_list);
-      })
-      .catch((err) => console.log(err));
-  }, []);
+    const fetchData = async () => {
+      try {
+        const res = await axios.get(`${ServerUrl}/api/admin/get/${filterRole}/${currentPage - 1}`, {
+          headers: { "Content-Type": "application/json" },
+        });
+        setData(res.data.responseList.accounts);
+        setTotalPages(res.data.responseList.totalPages);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    
+    fetchData();
+  }, [filterRole, currentPage]);
 
   const handleFilterChange = (event) => {
     const selectedValue = event.target.value;
     setFilterRole(selectedValue);
+    setCurrentPage(1); // Reset to first page when filter changes
   };
 
   const handleEdit = (record) => {
@@ -64,17 +69,13 @@ export default function EmployeeManager() {
         address: form.address.value,
       },
     };
-
+  
     const newData = data.map((item) => (item.id === values.id ? values : item));
-    setData(newData);
+    setData(newData); // Update state immutably
     setIsModalVisible(false);
     setSelectedUser(null);
   };
-
-  const handleAddClick = () => {
-    setIsAddModalVisible(true);
-  };
-
+  
   const handleAdd = (event) => {
     event.preventDefault();
     const form = event.currentTarget;
@@ -94,8 +95,13 @@ export default function EmployeeManager() {
         address: form.address.value,
       },
     };
-    setData([...data, newEmployee]);
+    setData([...data, newEmployee]); // Update state immutably
     setIsAddModalVisible(false);
+  };
+  
+
+  const handleAddClick = () => {
+    setIsAddModalVisible(true);
   };
 
   const handleDeleteClick = (record) => {
@@ -118,19 +124,6 @@ export default function EmployeeManager() {
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
-
-  const filteredData = filterRole
-    ? data.filter(
-        (item) => item.role.toLowerCase() === filterRole.toLowerCase()
-      )
-    : data;
-
-  const paginatedData = filteredData.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
   const styles = {
     paginationContainer: {
@@ -211,7 +204,7 @@ export default function EmployeeManager() {
         }
       `}</style>
       <p style={{ margin: 0, fontSize: 24, fontWeight: "bold" }}>Welcome, K!</p>
-      <p style={{ fontSize: 16 }}>Employee Manager</p>
+      <p style={{ fontSize: 16 }}>Client Manager</p>
       <div
         style={{
           display: "flex",
@@ -222,13 +215,15 @@ export default function EmployeeManager() {
       >
         <div className="rounded-lg bg-neutral-500 text-white pl-3 flex items-center">
           <div>Role Filter</div>
-          <select className="bg-neutral-500 inline-block text-orange-500 w-44">
+          <select className="bg-neutral-500 inline-block text-orange-500 w-44" onChange={handleFilterChange}>
             {roles.map((role) => (
-              <option className="bg-white text-black">{role.name} </option>
+              <option key={role.name} value={role.value} className="bg-white text-black">
+                {role.name}
+              </option>
             ))}
           </select>
           <div className="relative right-6 pb-2">
-          <Icon  icon="fa:sort-down" />
+            <Icon icon="fa:sort-down" />
           </div>
         </div>
         
@@ -265,7 +260,7 @@ export default function EmployeeManager() {
           </tr>
         </thead>
         <tbody>
-          {paginatedData.map((item) => (
+          {data.map((item) => (
             <tr key={item.id}>
               <td>{item.id}</td>
               <td>{item.role}</td>
@@ -287,7 +282,6 @@ export default function EmployeeManager() {
                 <Button variant="link" onClick={() => handleEdit(item)}>
                   Edit
                 </Button>
-                <span style={{ margin: "0 5px" }}>|</span>
                 <Button variant="link" onClick={() => handleDeleteClick(item)}>
                   Delete
                 </Button>
@@ -296,223 +290,227 @@ export default function EmployeeManager() {
           ))}
         </tbody>
       </Table>
-
       <div style={styles.paginationContainer}>
         <div
+          onClick={() => handlePageChange(currentPage - 1)}
           style={{
             ...styles.paginationButton,
-            ...(currentPage === 1 ? styles.paginationButtonDisabled : {}),
+            ...(currentPage === 1 && styles.paginationButtonDisabled),
           }}
-          onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1}
         >
           &lt;
         </div>
-        {[...Array(totalPages).keys()].map((page) => (
+        {[...Array(totalPages)].map((_, index) => (
           <div
-            key={page + 1}
+            key={index}
+            onClick={() => handlePageChange(index + 1)}
             style={{
               ...styles.paginationButton,
-              ...(page + 1 === currentPage
-                ? styles.paginationButtonActive
-                : {}),
+              ...(currentPage === index + 1 && styles.paginationButtonActive),
             }}
-            onClick={() => handlePageChange(page + 1)}
           >
-            {page + 1}
+            {index + 1}
           </div>
         ))}
         <div
+          onClick={() => handlePageChange(currentPage + 1)}
           style={{
             ...styles.paginationButton,
-            ...(currentPage === totalPages
-              ? styles.paginationButtonDisabled
-              : {}),
+            ...(currentPage === totalPages && styles.paginationButtonDisabled),
           }}
-          onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
         >
           &gt;
         </div>
       </div>
 
-      <Modal show={isModalVisible} onHide={handleCancel}>
+      <Modal show={isModalVisible} onHide={handleCancel} centered>
         <Modal.Header closeButton>
           <Modal.Title>Edit Employee</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {selectedUser && (
             <Form onSubmit={handleSave}>
-              <Form.Group>
-                <Form.Label>ID</Form.Label>
-                <FormControl
-                  type="text"
-                  defaultValue={selectedUser.id}
-                  disabled
-                />
-              </Form.Group>
-              <Form.Group>
+              <Form.Group controlId="role">
                 <Form.Label>Role</Form.Label>
-                <FormControl type="text" defaultValue={selectedUser.role} />
+                <Form.Control
+                  as="select"
+                  defaultValue={selectedUser.role}
+                  required
+                >
+                  {roles.map((role) => (
+                    <option key={role.value} value={role.value}>
+                      {role.name}
+                    </option>
+                  ))}
+                </Form.Control>
               </Form.Group>
+
               <Row>
                 <Col>
-                  <Form.Group>
+                  <Form.Group controlId="firstName">
                     <Form.Label>First Name</Form.Label>
-                    <FormControl
+                    <Form.Control
                       type="text"
                       defaultValue={selectedUser.userInfo.firstName}
-                      name="firstName"
+                      required
                     />
                   </Form.Group>
                 </Col>
                 <Col>
-                  <Form.Group>
+                  <Form.Group controlId="lastName">
                     <Form.Label>Last Name</Form.Label>
-                    <FormControl
+                    <Form.Control
                       type="text"
                       defaultValue={selectedUser.userInfo.lastName}
-                      name="lastName"
+                      required
                     />
                   </Form.Group>
                 </Col>
               </Row>
-              <Form.Group>
-                <Form.Label>Gmail</Form.Label>
-                <FormControl type="email" defaultValue={selectedUser.email} />
+
+              <Form.Group controlId="gmail">
+                <Form.Label>Email</Form.Label>
+                <Form.Control
+                  type="email"
+                  defaultValue={selectedUser.email}
+                  required
+                />
               </Form.Group>
-              <Form.Group>
+
+              <Form.Group controlId="phone">
                 <Form.Label>Phone</Form.Label>
-                <FormControl
+                <Form.Control
                   type="text"
                   defaultValue={selectedUser.userInfo.phoneNumber}
-                  name="phone"
+                  required
                 />
               </Form.Group>
-              <Form.Group>
+
+              <Form.Group controlId="birthDate">
                 <Form.Label>Birth Date</Form.Label>
-                <FormControl
+                <Form.Control
                   type="date"
                   defaultValue={selectedUser.userInfo.birthDate}
-                  name="birthDate"
+                  required
                 />
               </Form.Group>
-              <Form.Group>
+
+              <Form.Group controlId="gender">
                 <Form.Label>Gender</Form.Label>
-                <FormControl
+                <Form.Control
                   as="select"
                   defaultValue={selectedUser.userInfo.gender}
-                  name="gender"
+                  required
                 >
                   <option value="MALE">Male</option>
                   <option value="FEMALE">Female</option>
-                  <option value="NON_BINARY">Non-binary</option>
-                  <option value="OTHER">Other</option>
-                </FormControl>
+                </Form.Control>
               </Form.Group>
-              <Form.Group>
+
+              <Form.Group controlId="address">
                 <Form.Label>Address</Form.Label>
-                <FormControl
+                <Form.Control
                   type="text"
                   defaultValue={selectedUser.userInfo.address}
-                  name="address"
+                  required
                 />
               </Form.Group>
-              <Button variant="primary" type="submit">
-                Save changes
-              </Button>
-              <Button
-                variant="secondary"
-                onClick={handleCancel}
-                style={{ marginLeft: 8 }}
-              >
-                Back
+
+              <Button variant="primary" type="submit" className="mt-3">
+                Save Changes
               </Button>
             </Form>
           )}
         </Modal.Body>
       </Modal>
 
-      <Modal show={deleteModalVisible} onHide={handleCancelDelete}>
-        <Modal.Header closeButton>
-          <Modal.Title>Confirm Delete</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>Are you sure you want to delete this employee?</p>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCancelDelete}>
-            Cancel
-          </Button>
-          <Button variant="danger" onClick={handleConfirmDelete}>
-            Delete
-          </Button>
-        </Modal.Footer>
-      </Modal>
-
-      <Modal
-        show={isAddModalVisible}
-        onHide={() => setIsAddModalVisible(false)}
-      >
+      <Modal show={isAddModalVisible} onHide={() => setIsAddModalVisible(false)} centered>
         <Modal.Header closeButton>
           <Modal.Title>Add Employee</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={handleAdd}>
-            <Form.Group controlId="formRole">
+            <Form.Group controlId="role">
               <Form.Label>Role</Form.Label>
-              <FormControl type="text" name="role" required />
+              <Form.Control as="select" required>
+                {roles.map((role) => (
+                  <option key={role.value} value={role.value}>
+                    {role.name}
+                  </option>
+                ))}
+              </Form.Control>
             </Form.Group>
+
             <Row>
               <Col>
-                <Form.Group controlId="formFirstName">
+                <Form.Group controlId="firstName">
                   <Form.Label>First Name</Form.Label>
-                  <FormControl type="text" name="firstName" required />
+                  <Form.Control type="text" required />
                 </Form.Group>
               </Col>
               <Col>
-                <Form.Group controlId="formLastName">
+                <Form.Group controlId="lastName">
                   <Form.Label>Last Name</Form.Label>
-                  <FormControl type="text" name="lastName" required />
+                  <Form.Control type="text" required />
                 </Form.Group>
               </Col>
             </Row>
-            <Form.Group controlId="formGmail">
-              <Form.Label>Gmail</Form.Label>
-              <FormControl type="email" name="gmail" required />
+
+            <Form.Group controlId="gmail">
+              <Form.Label>Email</Form.Label>
+              <Form.Control type="email" required />
             </Form.Group>
-            <Form.Group controlId="formPhone">
+
+            <Form.Group controlId="phone">
               <Form.Label>Phone</Form.Label>
-              <FormControl type="text" name="phone" required />
+              <Form.Control type="text" required />
             </Form.Group>
-            <Form.Group controlId="formBirthDate">
+
+            <Form.Group controlId="birthDate">
               <Form.Label>Birth Date</Form.Label>
-              <FormControl type="date" name="birthDate" required />
+              <Form.Control type="date" required />
             </Form.Group>
-            <Form.Group controlId="formGender">
+
+            <Form.Group controlId="gender">
               <Form.Label>Gender</Form.Label>
-              <FormControl as="select" name="gender" required>
+              <Form.Control as="select" required>
                 <option value="MALE">Male</option>
                 <option value="FEMALE">Female</option>
-                <option value="NON_BINARY">Non-binary</option>
-                <option value="OTHER">Other</option>
-              </FormControl>
+              </Form.Control>
             </Form.Group>
-            <Form.Group controlId="formAddress">
+
+            <Form.Group controlId="address">
               <Form.Label>Address</Form.Label>
-              <FormControl type="text" name="address" required />
+              <Form.Control type="text" required />
             </Form.Group>
-            <Button variant="primary" type="submit">
+
+            <Button variant="primary" type="submit" className="mt-3">
               Add Employee
             </Button>
-            <Button
-              variant="secondary"
-              onClick={() => setIsAddModalVisible(false)}
-              style={{ marginLeft: 8 }}
-            >
-              Back
-            </Button>
           </Form>
+        </Modal.Body>
+      </Modal>
+
+      <Modal show={deleteModalVisible} onHide={handleCancelDelete} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Delete</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Are you sure you want to delete this employee?</p>
+          <div className="d-flex justify-content-end">
+            <Button variant="secondary" onClick={handleCancelDelete}>
+              Cancel
+            </Button>
+            <Button
+              variant="danger"
+              onClick={handleConfirmDelete}
+              className="ms-2"
+            >
+              Delete
+            </Button>
+          </div>
         </Modal.Body>
       </Modal>
     </div>

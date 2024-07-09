@@ -25,6 +25,7 @@ public interface AccountRepository extends JpaRepository<Account, String> {
     Page<Account> findAllByRole(Role role, PageRequest pageRequest);
     Optional<Account> findByEmail(String email);
     List<Account> findAllByEmail(String email);
+    List<Account> findAllByRole(Role role);
 
     @Query("SELECT a FROM Account a")
     List<Account> findAllAccounts();
