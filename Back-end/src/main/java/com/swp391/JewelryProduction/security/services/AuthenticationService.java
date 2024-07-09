@@ -4,6 +4,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.swp391.JewelryProduction.dto.AccountDTO;
+import com.swp391.JewelryProduction.dto.RequestDTOs.RegistrationRequest;
 import com.swp391.JewelryProduction.pojos.Account;
 import com.swp391.JewelryProduction.pojos.UserInfo;
 import com.swp391.JewelryProduction.security.model.User;
@@ -63,17 +64,17 @@ public class AuthenticationService {
         return jwtService.generateToken(claims, user);
     }
 
-    public String authenticate(AccountDTO accountDTO) {
-        var test = userRepository.findByEmail(accountDTO.getEmail()).orElseThrow(() -> new UsernameNotFoundException("No user found"));
-        log.info(accountDTO.getPassword() + ": " + passwordEncoder.encode(accountDTO.getPassword()) + " and " + test.getPassword() + ": " +passwordEncoder.matches(accountDTO.getPassword(), test.getPassword()));
+    public String authenticate(RegistrationRequest request) {
+        var test = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new UsernameNotFoundException("No user found"));
+        log.info(request.getPassword() + ": " + passwordEncoder.encode(request.getPassword()) + " and " + test.getPassword() + ": " +passwordEncoder.matches(request.getPassword(), test.getPassword()));
 
         authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(
-                    accountDTO.getEmail(),
-                    accountDTO.getPassword()
+                    request.getEmail(),
+                    request.getPassword()
             )
         );
-        var user = userRepository.findByEmail(accountDTO.getEmail()).orElseThrow(() -> new UsernameNotFoundException("No user found"));
+        var user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new UsernameNotFoundException("No user found"));
         Map<String, Object> claims = new HashMap<>();
         claims.put("id", user.getAccount().getId());
         claims.put("first_name", user.getUserInfo().getFirstName());

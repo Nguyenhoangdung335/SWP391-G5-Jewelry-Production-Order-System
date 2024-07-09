@@ -1,6 +1,7 @@
 package com.swp391.JewelryProduction.services.account;
 
 import com.swp391.JewelryProduction.dto.AccountDTO;
+import com.swp391.JewelryProduction.dto.RequestDTOs.RegistrationRequest;
 import com.swp391.JewelryProduction.enums.AccountStatus;
 import com.swp391.JewelryProduction.enums.Role;
 import com.swp391.JewelryProduction.pojos.Account;
@@ -40,7 +41,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public List<Account> getAllAccounts() {
-        List<Account> accounts = accountRepository.findAllAccounts();
+        List<Account> accounts = accountRepository.findAll();
         List<String> accountIds = accounts.stream().map(Account::getId).collect(Collectors.toList());
 
         if (!accountIds.isEmpty()) {
@@ -123,12 +124,15 @@ public class AccountServiceImpl implements AccountService {
     //<editor-fold desc="UPDATE METHODS" defaultstate="collapsed">
     @Transactional
     @Override
-    public Account updateAccountPassword(AccountDTO accountDTO) {
-        Account updatedAcc = accountRepository.findByEmail(accountDTO.getEmail()).orElseThrow(() -> new ObjectNotFoundException("Account with email "+accountDTO.getEmail()+" does not exist"));
+    public Account updateAccountPassword(RegistrationRequest request) {
+        Account updatedAcc = accountRepository.findByEmail(
+                request.getEmail()).orElseThrow(
+                        () -> new ObjectNotFoundException("Account with email "+request.getEmail()+" does not exist")
+        );
         log.info("Old Password: " +updatedAcc.getPassword());
-        String.format("Old password: %s \nNew Password: %s", updatedAcc.getPassword(), accountDTO.getPassword());
+        String.format("Old password: %s \nNew Password: %s", updatedAcc.getPassword(), request.getPassword());
 
-        updatedAcc.setPassword(passwordEncoder.encode(accountDTO.getPassword()));
+        updatedAcc.setPassword(passwordEncoder.encode(request.getPassword()));
         return accountRepository.save(updatedAcc);
     }
 
@@ -154,10 +158,10 @@ public class AccountServiceImpl implements AccountService {
 
     @Transactional
     @Override
-    public Account saveAccountIfNew(AccountDTO accountDTO) {
-        Account acc = accountRepository.findByEmail(accountDTO.getEmail()).orElse(null);
+    public Account saveAccountIfNew(RegistrationRequest request) {
+        Account acc = accountRepository.findByEmail(request.getEmail()).orElse(null);
         if (acc != null && acc.getStatus().equals(AccountStatus.LOCKED)) {
-            if (passwordEncoder.matches(accountDTO.getPassword(), acc.getPassword()))
+            if (passwordEncoder.matches(request.getPassword(), acc.getPassword()))
                 return acc;
             else
                 return null;
@@ -166,8 +170,8 @@ public class AccountServiceImpl implements AccountService {
 
         UserInfo info = new UserInfo();
         acc = Account.builder()
-                .email(accountDTO.getEmail())
-                .password(passwordEncoder.encode(accountDTO.getPassword()))
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.CUSTOMER)
                 .status(AccountStatus.LOCKED)
                 .dateCreated(LocalDateTime.now())
@@ -215,7 +219,12 @@ public class AccountServiceImpl implements AccountService {
     //<editor-fold desc="ADMIN" defaultstate="collapsed">
     @Override
     public Page<Account> findAllByRole(Role role, int offset) {
-        return accountRepository.findAllByRole(role, PageRequest.of(offset, 5));
+        return findAllByRole(role, offset, 5);
+    }
+
+    @Override
+    public Page<Account> findAllByRole(Role role, int offset, int elementsPerPage) {
+        return accountRepository.findAllByRole(role, PageRequest.of(offset, elementsPerPage));
     }
 
     @Transactional
