@@ -1,10 +1,14 @@
 package com.swp391.JewelryProduction.config.stateMachine;
 
+import com.paypal.api.payments.Payer;
+import com.paypal.base.rest.PayPalRESTException;
 import com.swp391.JewelryProduction.enums.OrderEvent;
 import com.swp391.JewelryProduction.enums.OrderStatus;
 import com.swp391.JewelryProduction.enums.Role;
 import com.swp391.JewelryProduction.pojos.*;
+import com.swp391.JewelryProduction.services.PaypalService;
 import com.swp391.JewelryProduction.services.account.AccountService;
+import com.swp391.JewelryProduction.services.email.EmailService;
 import com.swp391.JewelryProduction.services.notification.NotificationService;
 import com.swp391.JewelryProduction.services.order.OrderService;
 import com.swp391.JewelryProduction.services.report.ReportService;
@@ -15,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
@@ -29,8 +34,12 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.swp391.JewelryProduction.config.stateMachine.StateMachineUtil.Keywords.*;
 import static com.swp391.JewelryProduction.config.stateMachine.StateMachineUtil.getCurrentState;
@@ -43,6 +52,8 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
     private ApplicationContext applicationContext;
 
     private final MessagesConstant messagesConstant = new MessagesConstant();
+    @Value("${url.fe}")
+    private String baseClientURL;
 
     @Override
     public void setApplicationContext(@NotNull ApplicationContext applicationContext) throws BeansException {
@@ -412,7 +423,37 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
     @Bean
     public Action<OrderStatus, OrderEvent> notifyCustomerTransactionAction() {
         return context -> {
+            log.info("\tnotifyTransactionReceiptAction is called\t");
 
+            OrderService orderService = applicationContext.getBean(OrderService.class);
+            PaypalService paypalService = applicationContext.getBean(PaypalService.class);
+            EmailService emailService = applicationContext.getBean(EmailService.class);
+
+            try {
+                Order order = getOrder(context, orderService);
+                Account owner = order.getOwner();
+                Transactions transactions = order.getTransactions();
+                Quotation quotation = order.getQuotation();
+                String actionURL = baseClientURL + "";
+
+                Map<String, Object> variables = new HashMap<>();
+                Map<String, String> receiptItems = new HashMap<>();
+
+                for (QuotationItem item : quotation.getQuotationItems()) {
+                    receiptItems.put(item.getName(), String.valueOf(item.getTotalPrice()));
+                }
+                variables.put("items", receiptItems);
+                variables.put("name", owner.getUserInfo().getFirstName());
+                variables.put("businessName", "Custom Jewelery");
+                variables.put("total", "$100.00");
+                variables.put("due_date", quotation.getExpiredDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+                variables.put("action_url", actionURL);
+                variables.put("currentYear", 2024);
+
+                emailService.sendInvoiceEmail(owner.getEmail(), "Receipt for order " + order.getId(), variables);
+            } catch (MessagingException e) {
+                throw new RuntimeException("System error, cannot send receipt designated email address",e);
+            }
         };
     }
 
@@ -441,10 +482,38 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
             log.info("\tnotifyTransactionReceiptAction is called\t");
 
             OrderService orderService = applicationContext.getBean(OrderService.class);
+            PaypalService paypalService = applicationContext.getBean(PaypalService.class);
+            EmailService emailService = applicationContext.getBean(EmailService.class);
 
-            Order order = getOrder(context, orderService);
+            try {
+                Order order = getOrder(context, orderService);
+                Account owner = order.getOwner();
+                Transactions transactions = order.getTransactions();
+                Quotation quotation = order.getQuotation();
+                Payer payer;
+                    payer = paypalService.getPaymentDetails(transactions.getPaypalPaymentId()).getPayer();
 
+                Map<String, Object> variables = new HashMap<>();
+                Map<String, String> receiptItems = new HashMap<>();
 
+                for (QuotationItem item : quotation.getQuotationItems()) {
+                    receiptItems.put(item.getName(), String.valueOf(item.getTotalPrice()));
+                }
+                variables.put("items", receiptItems);
+                variables.put("name", owner.getUserInfo().getFirstName());
+                variables.put("businessName", "Custom Jewelery");
+                variables.put("payerName", payer.getPayerInfo().getFirstName());
+                variables.put("receipt_id", order.getTransactions().getPaypalPaymentId());
+                variables.put("date", LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+                variables.put("total", "$100.00");
+                variables.put("currentYear", 2024);
+
+                emailService.sendReceiptEmail(owner.getEmail(), "Receipt for order " + order.getId(), variables);
+            } catch (PayPalRESTException e) {
+                throw new RuntimeException("System error, cannot get Paypal payer details", e);
+            } catch (MessagingException e) {
+                throw new RuntimeException("System error, cannot send receipt designated email address",e);
+            }
         };
     }
 
