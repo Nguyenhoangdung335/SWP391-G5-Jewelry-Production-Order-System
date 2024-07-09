@@ -5,6 +5,7 @@ import com.swp391.JewelryProduction.dto.OrderDTO;
 import com.swp391.JewelryProduction.enums.Role;
 import com.swp391.JewelryProduction.pojos.Account;
 import com.swp391.JewelryProduction.services.account.AccountService;
+import com.swp391.JewelryProduction.services.admin.AdminService;
 import com.swp391.JewelryProduction.services.order.OrderService;
 import com.swp391.JewelryProduction.util.Response;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class AdminController {
     private final AccountService accountService;
     private final OrderService orderService;
+    private final AdminService adminService;
 
     @GetMapping("/account-list")
     public ResponseEntity<Response> getAccounts() {
@@ -116,6 +118,13 @@ public class AdminController {
         return Response.builder()
                 .status(HttpStatus.OK)
                 .message("Request sent successfully")
+                .buildEntity();
+    }
+
+    @GetMapping("/dashboard-test")
+    public ResponseEntity<Response> getDashboard() {
+        return Response.builder()
+                .response("data", adminService.dashboardDataProvider())
                 .buildEntity();
     }
     //</editor-fold>

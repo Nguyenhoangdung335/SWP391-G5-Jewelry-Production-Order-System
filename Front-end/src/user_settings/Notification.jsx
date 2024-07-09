@@ -19,25 +19,25 @@ function NotificationPage() {
         headers: { "Content-Type": "Application/json" },
       }).then((res) => setData(res.data));
     }
-  });
+  }, [token]);
 
-  const getNotification = data.map((i) => {
-    return (
-      <>
-        <tr key={i.id}>
-          <td>{i.time}</td>
-          <td>{i.type}</td>
-          <td>{i.from}</td>
-          <td>{i.title}</td>
-          <td>{i.status}</td>
-        </tr>
-      </>
-    );
-  });
+  // const getNotification = data.map((i) => {
+  //   return (
+  //     <>
+  //       <tr key={i.id}>
+  //         <td>{i.time}</td>
+  //         <td>{i.type}</td>
+  //         <td>{i.from}</td>
+  //         <td>{i.title}</td>
+  //         <td>{i.status}</td>
+  //       </tr>
+  //     </>
+  //   );
+  // });
 
   return (
     <Container>
-      <Table className="mt-3" hover>
+      <Table className="mt-3" hover striped>
         <thead>
           <tr>
             <th>Time</th>
@@ -47,7 +47,7 @@ function NotificationPage() {
             <th>Status</th>
           </tr>
         </thead>
-        <tbody>{getNotification}</tbody>
+        {/* <tbody>{getNotification}</tbody> */}
       </Table>
     </Container>
   );
