@@ -205,7 +205,7 @@ public class Application   {
 						.createdDate(LocalDateTime.now())
 						.name(faker.commerce().productName())
 						.owner(admin)
-						.status(OrderStatus.REQUESTING)
+						.status(OrderStatus.ORDER_COMPLETED)
 						.build();
 				order.setProduct(Product.builder()
 						.name(order.getName())
