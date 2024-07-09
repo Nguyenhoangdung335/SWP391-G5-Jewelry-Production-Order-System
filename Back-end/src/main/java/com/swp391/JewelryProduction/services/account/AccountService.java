@@ -28,4 +28,5 @@ public interface AccountService {
     Account createAccount(AccountDTO accountDTO);
     void deleteAccount(String accountId);
     Account updateAccount(AccountDTO accountDTO);
+    List<Account> findAccountsByRole(Role role);
 }

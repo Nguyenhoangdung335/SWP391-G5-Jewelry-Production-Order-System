@@ -128,6 +128,15 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.delete(orderRepository.findById(orderId).orElseThrow(() -> new ObjectNotFoundException("Order not found")));
     }
 
+    @Override
+    public double calculateTotalRevenueMonthly(int month) {
+        long totalRevenue = 0;
+        for(Order order : orderRepository.findAllByMonthAndYear(month, 2024)) {
+            totalRevenue += order.getBudget();
+        };
+        return totalRevenue;
+    }
+
     public Order setOrder(OrderDTO orderDTO) {
         Order order = Order.builder()
                 .id(orderDTO.getId())
