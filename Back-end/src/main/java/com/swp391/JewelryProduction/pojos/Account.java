@@ -54,7 +54,6 @@ public class Account{
     @Column(nullable = false, unique = true)
     private String email;
 
-    @JsonIgnore
     @ToString.Include
     @EqualsAndHashCode.Include
     @Column(nullable = false)

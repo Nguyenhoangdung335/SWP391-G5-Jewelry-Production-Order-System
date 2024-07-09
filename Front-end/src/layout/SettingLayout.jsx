@@ -6,9 +6,11 @@ function SettingPageLayout() {
   return (
     <Row>
       <Col md={3}>
-        <SideBar />
+        <div className="position-fixed w-25">
+          <SideBar />
+        </div>
       </Col>
-      <Col md={9}>
+      <Col  md={9}>
         <Container className="d-flex justify-content-center w-100 h-100">
           <Outlet />
         </Container>

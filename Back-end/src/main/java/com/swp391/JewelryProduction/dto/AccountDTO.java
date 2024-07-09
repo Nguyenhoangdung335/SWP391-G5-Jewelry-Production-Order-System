@@ -23,7 +23,6 @@ import java.util.List;
 public class AccountDTO{
     private String id;
     @Pattern(regexp = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message = "Email is invalid")
-    @NotEmpty(message = "Email cannot be empty")
     private String email;
     private String password;
     private LocalDateTime dateCreated;

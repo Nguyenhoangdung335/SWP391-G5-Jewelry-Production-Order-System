@@ -14,6 +14,7 @@ public interface AccountService {
     List<Account> getAllAccounts();
     List<Account> findAllAccounts();
     Account updateAccountPassword(RegistrationRequest request);
+    Account updateAccountInfo(UserInfo info, String accountId);
     Account saveAccountIfNew(RegistrationRequest request);
     Account saveUserInfo(UserInfo info, String email);
     Account findAccountById(String accountId);

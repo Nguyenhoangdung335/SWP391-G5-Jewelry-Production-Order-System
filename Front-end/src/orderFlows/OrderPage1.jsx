@@ -40,16 +40,16 @@ function OrderPage1() {
   }, [selectedType]);
 
   const productSpecification = {
-    selectedType,
-    selectedStyle,
-    selectedOccasion,
-    selectedChainType,
-    selectedTexture,
-    selectedGem,
-    selectedGemShape,
-    selectedGemWeight,
-    selectedMetal,
-    selectedLength,
+    type: selectedType,
+    style: selectedStyle,
+    occasion: selectedOccasion,
+    chainType: selectedChainType,
+    texture: selectedTexture,
+    gemStone: selectedGem,
+    shape: selectedGemShape,
+    gemstoneWeight: selectedGemWeight,
+    metal: selectedMetal,
+    length: selectedLength,
   };
 
   const handleSubmit = (e) => {
