@@ -62,11 +62,11 @@ function RouteMap() {
         }
       >
         <Route
-          index
+          path="/userManager/dashboard"
           element={
-            <ProtectedRoute roles={["ADMIN"]}>
+            //<ProtectedRoute roles={["ADMIN"]}>
               <DashboardManger />
-            </ProtectedRoute>
+            //</ProtectedRoute>
           }
         />
         <Route
