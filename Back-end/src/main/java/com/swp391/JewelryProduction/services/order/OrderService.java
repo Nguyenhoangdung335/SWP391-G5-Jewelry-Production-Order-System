@@ -2,6 +2,7 @@ package com.swp391.JewelryProduction.services.order;
 
 import com.swp391.JewelryProduction.dto.OrderDTO;
 import com.swp391.JewelryProduction.dto.RequestDTOs.StaffGroup;
+import com.swp391.JewelryProduction.dto.ResponseDTOs.OrderResponse;
 import com.swp391.JewelryProduction.pojos.Order;
 import org.springframework.data.domain.Page;
 
@@ -19,4 +20,5 @@ public interface OrderService {
     List<Order> findOrderByAccountId (String accountId);
     double calculateTotalRevenueMonthly(int month);
 
+    OrderResponse mappedToResponse (Order order);
 }

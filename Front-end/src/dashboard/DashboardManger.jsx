@@ -13,7 +13,7 @@ export default function DashboardManager() {
   const [currentPageOrders, setCurrentPageOrders] = useState(1);
   const [order, setOrder] = useState([]);
   // const [info, setInfo] = useState([]);
-  const itemsPerPage = 3;
+  const itemsPerPage = 5;
 
 
   useEffect(() => {
