@@ -18,6 +18,7 @@ public interface OrderService {
     Order updateOrder(OrderDTO orderDTO);
     void deleteOrder(String orderId);
     List<Order> findOrderByAccountId (String accountId);
+    double calculateTotalRevenueMonthly(int month);
 
     OrderResponse mappedToResponse (Order order);
 }

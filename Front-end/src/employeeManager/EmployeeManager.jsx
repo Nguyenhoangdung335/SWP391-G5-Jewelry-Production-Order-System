@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Table, Button, Modal, Form, FormControl } from "react-bootstrap";
 import { FiPlus } from "react-icons/fi";
 import { FaCaretDown } from "react-icons/fa";
 import { roles } from "../data/data";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import axios from "axios";
 
 export default function EmployeeManager() {
   const [filterRole, setFilterRole] = useState("");
@@ -13,7 +14,19 @@ export default function EmployeeManager() {
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
+  const [data, setData] = useState([]);
 
+  useEffect(() => {
+    axios({
+      method: "GET",
+      url: "http://localhost:8080/api/admin/get/CUSTOMER",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((res) => {
+        setData(res.data.responseList.CUSTOMER_list);
+      })
+      .catch((err) => console.log(err));
+  }, []);
   const handleFilterChange = (event) => {
     const selectedValue = event.target.value;
     setFilterRole(selectedValue);
@@ -55,19 +68,6 @@ export default function EmployeeManager() {
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
-
-  const data = [
-    { id: "AD_0001", role: "Admin", name: "Tran Mai Quang Khai", gmail: "khaitmq@gmail.com", phone: "0867406725", status: "active" },
-    { id: "MA_0002", role: "Manager", name: "Nguyen Hoang Dung", gmail: "dungnh@gmail.com", phone: "0574179547", status: "inactive" },
-    { id: "SS_0003", role: "Sales Staff", name: "Vu Tien Dat", gmail: "datvt@gmail.com", phone: "0936127853", status: "active" },
-    { id: "AD_0004", role: "Admin", name: "Nguyen Viet Thai", gmail: "thainv@gmail.com", phone: "0826709871", status: "active" },
-    { id: "AD_0005", role: "Admin", name: "Bui Khanh Duy", gmail: "duybkse73484@gmail.com", phone: "0936137090", status: "active" },
-    { id: "AD_0006", role: "Admin", name: "Ly Hoang Khang", gmail: "khang@gmail.com", phone: "0845123898", status: "active" },
-    { id: "AD_0007", role: "Admin", name: "Ha Duy Tung", gmail: "tung@gmail.com", phone: "091834926", status: "inactive" },
-    { id: "AD_0008", role: "Admin", name: "Doan Dang Thien Bao", gmail: "bao@gmail.com", phone: "0938110083", status: "active" },
-    { id: "AD_0009", role: "Admin", name: "Nguyen Huu Quoc Hung", gmail: "hung@gmail.com", phone: "0965326132", status: "inactive" },
-    { id: "CB_0010", role: "Contribution", name: "Duong Hong An", gmail: "An@gmail.com", phone: "0987665512", status: "active" },
-  ];
 
   const filteredData = filterRole
     ? data.filter((item) => item.role.toLowerCase() === filterRole.toLowerCase())

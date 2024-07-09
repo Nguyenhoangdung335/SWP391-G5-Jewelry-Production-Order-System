@@ -245,11 +245,18 @@ public class AccountServiceImpl implements AccountService {
             throw new ObjectExistsException("Account with email " + accountDTO.getEmail() + " already exists");
     }
 
+    @Override
+    public List<Account> findAccountsByRole(Role role) {
+        return accountRepository.findAllByRole(role);
+    }
+
     @Transactional
     @Override
     public void deleteAccount(String accountId) {
         accountRepository.delete(accountRepository.findById(accountId).orElseThrow(() -> new ObjectNotFoundException("Account with id " + accountId + " not found")));
     }
+
+
 
     public Account setAccount(AccountDTO accountDTO) {
         Account account = Account.builder()

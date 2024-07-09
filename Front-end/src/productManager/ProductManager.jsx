@@ -63,7 +63,7 @@ export default function ProductManager() {
           console.error("Error deleting product:", err);
       });
     };
-
+    
 
     const handleAddCancel = () => {
         setIsCreateModalVisible(false);

@@ -130,6 +130,15 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public double calculateTotalRevenueMonthly(int month) {
+        long totalRevenue = 0;
+        for(Order order : orderRepository.findAllByMonthAndYear(month, 2024)) {
+            totalRevenue += order.getBudget();
+        };
+        return totalRevenue;
+    }
+
+    @Override
     public List<Order> findOrderByAccountId(String accountId) {
         return orderRepository.findAllByOwnerId(accountId);
     }

@@ -1,70 +1,34 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Table, Modal, Button } from "react-bootstrap";
+import axios from "axios";
 
 export default function OrderManager() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    axios({
+      method: "GET",
+      url: "http://localhost:8080/api/order/list",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((res) => {
+        setData(res.data.responseList['order-list']);
+      })
+      .catch((err) => console.log(err));
+  }, []);
 
   const columns = [
-    { title: "OrderID", dataIndex: "orderId" },
-    { title: "CustomerID", dataIndex: "customerID" },
-    { title: "Date", dataIndex: "date" },
-    { title: "Total", dataIndex: "total" },
+    { title: "ID", dataIndex: "id" },
+    { title: "Name", dataIndex: "name" },
+    { title: "Budget", dataIndex: "budget" },
+    { title: "Created Date", dataIndex: "createdDate" },
+    { title: "Completed Date", dataIndex: "completedDate" },
     { title: "Status", dataIndex: "status" },
     { title: "Detail", dataIndex: "detail" },
-  ];
-
-  const data = [
-    {
-      orderId: "ID_0001",
-      customerID: "CL_0009",
-      date: "11/6/1994",
-      total: "$1200",
-      status: "paid",
-      detail: "",
-    },
-    {
-      orderId: "ID_0002",
-      customerID: "CL_0001",
-      date: "11/6/1994",
-      total: "$11000",
-      status: "unpaid",
-      detail: "",
-    },
-    {
-      orderId: "ID_0003",
-      customerID: "CL_0006",
-      date: "11/6/1994",
-      total: "$1200",
-      status: "paid",
-      detail: "",
-    },
-    {
-      orderId: "ID_0004",
-      customerID: "CL_0001",
-      date: "11/6/1994",
-      total: "$11000",
-      status: "unpaid",
-      detail: "",
-    },
-    {
-      orderId: "ID_0005",
-      customerID: "CL_0002",
-      date: "11/6/1994",
-      total: "$11000",
-      status: "unpaid",
-      detail: "",
-    },
-    {
-      orderId: "ID_0006",
-      customerID: "CL_0007",
-      date: "11/6/1994",
-      total: "$11000",
-      status: "paid",
-      detail: "",
-    },
   ];
 
   const handlePageChange = (pageNumber) => {
@@ -132,18 +96,19 @@ export default function OrderManager() {
         </thead>
         <tbody>
           {paginatedData.map((order) => (
-            <tr key={order.orderId}>
-              <td>{order.orderId}</td>
-              <td>{order.customerID}</td>
-              <td>{order.date}</td>
-              <td>{order.total}</td>
+            <tr key={order.id}>
+              <td>{order.id}</td>
+              <td>{order.name}</td>
+              <td>{order.budget}</td>
+              <td>{order.createdDate}</td>
+              <td>{order.completedDate}</td>
               <td>
                 <span
                   className={`badge ${
-                    order.status === "paid" ? "bg-success" : "bg-danger"
+                    order.status === "completed" ? "bg-success" : "bg-danger"
                   }`}
                 >
-                  {order.status === "paid" ? "Paid" : "Unpaid"}
+                  {order.status ? order.status.charAt(0).toUpperCase() + order.status.slice(1) : 'Unknown'}
                 </span>
               </td>
               <td>
@@ -192,10 +157,11 @@ export default function OrderManager() {
         <Modal.Body>
           {selectedOrder && (
             <div>
-              <p><strong>Order ID:</strong> {selectedOrder.orderId}</p>
-              <p><strong>Customer ID:</strong> {selectedOrder.customerID}</p>
-              <p><strong>Date:</strong> {selectedOrder.date}</p>
-              <p><strong>Total:</strong> {selectedOrder.total}</p>
+              <p><strong>ID:</strong> {selectedOrder.id}</p>
+              <p><strong>Name:</strong> {selectedOrder.name}</p>
+              <p><strong>Budget:</strong> {selectedOrder.budget}</p>
+              <p><strong>Created Date:</strong> {selectedOrder.createdDate}</p>
+              <p><strong>Completed Date:</strong> {selectedOrder.completedDate}</p>
               <p><strong>Status:</strong> {selectedOrder.status}</p>
               <p><strong>Details:</strong> Details of the order go here...</p>
             </div>
