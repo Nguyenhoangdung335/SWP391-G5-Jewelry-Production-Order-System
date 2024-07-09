@@ -128,6 +128,11 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.delete(orderRepository.findById(orderId).orElseThrow(() -> new ObjectNotFoundException("Order not found")));
     }
 
+    @Override
+    public List<Order> findOrderByAccountId(String accountId) {
+        return orderRepository.findAllByOwnerId(accountId);
+    }
+
     public Order setOrder(OrderDTO orderDTO) {
         Order order = Order.builder()
                 .id(orderDTO.getId())

@@ -16,6 +16,6 @@ public interface OrderService {
     Page<Order> findAll(int offset);
     Order updateOrder(OrderDTO orderDTO);
     void deleteOrder(String orderId);
-
+    List<Order> findOrderByAccountId (String accountId);
 
 }
