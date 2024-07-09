@@ -10,7 +10,6 @@ public enum OrderStatus {
         AWAIT_ASSIGN_STAFF,
         IN_EXCHANGING,          //Guard from REQ_AWAIT_APPROVAL to IN_EXCHANGIN
     QUOTATION,
-        AWAIT_QUO,
         QUO_AWAIT_MANA_APPROVAL,
             QUO_MANA_APPROVAL_PROCESS,
             QUO_MANA_APPROVED,
