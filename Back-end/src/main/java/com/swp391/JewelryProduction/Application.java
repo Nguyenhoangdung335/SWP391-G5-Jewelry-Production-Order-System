@@ -76,14 +76,14 @@ public class Application   {
 	public CommandLineRunner commandLineRunner (AccountRepository accountRepository, StaffRepository staffRepository, OrderRepository orderRepository, ProductRepository productRepository) {
 		return args -> {
 			logger.info("Application start");
-			Account acc = Account.builder()
+			Account admin = Account.builder()
 					.email("nguyenhoangdung335@gmail.com")
 					.password(passwordEncoder.encode("#Dung111004"))
 					.dateCreated(LocalDateTime.now())
 					.role(Role.ADMIN)
 					.status(AccountStatus.ACTIVE)
 					.build();
-			acc.setUserInfo(UserInfo.builder()
+			admin.setUserInfo(UserInfo.builder()
 					.firstName("Dung")
 					.lastName("Nguyen Hoang")
 					.gender(Gender.MALE)
@@ -91,11 +91,10 @@ public class Application   {
 					.birthDate(LocalDate.parse("2004-10-11"))
 					.phoneNumber("0916320563")
 					.build());
-			accountRepository.save(acc);
-			logger.info("Acc00001 Added");
+			admin = accountRepository.save(admin);
 
 
-			acc = Account.builder()
+			Account acc = Account.builder()
 					.email("dungnhse180163@fpt.edu.vn")
 					.password(passwordEncoder.encode("#Dung111004"))
 					.dateCreated(LocalDateTime.now())
@@ -205,6 +204,7 @@ public class Application   {
 						.budget(Double.parseDouble(faker.commerce().price()))
 						.createdDate(LocalDateTime.now())
 						.name(faker.commerce().productName())
+						.owner(admin)
 						.status(OrderStatus.REQUESTING)
 						.build();
 				order.setProduct(Product.builder()
