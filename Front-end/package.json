@@ -24,6 +24,7 @@
     "react-multi-carousel": "^2.8.5",
     "react-router-dom": "^6.23.1",
     "react-scripts": "5.0.1",
+    "react-toastify": "^10.0.5",
     "react-use-scroll-snap": "^1.0.0",
     "recharts": "^2.12.7",
     "sockjs-client": "^1.6.1",
