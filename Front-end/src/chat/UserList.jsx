@@ -1,11 +1,15 @@
 import React from 'react';
-import UserIcon from './img/user_icon.png'
+import UserIcon from './img/user_icon.png';
 
-const UserList = React.memo(({ users, onSelectUser, currentUser  }) => {
+const UserList = React.memo(({ users, onSelectUser, currentUser }) => {
     return (
         <ul id="connectedUsers" className="list-group">
             {users.length === 0 ? (
-                <p className="list-group-item">No users connected</p>
+                currentUser.role === "CUSTOMER" ? (
+                    <p className="list-group-item">There is no sale staff assigned yet!</p>
+                ) : (
+                    <p className="list-group-item">No users connected</p>
+                )
             ) : (
                 users.map((user) => {
                     if (user.id === currentUser.id) {

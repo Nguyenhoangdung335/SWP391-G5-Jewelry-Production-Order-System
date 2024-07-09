@@ -12,7 +12,7 @@ import Collections from "../Home/Collections";
 import About from "../Home/About";
 import Blogs from "../Home/Blogs";
 import OrderPage1 from "../orderFlows/OrderPage1";
-
+import CreateRequest from "../orderFlows/CreateRequest";
 import UserManagerLayout from "../layout/UserManagerLayout";
 import ClientManager from "../clientManager/ClientManager";
 import DashboardManger from "../dashboard/DashboardManger";
@@ -27,6 +27,7 @@ import UserInfo from "../user_settings/UserInfo";
 import SettingPageLayout from "../layout/SettingLayout";
 import OrderHistory from "../user_settings/OrderHistory";
 import NotificationPage from "../user_settings/Notification";
+import OrderDetail from "../user_settings/detailpage/OrderDetail";
 
 function RouteMap() {
   return (
@@ -52,6 +53,24 @@ function RouteMap() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/order_detail_page"
+          element={
+            <ProtectedRoute>
+              <OrderDetail />
+            </ProtectedRoute>
+          }
+        />
+          <Route path="/create_request/:productSpecId" element={<CreateRequest />} />
+      </Route >
+      <Route
+        path="/userManager"
+        element={
+          //<ProtectedRoute>
+          <UserManagerLayout />
+          //</ProtectedRoute>
+        }
+      >
       </Route>
       <Route path="/userManager" element={<UserManagerLayout />}>
         <Route

@@ -64,7 +64,7 @@ function OrderPage1() {
       data: productSpecification,
     })
       .then((response) => {
-        // Create a components for quotation
+        navigate(`/create_request/${response.data.responseList.productSpecification.id}`)
       })
       .catch((error) => {
         console.log("There is an error in this code" + error);
@@ -417,7 +417,7 @@ function OrderPage1() {
 
         <Button
           type="submit"
-          disabled={handleDisable()}
+          disabled={handleSubmit}
           className="fw-bold"
           style={{ width: "100px" }}
         >
@@ -434,15 +434,6 @@ function OrderPage1() {
           style={{ width: "125px", height: "100%" }}
         >
           Contact us
-        </Button>
-        <h6 className=" d-inline"> Or </h6>
-
-        <Button
-          className="d-inline"
-          variant="secondary"
-          style={{ width: "125px", height: "100%" }}
-        >
-          Chat now
         </Button>
       </div>
     </Container>

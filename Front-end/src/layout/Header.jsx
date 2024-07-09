@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import {Link, Navigate, useNavigate} from "react-router-dom";
 import { IoChatbubbleOutline, IoSearchCircle } from "react-icons/io5";
 import { IoNotificationsOutline } from "react-icons/io5";
 import { GoPerson } from "react-icons/go";
@@ -14,11 +14,13 @@ import {
 import { Dropdown } from "antd";
 import { jwtDecode } from "jwt-decode";
 import { useAuth } from "../provider/AuthProvider";
+import ServerUrl from "../reusable/ServerUrl";
+import axios from "axios";
 
 export default function Header() {
   const [role, setRole] = useState("GUEST");
-  const [state, setState] = useState(false);
   const { token, setToken } = useAuth();
+  const [requestSent, setRequestSent] = useState(false);
 
   useEffect(() => {
     if (token) {
@@ -32,6 +34,25 @@ export default function Header() {
   const handleLogout = () => {
     localStorage.removeItem("token");
     setToken(null);
+  };
+
+  const checkCurrentOrder = () => {
+    const decodedToken = jwtDecode(token);
+    axios
+        .get(`${ServerUrl}/api/account/${decodedToken.id}/check-current-order`)
+        .then((response) => {
+          if (response.data) {
+            alert(
+                "You already have an ongoing order. Please complete it before designing new jewelry."
+            );
+          } else {
+            setRequestSent(true);
+          }
+        })
+        .catch((error) => {
+          console.error("Error checking current order:", error);
+          alert("Error checking current order. Please try again later.");
+        });
   };
 
   const items = [
@@ -80,8 +101,12 @@ export default function Header() {
   ];
 
   const handleClick = () => {
-    setState(true);
+    checkCurrentOrder();
   };
+
+  if (requestSent) {
+    return <Navigate to="/order_page" />;
+  }
 
   return (
     <Navbar
@@ -166,11 +191,9 @@ export default function Header() {
               </Nav.Link>
             </>
           )}
-          <Link to="/order_page">
-            <Button style={{ borderRadius: "22px", width: "150px" }}>
+            <Button style={{ borderRadius: "22px", width: "150px" }} onClick={handleClick}>
               Design Jewelry
             </Button>
-          </Link>
         </Nav>
       </Container>
     </Navbar>
