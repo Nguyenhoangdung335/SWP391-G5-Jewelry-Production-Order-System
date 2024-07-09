@@ -84,7 +84,7 @@ public class Order {
     @OneToMany(
             mappedBy = "order",
             cascade = {CascadeType.MERGE, CascadeType.DETACH, CascadeType.REMOVE},
-            fetch = FetchType.LAZY
+            fetch = FetchType.EAGER
     )
     @Builder.Default
     private List<StaffOrderHistory> staffOrderHistory = new LinkedList<>();

@@ -74,7 +74,7 @@ public class FirestoreService {
         Firestore db = FirestoreClient.getFirestore();
         List<Account> accounts;
         try {
-            accounts = accountService.getAllAccounts(); // Fetch all accounts
+            accounts = accountService.findAllAccounts(); // Fetch all accounts
         } catch (Exception e) {
             throw new RuntimeException("Failed to fetch accounts from SQL", e);
         }

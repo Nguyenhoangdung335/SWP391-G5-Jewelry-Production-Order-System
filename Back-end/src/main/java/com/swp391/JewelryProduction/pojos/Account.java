@@ -84,7 +84,7 @@ public class Account{
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner", cascade = CascadeType.REMOVE)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "owner", cascade = CascadeType.REMOVE)
     @Builder.Default
     @JsonIgnore
     private List<Order> pastOrder = new LinkedList<>();
