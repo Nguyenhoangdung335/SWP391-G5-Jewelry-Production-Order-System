@@ -26,6 +26,9 @@ public interface AccountRepository extends JpaRepository<Account, String> {
     Optional<Account> findByEmail(String email);
     List<Account> findAllByEmail(String email);
 
+    @Query("SELECT a FROM Account a")
+    List<Account> findAllAccounts();
+
     @Query("SELECT o FROM Order o WHERE o.owner.id IN :accountIds")
     List<Order> findOrdersByAccountIds(@Param("accountIds") List<String> accountIds);
 
