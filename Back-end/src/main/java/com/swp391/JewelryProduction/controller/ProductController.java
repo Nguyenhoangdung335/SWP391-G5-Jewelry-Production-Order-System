@@ -24,6 +24,14 @@ public class ProductController {
                 .buildEntity();
     }
 
+    @GetMapping("/{productId}")
+    public ResponseEntity<Response> getProductById(@PathVariable String productId) {
+        return Response.builder()
+                .message("Request send successfully")
+                .response("product", productService.findById(productId))
+                .buildEntity();
+    }
+
     @DeleteMapping("/{productId}/remove")
     public ResponseEntity<Response> removeProduct(@PathVariable String productId) {
         productService.deleteProduct(productId);
