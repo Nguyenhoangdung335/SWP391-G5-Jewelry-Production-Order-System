@@ -1,25 +1,57 @@
 import React, { useState, useEffect } from "react";
-import { Table, Modal, Button } from "react-bootstrap";
+import { Table, Button, Modal, Form, Row, Col } from "react-bootstrap";
 import axios from "axios";
+import { Icon } from "@iconify/react";
+import { useAuth } from "../provider/AuthProvider";
+import { jwtDecode } from "jwt-decode";
+import { OrderStatus } from "../data/OrderStatus";
+import ServerUrl from "../reusable/ServerUrl";
 
 export default function OrderManager() {
+  const { token } = useAuth();
+  let decodedToken;
+
+  if (token) {
+    decodedToken = jwtDecode(token);
+  }
+
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const [totalPages, setTotalPages] = useState(1);
   const [data, setData] = useState([]);
+  const [filteredStatus, setFilteredStatus] = useState("ALL"); // Optional status filter
 
   useEffect(() => {
-    axios({
-      method: "GET",
-      url: "http://localhost:8080/api/order/list",
-      headers: { "Content-Type": "application/json" },
-    })
-      .then((res) => {
-        setData(res.data.responseList['order-list']);
+    const userRole = decodedToken?.role;
+    const accountId = decodedToken?.id;
+
+    const fetchOrders = (pageNumber) => {
+      axios({
+        method: "GET",
+        url: `${ServerUrl}/api/admin/get/order/${pageNumber - 1}`,
+        headers: { "Content-Type": "application/json" },
+        params: {
+          role: userRole,
+          status: filteredStatus,
+          accountId: accountId,
+        },
       })
-      .catch((err) => console.log(err));
-  }, []);
+        .then((res) => {
+          setData(res.data.responseList.orders);
+          setTotalPages(res.data.responseList.totalPages);
+        })
+        .catch((err) => console.log(err));
+    };
+
+    fetchOrders(currentPage);
+  }, [currentPage, filteredStatus]);
+
+  const handleFilterChange = (event) => {
+    const selectedValue = event.target.value;
+    setFilteredStatus(selectedValue);
+    setCurrentPage(1); // Reset to first page when filter changes
+  };
 
   const columns = [
     { title: "ID", dataIndex: "id" },
@@ -32,13 +64,10 @@ export default function OrderManager() {
   ];
 
   const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+    }
   };
-
-  const paginatedData = data.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
 
   const showDetail = (order) => {
     setSelectedOrder(order);
@@ -46,8 +75,6 @@ export default function OrderManager() {
   };
 
   const handleClose = () => setIsModalVisible(false);
-
-  const totalPages = Math.ceil(data.length / itemsPerPage);
 
   const styles = {
     paginationContainer: {
@@ -86,6 +113,20 @@ export default function OrderManager() {
       </p>
       <p style={{ fontSize: 16 }}>Order</p>
 
+      <div className="rounded-lg bg-neutral-500 text-white pl-3 flex items-center">
+          <div>Role Filter</div>
+          <select className="bg-neutral-500 inline-block text-orange-500 w-44" onChange={handleFilterChange}>
+            {OrderStatus.map((status) => (
+              <option key={status.name} value={status.value} className="bg-white text-black">
+                {status.name}
+              </option>
+            ))}
+          </select>
+          <div className="relative right-6 pb-2">
+            <Icon icon="fa:sort-down" />
+          </div>
+        </div>
+
       <Table striped bordered hover>
         <thead>
           <tr>
@@ -95,7 +136,7 @@ export default function OrderManager() {
           </tr>
         </thead>
         <tbody>
-          {paginatedData.map((order) => (
+          {data.map((order) => (
             <tr key={order.id}>
               <td>{order.id}</td>
               <td>{order.name}</td>
@@ -125,7 +166,6 @@ export default function OrderManager() {
         <div
           style={{ ...styles.paginationButton, ...(currentPage === 1 ? styles.paginationButtonDisabled : {}) }}
           onClick={() => handlePageChange(currentPage - 1)}
-          disabled={currentPage === 1}
         >
           &lt;
         </div>
@@ -144,7 +184,6 @@ export default function OrderManager() {
         <div
           style={{ ...styles.paginationButton, ...(currentPage === totalPages ? styles.paginationButtonDisabled : {}) }}
           onClick={() => handlePageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
         >
           &gt;
         </div>
