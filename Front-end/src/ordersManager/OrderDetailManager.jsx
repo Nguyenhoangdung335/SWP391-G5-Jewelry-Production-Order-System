@@ -60,20 +60,21 @@ function OrderDetailManager() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
-  
+
     if (designImage instanceof File) {
       const resizedImageFile = await ResizeImage(designImage);
-      formData.append('file', resizedImageFile);
-      const responst = await axios.post(`${ServerUrl}/api/order/${data.id}/detail/edit-design`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-
-
+      formData.append("file", resizedImageFile);
+      const responst = await axios.post(
+        `${ServerUrl}/api/order/${data.id}/detail/edit-design`,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
     } else {
-      console.error('designImage is not a File');
+      console.error("designImage is not a File");
     }
   };
-  
 
   return (
     <>
@@ -81,7 +82,11 @@ function OrderDetailManager() {
         <Row>
           <Col md={8}>
             <div className="pb-2">
-              <img src={data.design.designLink || snowfall} alt="Product Image" className="w-100 h-100" />
+              <img
+                src={data.design.designLink || snowfall}
+                alt="Product Image"
+                className="w-100 h-100"
+              />
             </div>
             <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
               <div className="p-3">
@@ -221,33 +226,33 @@ function OrderDetailManager() {
               </div>
             </Row>
             {/* {data.owner.role === "DESIGN_STAFF" && ( */}
-              <Row className="pb-2">
-                <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
-                  <div className="p-2">
-                    <div
-                      className="mb-2"
-                      style={{
-                        borderBottom: "1px solid rgba(166, 166, 166, 0.5) ",
-                      }}
-                    >
-                      <h4>Upload Image</h4>
-                    </div>
-                    <Form noValidate onSubmit={handleSubmit}>
-                      <Form.Control
-                        type="file"
-                        name="designImage"
-                        accept="image/png, image/gif, image/jpeg, image/jpg"
-                        onChange={(e) => setDesignImage(e.target.files[0])}
-                      />
-                      <div className="d-flex justify-content-end">
-                        <Button type="submit" className="mt-2 mb-2">
-                          Upload
-                        </Button>
-                      </div>
-                    </Form>
+            <Row className="pb-2">
+              <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
+                <div className="p-2">
+                  <div
+                    className="mb-2"
+                    style={{
+                      borderBottom: "1px solid rgba(166, 166, 166, 0.5) ",
+                    }}
+                  >
+                    <h4>Upload Image</h4>
                   </div>
+                  <Form noValidate onSubmit={handleSubmit}>
+                    <Form.Control
+                      type="file"
+                      name="designImage"
+                      accept="image/png, image/gif, image/jpeg, image/jpg"
+                      onChange={(e) => setDesignImage(e.target.files[0])}
+                    />
+                    <div className="d-flex justify-content-end">
+                      <Button type="submit" className="mt-2 mb-2">
+                        Upload
+                      </Button>
+                    </div>
+                  </Form>
                 </div>
-              </Row>
+              </div>
+            </Row>
             {/* )} */}
           </Col>
         </Row>
@@ -263,113 +268,142 @@ function OrderDetailManager() {
 }
 
 function MyVerticallyCenteredModal(props) {
-    const [quotationItems, setQuotationItems] = useState(props.quotation.quotationItems);
-    const [ currId, setCurrentId ] = useState(quotationItems.length);
+  const [quotationItems, setQuotationItems] = useState(
+    props.quotation.quotationItems
+  );
+  const [currId, setCurrentId] = useState(quotationItems.length);
 
-    const handleAddItem = () => {
-      const newItem = {
-        itemID: currId, // Unique ID
-        name: "",
-        quantity: 1,
-        unitPrice: 0,
-        totalPrice: 0,
-      };
-      setQuotationItems([...quotationItems, newItem]);
-      setCurrentId(currId + 1);
+  const handleAddItem = () => {
+    const newItem = {
+      itemID: currId, // Unique ID
+      name: "",
+      quantity: 1,
+      unitPrice: 0,
+      totalPrice: 0,
     };
+    setQuotationItems([...quotationItems, newItem]);
+    setCurrentId(currId + 1);
+  };
 
-    const handleRemoveItem = (itemID) => {
-      const updatedItems = quotationItems.filter(item => item.itemID !== itemID);
-      setQuotationItems(updatedItems);
-      setCurrentId(currId - 1);
-    };
-
-    const handleInputChange = (itemID, field, value) => {
-        const updatedItems = quotationItems.map(item => {
-          if (item.itemID === itemID) {
-            const updatedItem = { ...item, [field]: value };
-            if (field === "quantity" || field === "unitPrice") {
-              const quantity = updatedItem.quantity || 0;
-              const unitPrice = updatedItem.unitPrice || 0;
-              updatedItem.totalPrice = quantity * unitPrice;
-            }
-            return updatedItem;
-          }
-          return item;
-        });
-        setQuotationItems(updatedItems);
-      };
-
-    const getQuotationItems = quotationItems.map((item) => {
-      return (
-        <tr key={item.itemID}>
-          <td>{item.itemID}</td>
-          <td>
-            <FormControl
-              type="text"
-              value={item.name}
-              onChange={(e) => handleInputChange(item.itemID, "name", e.target.value)}
-            />
-          </td>
-          <td>
-            <FormControl
-              type="number"
-              value={item.quantity}
-              onChange={(e) => handleInputChange(item.itemID, "quantity", parseFloat(e.target.value))}
-            />
-          </td>
-          <td>
-            <FormControl
-              type="number"
-              value={item.unitPrice}
-              onChange={(e) => handleInputChange(item.itemID, "unitPrice", parseFloat(e.target.value))}
-            />
-          </td>
-          <td>{item.totalPrice}</td>
-          <td>
-            <Button variant="danger" onClick={() => handleRemoveItem(item.itemID)}>
-              Remove
-            </Button>
-          </td>
-        </tr>
-      );
-    });
-
-    const finalPrice = quotationItems.reduce((acc, item) => acc + (item.totalPrice || 0), 0);
-
-    return (
-      <Modal {...props} size="lg" aria-labelledby="contained-modal-title-vcenter" centered>
-        <Modal.Header className="w-100" closeButton>
-          <Modal.Title id="contained-modal-title-vcenter">Quotations</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Table bordered hover striped>
-            <thead>
-              <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Quantity</th>
-                <th>Unit Price</th>
-                <th>Total Price</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {getQuotationItems}
-              <tr>
-                <td colSpan={4}>Final Price</td>
-                <td>{finalPrice}</td>
-              </tr>
-            </tbody>
-          </Table>
-          <Button onClick={handleAddItem}>Add Item</Button>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button onClick={props.onHide}>Decline Quotation</Button>
-          <Button>Accept Quotation</Button>
-        </Modal.Footer>
-      </Modal>
+  const handleRemoveItem = (itemID) => {
+    const updatedItems = quotationItems.filter(
+      (item) => item.itemID !== itemID
     );
-  }
+    setQuotationItems(updatedItems);
+    setCurrentId(currId - 1);
+  };
+
+  const handleInputChange = (itemID, field, value) => {
+    const updatedItems = quotationItems.map((item) => {
+      if (item.itemID === itemID) {
+        const updatedItem = { ...item, [field]: value };
+        if (field === "quantity" || field === "unitPrice") {
+          const quantity = updatedItem.quantity || 0;
+          const unitPrice = updatedItem.unitPrice || 0;
+          updatedItem.totalPrice = quantity * unitPrice;
+        }
+        return updatedItem;
+      }
+      return item;
+    });
+    setQuotationItems(updatedItems);
+  };
+
+  const getQuotationItems = quotationItems.map((item) => {
+    return (
+      <tr key={item.itemID}>
+        <td>{item.itemID}</td>
+        <td>
+          <FormControl
+            type="text"
+            value={item.name}
+            onChange={(e) =>
+              handleInputChange(item.itemID, "name", e.target.value)
+            }
+          />
+        </td>
+        <td>
+          <FormControl
+            type="number"
+            value={item.quantity}
+            onChange={(e) =>
+              handleInputChange(
+                item.itemID,
+                "quantity",
+                parseFloat(e.target.value)
+              )
+            }
+          />
+        </td>
+        <td>
+          <FormControl
+            type="number"
+            value={item.unitPrice}
+            onChange={(e) =>
+              handleInputChange(
+                item.itemID,
+                "unitPrice",
+                parseFloat(e.target.value)
+              )
+            }
+          />
+        </td>
+        <td>{item.totalPrice}</td>
+        <td>
+          <Button
+            variant="danger"
+            onClick={() => handleRemoveItem(item.itemID)}
+          >
+            Remove
+          </Button>
+        </td>
+      </tr>
+    );
+  });
+
+  const finalPrice = quotationItems.reduce(
+    (acc, item) => acc + (item.totalPrice || 0),
+    0
+  );
+
+  return (
+    <Modal
+      {...props}
+      size="lg"
+      aria-labelledby="contained-modal-title-vcenter"
+      centered
+    >
+      <Modal.Header className="w-100" closeButton>
+        <Modal.Title id="contained-modal-title-vcenter">Quotations</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Table bordered hover striped>
+          <thead>
+            <tr>
+              <th>Id</th>
+              <th>Name</th>
+              <th>Quantity</th>
+              <th>Unit Price</th>
+              <th>Total Price</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {getQuotationItems}
+            <tr>
+              <td colSpan={4}>Final Price</td>
+              <td>{finalPrice}</td>
+            </tr>
+          </tbody>
+        </Table>
+        <Button onClick={handleAddItem}>Add Item</Button>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button onClick={props.onHide}>Decline Quotation</Button>
+        <Button>Accept Quotation</Button>
+      </Modal.Footer>
+    </Modal>
+  );
+}
 
 export default OrderDetailManager;
