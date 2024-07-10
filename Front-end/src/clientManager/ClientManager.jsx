@@ -22,6 +22,7 @@ export default function ClientManager() {
         const res = await axios.get(`${ServerUrl}/api/admin/get/account/${currentPage - 1}?role=${filterRole}`, {
           headers: { "Content-Type": "application/json" },
         });
+        console.log(res.data.responseList.accounts);
         setData(res.data.responseList.accounts);
         setTotalPages(res.data.responseList.totalPages);
       } catch (err) {
@@ -30,7 +31,7 @@ export default function ClientManager() {
     };
 
     fetchData();
-  }, [filterRole, currentPage]);
+  }, [filterRole, currentPage, deleteUser]);
 
   const handleFilterChange = (event) => {
     const selectedValue = event.target.value;
@@ -101,16 +102,21 @@ export default function ClientManager() {
     setIsAddModalVisible(true);
   };
 
-  const handleDeleteClick = (record) => {
-    setDeleteUser(record);
+  const handleDeleteClick = (id) => {
+    setDeleteUser(id);
     setDeleteModalVisible(true);
   };
 
-  const handleConfirmDelete = () => {
-    const newData = data.filter((item) => item.id !== deleteUser.id);
-    setData(newData);
+  const handleConfirmDelete = async () => {
+    try {
+      const res = await axios.delete(`http://localhost:8080/api/admin/delete/account?accountId=${deleteUser}`, {
+        headers: { "Content-Type": "application/json" },
+      });
+    } catch (err) {
+      console.log(err);
+    }
     setDeleteModalVisible(false);
-    setDeleteUser(null);
+    setDeleteUser(null)
   };
 
   const handleCancelDelete = () => {
@@ -257,7 +263,7 @@ export default function ClientManager() {
                 <Button variant="link" onClick={() => handleEdit(item)}>
                   Edit
                 </Button>
-                <Button variant="link" onClick={() => handleDeleteClick(item)}>
+                <Button variant="link" onClick={() => handleDeleteClick(item.id)}>
                   Delete
                 </Button>
               </td>

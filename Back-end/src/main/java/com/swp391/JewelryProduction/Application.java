@@ -68,7 +68,7 @@ public class Application   {
 			@Override
 			public void addCorsMappings(@NotNull CorsRegistry registry) {
 				registry.addMapping("/**")
-						.allowedOrigins("*")
+						.allowedOrigins("http://localhost:3000")
 						.allowedMethods("HEAD","GET","POST","PUT","DELETE","PATCH","OPTIONS");
 			}
 		};
@@ -101,7 +101,7 @@ public class Application   {
 					.email("dungnhse180163@fpt.edu.vn")
 					.password(passwordEncoder.encode("#Dung111004"))
 					.dateCreated(LocalDateTime.now())
-					.role(Role.CUSTOMER)
+					.role(Role.MANAGER)
 					.status(AccountStatus.ACTIVE)
 					.build();
 			acc.setUserInfo(UserInfo.builder()
