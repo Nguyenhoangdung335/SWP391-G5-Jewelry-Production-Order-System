@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
@@ -225,6 +226,11 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Long countAllOrders() {
         return orderRepository.count();
+    }
+
+    @Override
+    public Order findOrderByProductId(String productId) {
+        return orderRepository.findByProductId(productId).orElseThrow(() -> new ObjectNotFoundException("Order not found"));
     }
 
     private Order setOrder(OrderDTO orderDTO) {
