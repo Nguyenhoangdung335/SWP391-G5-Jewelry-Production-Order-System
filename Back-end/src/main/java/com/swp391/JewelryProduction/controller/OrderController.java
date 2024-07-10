@@ -53,9 +53,6 @@ public class OrderController {
                 .status(HttpStatus.OK)
                 .message("Request sent successfully")
                 .response("orderDetail", orderService.findOrderById(orderId))
-                .response("saleStaffs", staffService.findAllByRole(Role.SALE_STAFF))
-                .response("designStaffs", staffService.findAllByRole(Role.DESIGN_STAFF))
-                .response("productionStaffs", staffService.findAllByRole(Role.PRODUCTION_STAFF))
                 .buildEntity();
     }
 

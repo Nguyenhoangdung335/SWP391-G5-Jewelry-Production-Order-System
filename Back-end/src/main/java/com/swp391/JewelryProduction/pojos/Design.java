@@ -1,6 +1,7 @@
 package com.swp391.JewelryProduction.pojos;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.swp391.JewelryProduction.util.IdGenerator;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -17,6 +18,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Design {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "design_seq")

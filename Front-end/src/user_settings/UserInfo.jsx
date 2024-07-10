@@ -68,7 +68,6 @@ function UserInfo() {
             );
             const isoString = dateObject.toISOString();
             const formattedDate = isoString.substring(0, 10);
-            console.log(dateObject);
             setBirthDate(formattedDate);
             setGender(account.userInfo.gender);
             setPhoneNumber(account.userInfo.phoneNumber);
