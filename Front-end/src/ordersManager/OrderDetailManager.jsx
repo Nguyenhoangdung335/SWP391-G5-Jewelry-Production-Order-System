@@ -16,6 +16,7 @@ import {
 import snowfall from "../assets/snowfall.jpg";
 import { jwtDecode } from "jwt-decode";
 import { useAuth } from "../provider/AuthProvider";
+import ResizeImage from "../reusable/ResizeImage";
 
 function OrderDetailManager() {
   const state = useLocation();
@@ -56,16 +57,23 @@ function OrderDetailManager() {
   const handleShowQuotations = () => {
     setShowQuotation(true);
   };
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    axios(`${ServerUrl}/api/order/${data.id}/detail/edit-design`, {
-      headers: { "Content-Type": "application/json" },
-      method: "POST",
-      data: {
-        designLink: designImage,
-      },
-    });
+    const formData = new FormData();
+  
+    if (designImage instanceof File) {
+      const resizedImageFile = await ResizeImage(designImage);
+      formData.append('file', resizedImageFile);
+      const responst = await axios.post(`${ServerUrl}/api/order/${data.id}/detail/edit-design`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
+
+    } else {
+      console.error('designImage is not a File');
+    }
   };
+  
 
   return (
     <>
@@ -73,7 +81,7 @@ function OrderDetailManager() {
         <Row>
           <Col md={8}>
             <div className="pb-2">
-              <img src={snowfall} alt="Product Image" className="w-100 h-100" />
+              <img src={data.design.designLink || snowfall} alt="Product Image" className="w-100 h-100" />
             </div>
             <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
               <div className="p-3">
@@ -212,7 +220,7 @@ function OrderDetailManager() {
                 </div>
               </div>
             </Row>
-            {data.owner.role === "DESIGN_STAFF" && (
+            {/* {data.owner.role === "DESIGN_STAFF" && ( */}
               <Row className="pb-2">
                 <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
                   <div className="p-2">
@@ -228,9 +236,8 @@ function OrderDetailManager() {
                       <Form.Control
                         type="file"
                         name="designImage"
-                        value={designImage}
                         accept="image/png, image/gif, image/jpeg, image/jpg"
-                        onChange={(e) => setDesignImage(e.target.value)}
+                        onChange={(e) => setDesignImage(e.target.files[0])}
                       />
                       <div className="d-flex justify-content-end">
                         <Button type="submit" className="mt-2 mb-2">
@@ -241,7 +248,7 @@ function OrderDetailManager() {
                   </div>
                 </div>
               </Row>
-            )}
+            {/* )} */}
           </Col>
         </Row>
       </Container>
