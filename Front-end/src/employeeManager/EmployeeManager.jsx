@@ -29,9 +29,7 @@ export default function EmployeeManager() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const res = await axios.get(
-                    `${ServerUrl}/api/admin/get/account/${currentPage - 1}`,
-                    {
+                const res = await axios.get(`${ServerUrl}/api/admin/get/account/${currentPage - 1}`,{
                         headers: { "Content-Type": "application/json" },
                         params: {
                           role: filterRole,
@@ -47,7 +45,7 @@ export default function EmployeeManager() {
             }
         };
         fetchData();
-    }, [filterRole, currentPage]);
+    }, [filterRole, currentPage, deleteUser]);
 
     const handleFilterChange = (event) => {
         const selectedValue = event.target.value;
