@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -66,4 +67,12 @@ public class ProductServiceImpl implements ProductService {
         }
         return productSpecificationRepository.save(specs);
     }
+
+    @Transactional
+    @Override
+    public void deleteSpecificationById(int id) {
+        productSpecificationRepository.deleteById(id);
+    }
+
+
 }

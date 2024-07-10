@@ -12,7 +12,6 @@ import Collections from "../Home/Collections";
 import About from "../Home/About";
 import Blogs from "../Home/Blogs";
 import OrderPage1 from "../orderFlows/OrderPage1";
-import CreateRequest from "../orderFlows/CreateRequest";
 import UserManagerLayout from "../layout/UserManagerLayout";
 import ClientManager from "../clientManager/ClientManager";
 import DashboardManger from "../dashboard/DashboardManger";
@@ -61,11 +60,7 @@ function RouteMap() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/create_request/:productSpecId"
-          element={<CreateRequest />}
-        />
-      </Route>
+      </Route >
       <Route
         path="/userManager"
         element={
