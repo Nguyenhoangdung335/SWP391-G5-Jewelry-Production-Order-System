@@ -3,7 +3,6 @@ import { Table, Button, Modal, Form, Row, Col } from "react-bootstrap";
 import { FiPlus } from "react-icons/fi";
 import axios from "axios";
 import { roles } from "../data/Roles";
-import { Icon } from "@iconify/react";
 import ServerUrl from "../reusable/ServerUrl";
 
 export default function ClientManager() {
@@ -98,7 +97,6 @@ export default function ClientManager() {
     setIsAddModalVisible(false);
   };
 
-
   const handleAddClick = () => {
     setIsAddModalVisible(true);
   };
@@ -157,7 +155,7 @@ export default function ClientManager() {
   return (
     <div style={{ padding: "3%" }}>
       <style jsx>{`
-        .add-employee-button {
+        .add-client-button {
           display: flex;
           flex-direction: row;
           align-items: center;
@@ -169,7 +167,7 @@ export default function ClientManager() {
           border-radius: 5px;
           transition: background-color 0.3s;
         }
-        .add-employee-button:hover {
+        .add-client-button:hover {
           background-color: #007bff;
         }
         .role-filter-button {
@@ -209,41 +207,19 @@ export default function ClientManager() {
           display: "flex",
           flexDirection: "row",
           justifyContent: "space-between",
+          alignItems: "center",
           marginBottom: "2%",
         }}
       >
-        <div className="rounded-lg bg-neutral-500 text-white pl-3 flex items-center">
-          <div>Role Filter</div>
-          <select className="bg-neutral-500 inline-block text-orange-500 w-44" onChange={handleFilterChange}>
-            {roles.map((role) => (
-              <option key={role.name} value={role.value} className="bg-white text-black">
-                {role.name}
-              </option>
-            ))}
-          </select>
-          <div className="relative right-6 pb-2">
-            <Icon icon="fa:sort-down" />
-          </div>
-        </div>
-
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            gap: 20,
-          }}
+        <Button
+          variant="secondary"
+          className="add-client-button"
+          onClick={handleAddClick}
+          style={{ marginLeft: "auto" }} // Align to the right
         >
-          <Button
-            variant="secondary"
-            className="add-employee-button"
-            onClick={handleAddClick}
-          >
-            <FiPlus color="rgba(224, 215, 234, 1)" />
-            Add Employee
-          </Button>
-        </div>
-
+          <FiPlus color="rgba(224, 215, 234, 1)" />
+          Add Client
+        </Button>
       </div>
 
       <Table striped bordered hover>
@@ -427,7 +403,7 @@ export default function ClientManager() {
 
       <Modal show={isAddModalVisible} onHide={() => setIsAddModalVisible(false)} centered>
         <Modal.Header closeButton>
-          <Modal.Title>Add Employee</Modal.Title>
+          <Modal.Title>Add Client</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={handleAdd}>
@@ -485,9 +461,14 @@ export default function ClientManager() {
               <Form.Control type="text" required />
             </Form.Group>
 
-            <Button variant="primary" type="submit" className="mt-3">
-              Add Employee
-            </Button>
+            <div className="d-flex justify-content-between">
+              <Button variant="primary" type="submit" className="mt-3">
+                Add Client
+              </Button>
+              <Button variant="secondary" onClick={() => setIsAddModalVisible(false)} className="mt-3">
+                Back
+              </Button>
+            </div>
           </Form>
         </Modal.Body>
       </Modal>
@@ -497,7 +478,7 @@ export default function ClientManager() {
           <Modal.Title>Confirm Delete</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>Are you sure you want to delete this employee?</p>
+          <p>Are you sure you want to delete this client?</p>
           <div className="d-flex justify-content-end">
             <Button variant="secondary" onClick={handleCancelDelete}>
               Cancel
