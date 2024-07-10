@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import {Link, Navigate, useNavigate} from "react-router-dom";
-import { IoChatbubbleOutline, IoSearchCircle } from "react-icons/io5";
+import {Link, Navigate} from "react-router-dom";
+import { IoChatbubbleOutline } from "react-icons/io5";
 import { IoNotificationsOutline } from "react-icons/io5";
 import { GoPerson } from "react-icons/go";
 import {
@@ -21,6 +21,7 @@ export default function Header() {
   const [role, setRole] = useState("GUEST");
   const { token, setToken } = useAuth();
   const [requestSent, setRequestSent] = useState(false);
+  const [navigate, setNavigate] = useState(false);
 
   useEffect(() => {
     if (token) {
@@ -37,22 +38,27 @@ export default function Header() {
   };
 
   const checkCurrentOrder = () => {
-    const decodedToken = jwtDecode(token);
-    axios
-        .get(`${ServerUrl}/api/account/${decodedToken.id}/check-current-order`)
-        .then((response) => {
-          if (response.data) {
-            alert(
-                "You already have an ongoing order. Please complete it before designing new jewelry."
-            );
-          } else {
-            setRequestSent(true);
-          }
-        })
-        .catch((error) => {
-          console.error("Error checking current order:", error);
-          alert("Error checking current order. Please try again later.");
-        });
+    if(role==="GUEST"){
+      alert("You must login to use this feature");
+      setNavigate(true);
+    }else{
+      const decodedToken = jwtDecode(token);
+      axios
+          .get(`${ServerUrl}/api/account/${decodedToken.id}/check-current-order`)
+          .then((response) => {
+            if (response.data) {
+              alert(
+                  "You already have an ongoing order. Please complete it before designing new jewelry."
+              );
+            } else {
+              setRequestSent(true);
+            }
+          })
+          .catch((error) => {
+            console.error("Error checking current order:", error);
+            alert("Error checking current order. Please try again later.");
+          });
+    }
   };
 
   const items = [
@@ -103,6 +109,10 @@ export default function Header() {
   const handleClick = () => {
     checkCurrentOrder();
   };
+
+  if(navigate){
+    return <Navigate to="/login" />;
+  }
 
   if (requestSent) {
     return <Navigate to="/order_page" />;

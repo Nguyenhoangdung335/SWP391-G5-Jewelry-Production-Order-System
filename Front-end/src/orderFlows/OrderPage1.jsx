@@ -1,8 +1,9 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Button, Container, Form } from "react-bootstrap";
+import { Button, Container, Form, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import ServerUrl from "../reusable/ServerUrl";
+import CreateRequest from "./CreateRequest";
 
 function OrderPage1() {
     const [selectedStyle, setSelectedStyle] = useState("");
@@ -15,6 +16,8 @@ function OrderPage1() {
     const [selectedTexture, setSelectedTexture] = useState("");
     const [selectedChainType, setSelectedChainType] = useState("");
     const [selectedOccasion, setSelectedOccasion] = useState("");
+    const [showModal, setShowModal] = useState(false);
+    const [productSpecId, setProductSpecId] = useState(null);
     const navigate = useNavigate();
 
   useEffect(() => {
@@ -64,7 +67,8 @@ function OrderPage1() {
       data: productSpecification,
     })
       .then((response) => {
-        navigate(`/create_request/${response.data.responseList.productSpecification.id}`)
+          setProductSpecId(response.data.responseList.productSpecification.id);
+          setShowModal(true);
       })
       .catch((error) => {
         console.log("There is an error in this code" + error);
@@ -476,7 +480,7 @@ function OrderPage1() {
 
         <Button
           type="submit"
-          disabled={handleSubmit}
+          disabled={handleDisable()}
           className="fw-bold"
           style={{ width: "100px" }}
         >
@@ -495,6 +499,26 @@ function OrderPage1() {
           Contact us
         </Button>
       </div>
+            <Modal show={showModal} onHide={() => {
+                setShowModal(false);
+                // Add axios call to remove product specification
+                if (productSpecId) {
+                    axios.post(`${ServerUrl}/api/product/remove/${productSpecId}`)
+                        .then(response => {
+                            console.log("Product specification removed successfully");
+                        })
+                        .catch(error => {
+                            console.error("Error removing product specification:", error);
+                        });
+                }
+            }}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Create Request</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <CreateRequest productSpecId={productSpecId} />
+                </Modal.Body>
+            </Modal>
     </Container>
   );
 }

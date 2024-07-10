@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Pin from "../components/Pin";
+import CreateRequest from "../orderFlows/CreateRequest";
 import { Container, Modal, Button, Table } from "react-bootstrap";
-import {Navigate, useNavigate} from "react-router-dom";
 import "./Collections.css";
 import snowfall from "../assets/snowfall.jpg";
 import serverUrl from "../reusable/ServerUrl";
 import ServerUrl from "../reusable/ServerUrl";
 import { jwtDecode } from "jwt-decode";
 import { useAuth } from "../provider/AuthProvider";
+import {Navigate} from "react-router-dom";
 
 const size = ["small", "medium", "large"];
 
@@ -26,14 +27,20 @@ const formatString = (string) => {
 
 function Collections() {
     const { token } = useAuth();
-    const decodedToken = jwtDecode(token);
+    const [decodedToken, setDecodedToken] = useState(null);
 
     const [products, setProducts] = useState([]);
-    const [showModal, setShowModal] = useState(false);
+    const [showProductModal, setShowProductModal] = useState(false);
+    const [showCreateRequestModal, setShowCreateRequestModal] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
-    const navigate = useNavigate();
-    const [requestSent, setRequestSent] = useState(false);
+    const [navigate, setNavigate] = useState(false);
 
+    useEffect(() => {
+        if (token) {
+            const decodedToken = jwtDecode(token);
+            setDecodedToken(decodedToken);
+        }
+    }, [token]);
 
     useEffect(() => {
         axios
@@ -48,36 +55,47 @@ function Collections() {
 
     const handlePinClick = (product) => {
         setSelectedProduct(product);
-        setShowModal(true);
+        setShowProductModal(true);
     };
 
-    const handleCloseModal = () => setShowModal(false);
+    const handleCloseProductModal = () => {
+        setShowProductModal(false);
+    };
+
+    const handleCloseCreateRequestModal = () => {
+        setShowCreateRequestModal(false);
+    };
 
     const checkCurrentOrder = () => {
-        axios
-            .get(`${ServerUrl}/api/account/${decodedToken.id}/check-current-order`)
-            .then((response) => {
-                if (response.data) {
-                    alert(
-                        "You already have an ongoing order. Please complete it before designing new jewelry."
-                    );
-                } else {
-                    setRequestSent(true);
-                }
-            })
-            .catch((error) => {
-                console.error("Error checking current order:", error);
-                alert("Error checking current order. Please try again later.");
-            });
+        if(decodedToken===null) {
+            alert("You must login to use this feature");
+            setNavigate(true);
+        } else {
+            axios
+                .get(`${ServerUrl}/api/account/${decodedToken.id}/check-current-order`)
+                .then((response) => {
+                    if (response.data) {
+                        alert(
+                            "You already have an ongoing order. Please complete it before designing new jewelry."
+                        );
+                    } else {
+                        setShowProductModal(false);
+                        setShowCreateRequestModal(true);
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error checking current order:", error);
+                    alert("Error checking current order. Please try again later.");
+                });
+        }
     };
 
     const handleUseTemplate = () => {
         checkCurrentOrder()
-        setShowModal(false);
     };
 
-    if (requestSent) {
-        return <Navigate to={`/create_request/${selectedProduct.specification.id}`} />;
+    if(navigate){
+        return <Navigate to="/login" />;
     }
 
     return (
@@ -94,7 +112,7 @@ function Collections() {
             </div>
 
             {selectedProduct && (
-                <Modal show={showModal} onHide={handleCloseModal} size="lg">
+                <Modal show={showProductModal} onHide={handleCloseProductModal} size="lg">
                     <Modal.Header closeButton>
                         <Modal.Title>{selectedProduct.name}</Modal.Title>
                     </Modal.Header>
@@ -127,15 +145,23 @@ function Collections() {
                     </Modal.Body>
                     <Modal.Footer>
                         <Button onClick={handleUseTemplate}>Use this template</Button>
-                        <Button variant="secondary" onClick={handleCloseModal}>
-                            Close
-                        </Button>
                     </Modal.Footer>
+                </Modal>
+            )}
+            {showCreateRequestModal && (
+                <Modal show={showCreateRequestModal} onHide={handleCloseCreateRequestModal} size="lg">
+                    <Modal.Header closeButton>
+                        <Modal.Title>Create Request</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <CreateRequest productSpecId={selectedProduct.specification.id} />
+                    </Modal.Body>
                 </Modal>
             )}
         </Container>
     );
 }
+
 
 const styles = {
     pin_container: {
