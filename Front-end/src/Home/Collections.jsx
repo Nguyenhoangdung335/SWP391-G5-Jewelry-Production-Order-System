@@ -129,7 +129,7 @@ function Collections() {
                                         ([key, value]) =>
                                             key !== "id" && (
                                                 <tr key={key}>
-                                                    <td>{formatString(key)}</td>
+                                                    <td style={{ width: '50%' }}>{formatString(key)}</td>
                                                     <td>{formatString(value)}</td>
                                                 </tr>
                                             )
