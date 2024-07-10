@@ -10,7 +10,7 @@ import {
 } from "react-bootstrap";
 import { FiPlus } from "react-icons/fi";
 import axios from "axios";
-import { roles } from "../data/data";
+import { roles } from "../data/Roles";
 import { Icon } from "@iconify/react";
 import ServerUrl from "../reusable/ServerUrl";
 
@@ -30,11 +30,13 @@ export default function EmployeeManager() {
         const fetchData = async () => {
             try {
                 const res = await axios.get(
-                    `${ServerUrl}/api/admin/get/${filterRole}/${
-                        currentPage - 1
-                    }`,
+                    `${ServerUrl}/api/admin/get/account/${currentPage - 1}`,
                     {
                         headers: { "Content-Type": "application/json" },
+                        params: {
+                          role: filterRole,
+                          size: itemsPerPage,
+                        }
                     }
                 );
                 console.log("API response:", res.data);
