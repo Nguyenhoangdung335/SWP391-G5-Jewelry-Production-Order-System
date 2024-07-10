@@ -1,6 +1,7 @@
 package com.swp391.JewelryProduction.repositories;
 
 import com.swp391.JewelryProduction.pojos.Order;
+import com.swp391.JewelryProduction.pojos.designPojos.Product;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,4 +20,5 @@ public interface OrderRepository extends JpaRepository<Order, String> {
     @Query(value = "SELECT * FROM dbo.[order] WHERE MONTH(date_created) = :month AND YEAR(date_created) = :year", nativeQuery = true)
     List<Order> findAllByMonthAndYear(@Param("month") int month, @Param("year") int year);
     List<Order> findAllByOwnerId (String ownerId);
+    Optional<Order> findByProductId (String productId);
 }

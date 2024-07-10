@@ -161,6 +161,11 @@ public class OrderServiceImpl implements OrderService {
                 .build();
     }
 
+    @Override
+    public Order findOrderByProductId(String productId) {
+        return orderRepository.findByProductId(productId).orElseThrow(() -> new ObjectNotFoundException("Order not found"));
+    }
+
     private Order setOrder(OrderDTO orderDTO) {
         Order order = Order.builder()
                 .id(orderDTO.getId())

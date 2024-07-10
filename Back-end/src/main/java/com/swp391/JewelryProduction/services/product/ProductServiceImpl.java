@@ -4,6 +4,7 @@ import com.swp391.JewelryProduction.pojos.designPojos.Product;
 import com.swp391.JewelryProduction.pojos.designPojos.ProductSpecification;
 import com.swp391.JewelryProduction.repositories.ProductRepository;
 import com.swp391.JewelryProduction.repositories.ProductSpecificationRepository;
+import com.swp391.JewelryProduction.services.order.OrderService;
 import com.swp391.JewelryProduction.util.exceptions.ObjectNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import java.util.List;
 public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final ProductSpecificationRepository productSpecificationRepository;
+    private final OrderService orderService;
 
     @Override
     public List<Product> findAll() {
@@ -55,6 +57,7 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     @Override
     public void deleteProduct(String id) {
+        orderService.findOrderByProductId(id).setProduct(null);
         productRepository.deleteById(id);
     }
 
