@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Table, Button, Modal, Form, Row, Col } from "react-bootstrap";
 import { FiPlus } from "react-icons/fi";
 import axios from "axios";
-import { roles } from "../data/data";
+import { roles } from "../data/Roles";
 import { Icon } from "@iconify/react";
 import ServerUrl from "../reusable/ServerUrl";
 
@@ -15,13 +15,12 @@ export default function ClientManager() {
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const itemsPerPage = 5;
   const [data, setData] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get(`${ServerUrl}/api/admin/get/${filterRole}/${currentPage - 1}`, {
+        const res = await axios.get(`${ServerUrl}/api/admin/get/account/${currentPage - 1}?role=${filterRole}`, {
           headers: { "Content-Type": "application/json" },
         });
         setData(res.data.responseList.accounts);
@@ -30,7 +29,7 @@ export default function ClientManager() {
         console.log(err);
       }
     };
-    
+
     fetchData();
   }, [filterRole, currentPage]);
 

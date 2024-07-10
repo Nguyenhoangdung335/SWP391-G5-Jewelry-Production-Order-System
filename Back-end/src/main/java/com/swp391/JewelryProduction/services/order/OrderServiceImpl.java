@@ -26,7 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
@@ -44,11 +43,76 @@ public class OrderServiceImpl implements OrderService {
 
     private final StateMachineService<OrderStatus, OrderEvent> stateMachineService;
 
+    //<editor-fold desc="READ OPERATIONS" defaultstate="collapsed">
     @Override
     public List<Order> findAllOrders() {
         return orderRepository.findAll().stream().toList();
     }
 
+    @Transactional
+    @Override
+    public Order findOrderById(String id) {
+        return orderRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException("Order not found"));
+    }
+
+    @Override
+    public Page<Order> findAll(int offset, int elementsPerPage) {
+        return orderRepository.findAll(PageRequest.of(offset, elementsPerPage));
+    }
+
+    @Override
+    public Page<Order> findAll(int offset) {
+        return this.findAll(offset, 5);
+    }
+
+    @Override
+    public List<Order> findOrderByAccountId(String accountId) {
+        return orderRepository.findAllByOwnerId(accountId);
+    }
+
+    @Override
+    public Order findLatestUncompletedOrderByStaffAndRole(String staffId, Role role) {
+//        List<Order> orders = orderRepository.findLatestUncompletedOrderByStaffAndRole(staffId, role);
+//        if (orders.isEmpty()) {
+//            return null;
+//        }
+//        return orders.getFirst(); // Return the latest order
+        return null;
+    }
+
+    @Override
+    public Page<Order> findOrdersByPageAndStatusBasedOnRole(String accountId, Role role, OrderStatus orderStatus, int page, int pageSize) {
+        PageRequest pageRequest = PageRequest.of(page, pageSize);
+
+        if (role.name().contains("STAFF"))
+            return handleStaffRoleOrders(accountId, role, orderStatus, pageRequest);
+        else
+            return handleNonStaffRoleOrders(orderStatus, pageRequest);
+    }
+
+    private Page<Order> handleStaffRoleOrders(String accountId, Role role, OrderStatus orderStatus, PageRequest pageRequest) {
+        if (orderStatus.equals(OrderStatus.ALL)) {
+            return orderRepository.findAllAssignedOrderByStaffAndRole(accountId, role, pageRequest);
+        } else if (orderStatus.equals(OrderStatus.INCOMPLETE)) {
+            return orderRepository.findLatestUncompletedOrderByStaffAndRole(accountId, role, pageRequest);
+        } else {
+            return orderRepository.findAllByOrderByStaffAndStatus(accountId, role, orderStatus, pageRequest);
+        }
+    }
+
+    private Page<Order> handleNonStaffRoleOrders(OrderStatus orderStatus, PageRequest pageRequest) {
+        if (orderStatus.equals(OrderStatus.ALL)) {
+            return orderRepository.findAll(pageRequest);
+        } else if (orderStatus.equals(OrderStatus.INCOMPLETE)) {
+            return orderRepository.findAllByStatusNot(OrderStatus.ORDER_COMPLETED, pageRequest);
+        } else {
+            return orderRepository.findAllByStatus(orderStatus, pageRequest);
+        }
+    }
+
+    //</editor-fold>
+
+    //<editor-fold desc="CREATE OPERATIONS" defaultstate="collapsed">
     @Override
     public Order saveNewOrder(String accountId) {
         Account owner = modelMapper.map(accountService.findAccountById(accountId), Account.class);
@@ -67,18 +131,30 @@ public class OrderServiceImpl implements OrderService {
 
         return order;
     }
+    //</editor-fold>
 
-    @Transactional
-    @Override
-    public Order findOrderById(String id) {
-        return orderRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException("Order not found"));
-    }
-
+    //<editor-fold desc="UPDATE OPERATIONS" defaultstate="collapsed">
     @Override
     public Order updateOrder(Order order) {
         return orderRepository.save(order);
     }
 
+    @Transactional
+    @Override
+    public Order updateOrder(OrderDTO orderDTO) {
+        return orderRepository.save(setOrder(orderDTO));
+    }
+    //</editor-fold>
+
+    //<editor-fold desc="DELETE OPERATIONS" defaultstate="collapsed">
+    @Transactional
+    @Override
+    public void deleteOrder(String orderId) {
+        orderRepository.delete(orderRepository.findById(orderId).orElseThrow(() -> new ObjectNotFoundException("Order not found")));
+    }
+    //</editor-fold>
+
+    //<editor-fold desc="ORDER UTILITIES" defaultstate="collapsed">
     @Transactional
     @Override
     public Order assignStaff(String orderId, StaffGroup staffs) {
@@ -111,36 +187,13 @@ public class OrderServiceImpl implements OrderService {
         return order;
     }
 
-    //<editor-fold desc="ADMIN" defaultstate="collapsed>
-    @Override
-    public Page<Order> findAll(int offset) {
-        return orderRepository.findAll(PageRequest.of(offset, 5));
-    }
-
-    @Transactional
-    @Override
-    public Order updateOrder(OrderDTO orderDTO) {
-        return orderRepository.save(setOrder(orderDTO));
-    }
-
-    @Transactional
-    @Override
-    public void deleteOrder(String orderId) {
-        orderRepository.delete(orderRepository.findById(orderId).orElseThrow(() -> new ObjectNotFoundException("Order not found")));
-    }
-
     @Override
     public double calculateTotalRevenueMonthly(int month) {
-        long totalRevenue = 0;
+        double totalRevenue = 0;
         for(Order order : orderRepository.findAllByMonthAndYear(month, 2024)) {
             totalRevenue += order.getBudget();
         };
         return totalRevenue;
-    }
-
-    @Override
-    public List<Order> findOrderByAccountId(String accountId) {
-        return orderRepository.findAllByOwnerId(accountId);
     }
 
     @Override
@@ -156,6 +209,7 @@ public class OrderServiceImpl implements OrderService {
                 .budget(order.getBudget())
                 .name(order.getName())
                 .createdDate(order.getCreatedDate())
+                .completedDate(order.getCompletedDate())
                 .status(order.getStatus())
                 .imageURL(imageURL)
                 .build();

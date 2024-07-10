@@ -46,6 +46,8 @@ public enum OrderStatus {
             DELIVERED_DENIED,
     ORDER_COMPLETED, //send email to customer
     CANCEL,
-    ORDER_RESTORED
+    ORDER_RESTORED,
+    ALL,
+    INCOMPLETE
 }
 

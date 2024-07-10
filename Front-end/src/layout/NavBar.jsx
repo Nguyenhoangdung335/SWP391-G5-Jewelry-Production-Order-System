@@ -7,121 +7,72 @@ import { IoChatboxEllipses } from "react-icons/io5";
 import { LuUser2 } from "react-icons/lu";
 import { FiBox } from "react-icons/fi";
 import { useAuth } from "../provider/AuthProvider";
+import { jwtDecode } from "jwt-decode";
+
+// Define RBAC configuration
+const rbacConfig = {
+  "/userManager/dashboard": ["ADMIN"],
+  "/userManager/client_manager": ["MANAGER", "ADMIN"],
+  "/userManager/orders_manager": ["SALE_STAFF", "DESIGN_STAFF", "PRODUCTION_STAFF", "MANAGER", "ADMIN"],
+  "/userManager/blogs_manager": ["SALE_STAFF", "MANAGER", "ADMIN"],
+  "/userManager/employees_manager": ["MANAGER", "ADMIN"],
+  "/userManager/products_manager": ["SALE_STAFF", "MANAGER", "ADMIN"],
+};
+
+const navLinks = [
+  { to: "/userManager/dashboard", icon: <MdSpaceDashboard size={22} color="white" />, label: "Dashboard" },
+  { to: "/userManager/client_manager", icon: <FaUsers size={22} color="white" />, label: "Clients" },
+  { to: "/userManager/orders_manager", icon: <IoMdCart size={22} color="white" />, label: "Orders" },
+  { to: "/userManager/blogs_manager", icon: <IoChatboxEllipses size={22} color="white" />, label: "Blogs" },
+  { to: "/userManager/employees_manager", icon: <LuUser2 size={22} color="white" />, label: "Employees" },
+  { to: "/userManager/products_manager", icon: <FiBox size={22} color="white" />, label: "Products" },
+];
+
+// Utility function to check if a role is allowed
+const isAllowed = (role, path) => {
+  return rbacConfig[path]?.includes(role);
+};
 
 export default function NavBar() {
+  const { token } = useAuth();
+  let decodedToken;
+
+  if (token) {
+    decodedToken = jwtDecode(token);
+  }
+
+  const userRole = decodedToken?.role;
+
   return (
     <>
       <Link to="/" style={{ textDecoration: "none" }}>
-        <h1
-          className="display-4 px-5"
-          style={{ fontSize: "2.5rem", color: "white", textAlign: "center" }}
-        >
+        <h1 className="display-4 px-5" style={{ fontSize: "2.5rem", color: "white", textAlign: "center" }}>
           宝石店
         </h1>
       </Link>
       <div style={{ marginTop: "10%" }} className="d-flex flex-column gap-3 ">
-        <NavLink
-          style={({ isActive }) => ({
-            backgroundColor: isActive ? "#444444" : "transparent",
-            display: "flex",
-            flexDirection: "row",
-            gap: 10,
-            alignItems: "center",
-            textDecoration: "none",
-            paddingLeft: "10%",
-            paddingTop: "2%",
-            paddingBottom: "2%",
-          })}
-          to="/userManager/dashboard"
-        >
-          <MdSpaceDashboard size={22} color="white" />
-          <p style={{ color: "white", margin: 0, fontSize: 20 }}>Dashboard</p>
-        </NavLink>
-        <NavLink
-          style={({ isActive }) => ({
-            backgroundColor: isActive ? "#444444" : "transparent",
-            display: "flex",
-            flexDirection: "row",
-            gap: 10,
-            alignItems: "center",
-            textDecoration: "none",
-            paddingLeft: "10%",
-            paddingTop: "2%",
-            paddingBottom: "2%",
-          })}
-          to="/userManager/client_manager"
-        >
-          <FaUsers size={22} color="white" />
-          <p style={{ color: "white", margin: 0, fontSize: 20 }}>Clients</p>
-        </NavLink>
-        <NavLink
-          style={({ isActive }) => ({
-            backgroundColor: isActive ? "#444444" : "transparent",
-            display: "flex",
-            flexDirection: "row",
-            gap: 10,
-            alignItems: "center",
-            textDecoration: "none",
-            paddingLeft: "10%",
-            paddingTop: "2%",
-            paddingBottom: "2%",
-          })}
-          to="/userManager/orders_manager"
-        >
-          <IoMdCart size={22} color="white" />
-          <p style={{ color: "white", margin: 0, fontSize: 20 }}>Orders</p>
-        </NavLink>
-        <NavLink
-          style={({ isActive }) => ({
-            backgroundColor: isActive ? "#444444" : "transparent",
-            display: "flex",
-            flexDirection: "row",
-            gap: 10,
-            alignItems: "center",
-            textDecoration: "none",
-            paddingLeft: "10%",
-            paddingTop: "2%",
-            paddingBottom: "2%",
-          })}
-          to="/userManager/blogs_manager"
-        >
-          <IoChatboxEllipses size={22} color="white" />
-          <p style={{ color: "white", margin: 0, fontSize: 20 }}>Blogs</p>
-        </NavLink>
-        <NavLink
-          style={({ isActive }) => ({
-            backgroundColor: isActive ? "#444444" : "transparent",
-            display: "flex",
-            flexDirection: "row",
-            gap: 10,
-            alignItems: "center",
-            textDecoration: "none",
-            paddingLeft: "10%",
-            paddingTop: "2%",
-            paddingBottom: "2%",
-          })}
-          to="/userManager/employees_manager"
-        >
-          <LuUser2 size={22} color="white" />
-          <p style={{ color: "white", margin: 0, fontSize: 20 }}>Employees</p>
-        </NavLink>
-        <NavLink
-          style={({ isActive }) => ({
-            backgroundColor: isActive ? "#444444" : "transparent",
-            display: "flex",
-            flexDirection: "row",
-            gap: 10,
-            alignItems: "center",
-            textDecoration: "none",
-            paddingLeft: "10%",
-            paddingTop: "2%",
-            paddingBottom: "2%",
-          })}
-          to="/userManager/products_manager"
-        >
-          <FiBox size={22} color="white" />
-          <p style={{ color: "white", margin: 0, fontSize: 20 }}>Products</p>
-        </NavLink>
+        {navLinks.map((navLink) =>
+          isAllowed(userRole, navLink.to) ? (
+            <NavLink
+              key={navLink.to}
+              style={({ isActive }) => ({
+                backgroundColor: isActive ? "#444444" : "transparent",
+                display: "flex",
+                flexDirection: "row",
+                gap: 10,
+                alignItems: "center",
+                textDecoration: "none",
+                paddingLeft: "10%",
+                paddingTop: "2%",
+                paddingBottom: "2%",
+              })}
+              to={navLink.to}
+            >
+              {navLink.icon}
+              <p style={{ color: "white", margin: 0, fontSize: 20 }}>{navLink.label}</p>
+            </NavLink>
+          ) : null
+        )}
       </div>
     </>
   );
