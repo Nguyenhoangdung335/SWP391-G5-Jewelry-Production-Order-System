@@ -14,4 +14,5 @@ public interface ProductService {
     List<ProductSpecification> findAllSpecification();
     ProductSpecification findProductSpecificationById(int id);
     ProductSpecification saveSpecification(ProductSpecification specs);
+    void deleteSpecificationById(int id);
 }

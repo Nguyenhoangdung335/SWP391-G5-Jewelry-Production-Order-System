@@ -1,5 +1,7 @@
 package com.swp391.JewelryProduction.services.order;
 
+import com.google.cloud.firestore.Firestore;
+import com.google.firebase.cloud.FirestoreClient;
 import com.swp391.JewelryProduction.dto.OrderDTO;
 import com.swp391.JewelryProduction.dto.RequestDTOs.StaffGroup;
 import com.swp391.JewelryProduction.dto.ResponseDTOs.OrderResponse;
@@ -12,6 +14,7 @@ import com.swp391.JewelryProduction.pojos.Order;
 import com.swp391.JewelryProduction.pojos.Quotation;
 import com.swp391.JewelryProduction.pojos.designPojos.Product;
 import com.swp391.JewelryProduction.repositories.OrderRepository;
+import com.swp391.JewelryProduction.services.FirestoreService;
 import com.swp391.JewelryProduction.services.account.AccountService;
 import com.swp391.JewelryProduction.services.account.StaffService;
 import com.swp391.JewelryProduction.util.exceptions.ObjectNotFoundException;
@@ -40,6 +43,7 @@ public class OrderServiceImpl implements OrderService {
     private final AccountService accountService;
     private final StaffService staffService;
     private final ModelMapper modelMapper;
+    private final FirestoreService firestoreService;
 
     private final StateMachineService<OrderStatus, OrderEvent> stateMachineService;
 
@@ -158,6 +162,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     @Override
     public Order assignStaff(String orderId, StaffGroup staffs) {
+        Firestore db = FirestoreClient.getFirestore();
         Order order = this.findOrderById(orderId);
         order.setSaleStaff(
                 staffService.findStaffByIdWithRole(
@@ -175,6 +180,8 @@ public class OrderServiceImpl implements OrderService {
                 )
         );
         order = this.updateOrder(order);
+
+        firestoreService.saveOrUpdateUser(db,order.getOwner());
 
         StateMachine<OrderStatus, OrderEvent> stateMachine = getStateMachine(orderId, stateMachineService);
         stateMachine.sendEvent(
