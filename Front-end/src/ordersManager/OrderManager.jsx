@@ -38,8 +38,10 @@ export default function OrderManager() {
         },
       })
         .then((res) => {
-          setData(res.data.responseList.orders);
-          setTotalPages(res.data.responseList.totalPages);
+          if (res.status === 200) {
+            setData(res.data.responseList.orders);
+            setTotalPages(res.data.responseList.totalPages);
+          }
         })
         .catch((err) => console.log(err));
     };
