@@ -4,7 +4,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.paypal.api.payments.*;
-import com.paypal.base.rest.APIContext;
 import com.paypal.base.rest.PayPalRESTException;
 import com.swp391.JewelryProduction.pojos.Order;
 import com.swp391.JewelryProduction.pojos.Quotation;
