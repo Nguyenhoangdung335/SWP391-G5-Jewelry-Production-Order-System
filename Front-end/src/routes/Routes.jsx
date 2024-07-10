@@ -79,10 +79,6 @@ function RouteMap() {
             <ProtectedRoute
               roles={[
                 "ADMIN",
-                "MANAGER",
-                "PRODUCTION_STAFF",
-                "DESIGN_STAFF",
-                "SALE_STAFF",
               ]}
             >
               <DashboardManger />
@@ -96,9 +92,6 @@ function RouteMap() {
               roles={[
                 "ADMIN",
                 "MANAGER",
-                "PRODUCTION_STAFF",
-                "DESIGN_STAFF",
-                "SALE_STAFF",
               ]}
             >
               <ClientManager />
@@ -128,8 +121,6 @@ function RouteMap() {
               roles={[
                 "ADMIN",
                 "MANAGER",
-                "PRODUCTION_STAFF",
-                "DESIGN_STAFF",
                 "SALE_STAFF",
               ]}
             >
@@ -144,9 +135,6 @@ function RouteMap() {
               roles={[
                 "ADMIN",
                 "MANAGER",
-                "PRODUCTION_STAFF",
-                "DESIGN_STAFF",
-                "SALE_STAFF",
               ]}
             >
               <EmployeeManager />
@@ -160,8 +148,6 @@ function RouteMap() {
               roles={[
                 "ADMIN",
                 "MANAGER",
-                "PRODUCTION_STAFF",
-                "DESIGN_STAFF",
                 "SALE_STAFF",
               ]}
             >
