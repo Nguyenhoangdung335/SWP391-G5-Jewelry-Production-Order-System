@@ -12,7 +12,7 @@ import {
   Table,
 } from "react-bootstrap";
 import snowfall from "../../assets/snowfall.jpg";
-import { jwtDecode } from "jwt-decode"; 
+import { jwtDecode } from "jwt-decode";
 
 function OrderDetail() {
   const state = useLocation();
@@ -58,7 +58,11 @@ function OrderDetail() {
         <Row>
           <Col md={8}>
             <div className="pb-2">
-              <img src={snowfall} alt="Product Image" className="w-100 h-100" />
+              <img
+                src={data.design.designLink || snowfall}
+                alt="Product Image"
+                className="w-100 h-100"
+              />
             </div>
             <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
               <div className="p-3">
