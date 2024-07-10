@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"; // Added useEffect import
+import React, { useState, useEffect } from "react"; 
 import { Table, Button, Modal, Form } from "react-bootstrap";
 import { FiPlus } from "react-icons/fi";
 import { FaBox } from "react-icons/fa";
@@ -67,16 +67,16 @@ export default function ProductManager() {
     };
 
     const handleSave = (event) => {
-        event.preventDefault();
-        const form = event.currentTarget;
+        event.preventDefault();// được gọi để ngăn chặn hành vi mặc định của form khi người dùng nhấn nút submit, tránh việc reload trang.
+        const form = event.currentTarget;//là form HTML hiện tại đang được submit. Dòng này lấy tham chiếu đến form đó để có thể truy cập vào các giá trị của các trường trong form.
         const values = {
             id: form.formProductId.value,
             name: form.formProductName.value,
             description: form.formProductDescription.value,
         };
-        const newData = data.map((item) =>
-            item.id === values.id ? values : item
-        );
+        const newData = data.map((item) =>//data.map() được sử dụng để tạo một mảng mới newData,
+            item.id === values.id ? values : item// trong đó mỗi sản phẩm (item) sẽ được so sánh với values.id. 
+        );//Nếu item.id trùng với values.id, sản phẩm đó sẽ được thay thế bằng đối tượng values mới, nếu không, sản phẩm sẽ giữ nguyên.
         setData(newData);
         setIsModalVisible(false);
         setSelectedProduct(null);
