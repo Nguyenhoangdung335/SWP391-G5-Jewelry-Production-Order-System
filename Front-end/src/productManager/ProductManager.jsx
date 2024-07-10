@@ -27,7 +27,7 @@ export default function ProductManager() {
                 setData(res.data.responseList.productList);
             })
             .catch((err) => console.log(err));
-    }, [currentPage]);
+    }, [currentPage, data]);
 
     const handleEdit = (record) => {
         setSelectedProduct(record);
