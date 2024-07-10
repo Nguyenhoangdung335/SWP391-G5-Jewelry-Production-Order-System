@@ -33,7 +33,6 @@ function Collections() {
     const [showProductModal, setShowProductModal] = useState(false);
     const [showCreateRequestModal, setShowCreateRequestModal] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
-    const [navigate, setNavigate] = useState(false);
 
     useEffect(() => {
         if (token) {
@@ -67,9 +66,10 @@ function Collections() {
     };
 
     const checkCurrentOrder = () => {
-        if(decodedToken===null) {
+        if (decodedToken === null) {
             alert("You must login to use this feature");
-            setNavigate(true);
+        } else if (decodedToken.role !== "CUSTOMER") {
+            alert("You dont have permission to use this feature");
         } else {
             axios
                 .get(`${ServerUrl}/api/account/${decodedToken.id}/check-current-order`)
@@ -93,10 +93,6 @@ function Collections() {
     const handleUseTemplate = () => {
         checkCurrentOrder()
     };
-
-    if(navigate){
-        return <Navigate to="/login" />;
-    }
 
     return (
         <Container style={{ paddingTop: "10px" }}>
