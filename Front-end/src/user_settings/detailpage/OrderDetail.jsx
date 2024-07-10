@@ -119,123 +119,52 @@ function OrderDetail() {
           <Row>
             <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
               <div className="p-2">
-                <div
-                  className="mb-2"
-                  style={{
-                    borderBottom: "1px solid rgba(166, 166, 166, 0.5) ",
-                  }}
-                >
+                <div className="pb-2">
                   <h4>Specification</h4>
-                  <div style={{ overflow: "scroll", height: "57vh" }}>
-                    <Table bordered hover>
-                      <tr>
-                        <th>Id</th>
-                        <td>{data.product.id}</td>
-                      </tr>
-                      <tr>
-                        <th>Name</th>
-                        <td>{data.product.name}</td>
-                      </tr>
-                      <tr>
-                        <th>Created Date</th>
-                        <td>{arrayToDate(data.createdDate)}</td>
-                      </tr>
-                      <tr>
-                        <th>Completed Date</th>
-                        <td>{arrayToDate(data.createdDate)}</td>
-                      </tr>
-                      <tr>
-                        <th>Total Price</th>
-                        <td>{data.quotation.totalPrice}</td>
-                      </tr>
-                      <tr>
-                        <th>Status</th>
-                        <td>
-                          <Badge
-                            className="text-center"
-                            bg={
-                              data.status === "ORDER_COMPLETED"
-                                ? "success"
-                                : "danger"
-                            }
-                          >
-                            {data.status}
-                          </Badge>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th>Id</th>
-                        <td>{data.product.id}</td>
-                      </tr>
-                      <tr>
-                        <th>Name</th>
-                        <td>{data.product.name}</td>
-                      </tr>
-                      <tr>
-                        <th>Created Date</th>
-                        <td>{arrayToDate(data.createdDate)}</td>
-                      </tr>
-                      <tr>
-                        <th>Completed Date</th>
-                        <td>{arrayToDate(data.createdDate)}</td>
-                      </tr>
-                      <tr>
-                        <th>Total Price</th>
-                        <td>{data.quotation.totalPrice}</td>
-                      </tr>
-                      <tr>
-                        <th>Status</th>
-                        <td>
-                          <Badge
-                            className="text-center"
-                            bg={
-                              data.status === "ORDER_COMPLETED"
-                                ? "success"
-                                : "danger"
-                            }
-                          >
-                            {data.status}
-                          </Badge>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th>Id</th>
-                        <td>{data.product.id}</td>
-                      </tr>
-                      <tr>
-                        <th>Name</th>
-                        <td>{data.product.name}</td>
-                      </tr>
-                      <tr>
-                        <th>Created Date</th>
-                        <td>{arrayToDate(data.createdDate)}</td>
-                      </tr>
-                      <tr>
-                        <th>Completed Date</th>
-                        <td>{arrayToDate(data.createdDate)}</td>
-                      </tr>
-                      <tr>
-                        <th>Total Price</th>
-                        <td>{data.quotation.totalPrice}</td>
-                      </tr>
-                      <tr>
-                        <th>Status</th>
-                        <td>
-                          <Badge
-                            className="text-center"
-                            bg={
-                              data.status === "ORDER_COMPLETED"
-                                ? "success"
-                                : "danger"
-                            }
-                          >
-                            {data.status}
-                          </Badge>
-                        </td>
-                      </tr>
-                    </Table>
-                  </div>
                 </div>
+                <Table bordered hover>
+                  <tr>
+                    <th>Type</th>
+                    <td>{data.product.specification.type}</td>
+                  </tr>
+                  <tr>
+                    <th>Style</th>
+                    <td>{data.product.specification.style}</td>{" "}
+                  </tr>{" "}
+                  <tr></tr>
+                  <tr>
+                    <th>Occasion</th>
+                    <td>{data.product.specification.occasion}</td>
+                  </tr>
+                  <tr>
+                    <th>Metal</th>
+                    <td>{data.product.specification.metal}</td>
+                  </tr>
+                  <tr>
+                    <th>Texture</th>
+                    <td>{data.product.specification.texture}</td>
+                  </tr>
+                  <tr>
+                    <th>Length</th>
+                    <td>{data.product.specification.length}</td>
+                  </tr>
+                  <tr>
+                    <th>Chain Type</th>
+                    <td>{data.product.specification.chainType}</td>
+                  </tr>
+                  <tr>
+                    <th>Gem Stone</th>
+                    <td>{data.product.specification.gemStone}</td>
+                  </tr>
+                  <tr>
+                    <th>Gem Stone Weight</th>
+                    <td>{data.product.specification.gemStoneWeight}</td>
+                  </tr>
+                  <tr>
+                    <th>Shape</th>
+                    <td>{data.product.specification.shape}</td>
+                  </tr>
+                </Table>
               </div>
             </div>
           </Row>
