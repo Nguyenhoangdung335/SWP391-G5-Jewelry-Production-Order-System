@@ -49,7 +49,24 @@ export default function DashboardManager() {
   //     }
   //   }
   //   fetchInfo();
-  // }, []); 
+  // }, []);
+
+  useEffect(() => {
+    async function fetchOrder() {
+      try {
+        const response = await axios.get("http://localhost:8080/api/CUSTOMER/list");
+        if (response.data.status === "OK") {
+          const customerList = response.data.responseList["customer-list"]; 
+          setOrder(customerList); 
+        } else {
+          console.error("Failed to fetch orders:", response.data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      }
+    }
+    fetchOrder();
+  }, []); 
 
   const columnsClient = [
     {

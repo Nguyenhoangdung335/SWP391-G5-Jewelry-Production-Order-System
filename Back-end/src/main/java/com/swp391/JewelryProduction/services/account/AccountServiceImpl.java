@@ -235,6 +235,16 @@ public class AccountServiceImpl implements AccountService {
         return accountRepository.findAllByRole(role, PageRequest.of(offset, elementsPerPage));
     }
 
+    @Override
+    public Page<Account> findAll(int offset) {
+        return findAll(offset, 5);
+    }
+
+    @Override
+    public Page<Account> findAll(int offset, int elementPerPage) {
+        return accountRepository.findAll(PageRequest.of(offset, elementPerPage));
+    }
+
     @Transactional
     @Override
     public Account createAccount(AccountDTO accountDTO) {
@@ -271,8 +281,13 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public List<Account> findAccountsByRole(Role role) {
-        return accountRepository.findAllByRole(role);
+    public List<Account> findAccountsByRoles(List<Role> roles) {
+        return accountRepository.findAllByRoleIn(roles);
+    }
+
+    @Override
+    public Long countAllAccountByRole(List<Role> role) {
+        return accountRepository.countAllByRoleIn(role);
     }
 
     @Transactional

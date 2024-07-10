@@ -22,10 +22,11 @@ public interface AccountRepository extends JpaRepository<Account, String> {
     boolean existsByEmail(String email);
     Optional<Account> findAccountByRole(Role role);
     Optional<Staff> findStaffByRoleAndWorkStatus(Role role, WorkStatus workStatus);
-    Page<Account> findAllByRole(Role role, PageRequest pageRequest);
     Optional<Account> findByEmail(String email);
+    Page<Account> findAllByRole(Role role, PageRequest pageRequest);
     List<Account> findAllByEmail(String email);
-    List<Account> findAllByRole(Role role);
+    List<Account> findAllByRoleIn (List<Role> roles);
+    Long countAllByRoleIn (List<Role> roles);
 
     @Query("SELECT a FROM Account a")
     List<Account> findAllAccounts();

@@ -28,8 +28,12 @@ public interface AccountService {
     boolean checkCurrentOrderExist(String accountId);
     Page<Account> findAllByRole(Role role, int offset);
     Page<Account> findAllByRole(Role role, int offset, int elementsPerPage);
+    Page<Account> findAll(int offset);
+    Page<Account> findAll(int offset, int elementPerPage);
     Account createAccount(AccountDTO accountDTO);
     void deleteAccount(String accountId);
     Account updateAccount(AccountDTO accountDTO);
-    List<Account> findAccountsByRole(Role role);
+    List<Account> findAccountsByRoles(List<Role> role);
+
+    Long countAllAccountByRole (List<Role> role);
 }

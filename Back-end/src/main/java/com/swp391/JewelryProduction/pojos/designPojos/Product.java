@@ -1,9 +1,6 @@
 package com.swp391.JewelryProduction.pojos.designPojos;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import com.swp391.JewelryProduction.pojos.Order;
 import com.swp391.JewelryProduction.util.IdGenerator;
 import jakarta.persistence.*;
@@ -20,6 +17,7 @@ import org.hibernate.annotations.Parameter;
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "id"
 )
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Product {
     @Id
     @GeneratedValue(generator = "product_seq")
@@ -43,7 +41,7 @@ public class Product {
     private ProductSpecification specification;
 
     @ToString.Exclude
-    @OneToOne(mappedBy = "product", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "product", fetch = FetchType.EAGER)
     @JsonBackReference("Order-Product")
     private Order order;
 }

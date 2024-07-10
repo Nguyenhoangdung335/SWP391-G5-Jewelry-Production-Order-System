@@ -18,6 +18,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -85,9 +87,11 @@ public class FirestoreService {
     }
 
     @Async
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void saveOrUpdateUser(Firestore db, Account account) {
         DocumentReference docRef = db.collection(USER_COLLECTION_NAME).document(account.getId());
         Map<String, Object> userData = new HashMap<>();
+        Hibernate.initialize(account.getUserInfo());
         userData.put("id", account.getId());
         userData.put("name", (account.getUserInfo() == null) ? account.getEmail() : account.getUserInfo().getFirstName());
         userData.put("role", account.getRole().toString());

@@ -2,11 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Table, Button, Modal, Form, Row, Col } from "react-bootstrap";
 import { FiPlus } from "react-icons/fi";
 import axios from "axios";
-import { roles } from "../data/data";
-import { Icon } from "@iconify/react";
+import { roles } from "../data/Roles";
 import ServerUrl from "../reusable/ServerUrl";
 
-export default function EmployeeManager() {
+export default function ClientManager() {
   const [filterRole, setFilterRole] = useState("CUSTOMER");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
@@ -15,13 +14,12 @@ export default function EmployeeManager() {
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const itemsPerPage = 5;
   const [data, setData] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get(`${ServerUrl}/api/admin/get/${filterRole}/${currentPage - 1}`, {
+        const res = await axios.get(`${ServerUrl}/api/admin/get/account/${currentPage - 1}?role=${filterRole}`, {
           headers: { "Content-Type": "application/json" },
         });
         setData(res.data.responseList.accounts);
@@ -30,7 +28,7 @@ export default function EmployeeManager() {
         console.log(err);
       }
     };
-    
+
     fetchData();
   }, [filterRole, currentPage]);
 
@@ -69,13 +67,13 @@ export default function EmployeeManager() {
         address: form.address.value,
       },
     };
-  
+
     const newData = data.map((item) => (item.id === values.id ? values : item));
     setData(newData); // Update state immutably
     setIsModalVisible(false);
     setSelectedUser(null);
   };
-  
+
   const handleAdd = (event) => {
     event.preventDefault();
     const form = event.currentTarget;
@@ -98,7 +96,6 @@ export default function EmployeeManager() {
     setData([...data, newEmployee]); // Update state immutably
     setIsAddModalVisible(false);
   };
-  
 
   const handleAddClick = () => {
     setIsAddModalVisible(true);
@@ -158,7 +155,7 @@ export default function EmployeeManager() {
   return (
     <div style={{ padding: "3%" }}>
       <style jsx>{`
-        .add-employee-button {
+        .add-client-button {
           display: flex;
           flex-direction: row;
           align-items: center;
@@ -170,7 +167,7 @@ export default function EmployeeManager() {
           border-radius: 5px;
           transition: background-color 0.3s;
         }
-        .add-employee-button:hover {
+        .add-client-button:hover {
           background-color: #007bff;
         }
         .role-filter-button {
@@ -210,41 +207,19 @@ export default function EmployeeManager() {
           display: "flex",
           flexDirection: "row",
           justifyContent: "space-between",
+          alignItems: "center",
           marginBottom: "2%",
         }}
       >
-        <div className="rounded-lg bg-neutral-500 text-white pl-3 flex items-center">
-          <div>Role Filter</div>
-          <select className="bg-neutral-500 inline-block text-orange-500 w-44" onChange={handleFilterChange}>
-            {roles.map((role) => (
-              <option key={role.name} value={role.value} className="bg-white text-black">
-                {role.name}
-              </option>
-            ))}
-          </select>
-          <div className="relative right-6 pb-2">
-            <Icon icon="fa:sort-down" />
-          </div>
-        </div>
-        
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            gap: 20,
-          }}
+        <Button
+          variant="secondary"
+          className="add-client-button"
+          onClick={handleAddClick}
+          style={{ marginLeft: "auto" }} // Align to the right
         >
-          <Button
-            variant="secondary"
-            className="add-employee-button"
-            onClick={handleAddClick}
-          >
-            <FiPlus color="rgba(224, 215, 234, 1)" />
-            Add Employee
-          </Button>
-        </div>
-        
+          <FiPlus color="rgba(224, 215, 234, 1)" />
+          Add Client
+        </Button>
       </div>
 
       <Table striped bordered hover>
@@ -428,7 +403,7 @@ export default function EmployeeManager() {
 
       <Modal show={isAddModalVisible} onHide={() => setIsAddModalVisible(false)} centered>
         <Modal.Header closeButton>
-          <Modal.Title>Add Employee</Modal.Title>
+          <Modal.Title>Add Client</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={handleAdd}>
@@ -486,9 +461,14 @@ export default function EmployeeManager() {
               <Form.Control type="text" required />
             </Form.Group>
 
-            <Button variant="primary" type="submit" className="mt-3">
-              Add Employee
-            </Button>
+            <div className="d-flex justify-content-between">
+              <Button variant="primary" type="submit" className="mt-3">
+                Add Client
+              </Button>
+              <Button variant="secondary" onClick={() => setIsAddModalVisible(false)} className="mt-3">
+                Back
+              </Button>
+            </div>
           </Form>
         </Modal.Body>
       </Modal>
@@ -498,7 +478,7 @@ export default function EmployeeManager() {
           <Modal.Title>Confirm Delete</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>Are you sure you want to delete this employee?</p>
+          <p>Are you sure you want to delete this client?</p>
           <div className="d-flex justify-content-end">
             <Button variant="secondary" onClick={handleCancelDelete}>
               Cancel

@@ -59,6 +59,15 @@ public class ProductController {
                 .buildEntity();
     }
 
+    @PostMapping("/remove/{specificationId}")
+    public ResponseEntity<Response> deleteCustomization(@PathVariable int specificationId) {
+        productService.deleteSpecificationById(specificationId);
+        return Response.builder()
+                .status(HttpStatus.OK)
+                .message("Request send successfully.")
+                .buildEntity();
+    }
+
     @GetMapping("/get-all/specification")
     public ResponseEntity<Response> getAllSpecification () {
         return Response.builder()

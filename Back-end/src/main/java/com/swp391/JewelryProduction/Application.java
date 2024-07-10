@@ -7,6 +7,7 @@ import com.swp391.JewelryProduction.enums.OrderStatus;
 import com.swp391.JewelryProduction.enums.Role;
 import com.swp391.JewelryProduction.pojos.*;
 import com.swp391.JewelryProduction.pojos.designPojos.Product;
+import com.swp391.JewelryProduction.pojos.designPojos.ProductSpecification;
 import com.swp391.JewelryProduction.repositories.AccountRepository;
 //import com.swp391.JewelryProduction.websocket.listener.GlobalEntityListener;
 import com.swp391.JewelryProduction.repositories.OrderRepository;
@@ -33,6 +34,8 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 @SpringBootApplication
@@ -98,7 +101,7 @@ public class Application   {
 					.email("dungnhse180163@fpt.edu.vn")
 					.password(passwordEncoder.encode("#Dung111004"))
 					.dateCreated(LocalDateTime.now())
-					.role(Role.MANAGER)
+					.role(Role.CUSTOMER)
 					.status(AccountStatus.ACTIVE)
 					.build();
 			acc.setUserInfo(UserInfo.builder()
@@ -111,14 +114,14 @@ public class Application   {
 					.build());
 			accountRepository.save(acc);
 
-			acc = Account.builder()
+			Staff saleStaff = Staff.builder()
 					.email("nguyenhoangd335@gmail.com")
 					.password(passwordEncoder.encode("#Dung111004"))
 					.dateCreated(LocalDateTime.now())
 					.role(Role.SALE_STAFF)
 					.status(AccountStatus.ACTIVE)
 					.build();
-			acc.setUserInfo(UserInfo.builder()
+			saleStaff.setUserInfo(UserInfo.builder()
 					.firstName("Dung")
 					.lastName("Nguyen Hoang")
 					.gender(Gender.MALE)
@@ -126,7 +129,7 @@ public class Application   {
 					.birthDate(LocalDate.parse("2004-10-11"))
 					.phoneNumber("0916320563")
 					.build());
-			accountRepository.save(acc);
+			staffRepository.save(saleStaff);
 
 			Faker faker = new Faker();
 			Random rand = new Random();
@@ -211,13 +214,26 @@ public class Application   {
 						.name(order.getName())
 						.description(faker.lorem().sentence())
 						.order(order)
+						.specification(ProductSpecification.builder().build())
 						.build());
-				order.setQuotation(Quotation.builder()
+				Quotation quotation = Quotation.builder()
 						.createdDate(LocalDate.now())
 						.expiredDate(LocalDate.now().plusDays(rand.nextInt(10)))
 						.title(order.getName())
 						.order(order)
-						.build());
+						.build();
+				List<QuotationItem> items = new ArrayList<>();
+				for (int j = 0; j < rand.nextInt(5, 10); j++) {
+					items.add(QuotationItem.builder()
+							.name(faker.commerce().productName())
+							.unitPrice(rand.nextDouble(100, 200))
+							.quantity(rand.nextInt(1, 5))
+							.quotation(quotation)
+							.build());
+				}
+				quotation.setQuotationItems(items);
+
+				order.setQuotation(quotation);
 				order.setDesign(Design.builder()
 						.lastUpdated(LocalDateTime.now())
 						.designLink(faker.internet().url())
