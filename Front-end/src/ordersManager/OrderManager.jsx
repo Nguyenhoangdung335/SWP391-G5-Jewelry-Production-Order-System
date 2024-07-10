@@ -149,7 +149,7 @@ export default function OrderManager() {
                     order.status === "completed" ? "bg-success" : "bg-danger"
                   }`}
                 >
-                  {order.status ? order.status.charAt(0).toUpperCase() + order.status.slice(1) : 'Unknown'}
+                  {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                 </span>
               </td>
               <td>
