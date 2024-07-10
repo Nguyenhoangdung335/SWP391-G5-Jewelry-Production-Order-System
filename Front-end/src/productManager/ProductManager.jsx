@@ -27,7 +27,7 @@ export default function ProductManager() {
                 setData(res.data.responseList.productList);
             })
             .catch((err) => console.log(err));
-    }, [currentPage, data]);
+    }, [currentPage]);
 
     const handleEdit = (record) => {
         setSelectedProduct(record);
@@ -45,20 +45,24 @@ export default function ProductManager() {
     };
 
     const handleConfirmDelete = () => {
-      const productId = deleteProduct.id;
-      axios({
-          method: "DELETE",
-          url: `http://localhost:8080/api/product/${productId}/remove`,
-          headers: { "Content-Type": "application/json" },
-      })
-      .then((res) => {
-        console.log(res);
-          setIsDeleteModalVisible(false);
-          setDeleteProduct(null);
-      })
-      .catch((err) => {
-          console.error("Error deleting product:", err);
-      });
+        const productId = deleteProduct.id;
+        axios({
+            method: "DELETE",
+            url: `${ServerUrl}/api/product/${productId}/remove`,
+            headers: { "Content-Type": "application/json" },
+        })
+            .then((res) => {
+                console.log(res);
+                setIsDeleteModalVisible(false);
+                setDeleteProduct(null);
+    
+                // Remove the deleted product from data
+                const updatedData = data.filter((product) => product.id !== productId);
+                setData(updatedData);
+            })
+            .catch((err) => {
+                console.error("Error deleting product:", err);
+            });
     };
     
 
