@@ -46,16 +46,13 @@ export default function ProductManager() {
 
     const handleConfirmDelete = () => {
       const productId = deleteProduct.id;
-
       axios({
           method: "DELETE",
           url: `http://localhost:8080/api/product/${productId}/remove`,
           headers: { "Content-Type": "application/json" },
       })
       .then((res) => {
-
-          const newData = data.filter((item) => item.id !== productId);
-          setData(newData);
+        console.log(res);
           setIsDeleteModalVisible(false);
           setDeleteProduct(null);
       })

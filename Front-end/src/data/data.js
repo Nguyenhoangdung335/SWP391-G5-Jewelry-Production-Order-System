@@ -1,32 +1,32 @@
 export const roles = [
   {
     name: "All",
-    value: "ALL",
+    show: "All",
     id: "0",
   },
   {
-    name: "Customer",
-    value: "CUSTOMER",
+    name: "CUSTOMER",
+    show: "Customer",
     id: "0",
   },
   {
-    name: "Admin",
-    value: "ADMIN",
+    name: "ADMIN",
+    show: "Admin",
     id: "0",
   },
   {
-    name: "Manager",
-    value: "MANAGER",
+    name: "MANAGER",
+    show: "Manager",
     id: "0",
   },
   {
-    name: "Sales Staff",
-    value: "SALE_STAFF",
+    name: "SALE_STAFF",
+    show: "Sale staff",
     id: "0",
   },
   {
-    name: "Production Staff",
-    value: "PRODUCTION_STAFF",
+    name: "PRODUCTION_STAFF",
+    show: "Product staff",
     id: "0",
   },
 ];

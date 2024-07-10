@@ -6,7 +6,7 @@ import { roles } from "../data/data";
 import { Icon } from "@iconify/react";
 import ServerUrl from "../reusable/ServerUrl";
 
-export default function EmployeeManager() {
+export default function ClientManager() {
   const [filterRole, setFilterRole] = useState("CUSTOMER");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
