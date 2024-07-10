@@ -39,7 +39,6 @@ export default function LandingPageLayout() {
             style={{
               position: "fixed",
               color: "black",
-              opacity: "1",
               fontSize: "25px",
               bottom: "0",
               right: "0",

@@ -1,11 +1,59 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, {useEffect, useState} from "react";
+import {Link, Navigate} from "react-router-dom";
 import { IoLogoFacebook } from "react-icons/io5";
 import { FaInstagram } from "react-icons/fa";
 import { FaYoutube } from "react-icons/fa";
 import { Container, Row, Col, Button } from "react-bootstrap";
+import {jwtDecode} from "jwt-decode";
+import {useAuth} from "../provider/AuthProvider";
+import axios from "axios";
+import ServerUrl from "../reusable/ServerUrl";
 
 export default function Footer() {
+  const {token} = useAuth();
+  const [decodedToken, setDecodedToken] = useState(null);
+  const [requestSent, setRequestSent] = useState(false);
+
+  useEffect(() => {
+    if (token) {
+      const decodedToken = jwtDecode(token);
+      setDecodedToken(decodedToken);
+    }
+  }, [token]);
+
+  const checkCurrentOrder = () => {
+    if (decodedToken === null) {
+      alert("You must login to use this feature");
+    } else if (decodedToken.role !== "CUSTOMER") {
+      alert("You dont have permission to use this feature");
+    } else {
+      axios
+          .get(`${ServerUrl}/api/account/${decodedToken.id}/check-current-order`)
+          .then((response) => {
+            if (response.data) {
+              alert(
+                  "You already have an ongoing order. Please complete it before designing new jewelry."
+              );
+            } else {
+              setRequestSent(true);
+            }
+          })
+          .catch((error) => {
+            console.error("Error checking current order:", error);
+            alert("Error checking current order. Please try again later.");
+          });
+    }
+
+  };
+
+  const handleClick = () => {
+    checkCurrentOrder();
+  }
+
+  if (requestSent) {
+    return <Navigate to="/order_page"/>;
+  }
+
   return (
     <div>
       <div
@@ -84,6 +132,7 @@ export default function Footer() {
                       style={{ borderRadius: 25 }}
                       variant="outline-dark"
                       className="border-2 shadow-sm px-4 py-2 "
+                      onClick={handleClick}
                     >
                       Make your own jewelry
                     </Button>
