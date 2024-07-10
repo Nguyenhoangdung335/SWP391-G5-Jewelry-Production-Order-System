@@ -7,26 +7,20 @@ import {
   Button,
   Col,
   Container,
+  Form,
   Modal,
   Row,
   Table,
 } from "react-bootstrap";
 import snowfall from "../assets/snowfall.jpg";
-import { jwtDecode } from "jwt-decode"; 
+import { jwtDecode } from "jwt-decode";
 
 function OrderDetailManager() {
   const state = useLocation();
   const [data, setData] = useState();
   const [showQuotation, setShowQuotation] = useState(false);
+  const [designImage, setDesignImage] = useState();
   const id = state.state;
-
-  const arrayToDate = (date) => {
-    const dateObject1 = new Date(date[0], date[1] - 1, date[2] + 1);
-    const isoString = dateObject1.toISOString();
-    const formattedDate = isoString.substring(0, 10);
-
-    return formattedDate;
-  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,9 +41,26 @@ function OrderDetailManager() {
 
   console.log(data);
 
+  const arrayToDate = (date) => {
+    const dateObject1 = new Date(date[0], date[1] - 1, date[2] + 1);
+    const isoString = dateObject1.toISOString();
+    const formattedDate = isoString.substring(0, 10);
+
+    return formattedDate;
+  };
   const handleClose = () => setShowQuotation(false);
   const handleShowQuotations = () => {
     setShowQuotation(true);
+  };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    axios(`${ServerUrl}/api/order/${data.id}/detail/edit-design`, {
+      headers: { "Content-Type": "application/json" },
+      method: "POST",
+      data: {
+        designLink: designImage,
+      },
+    });
   };
 
   return (
@@ -88,7 +99,7 @@ function OrderDetailManager() {
                     <th>Status</th>
                     <td>
                       <Badge
-                        className="text-center"
+                        className="text-white"
                         bg={
                           data.status === "ORDER_COMPLETED"
                             ? "success"
@@ -197,6 +208,36 @@ function OrderDetailManager() {
                 </div>
               </div>
             </Row>
+            {data.owner.role === "DESIGN_STAFF" && (
+              <Row className="pb-2">
+                <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
+                  <div className="p-2">
+                    <div
+                      className="mb-2"
+                      style={{
+                        borderBottom: "1px solid rgba(166, 166, 166, 0.5) ",
+                      }}
+                    >
+                      <h4>Upload Image</h4>
+                    </div>
+                    <Form noValidate onSubmit={handleSubmit}>
+                      <Form.Control
+                        type="file"
+                        name="designImage"
+                        value={designImage}
+                        accept="image/png, image/gif, image/jpeg, image/jpg"
+                        onChange={(e) => setDesignImage(e.target.value)}
+                      />
+                      <div className="d-flex justify-content-end">
+                        <Button type="submit" className="mt-2 mb-2">
+                          Upload
+                        </Button>
+                      </div>
+                    </Form>
+                  </div>
+                </div>
+              </Row>
+            )}
           </Col>
         </Row>
       </Container>

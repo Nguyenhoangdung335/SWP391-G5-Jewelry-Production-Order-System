@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/design")
+@RequestMapping("/api/design")
 public class DesignController {
 
     private final ImageService imageService;
