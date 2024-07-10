@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import ServerUrl from "../../reusable/ServerUrl";
+import ServerUrl from "../reusable/ServerUrl";
 import {
   Badge,
   Button,
@@ -11,10 +11,10 @@ import {
   Row,
   Table,
 } from "react-bootstrap";
-import snowfall from "../../assets/snowfall.jpg";
+import snowfall from "../assets/snowfall.jpg";
 import { jwtDecode } from "jwt-decode"; 
 
-function OrderDetail() {
+function OrderDetailManager() {
   const state = useLocation();
   const [data, setData] = useState();
   const [showQuotation, setShowQuotation] = useState(false);
@@ -88,7 +88,7 @@ function OrderDetail() {
                     <th>Status</th>
                     <td>
                       <Badge
-                        className="text-white"
+                        className="text-center"
                         bg={
                           data.status === "ORDER_COMPLETED"
                             ? "success"
@@ -265,4 +265,4 @@ function MyVerticallyCenteredModal(props) {
   );
 }
 
-export default OrderDetail;
+export default OrderDetailManager;

@@ -6,6 +6,7 @@ import { useAuth } from "../provider/AuthProvider";
 import { jwtDecode } from "jwt-decode";
 import { OrderStatus } from "../data/OrderStatus";
 import ServerUrl from "../reusable/ServerUrl";
+import { useNavigate } from "react-router-dom";
 
 export default function OrderManager() {
   const { token } = useAuth();
@@ -21,6 +22,7 @@ export default function OrderManager() {
   const [totalPages, setTotalPages] = useState(1);
   const [data, setData] = useState([]);
   const [filteredStatus, setFilteredStatus] = useState("ALL"); // Optional status filter
+  const navigate = useNavigate();
 
   useEffect(() => {
     const userRole = decodedToken?.role;
@@ -72,8 +74,7 @@ export default function OrderManager() {
   };
 
   const showDetail = (order) => {
-    setSelectedOrder(order);
-    setIsModalVisible(true);
+    navigate("/userManager/orders_manager/order_detail", { state: order.id });
   };
 
   const handleClose = () => setIsModalVisible(false);
