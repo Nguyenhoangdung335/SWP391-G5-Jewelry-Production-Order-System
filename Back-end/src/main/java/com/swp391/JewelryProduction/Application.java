@@ -98,7 +98,7 @@ public class Application   {
 					.email("dungnhse180163@fpt.edu.vn")
 					.password(passwordEncoder.encode("#Dung111004"))
 					.dateCreated(LocalDateTime.now())
-					.role(Role.MANAGER)
+					.role(Role.CUSTOMER)
 					.status(AccountStatus.ACTIVE)
 					.build();
 			acc.setUserInfo(UserInfo.builder()
