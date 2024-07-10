@@ -2,8 +2,10 @@ package com.swp391.JewelryProduction.controller;
 
 import com.swp391.JewelryProduction.dto.AccountDTO;
 import com.swp391.JewelryProduction.dto.OrderDTO;
+import com.swp391.JewelryProduction.enums.OrderStatus;
 import com.swp391.JewelryProduction.enums.Role;
 import com.swp391.JewelryProduction.pojos.Account;
+import com.swp391.JewelryProduction.pojos.Order;
 import com.swp391.JewelryProduction.services.account.AccountService;
 import com.swp391.JewelryProduction.services.admin.AdminService;
 import com.swp391.JewelryProduction.services.order.OrderService;
@@ -51,11 +53,11 @@ public class AdminController {
     //<editor-fold desc="ADMIN" defaultstate="collapsed>
 
     //<editor-fold desc="CLIENTS/EMPLOYEES" defaultstate="collapsed>
-    @GetMapping("/get/{role}/{offset}")
+    @GetMapping("/get/account/{offset}")
     public ResponseEntity<Response> getAccountByRole(
-            @PathVariable("role") Role role,
             @PathVariable("offset") int offset,
-            @RequestParam(defaultValue = "5") int elementPerPage
+            @RequestParam(value = "role", defaultValue = "ALL") Role role,
+            @RequestParam(value = "size", defaultValue = "5") int elementPerPage
     ) {
         Page<Account> accountPage;
         if (role.equals(Role.ALL))
@@ -99,11 +101,21 @@ public class AdminController {
 
     //<editor-fold desc="ORDER" defaultstate="collapsed>
     @GetMapping("/get/order/{offset}")
-    public ResponseEntity<Response> getOrder(@PathVariable("offset") int offset) {
+    public ResponseEntity<Response> getOrder(
+                @PathVariable("offset") int offset,
+                @RequestParam(value = "accountId", required = true) String accountId,
+                @RequestParam(value = "role", required = true) Role role,
+                @RequestParam("status") OrderStatus status,
+                @RequestParam(value = "size", defaultValue = "5") int elementsPerPage
+    ) {
+        Page<Order> orderPage = orderService.findOrdersByPageAndStatusBasedOnRole(accountId, role, status, offset, elementsPerPage);
+        System.out.println(orderPage.getTotalElements());
         return Response.builder()
                 .status(HttpStatus.OK)
                 .message("Request sent successfully")
-                .response("ORDER_list", orderService.findAll(offset))
+                .response("orders", orderPage.getContent())
+                .response("totalPages", orderPage.getTotalPages())
+                .response("totalElements", orderPage.getTotalElements())
                 .buildEntity();
     }
 
