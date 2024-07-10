@@ -11,6 +11,7 @@ import com.swp391.JewelryProduction.repositories.QuotationRepository;
 import com.swp391.JewelryProduction.services.account.StaffService;
 import com.swp391.JewelryProduction.services.order.OrderService;
 import com.swp391.JewelryProduction.util.Response;
+import com.swp391.JewelryProduction.websocket.image.ImageService;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,7 +20,11 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.service.StateMachineService;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
 
 import static com.swp391.JewelryProduction.config.stateMachine.StateMachineUtil.getStateMachine;
 
@@ -28,6 +33,7 @@ import static com.swp391.JewelryProduction.config.stateMachine.StateMachineUtil.
 @RequiredArgsConstructor
 public class OrderController {
     private final OrderService orderService;
+    private final ImageService imageService;
     private final StaffService staffService;
     private final QuotationRepository quotationRepository;
     private final StateMachineService<OrderStatus, OrderEvent> stateMachineService;
@@ -82,23 +88,37 @@ public class OrderController {
     }
 
     @PostMapping("/{orderId}/detail/edit-design")
-    public ResponseEntity<Response> editDesign(@PathVariable("orderId") String orderId, @RequestBody Design design) {
-        Order order = orderService.findOrderById(orderId);
-        order.setDesign(design);
-        orderService.updateOrder(order);
+    public ResponseEntity<Response> editDesign(
+            @PathVariable("orderId") String orderId,
+            @RequestParam MultipartFile file
+    ) {
+        try {
+            String designUrl = imageService.uploadImage(file, "design-images");
+            Order order = orderService.findOrderById(orderId);
+            Design design = Design.builder()
+                    .order(order)
+                    .designLink(designUrl)
+                    .lastUpdated(LocalDateTime.now())
+                    .build();
+            order.setDesign(design);
+            orderService.updateOrder(order);
+    
+            StateMachine<OrderStatus, OrderEvent> stateMachine = getStateMachine(orderId, stateMachineService);
+            stateMachine.sendEvent(
+                    Mono.just(MessageBuilder.
+                            withPayload(OrderEvent.DES_MANA_PROCESS)
+                            .build()
+                    )
+            ).subscribe();
 
-        StateMachine<OrderStatus, OrderEvent> stateMachine = getStateMachine(orderId, stateMachineService);
-        stateMachine.sendEvent(
-                Mono.just(MessageBuilder.
-                        withPayload(OrderEvent.DES_MANA_PROCESS)
-                        .build()
-                )
-        ).subscribe();
-
-        return Response.builder()
-                .status(HttpStatus.OK)
-                .message("Request sent successfully")
-                .buildEntity();
+            return Response.builder()
+                    .status(HttpStatus.OK)
+                    .message("Request sent successfully")
+                    .response("designUrl", designUrl)
+                    .buildEntity();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to upload image", e);
+        }
     }
 
     @GetMapping("/account/{accountId}")
