@@ -49,7 +49,7 @@ export default function ClientManager() {
     setSelectedUser(null);
   };
 
-  const handleSave = (event) => {
+  const handleSave = async (event) => {
     event.preventDefault();
     const form = event.currentTarget;
     const values = {
@@ -69,13 +69,22 @@ export default function ClientManager() {
       },
     };
 
+    try {
+      const res = await axios.put(`${ServerUrl}/api/admin/update/account`, values, {
+        headers: { "Content-Type": "application/json" },
+      });
+      console.log('Update Response:', res.data);
+    } catch (err) {
+      console.error('Error updating account:', err);
+    }
+
     const newData = data.map((item) => (item.id === values.id ? values : item));
     setData(newData); // Update state immutably
     setIsModalVisible(false);
     setSelectedUser(null);
   };
 
-  const handleAdd = (event) => {
+  const handleAdd = async (event) => {
     event.preventDefault();
     const form = event.currentTarget;
     const newEmployee = {
@@ -94,6 +103,16 @@ export default function ClientManager() {
         address: form.address.value,
       },
     };
+
+    try {
+      const res = await axios.post(`${ServerUrl}/api/admin/add/account`, newEmployee, {
+        headers: { "Content-Type": "application/json" },
+      });
+      console.log('Add Response:', res.data);
+    } catch (err) {
+      console.error('Error adding account:', err);
+    }
+
     setData([...data, newEmployee]); // Update state immutably
     setIsAddModalVisible(false);
   };
@@ -112,11 +131,12 @@ export default function ClientManager() {
       const res = await axios.delete(`http://localhost:8080/api/admin/delete/account?accountId=${deleteUser}`, {
         headers: { "Content-Type": "application/json" },
       });
+      console.log('Delete Response:', res.data);
     } catch (err) {
-      console.log(err);
+      console.log('Error deleting account:', err);
     }
     setDeleteModalVisible(false);
-    setDeleteUser(null)
+    setDeleteUser(null);
   };
 
   const handleCancelDelete = () => {
@@ -156,6 +176,11 @@ export default function ClientManager() {
       color: "#6c757d",
       cursor: "not-allowed",
     },
+  };
+
+  const formatDate = (dateArray) => {
+    const [year, month, day] = dateArray;
+    return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
   };
 
   return (
@@ -373,7 +398,7 @@ export default function ClientManager() {
                 <Form.Label>Birth Date</Form.Label>
                 <Form.Control
                   type="date"
-                  defaultValue={selectedUser.userInfo.birthDate}
+                  defaultValue={formatDate(selectedUser.userInfo.birthDate)}
                   required
                 />
               </Form.Group>
