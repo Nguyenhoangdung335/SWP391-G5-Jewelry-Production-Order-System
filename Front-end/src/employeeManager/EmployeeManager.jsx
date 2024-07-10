@@ -128,24 +128,16 @@ export default function EmployeeManager() {
     };
 
     const handleConfirmDelete = async () => {
-        // const newData = data.filter((item) => item.id !== deleteUser.id);
         try {
-            console.log("sadasas", deleteUser);
-            const response = await axios.delete(
-                `http://localhost:8080/api/admin/delete/account`,
-                {
-                    deleteUser,
-                }
-            );
-            if (response.status === 200) {
-                alert("delete successfully");
-            }
-        } catch (error) {
-            console.error("Error something:", error);
-        }
-        setDeleteModalVisible(false);
-        setDeleteUser(null);
-    };
+            const res = await axios.delete(`http://localhost:8080/api/admin/delete/account?accountId=${deleteUser}`, {
+              headers: { "Content-Type": "application/json" },
+            });
+          } catch (err) {
+            console.log(err);
+          }
+          setDeleteModalVisible(false);
+          setDeleteUser(null)
+        };
 
     const handleCancelDelete = () => {
         setDeleteModalVisible(false);
