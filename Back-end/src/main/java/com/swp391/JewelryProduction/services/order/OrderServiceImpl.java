@@ -222,6 +222,11 @@ public class OrderServiceImpl implements OrderService {
                 .build();
     }
 
+    @Override
+    public Long countAllOrders() {
+        return orderRepository.count();
+    }
+
     private Order setOrder(OrderDTO orderDTO) {
         Order order = Order.builder()
                 .id(orderDTO.getId())

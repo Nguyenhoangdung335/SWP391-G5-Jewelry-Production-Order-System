@@ -24,7 +24,7 @@ public interface OrderService {
     Order updateOrder(OrderDTO orderDTO);
     void deleteOrder(String orderId);
     List<Order> findOrderByAccountId (String accountId);
-
+    Long countAllOrders ();
 
     double calculateTotalRevenueMonthly(int month);
 

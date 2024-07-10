@@ -81,7 +81,7 @@ public class AdminController {
                 .response("account", accountService.createAccount(accountDTO))
                 .buildEntity();
     }
-    @PostMapping("/update/account")
+    @PutMapping("/update/account")
     public ResponseEntity<Response> updateAccount(@RequestBody AccountDTO accountDTO) {
         return Response.builder()
                 .status(HttpStatus.OK)
@@ -89,7 +89,7 @@ public class AdminController {
                 .response("account", accountService.updateAccount(accountDTO))
                 .buildEntity();
     }
-    @PostMapping("/delete/account")
+    @DeleteMapping("/delete/account")
     public ResponseEntity<Response> deleteAccount(@RequestParam String accountId) {
         accountService.deleteAccount(accountId);
         return Response.builder()
@@ -105,11 +105,10 @@ public class AdminController {
                 @PathVariable("offset") int offset,
                 @RequestParam(value = "accountId", required = true) String accountId,
                 @RequestParam(value = "role", required = true) Role role,
-                @RequestParam("status") OrderStatus status,
+                @RequestParam(value = "status", defaultValue = "ALL") OrderStatus status,
                 @RequestParam(value = "size", defaultValue = "5") int elementsPerPage
     ) {
         Page<Order> orderPage = orderService.findOrdersByPageAndStatusBasedOnRole(accountId, role, status, offset, elementsPerPage);
-        System.out.println(orderPage.getTotalElements());
         return Response.builder()
                 .status(HttpStatus.OK)
                 .message("Request sent successfully")
@@ -140,7 +139,7 @@ public class AdminController {
     @GetMapping("/dashboard-test")
     public ResponseEntity<Response> getDashboard() {
         return Response.builder()
-                .response("data", adminService.dashboardDataProvider())
+                .responseList(adminService.dashboardDataProvider())
                 .buildEntity();
     }
     //</editor-fold>

@@ -33,5 +33,7 @@ public interface AccountService {
     Account createAccount(AccountDTO accountDTO);
     void deleteAccount(String accountId);
     Account updateAccount(AccountDTO accountDTO);
-    List<Account> findAccountsByRole(Role role);
+    List<Account> findAccountsByRoles(List<Role> role);
+
+    Long countAllAccountByRole (List<Role> role);
 }

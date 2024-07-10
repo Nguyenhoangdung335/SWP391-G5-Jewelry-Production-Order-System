@@ -281,8 +281,13 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public List<Account> findAccountsByRole(Role role) {
-        return accountRepository.findAllByRole(role);
+    public List<Account> findAccountsByRoles(List<Role> roles) {
+        return accountRepository.findAllByRoleIn(roles);
+    }
+
+    @Override
+    public Long countAllAccountByRole(List<Role> role) {
+        return accountRepository.countAllByRoleIn(role);
     }
 
     @Transactional

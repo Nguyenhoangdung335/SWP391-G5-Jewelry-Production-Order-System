@@ -41,7 +41,7 @@ public class Product {
     private ProductSpecification specification;
 
     @ToString.Exclude
-    @OneToOne(mappedBy = "product", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "product", fetch = FetchType.EAGER)
     @JsonBackReference("Order-Product")
     private Order order;
 }

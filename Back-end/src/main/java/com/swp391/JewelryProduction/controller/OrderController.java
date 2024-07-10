@@ -7,7 +7,6 @@ import com.swp391.JewelryProduction.enums.Role;
 import com.swp391.JewelryProduction.pojos.Design;
 import com.swp391.JewelryProduction.pojos.Order;
 import com.swp391.JewelryProduction.pojos.Quotation;
-import com.swp391.JewelryProduction.pojos.QuotationItem;
 import com.swp391.JewelryProduction.repositories.QuotationRepository;
 import com.swp391.JewelryProduction.services.account.StaffService;
 import com.swp391.JewelryProduction.services.order.OrderService;
@@ -21,10 +20,6 @@ import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.service.StateMachineService;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
-
-import java.time.LocalDate;
-import java.util.LinkedList;
-import java.util.Random;
 
 import static com.swp391.JewelryProduction.config.stateMachine.StateMachineUtil.getStateMachine;
 
@@ -115,4 +110,15 @@ public class OrderController {
                 .response("orders", orderService.findOrderByAccountId(accountId).stream().map(orderService::mappedToResponse).toList())
                 .buildEntity();
     }
+
+//    @GetMapping("/assigned/{staffId}")
+//    public ResponseEntity<Response> getAssignedOrder(
+//            @PathVariable("staffId") String staffId,
+//            @RequestParam("role") Role role
+//    ) {
+//        return Response.builder()
+//                .message("Request sent successfully")
+//                .response("order", orderService.findLatestUncompletedOrderByStaffAndRole(staffId, role))
+//                .buildEntity();
+//    }
 }
