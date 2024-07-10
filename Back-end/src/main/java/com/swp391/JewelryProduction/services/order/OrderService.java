@@ -6,6 +6,7 @@ import com.swp391.JewelryProduction.dto.ResponseDTOs.OrderResponse;
 import com.swp391.JewelryProduction.enums.OrderStatus;
 import com.swp391.JewelryProduction.enums.Role;
 import com.swp391.JewelryProduction.pojos.Order;
+import com.swp391.JewelryProduction.pojos.designPojos.Product;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -31,4 +32,5 @@ public interface OrderService {
     Order findLatestUncompletedOrderByStaffAndRole(String staffId, Role role);
 
     OrderResponse mappedToResponse (Order order);
+    Order findOrderByProductId(String productId);
 }
