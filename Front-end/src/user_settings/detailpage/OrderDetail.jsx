@@ -197,12 +197,6 @@ function OrderDetail() {
                 </div>
               </div>
             </Row>
-            <Row>
-              <p className="d-inline text-danger">
-                <span className="fw-bold">Note:</span> Quotation will expire
-                after 6 days.
-              </p>
-            </Row>
           </Col>
         </Row>
       </Container>
