@@ -68,13 +68,13 @@ export default function ClientManager() {
         address: form.address.value,
       },
     };
-  
+
     const newData = data.map((item) => (item.id === values.id ? values : item));
     setData(newData); // Update state immutably
     setIsModalVisible(false);
     setSelectedUser(null);
   };
-  
+
   const handleAdd = (event) => {
     event.preventDefault();
     const form = event.currentTarget;
@@ -97,7 +97,7 @@ export default function ClientManager() {
     setData([...data, newEmployee]); // Update state immutably
     setIsAddModalVisible(false);
   };
-  
+
 
   const handleAddClick = () => {
     setIsAddModalVisible(true);
@@ -225,7 +225,7 @@ export default function ClientManager() {
             <Icon icon="fa:sort-down" />
           </div>
         </div>
-        
+
         <div
           style={{
             display: "flex",
@@ -243,7 +243,7 @@ export default function ClientManager() {
             Add Employee
           </Button>
         </div>
-        
+
       </div>
 
       <Table striped bordered hover>
