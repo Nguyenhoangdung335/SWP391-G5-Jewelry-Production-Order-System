@@ -91,15 +91,15 @@ function OrderDetail() {
                   </tr>
                   <tr>
                     <th>Sale Staff</th>
-                    <td>{data.saleStaff}</td>
+                    <td>{data.saleStaff.userInfo.firstName}</td>
                   </tr>
                   <tr>
                     <th>Design Staff</th>
-                    <td>{data.designStaff}</td>
+                    <td>{data.designStaff.userInfo.firstName}</td>
                   </tr>
                   <tr>
                     <th>Production Staff</th>
-                    <td>{data.productionStaff}</td>
+                    <td>{data.productionStaff.userInfo.firstName}</td>
                   </tr>
                   <tr>
                     <th>Total Price</th>
@@ -227,7 +227,7 @@ function OrderDetail() {
         show={showQuotation}
         onHide={() => setShowQuotation(false)}
       />)
-      }
+      } 
     </>
   );
 }
