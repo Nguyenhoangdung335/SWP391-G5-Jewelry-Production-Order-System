@@ -39,7 +39,7 @@ const NotificationPage = () => {
         >
           <div
             className="p-3 m-3 text-black"
-            style={{ border: "1px solid black", borderRadius:"16px" }}
+            style={{ border: "1px solid black", borderRadius: "20px" }}
             key={notification.id}
           >
             <h4>{notification.report.title}</h4>
