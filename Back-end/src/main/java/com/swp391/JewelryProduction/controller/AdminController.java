@@ -7,6 +7,7 @@ import com.swp391.JewelryProduction.enums.Role;
 import com.swp391.JewelryProduction.pojos.Account;
 import com.swp391.JewelryProduction.pojos.Order;
 import com.swp391.JewelryProduction.services.account.AccountService;
+import com.swp391.JewelryProduction.services.account.StaffService;
 import com.swp391.JewelryProduction.services.admin.AdminService;
 import com.swp391.JewelryProduction.services.order.OrderService;
 import com.swp391.JewelryProduction.util.Response;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AdminController {
     private final AccountService accountService;
+    private final StaffService staffService;
     private final OrderService orderService;
     private final AdminService adminService;
 
@@ -30,6 +32,22 @@ public class AdminController {
                 .status(HttpStatus.OK)
                 .message("Request sent successfully")
                 .response("account-list", accountService.findAllAccounts())
+                .buildEntity();
+    }
+
+    @GetMapping("/get/staff")
+    public ResponseEntity<Response> getAvailableStaffLists (@RequestParam("role") Role role) {
+        if (!role.equals(Role.ADMIN) && !role.equals(Role.MANAGER)) {
+            return Response.builder()
+                    .status(HttpStatus.BAD_REQUEST)
+                    .message("Not authorized fetch staff list")
+                    .buildEntity();
+        }
+        return Response.builder()
+                .message("Request sent successfully")
+                .response("saleStaffs", staffService.findAllByRole(Role.SALE_STAFF))
+                .response("designStaffs", staffService.findAllByRole(Role.DESIGN_STAFF))
+                .response("productionStaffs", staffService.findAllByRole(Role.PRODUCTION_STAFF))
                 .buildEntity();
     }
 
