@@ -38,7 +38,9 @@ function OrderDetailManager() {
           headers: { "Content-Type": "application/json" },
         });
         if (response.status === 200) {
-          setData(response.data.responseList.orderDetail);
+          const orderDetail = response.data.responseList.orderDetail;
+          setData(orderDetail);
+          setImageLink(orderDetail.design?.designLink || snowfall);
         }
       } catch (error) {
         console.error("Error fetching data", error);

@@ -7,9 +7,11 @@ import com.swp391.JewelryProduction.enums.Role;
 import com.swp391.JewelryProduction.pojos.Design;
 import com.swp391.JewelryProduction.pojos.Order;
 import com.swp391.JewelryProduction.pojos.Quotation;
+import com.swp391.JewelryProduction.pojos.designPojos.Product;
 import com.swp391.JewelryProduction.repositories.QuotationRepository;
 import com.swp391.JewelryProduction.services.account.StaffService;
 import com.swp391.JewelryProduction.services.order.OrderService;
+import com.swp391.JewelryProduction.services.product.ProductService;
 import com.swp391.JewelryProduction.util.Response;
 import com.swp391.JewelryProduction.websocket.image.ImageService;
 import jakarta.mail.MessagingException;
@@ -34,7 +36,7 @@ import static com.swp391.JewelryProduction.config.stateMachine.StateMachineUtil.
 public class OrderController {
     private final OrderService orderService;
     private final ImageService imageService;
-    private final StaffService staffService;
+    private final ProductService productService;
     private final QuotationRepository quotationRepository;
     private final StateMachineService<OrderStatus, OrderEvent> stateMachineService;
 
@@ -101,6 +103,11 @@ public class OrderController {
                     .lastUpdated(LocalDateTime.now())
                     .build();
             order.setDesign(design);
+
+            Product product = order.getProduct();
+            product.setImageURL(designUrl);
+            productService.saveProduct(product);
+
             orderService.updateOrder(order);
     
             StateMachine<OrderStatus, OrderEvent> stateMachine = getStateMachine(orderId, stateMachineService);
