@@ -12,7 +12,6 @@ import Collections from "../Home/Collections";
 import About from "../Home/About";
 import Blogs from "../Home/Blogs";
 import OrderPage1 from "../orderFlows/OrderPage1";
-import CreateRequest from "../orderFlows/CreateRequest";
 import UserManagerLayout from "../layout/UserManagerLayout";
 import ClientManager from "../clientManager/ClientManager";
 import DashboardManger from "../dashboard/DashboardManger";
@@ -28,7 +27,6 @@ import SettingPageLayout from "../layout/SettingLayout";
 import OrderHistory from "../user_settings/OrderHistory";
 import NotificationPage from "../user_settings/Notification";
 import OrderDetail from "../user_settings/detailpage/OrderDetail";
-import OrderDetailManager from "../ordersManager/OrderDetailManager";
 
 function RouteMap() {
   return (
@@ -54,12 +52,15 @@ function RouteMap() {
             </ProtectedRoute>
           }
         />
-
         <Route
-          path="/create_request/:productSpecId"
-          element={<CreateRequest />}
+          path="/order_detail_page"
+          element={
+            <ProtectedRoute>
+              <OrderDetail />
+            </ProtectedRoute>
+          }
         />
-      </Route>
+      </Route >
       <Route
         path="/userManager"
         element={
@@ -68,7 +69,6 @@ function RouteMap() {
           //</ProtectedRoute>
         }
       ></Route>
-
       <Route path="/userManager" element={<UserManagerLayout />}>
         <Route
           index
@@ -103,22 +103,6 @@ function RouteMap() {
           }
         />
         <Route
-          path="/userManager/orders_manager/order_detail"
-          element={
-            <ProtectedRoute
-              roles={[
-                "ADMIN",
-                "MANAGER",
-                "PRODUCTION_STAFF",
-                "DESIGN_STAFF",
-                "SALE_STAFF",
-              ]}
-            >
-              <OrderDetailManager />
-            </ProtectedRoute>
-          }
-        />
-        <Route
           path="/userManager/blogs_manager"
           element={
             <ProtectedRoute roles={["ADMIN", "MANAGER", "SALE_STAFF"]}>
@@ -143,7 +127,6 @@ function RouteMap() {
           }
         />
       </Route>
-
       <Route path="/user_setting_page" element={<SettingPageLayout />}>
         <Route
           index
@@ -158,14 +141,6 @@ function RouteMap() {
           element={
             <ProtectedRoute>
               <OrderHistory />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/user_setting_page/order_detail_page"
-          element={
-            <ProtectedRoute>
-              <OrderDetail />
             </ProtectedRoute>
           }
         />

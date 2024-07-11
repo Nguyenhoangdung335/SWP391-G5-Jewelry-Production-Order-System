@@ -29,14 +29,13 @@ export default function EmployeeManager() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const res = await axios.get(`${ServerUrl}/api/admin/get/account/${currentPage - 1}`,{
-                        headers: { "Content-Type": "application/json" },
-                        params: {
-                          role: filterRole,
-                          size: itemsPerPage,
-                        }
+                const res = await axios.get(`${ServerUrl}/api/admin/get/account/${currentPage - 1}`, {
+                    headers: { "Content-Type": "application/json" },
+                    params: {
+                        role: filterRole,
+                        size: itemsPerPage,
                     }
-                );
+                });
                 console.log("API response:", res.data);
                 setData(res.data.responseList.accounts);
                 setTotalPages(res.data.responseList.totalPages);
@@ -63,7 +62,12 @@ export default function EmployeeManager() {
         setSelectedUser(null);
     };
 
-    const handleSave = (event) => {
+    const formatDate = (dateArray) => {
+        const [year, month, day] = dateArray;
+        return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    };
+
+    const handleSave = async (event) => {
         event.preventDefault();
         const form = event.currentTarget;
         const values = {
@@ -84,6 +88,15 @@ export default function EmployeeManager() {
             },
         };
 
+        try {
+            const res = await axios.put(`${ServerUrl}/api/admin/update/account`, values, {
+                headers: { "Content-Type": "application/json" },
+            });
+            console.log('Update Response:', res.data);
+        } catch (err) {
+            console.error('Error updating account:', err);
+        }
+
         const newData = data.map((item) =>
             item.id === values.id ? values : item
         );
@@ -92,7 +105,7 @@ export default function EmployeeManager() {
         setSelectedUser(null);
     };
 
-    const handleAdd = (event) => {
+    const handleAdd = async (event) => {
         event.preventDefault();
         const form = event.currentTarget;
         const newEmployee = {
@@ -112,6 +125,16 @@ export default function EmployeeManager() {
                 address: form.address.value,
             },
         };
+
+        try {
+            const res = await axios.post(`${ServerUrl}/api/admin/add/account`, newEmployee, {
+                headers: { "Content-Type": "application/json" },
+            });
+            console.log('Add Response:', res.data);
+        } catch (err) {
+            console.error('Error adding account:', err);
+        }
+
         setData([...data, newEmployee]); // Update state immutably
         setIsAddModalVisible(false);
     };
@@ -128,14 +151,15 @@ export default function EmployeeManager() {
     const handleConfirmDelete = async () => {
         try {
             const res = await axios.delete(`http://localhost:8080/api/admin/delete/account?accountId=${deleteUser}`, {
-              headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/json" },
             });
-          } catch (err) {
-            console.log(err);
-          }
-          setDeleteModalVisible(false);
-          setDeleteUser(null)
-        };
+            console.log('Delete Response:', res.data);
+        } catch (err) {
+            console.log('Error deleting account:', err);
+        }
+        setDeleteModalVisible(false);
+        setDeleteUser(null);
+    };
 
     const handleCancelDelete = () => {
         setDeleteModalVisible(false);
@@ -149,8 +173,8 @@ export default function EmployeeManager() {
     const filteredData =
         filterRole !== "ALL"
             ? data.filter(
-                  (item) => item.role.toLowerCase() === filterRole.toLowerCase()
-              )
+                (item) => item.role.toLowerCase() === filterRole.toLowerCase()
+            )
             : data;
 
     const paginatedData = filteredData.slice(
@@ -293,9 +317,9 @@ export default function EmployeeManager() {
                     <tr>
                         <th>ID</th>
                         <th>Email</th>
-                        <th>Password</th>
-                        <th>Date Created</th>
                         <th>Role</th>
+                        <th>Name</th>
+                        <th>Phone</th>
                         <th>Status</th>
                         <th>Action</th>
                     </tr>
@@ -304,9 +328,9 @@ export default function EmployeeManager() {
                     {data.map((item) => (
                         <tr key={item.id}>
                             <td>{item.id}</td>
+                            <td>{item.email}</td>
                             <td>{item.role}</td>
                             <td>{`${item.userInfo.firstName} ${item.userInfo.lastName}`}</td>
-                            <td>{item.email}</td>
                             <td>{item.userInfo.phoneNumber}</td>
                             <td>
                                 <span
@@ -449,9 +473,7 @@ export default function EmployeeManager() {
                                 <Form.Label>Birth Date</Form.Label>
                                 <FormControl
                                     type="date"
-                                    defaultValue={
-                                        selectedUser.userInfo.birthDate
-                                    }
+                                    defaultValue={formatDate(selectedUser.userInfo.birthDate)}
                                     name="birthDate"
                                 />
                             </Form.Group>
