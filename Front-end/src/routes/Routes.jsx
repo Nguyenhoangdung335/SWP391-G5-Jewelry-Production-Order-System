@@ -81,6 +81,14 @@ function RouteMap() {
           }
         />
         <Route
+          path="/userManager/dashboard"
+          element={
+            <ProtectedRoute roles={["ADMIN"]}>
+              <DashboardManger />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/userManager/client_manager"
           element={
             <ProtectedRoute roles={["ADMIN", "MANAGER"]}>

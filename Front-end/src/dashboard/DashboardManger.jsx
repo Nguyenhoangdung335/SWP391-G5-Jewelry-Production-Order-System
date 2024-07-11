@@ -6,23 +6,35 @@ import { LiaUser } from "react-icons/lia";
 import { useEffect } from "react";
 import LineChartComponent from "../chart/LineChart";
 import axios from "axios";
-
+import { jwtDecode } from "jwt-decode";
+import { useAuth } from "../provider/AuthProvider";
+import ServerUrl from "../reusable/ServerUrl";
 
 export default function DashboardManager() {
   const [currentPageClients, setCurrentPageClients] = useState(1);
   const [currentPageOrders, setCurrentPageOrders] = useState(1);
   const [order, setOrder] = useState([]);
+  const [ dashboard, setDashboard ] = useState();
   // const [info, setInfo] = useState([]);
   const itemsPerPage = 5;
-
+  const { token } = useAuth();
+  const decodedToken = jwtDecode(token);
 
   useEffect(() => {
     async function fetchOrder() {
+      const userRole = decodedToken?.role;
+      const accountId = decodedToken?.id;
       try {
-        const response = await axios.get("http://localhost:8080/api/order/list");
-        if (response.data.status === "OK") {
-          const orderList = response.data.responseList["order-list"]; 
-          setOrder(orderList); 
+        const response = await axios.get(`${ServerUrl}/api/admin/get/order/0`, {
+        headers: { "Content-Type": "application/json" },
+        params: {
+          role: userRole,
+          status: "ALL",
+          accountId: accountId,
+        },
+        });
+        if (response.status === 200) {
+          setOrder(response.data.responseList.orders);
         } else {
           console.error("Failed to fetch orders:", response.data.message);
         }
@@ -31,7 +43,20 @@ export default function DashboardManager() {
       }
     }
     fetchOrder();
-  }, []); 
+    async function fetchDashboard() {
+      try {
+        const response = await axios.get(`${ServerUrl}/api/admin/dashboard-test`);
+        if (response.data.status === "OK") {
+          setDashboard(response.data.responseList);
+        } else {
+          console.error("Failed to fetch orders:", response.data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      }
+    }
+    fetchDashboard();
+  }, []);
   
   // useEffect(() => {
   //   async function fetchInfo() {
@@ -51,22 +76,6 @@ export default function DashboardManager() {
   //   fetchInfo();
   // }, []);
 
-  useEffect(() => {
-    async function fetchOrder() {
-      try {
-        const response = await axios.get("http://localhost:8080/api/CUSTOMER/list");
-        if (response.data.status === "OK") {
-          const customerList = response.data.responseList["customer-list"]; 
-          setOrder(customerList); 
-        } else {
-          console.error("Failed to fetch orders:", response.data.message);
-        }
-      } catch (error) {
-        console.error("Error fetching orders:", error);
-      }
-    }
-    fetchOrder();
-  }, []); 
 
   const columnsClient = [
     {
@@ -231,7 +240,7 @@ export default function DashboardManager() {
   return (
     <Container fluid style={{ padding: "3%" }}>
       <p style={{ margin: 0, fontSize: 24 }} className="fw-bolder">
-        Welcome, K!
+        Welcome, {decodedToken.first_name}!
       </p>
       <p style={{ fontSize: 16 }}>Dashboard</p>
       <Row style={{ marginBottom: "1%" }}>
@@ -266,8 +275,12 @@ export default function DashboardManager() {
                 alignItems: "flex-end",
               }}
             >
-              <p style={{ margin: 0, fontSize: 17, fontWeight: 400 }}>Client</p>
-              <p style={{ margin: 0, fontSize: 20, fontWeight: 500 }}>126</p>
+              <p style={{ margin: 0, fontSize: 17, fontWeight: 400 }}>
+                Client
+              </p>
+              <p style={{ margin: 0, fontSize: 20, fontWeight: 500 }}>
+                {dashboard ? dashboard.numCustomers : "Loading..."}
+              </p>
             </div>
           </div>
         </Col>
@@ -305,7 +318,9 @@ export default function DashboardManager() {
               <p style={{ margin: 0, fontSize: 17, fontWeight: 400 }}>
                 Employees
               </p>
-              <p style={{ margin: 0, fontSize: 20, fontWeight: 500 }}>18</p>
+              <p style={{ margin: 0, fontSize: 20, fontWeight: 500 }}>
+                {dashboard ? dashboard.numStaffs : "Loading..."}
+              </p>
             </div>
           </div>
         </Col>
@@ -340,8 +355,12 @@ export default function DashboardManager() {
                 alignItems: "flex-end",
               }}
             >
-              <p style={{ margin: 0, fontSize: 17, fontWeight: 400 }}>Orders</p>
-              <p style={{ margin: 0, fontSize: 20, fontWeight: 500 }}>{order.length}</p>
+              <p style={{ margin: 0, fontSize: 17, fontWeight: 400 }}>
+                Orders
+              </p>
+              <p style={{ margin: 0, fontSize: 20, fontWeight: 500 }}>
+                {dashboard ? dashboard.numOrders : "Loading..."}
+              </p>
             </div>
           </div>
         </Col>
@@ -384,8 +403,12 @@ export default function DashboardManager() {
                 alignItems: "flex-end",
               }}
             >
-              <p style={{ margin: 0, fontSize: 17, fontWeight: 400 }}>Revenue</p>
-              <p style={{ margin: 0, fontSize: 20, fontWeight: 500 }}>125k</p>
+              <p style={{ margin: 0, fontSize: 17, fontWeight: 400 }}>
+                Revenue
+              </p>
+              <p style={{ margin: 0, fontSize: 20, fontWeight: 500 }}>
+                $ {dashboard ? dashboard.revenue : "Loading..."}
+              </p>
             </div>
           </div>
         </Col>
@@ -416,7 +439,7 @@ export default function DashboardManager() {
               Revenue per month
             </h1>
             <div style={{ flex: 1 }}>
-              <LineChartComponent />
+              <LineChartComponent data={dashboard}/>
             </div>
           </div>
         </Col>
