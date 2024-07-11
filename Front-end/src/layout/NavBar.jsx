@@ -20,7 +20,7 @@ const rbacConfig = {
 };
 
 const navLinks = [
-  { to: "/userManager", icon: <MdSpaceDashboard size={22} color="white" />, label: "Dashboard" },
+  { to: "/userManager/dashboard", icon: <MdSpaceDashboard size={22} color="white" />, label: "Dashboard" },
   { to: "/userManager/client_manager", icon: <FaUsers size={22} color="white" />, label: "Clients" },
   { to: "/userManager/orders_manager", icon: <IoMdCart size={22} color="white" />, label: "Orders" },
   { to: "/userManager/blogs_manager", icon: <IoChatboxEllipses size={22} color="white" />, label: "Blogs" },
