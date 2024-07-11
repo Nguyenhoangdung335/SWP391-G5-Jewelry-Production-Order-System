@@ -500,13 +500,13 @@ export default function EmployeeManager() {
                                     name="address"
                                 />
                             </Form.Group>
-                            <Button variant="primary" type="submit">
+                            <Button variant="primary" type="submit" style={{marginTop: 20}}>
                                 Save changes
                             </Button>
                             <Button
                                 variant="secondary"
                                 onClick={handleCancel}
-                                style={{ marginLeft: 8 }}
+                                style={{ marginLeft: 8,marginTop: 20 }}
                             >
                                 Back
                             </Button>
