@@ -54,15 +54,7 @@ function RouteMap() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/order_detail_page"
-          element={
-            <ProtectedRoute>
-              <OrderDetail />
-            </ProtectedRoute>
-          }
-        />
-      </Route >
+      </Route>
       <Route
         path="/userManager"
         element={
@@ -183,6 +175,14 @@ function RouteMap() {
           element={
             <ProtectedRoute>
               <NotificationDetail />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user_setting_page/order_detail_page"
+          element={
+            <ProtectedRoute>
+              <OrderDetail />
             </ProtectedRoute>
           }
         />
