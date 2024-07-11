@@ -85,6 +85,18 @@ function OrderDetail() {
                     <td>{arrayToDate(data.createdDate)}</td>
                   </tr>
                   <tr>
+                    <th>Sale Staff</th>
+                    <td>{data.saleStaff}</td>
+                  </tr>
+                  <tr>
+                    <th>Design Staff</th>
+                    <td>{data.designStaff}</td>
+                  </tr>
+                  <tr>
+                    <th>Production Staff</th>
+                    <td>{data.productionStaff}</td>
+                  </tr>
+                  <tr>
                     <th>Total Price</th>
                     <td>{data.quotation.totalPrice}</td>
                   </tr>
