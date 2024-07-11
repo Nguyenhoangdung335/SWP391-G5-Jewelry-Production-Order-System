@@ -113,6 +113,22 @@ function RouteMap() {
           }
         />
         <Route
+          path="/userManager/orders_manager/order_detail"
+          element={
+            <ProtectedRoute
+              roles={[
+                "ADMIN",
+                "MANAGER",
+                "PRODUCTION_STAFF",
+                "DESIGN_STAFF",
+                "SALE_STAFF",
+              ]}
+            >
+              <OrderDetailManager />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/userManager/blogs_manager"
           element={
             <ProtectedRoute roles={["ADMIN", "MANAGER", "SALE_STAFF"]}>

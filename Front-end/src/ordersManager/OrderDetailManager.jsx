@@ -12,12 +12,14 @@ import {
   Row,
   Table,
   FormControl,
+  Spinner,
 } from "react-bootstrap";
 import snowfall from "../assets/snowfall.jpg";
 import { jwtDecode } from "jwt-decode";
 import { useAuth } from "../provider/AuthProvider";
 import ResizeImage from "../reusable/ResizeImage";
 import CreateReport from "../orderFlows/CreateReport";
+import AssignedStaff from "./AssignedStaff";
 
 function OrderDetailManager() {
   const state = useLocation();
@@ -76,6 +78,17 @@ function OrderDetailManager() {
       setImageLink(response.data.responseList.designUrl);
     } else {
       console.error("designImage is not a File");
+    }
+  };
+
+  const handleStaffSubmit = async (updatedStaff) => {
+    try {
+      await axios.post(`${ServerUrl}/api/order/${data.id}/detail/assign-staff`, updatedStaff);
+      alert("Staff assignments updated successfully");
+      // Optionally, update the local state if necessary
+    } catch (error) {
+      console.error("Error updating staff assignments:", error);
+      alert("Error updating staff assignments");
     }
   };
 
@@ -167,28 +180,9 @@ function OrderDetailManager() {
                 </div>
               </div>
             </Row>
-            <Row className="pb-2">
-              <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
-                <div className="p-2">
-                  <div
-                    className="mb-2"
-                    style={{
-                      borderBottom: "1px solid rgba(166, 166, 166, 0.5)",
-                    }}
-                  >
-                    <div className="d-flex justify-content-between mb-2">
-                      <h4 style={{ display: "inline-block" }}>
-                        Assigned Staff
-                      </h4>
-                    </div>
-                    <div className="d-flex justify-content-between">
-                      <h6>Sale Staff:</h6>
-                      <p>{data.saleStaff?.name || "NaN"}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </Row>
+            {data && (
+              <AssignedStaff data={data} onSubmit={handleStaffSubmit} />
+            )}
             <Row className="pb-2">
               <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
                 <div className="p-2">
