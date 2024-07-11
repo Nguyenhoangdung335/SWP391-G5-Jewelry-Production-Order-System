@@ -18,6 +18,7 @@ function OrderDetail() {
   const state = useLocation();
   const [data, setData] = useState();
   const [showQuotation, setShowQuotation] = useState(false);
+  const [imageLink, setImageLink] = useState(null);
   const id = state.state;
 
   const arrayToDate = (date) => {
@@ -34,7 +35,9 @@ function OrderDetail() {
         headers: { "Content-Type": "application/json" },
       });
       if (response.status === 200) {
-        setData(response.data.responseList.orderDetail);
+        const orderDetail = response.data.responseList.orderDetail;
+        setData(orderDetail);
+        setImageLink(orderDetail.design?.designLink || snowfall);
       }
     };
     fetchData();
@@ -59,7 +62,7 @@ function OrderDetail() {
           <Col md={8}>
             <div className="pb-2">
               <img
-                src={data.design.designLink || snowfall}
+                src={imageLink || snowfall}
                 alt="Product Image"
                 className="w-100 h-100"
               />
@@ -98,7 +101,7 @@ function OrderDetail() {
                   </tr>
                   <tr>
                     <th>Total Price</th>
-                    <td>{data.quotation.totalPrice}</td>
+                    <td>{data.quotation?.totalPrice || "Dont have quotation yet"}</td>
                   </tr>
                   <tr>
                     <th>Status</th>
@@ -217,11 +220,12 @@ function OrderDetail() {
         </Row>
       </Container>
 
-      <MyVerticallyCenteredModal
+      {data.quotation && (<MyVerticallyCenteredModal
         quotation={data.quotation}
         show={showQuotation}
         onHide={() => setShowQuotation(false)}
-      />
+      />)
+      }
     </>
   );
 }
