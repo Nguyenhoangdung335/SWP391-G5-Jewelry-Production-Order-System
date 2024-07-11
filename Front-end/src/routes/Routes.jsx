@@ -27,6 +27,8 @@ import SettingPageLayout from "../layout/SettingLayout";
 import OrderHistory from "../user_settings/OrderHistory";
 import NotificationPage from "../user_settings/Notification";
 import OrderDetail from "../user_settings/detailpage/OrderDetail";
+import OrderDetailManager from "../ordersManager/OrderDetailManager";
+import NotificationDetail from "../user_settings/detailpage/NotificationDetail";
 
 function RouteMap() {
   return (
@@ -149,6 +151,14 @@ function RouteMap() {
           element={
             <ProtectedRoute>
               <NotificationPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user_setting_page/notification_page/:notificationId"
+          element={
+            <ProtectedRoute>
+              <NotificationDetail />
             </ProtectedRoute>
           }
         />

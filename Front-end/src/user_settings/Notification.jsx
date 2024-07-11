@@ -1,57 +1,47 @@
-import { useEffect, useState } from "react";
-import { Container, Table } from "react-bootstrap";
-import axios from "axios";
+import React, {useEffect, useState} from "react";
+import {useAuth} from "../provider/AuthProvider";
 import ServerUrl from "../reusable/ServerUrl";
-import { jwtDecode } from "jwt-decode";
-import { useAuth } from "../provider/AuthProvider";
-import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import {jwtDecode} from "jwt-decode";
+import {Link} from "react-router-dom";
 
-export function NotificationPage() {
-  const [data, setData] = useState();
-  const { token } = useAuth();
+const NotificationPage = () => {
+    const [notifications, setNotifications] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const {token} = useAuth();
+    const decodedToken = jwtDecode(token);
 
-  useEffect(() => {
-    if (token) {
-      const decodedToken = jwtDecode(token);
+    useEffect(() => {
+        axios
+            .get(`${ServerUrl}/api/notification/${decodedToken.id}/get-all`)
+            .then((response) => {
+                if (response.data.status === "OK") {
+                    setNotifications(response.data.responseList.notificationList);
+                }
+            })
+            .catch((error) => {
+                console.error("Error fetching notifications:", error);
+            })
+            .finally(() => setLoading(false));
+    }, []);
 
-      axios({
-        method: "GET",
-        url: `${ServerUrl}/api/notification/${decodedToken.id}/get-all`,
-        headers: { "Content-Type": "Application/json" },
-      }).then((res) => setData(res.data));
+    if (loading) {
+        return <div>Loading...</div>;
     }
-  }, [token]);
 
-  // const getNotification = data.map((i) => {
-  //   return (
-  //     <>
-  //       <tr key={i.id}>
-  //         <td>{i.time}</td>
-  //         <td>{i.type}</td>
-  //         <td>{i.from}</td>
-  //         <td>{i.title}</td>
-  //         <td>{i.status}</td>
-  //       </tr>
-  //     </>
-  //   );
-  // });
+    return (
+        <div>
+            {notifications.map(notification => (
+                <div key={notification.id}>
+                    <Link to={`/user_setting_page/notification_page/${notification.id}`} style={{ textDecoration: 'none' }}>
+                        <h4>{notification.report.title}</h4>
+                        <p>{notification.report.description}</p>
+                        <p>{notification.report.createdDate}</p>
+                    </Link>
+                </div>
+            ))}
+        </div>
+    );
+};
 
-  return (
-    <Container>
-      <Table className="mt-3" hover striped>
-        <thead>
-          <tr>
-            <th>Time</th>
-            <th>Type</th>
-            <th>From</th>
-            <th>Title</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        {/* <tbody>{getNotification}</tbody> */}
-      </Table>
-    </Container>
-  );
-}
-export default NotificationPage
-
+export default NotificationPage;

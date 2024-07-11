@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from "react";
-import {Link, Navigate} from "react-router-dom";
-import {IoChatbubbleOutline} from "react-icons/io5";
-import {IoNotificationsOutline} from "react-icons/io5";
+import {Link, Navigate, useNavigate} from "react-router-dom";
+import {IoChatbubbleOutline, IoNotificationsOutline} from "react-icons/io5";
 import {GoPerson} from "react-icons/go";
 import {
     Badge,
@@ -11,7 +10,7 @@ import {
     NavLink,
     Navbar,
 } from "react-bootstrap";
-import {Dropdown} from "antd";
+import {Dropdown, Menu} from "antd";
 import {jwtDecode} from "jwt-decode";
 import {useAuth} from "../provider/AuthProvider";
 import ServerUrl from "../reusable/ServerUrl";
@@ -20,14 +19,27 @@ import axios from "axios";
 export default function Header() {
     const [role, setRole] = useState("GUEST");
     const {token, setToken} = useAuth();
-    const [decodedToken, setDecodedToken] = useState(null);
     const [requestSent, setRequestSent] = useState(false);
+    const [notifications, setNotifications] = useState([]);
+    const [rowsToShow, setRowsToShow] = useState(5);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (token) {
             const decodedToken = jwtDecode(token);
-            setDecodedToken(decodedToken);
             setRole(decodedToken.role);
+
+            // Fetch notifications
+            axios
+                .get(`${ServerUrl}/api/notification/${decodedToken.id}/get-all`)
+                .then((response) => {
+                    if (response.data.status === "OK") {
+                        setNotifications(response.data.responseList.notificationList);
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error fetching notifications:", error);
+                });
         } else {
             setRole("GUEST");
         }
@@ -39,11 +51,8 @@ export default function Header() {
     };
 
     const checkCurrentOrder = () => {
-        if (role === "GUEST") {
-            alert("You must login to use this feature");
-        } else if (role !== "CUSTOMER") {
-            alert("You dont have permission to use this feature");
-        } else {
+        if (role !== "GUEST") {
+            const decodedToken = jwtDecode(token);
             axios
                 .get(`${ServerUrl}/api/account/${decodedToken.id}/check-current-order`)
                 .then((response) => {
@@ -59,6 +68,8 @@ export default function Header() {
                     console.error("Error checking current order:", error);
                     alert("Error checking current order. Please try again later.");
                 });
+        } else {
+            navigate("/login");
         }
     };
 
@@ -115,6 +126,53 @@ export default function Header() {
         return <Navigate to="/order_page"/>;
     }
 
+    const handleLoadMore = () => {
+        setRowsToShow(rowsToShow + 5);
+    };
+
+    const unreadCount = notifications.filter((notification) => !notification.read).length;
+
+    const handleNotificationClick = () => {
+        navigate("/user_setting_page/notification_page");
+    };
+
+    const notificationMenu = (
+        <Menu>
+            {notifications
+                .sort(
+                    (a, b) =>
+                        new Date(b.report.createdDate) - new Date(a.report.createdDate)
+                )
+                .slice(0, rowsToShow)
+                .map((notification) => (
+                    <Menu.Item key={notification.id} onClick={handleNotificationClick}>
+                        <div>
+                            <strong>{notification.report.title}</strong>
+                            <p
+                                style={{
+                                    display: "-webkit-box",
+                                    WebkitBoxOrient: "vertical",
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                    WebkitLineClamp: 2, // Number of lines to display
+                                    maxWidth: "250px", // Adjust width as needed
+                                }}
+                            >
+                                {notification.report.description}
+                            </p>
+                        </div>
+                    </Menu.Item>
+                ))}
+            {notifications.length > rowsToShow && (
+                <Menu.Item key="load-more">
+                    <Button onClick={handleLoadMore} style={{width: "100%"}}>
+                        Load More
+                    </Button>
+                </Menu.Item>
+            )}
+        </Menu>
+    );
+
     return (
         <Navbar
             bg="light"
@@ -135,7 +193,7 @@ export default function Header() {
                         <h1 className="fw-bold">宝石店</h1>
                     </Link>
                 </Navbar.Brand>
-                <Nav className=" me-auto">
+                <Nav className="me-auto">
                     <Nav.Link>
                         <Link to="/" className="nav-item nav-item-ltr">
                             Home
@@ -166,7 +224,7 @@ export default function Header() {
                         </Link>
                     </Nav.Link>
                 </Nav>
-                <Nav className="gap-1">
+                <Nav className="gap-1 align-items-center">
                     {role !== "GUEST" && token && (
                         <>
                             <NavLink>
@@ -175,7 +233,29 @@ export default function Header() {
                                 </Link>
                             </NavLink>
                             <NavLink>
-                                <IoNotificationsOutline size={30} color="black"/>
+                                <div style={{display: "flex", alignItems: "center", position: "relative"}}>
+                                    <Dropdown overlay={notificationMenu} placement="bottomRight" trigger={["click"]}>
+                                        <div style={{position: "relative", cursor: "pointer"}}>
+                                            <IoNotificationsOutline size={30} color="black"/>
+                                            {unreadCount > 0 && (
+                                                <span style={{
+                                                    position: "absolute",
+                                                    top: 0,
+                                                    right: 0,
+                                                    backgroundColor: "red",
+                                                    color: "white",
+                                                    borderRadius: "50%",
+                                                    padding: "0.25em 0.5em",
+                                                    fontSize: "0.75em",
+                                                    lineHeight: "1",
+                                                    transform: "translate(50%, -50%)",
+                                                }}>
+                                                    {unreadCount}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </Dropdown>
+                                </div>
                             </NavLink>
                             <NavLink>
                                 <Dropdown
@@ -198,7 +278,10 @@ export default function Header() {
                             </Nav.Link>
                         </>
                     )}
-                    <Button style={{borderRadius: "22px", width: "150px"}} onClick={handleClick}>
+                    <Button
+                        style={{borderRadius: "22px", width: "150px"}}
+                        onClick={handleClick}
+                    >
                         Design Jewelry
                     </Button>
                 </Nav>
