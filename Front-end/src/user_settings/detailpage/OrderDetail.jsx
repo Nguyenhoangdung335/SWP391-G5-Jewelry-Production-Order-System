@@ -22,10 +22,12 @@ function OrderDetail() {
   const id = state.state;
 
   const arrayToDate = (date) => {
+    if(date===null || date===0){
+      return "Ongoing";
+    }
     const dateObject1 = new Date(date[0], date[1] - 1, date[2] + 1);
     const isoString = dateObject1.toISOString();
     const formattedDate = isoString.substring(0, 10);
-
     return formattedDate;
   };
 
@@ -85,7 +87,7 @@ function OrderDetail() {
                   </tr>
                   <tr>
                     <th>Completed Date</th>
-                    <td>{arrayToDate(data.createdDate)}</td>
+                    <td>{arrayToDate(data.completedDate)}</td>
                   </tr>
                   <tr>
                     <th>Sale Staff</th>
