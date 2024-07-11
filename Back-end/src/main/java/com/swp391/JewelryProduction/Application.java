@@ -1,18 +1,13 @@
 package com.swp391.JewelryProduction;
 
 import com.github.javafaker.Faker;
-import com.swp391.JewelryProduction.enums.AccountStatus;
-import com.swp391.JewelryProduction.enums.Gender;
-import com.swp391.JewelryProduction.enums.OrderStatus;
-import com.swp391.JewelryProduction.enums.Role;
+import com.google.firebase.database.core.Repo;
+import com.swp391.JewelryProduction.enums.*;
 import com.swp391.JewelryProduction.pojos.*;
 import com.swp391.JewelryProduction.pojos.designPojos.Product;
 import com.swp391.JewelryProduction.pojos.designPojos.ProductSpecification;
-import com.swp391.JewelryProduction.repositories.AccountRepository;
+import com.swp391.JewelryProduction.repositories.*;
 //import com.swp391.JewelryProduction.websocket.listener.GlobalEntityListener;
-import com.swp391.JewelryProduction.repositories.OrderRepository;
-import com.swp391.JewelryProduction.repositories.ProductRepository;
-import com.swp391.JewelryProduction.repositories.StaffRepository;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,7 +71,7 @@ public class Application   {
 
 
 	@Bean
-	public CommandLineRunner commandLineRunner (AccountRepository accountRepository, StaffRepository staffRepository, OrderRepository orderRepository, ProductRepository productRepository) {
+	public CommandLineRunner commandLineRunner (AccountRepository accountRepository, StaffRepository staffRepository, OrderRepository orderRepository, ProductRepository productRepository, NotificationRepository notificationRepository, ReportRepository reportRepository) {
 		return args -> {
 			logger.info("Application start");
 			Account admin = Account.builder()
@@ -240,6 +235,20 @@ public class Application   {
 						.order(order)
 						.build());
                 orderRepository.save(order);
+				Notification notificaition = Notification.builder()
+						.order(order)
+						.receiver(accountRepository.findById("ACC00001").get())
+						.delivered(false)
+						.read(false)
+						.isOption(true)
+						.build();
+				notificaition.setReport(reportRepository.save(Report.builder()
+						.type(ReportType.REPORT)
+						.title(faker.name().title())
+						.description(faker.weather().description())
+						.createdDate(LocalDateTime.now())
+						.build()));
+				notificationRepository.save(notificaition);
 			}
 		};
 	}
