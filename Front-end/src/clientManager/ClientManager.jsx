@@ -333,7 +333,7 @@ export default function ClientManager() {
 
       <Modal show={isModalVisible} onHide={handleCancel} centered>
         <Modal.Header closeButton>
-          <Modal.Title>Edit Employee</Modal.Title>
+          <Modal.Title>Edit Client</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {selectedUser && (
