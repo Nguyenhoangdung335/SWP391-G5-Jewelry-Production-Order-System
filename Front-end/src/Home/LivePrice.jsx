@@ -62,7 +62,10 @@ function LivePrice() {
 
   return (
     <Container className="pt-5 pb-4 w-75">
-      <Table bordered hover >
+      <div className="text-center pb-3">
+        <h2>Real Time Gold Price</h2>
+      </div>
+      <Table bordered hover>
         <thead>
           <tr>
             <th>ID</th>

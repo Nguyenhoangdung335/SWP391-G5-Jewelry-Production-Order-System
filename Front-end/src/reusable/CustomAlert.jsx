@@ -19,7 +19,7 @@ function CustomAlert({ text, isShow, onClose }) {
 
   return (
     <Alert show={show} variant="light" transition style={{
-        position: "fixed", top: "20px",right: "20px", width: "300px", height: "150px", zIndex: "1050", boxShadow: "0 0 10px rgba(0, 0, 0, 0.5)"
+        position: "fixed", top: "20px",right: "20px", width: "300px", height: "150px", zIndex: "1050", boxShadow: "0 0 10px rgba(0, 0, 0, 0.5)", padding:"9px"
     }}>
       <Alert.Heading>My Alert</Alert.Heading>
       <p>

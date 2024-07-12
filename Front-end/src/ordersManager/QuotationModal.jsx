@@ -3,8 +3,13 @@ import { useEffect, useState } from "react";
 import ServerUrl from "../reusable/ServerUrl";
 import { Button, Form, Modal, Table, FormControl } from "react-bootstrap";
 import CreateReport from "../orderFlows/CreateReport";
+import { jwtDecode } from "jwt-decode";
+import { useAuth } from "../provider/AuthProvider";
 
 function QuotationModal(props) {
+  const { token } = useAuth();
+  const decodedToken = jwtDecode(token);
+
   const initialQuotation = props.quotation
     ? props.quotation
     : {
@@ -82,6 +87,7 @@ function QuotationModal(props) {
             onChange={(e) =>
               handleInputChange(item.itemID, "name", e.target.value)
             }
+            readOnly={!["ADMIN", "SALE_STAFF"].includes(decodedToken.role)}
           />
         </td>
         <td>
@@ -95,6 +101,7 @@ function QuotationModal(props) {
                 parseFloat(e.target.value)
               )
             }
+            readOnly={!["ADMIN", "SALE_STAFF"].includes(decodedToken.role)}
           />
         </td>
         <td>
@@ -108,16 +115,19 @@ function QuotationModal(props) {
                 parseFloat(e.target.value)
               )
             }
+            readOnly={!["ADMIN", "SALE_STAFF"].includes(decodedToken.role)}
           />
         </td>
         <td>{item.totalPrice || 0}</td>
         <td>
-          <Button
-            variant="danger"
-            onClick={() => handleRemoveItem(item.itemID)}
-          >
-            Remove
-          </Button>
+          {["ADMIN", "SALE_STAFF"].includes(decodedToken.role) && (
+              <Button
+                  variant="danger"
+                  onClick={() => handleRemoveItem(item.itemID)}
+              >
+                Remove
+              </Button>
+          )}
         </td>
       </tr>
     );
@@ -184,6 +194,7 @@ function QuotationModal(props) {
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
+              readOnly={!["ADMIN", "SALE_STAFF"].includes(decodedToken.role)}
             />
           </Form.Group>
           <Form.Group>
@@ -192,6 +203,7 @@ function QuotationModal(props) {
               type="date"
               value={createdDate}
               onChange={(e) => setCreatedDate(e.target.value)}
+              readOnly={!["ADMIN", "SALE_STAFF"].includes(decodedToken.role)}
             />
           </Form.Group>
           <Form.Group>
@@ -200,6 +212,7 @@ function QuotationModal(props) {
               type="date"
               value={expiredDate}
               onChange={(e) => setExpiredDate(e.target.value)}
+              readOnly={!["ADMIN", "SALE_STAFF"].includes(decodedToken.role)}
             />
           </Form.Group>
           <Table bordered hover striped>
@@ -221,11 +234,15 @@ function QuotationModal(props) {
               </tr>
             </tbody>
           </Table>
-          <Button onClick={handleAddItem}>Add Item</Button>
+          {["ADMIN", "SALE_STAFF"].includes(decodedToken.role) && (
+              <Button onClick={handleAddItem}>Add Item</Button>
+          )}
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={props.onHide}>Close</Button>
-          <Button onClick={handleSubmit}>Submit quotation</Button>
+          {["ADMIN", "SALE_STAFF"].includes(decodedToken.role) && (
+              <Button onClick={handleSubmit}>Submit quotation</Button>
+          )}
         </Modal.Footer>
       </Modal>
 

@@ -3,7 +3,7 @@ import { Link, NavLink } from "react-router-dom";
 import { MdSpaceDashboard } from "react-icons/md";
 import { FaUsers } from "react-icons/fa";
 import { IoMdCart } from "react-icons/io";
-import { IoChatboxEllipses } from "react-icons/io5";
+import { IoChatboxEllipses, IoLogOutOutline } from "react-icons/io5";
 import { LuUser2 } from "react-icons/lu";
 import { FiBox } from "react-icons/fi";
 import { useAuth } from "../provider/AuthProvider";
@@ -17,6 +17,8 @@ const rbacConfig = {
   "/userManager/blogs_manager": ["SALE_STAFF", "MANAGER", "ADMIN"],
   "/userManager/employees_manager": ["MANAGER", "ADMIN"],
   "/userManager/products_manager": ["SALE_STAFF", "MANAGER", "ADMIN"],
+  "/userManager/profile": ["SALE_STAFF", "DESIGN_STAFF", "PRODUCTION_STAFF", "MANAGER", "ADMIN"],
+  "/userManager/notifications": ["SALE_STAFF", "DESIGN_STAFF", "PRODUCTION_STAFF", "MANAGER", "ADMIN"],
 };
 
 const navLinks = [
@@ -26,6 +28,8 @@ const navLinks = [
   { to: "/userManager/blogs_manager", icon: <IoChatboxEllipses size={22} color="white" />, label: "Blogs" },
   { to: "/userManager/employees_manager", icon: <LuUser2 size={22} color="white" />, label: "Employees" },
   { to: "/userManager/products_manager", icon: <FiBox size={22} color="white" />, label: "Products" },
+  { to: "/userManager/profile", icon: <FiBox size={22} color="white" />, label: "Profile" },
+  { to: "/userManager/notifications", icon: <FiBox size={22} color="white" />, label: "Notifications" },
 ];
 
 // Utility function to check if a role is allowed
@@ -34,7 +38,7 @@ const isAllowed = (role, path) => {
 };
 
 export default function NavBar() {
-  const { token } = useAuth();
+  const { token, setToken } = useAuth();
   let decodedToken;
 
   if (token) {
@@ -42,6 +46,10 @@ export default function NavBar() {
   }
 
   const userRole = decodedToken?.role;
+
+  const handleLogout = () => {
+    setToken(null);
+  };
 
   return (
     <>
@@ -73,6 +81,22 @@ export default function NavBar() {
             </NavLink>
           ) : null
         )}
+        <NavLink style={({ isActive }) => ({
+                backgroundColor: isActive ? "#444444" : "transparent",
+                display: "flex",
+                flexDirection: "row",
+                gap: 10,
+                alignItems: "center",
+                textDecoration: "none",
+                paddingLeft: "10%",
+                paddingTop: "2%",
+                paddingBottom: "2%",
+              })}
+          to="/login" onClick={() => handleLogout()}
+        >
+          <IoLogOutOutline size={22} color="white" />
+          <p style={{ color: "white", margin: 0, fontSize: 20 }}>Log out</p>
+        </NavLink>
       </div>
     </>
   );

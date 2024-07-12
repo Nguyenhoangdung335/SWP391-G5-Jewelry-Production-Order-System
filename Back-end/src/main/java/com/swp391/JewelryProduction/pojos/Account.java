@@ -115,7 +115,8 @@ public class Account{
     public Order getCurrentOrder() {
         if (pastOrder != null && !pastOrder.isEmpty()) {
             Order latestOrder = pastOrder.get(pastOrder.size() - 1);
-            if (latestOrder.getStatus().equals(OrderStatus.ORDER_COMPLETED))
+            System.out.println(latestOrder);
+            if (latestOrder.getStatus().equals(OrderStatus.ORDER_COMPLETED) || latestOrder.getStatus().equals(OrderStatus.CANCEL))
                 return null;
             return latestOrder;
         }

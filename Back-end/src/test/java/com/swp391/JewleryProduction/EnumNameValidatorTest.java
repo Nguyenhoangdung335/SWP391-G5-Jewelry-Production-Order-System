@@ -42,7 +42,7 @@ public class EnumNameValidatorTest {
         ReportRequest request = ReportRequest.builder()
                 .title("Test Title")
                 .description("Test Description")
-                .type(ReportType.ORDER)  // Assuming INVALID is not a valid type
+                .type(ReportType.NONE)  // Assuming INVALID is not a valid type
                 .reportContentID("12345")
                 .build();
 

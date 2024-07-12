@@ -138,7 +138,7 @@ function Collections() {
 
             {selectedProduct && (
                 <Modal show={showProductModal} onHide={handleCloseProductModal} size="lg">
-                    <Modal.Header closeButton>
+                    <Modal.Header className="w-100" closeButton>
                         <Modal.Title>{selectedProduct.name}</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>

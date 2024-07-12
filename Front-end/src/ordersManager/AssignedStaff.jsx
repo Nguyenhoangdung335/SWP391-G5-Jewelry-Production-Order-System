@@ -17,13 +17,13 @@ function AssignedStaff({ data, onSubmit }) {
   //   const [loading, setLoading] = useState(true);
   // const [staffOptions, setStaffOptions] = useState();
   const [selectedSaleStaff, setSelectedSaleStaff] = useState(
-    data.saleStaff?.id || ""
+      data.saleStaff ?? ""
   );
   const [selectedDesignStaff, setSelectedDesignStaff] = useState(
-    data.designStaff?.id || ""
+      data.designStaff ?? ""
   );
   const [selectedProductionStaff, setSelectedProductionStaff] = useState(
-    data.productionStaff?.id || ""
+      data.productionStaff ?? ""
   );
 
   useEffect(() => {
