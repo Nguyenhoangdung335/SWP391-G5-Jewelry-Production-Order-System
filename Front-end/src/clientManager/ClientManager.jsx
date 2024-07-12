@@ -56,6 +56,7 @@ export default function ClientManager() {
       role: form.role.value,
       email: form.gmail.value,
       phone: form.phone.value,
+      dateCreated: selectedUser.dateCreated,
       status: selectedUser.status,
       userInfo: {
         id: selectedUser.userInfo.id,
@@ -90,8 +91,9 @@ export default function ClientManager() {
     const newEmployee = {
       role: "CUSTOMER",
       email: form.gmail.value,
+      password: "#User1234",
       phone: form.phone.value,
-      status: "active",
+      status: "ACTIVE ",
       userInfo: {
         firstName: form.firstName.value,
         lastName: form.lastName.value,
@@ -103,12 +105,12 @@ export default function ClientManager() {
     };
 
     try {
-      const res = await axios.post(`${ServerUrl}/api/admin/add/account`, newEmployee, {
+      const res = await axios.post(`${ServerUrl}/api/admin/create/account`, newEmployee, {
         headers: { "Content-Type": "application/json" },
       });
-      console.log('Add Response:', res.data);
+      console.log('Add Response:', res.data.responseList.account);
 
-      setData([...data, res.data]); // Cập nhật trạng thái dữ liệu trên client sau khi thêm thành công
+      setData([...data, res.data.responseList.account]); // Cập nhật trạng thái dữ liệu trên client sau khi thêm thành công
       setIsAddModalVisible(false);
     } catch (err) {
       console.error('Error adding account:', err);
@@ -273,10 +275,10 @@ export default function ClientManager() {
               <td>{item.id}</td>
               <td>{item.role}</td>
               <td>
-                {item.userInfo.firstName} {item.userInfo.lastName}
+                {item.userInfo?.firstName} {item.userInfo?.lastName}
               </td>
               <td>{item.email}</td>
-              <td>{item.userInfo.phoneNumber}</td>
+              <td>{item.userInfo?.phoneNumber}</td>
               <td>
                 <span
                   className={`badge ${

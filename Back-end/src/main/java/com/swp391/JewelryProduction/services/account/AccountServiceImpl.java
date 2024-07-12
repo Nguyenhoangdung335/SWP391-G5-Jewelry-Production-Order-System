@@ -248,7 +248,7 @@ public class AccountServiceImpl implements AccountService {
     @Transactional
     @Override
     public Account createAccount(AccountDTO accountDTO) {
-        if(accountRepository.findByEmail(accountDTO.getEmail().toLowerCase()).isPresent())
+        if(accountRepository.findByEmail(accountDTO.getEmail()).isPresent())
             throw new RuntimeException("Email is already existed.");
         return accountRepository.save(setAccount(accountDTO));
     }
@@ -263,7 +263,9 @@ public class AccountServiceImpl implements AccountService {
                     .orElseThrow(() -> new ObjectNotFoundException("Account not found"));
 
             // Check if the password is changed
-            if (!accountDTO.getPassword().equals(existingAccount.getPassword())) {
+            if (accountDTO.getPassword() == null) {
+                accountDTO.setPassword(existingAccount.getPassword());
+            } else if (!existingAccount.getPassword().equals(accountDTO.getPassword())) {
                 System.out.println("Is not matched");
                 // Encode the new password
                 accountDTO.setPassword(passwordEncoder.encode(accountDTO.getPassword()));

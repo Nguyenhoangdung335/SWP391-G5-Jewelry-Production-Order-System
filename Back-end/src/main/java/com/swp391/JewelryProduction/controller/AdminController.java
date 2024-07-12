@@ -16,6 +16,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+
 @CrossOrigin("*")
 @RestController
 @RequestMapping("api/admin")
@@ -93,6 +96,7 @@ public class AdminController {
     }
     @PostMapping("/create/account")
     public ResponseEntity<Response> createAccount(@RequestBody AccountDTO accountDTO) {
+        accountDTO.setDateCreated(LocalDateTime.now());
         return Response.builder()
                 .status(HttpStatus.OK)
                 .message("Request sent successfully")
