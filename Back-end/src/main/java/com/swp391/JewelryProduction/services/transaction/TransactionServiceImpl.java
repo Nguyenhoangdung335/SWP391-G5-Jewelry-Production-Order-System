@@ -45,8 +45,8 @@ public class TransactionServiceImpl implements TransactionService{
                      .order(order)
                      .dateCreated(LocalDateTime.now())
                      .amount(Double.parseDouble(transaction.getAmount().getTotal()))
-                     .paypalPayerId(payment.getPayer().getPayerInfo().getPayerId())
                      .status(payment.getState())
+                     .paypalPaymentId(payment.getId())
                      .build();
              transactions = transactionRepository.save(transactions);
 
