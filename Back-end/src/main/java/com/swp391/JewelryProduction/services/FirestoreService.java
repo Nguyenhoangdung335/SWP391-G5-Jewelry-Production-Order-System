@@ -6,23 +6,17 @@ import com.google.firebase.cloud.FirestoreClient;
 import com.swp391.JewelryProduction.dto.Blog;
 import com.swp391.JewelryProduction.pojos.Account;
 import com.swp391.JewelryProduction.pojos.Order;
-import com.swp391.JewelryProduction.pojos.Staff;
-import com.swp391.JewelryProduction.pojos.StaffOrderHistory;
 import com.swp391.JewelryProduction.services.account.AccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
@@ -67,24 +61,6 @@ public class FirestoreService {
         DocumentReference docRef = dbFirestore.collection(USER_COLLECTION_NAME).document(userId);
         ApiFuture<WriteResult> writeResult = docRef.delete();
         writeResult.get();
-    }
-
-    @EventListener(ApplicationReadyEvent.class)
-//    @Scheduled(fixedRate = 60000)
-    @Async
-    @Transactional
-    public void syncUsersToFirestore() {
-        Firestore db = FirestoreClient.getFirestore();
-        List<Account> accounts;
-        try {
-            accounts = accountService.findAllAccounts(); // Fetch all accounts
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to fetch accounts from SQL", e);
-        }
-
-        for (Account account : accounts) {
-            saveOrUpdateUser(db, account);
-        }
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)

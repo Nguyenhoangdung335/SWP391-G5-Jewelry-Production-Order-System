@@ -1,55 +1,67 @@
-import React, { useEffect, useState } from "react";
-import { useAuth } from "../provider/AuthProvider";
+import React, {useEffect, useState} from "react";
+import {useAuth} from "../provider/AuthProvider";
 import ServerUrl from "../reusable/ServerUrl";
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
-import { Link } from "react-router-dom";
-import { Container } from "react-bootstrap";
+import {jwtDecode} from "jwt-decode";
+import {Link} from "react-router-dom";
+import {Container} from "react-bootstrap";
 
 const NotificationPage = () => {
-  const [notifications, setNotifications] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const { token } = useAuth();
-  const decodedToken = jwtDecode(token);
+    const [notifications, setNotifications] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const {token} = useAuth();
+    const decodedToken = jwtDecode(token);
 
-  useEffect(() => {
-    axios
-      .get(`${ServerUrl}/api/notifications/receiver/${decodedToken.id}`)
-      .then((response) => {
-        if (response.data.status === "OK") {
-          setNotifications(response.data.responseList.notifications);
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching notifications:", error);
-      })
-      .finally(() => setLoading(false));
-  }, []);
+    useEffect(() => {
+        axios
+            .get(`${ServerUrl}/api/notifications/receiver/${decodedToken.id}`)
+            .then((response) => {
+                if (response.data.status === "OK") {
+                    setNotifications(response.data.responseList.notifications);
+                }
+            })
+            .catch((error) => {
+                console.error("Error fetching notifications:", error);
+            })
+            .finally(() => setLoading(false));
+    }, []);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+    const arrayToDate = (dateArray) => {
+        const dateObject = new Date(
+            dateArray[0],
+            dateArray[1] - 1,
+            dateArray[2],
+            dateArray[3],
+            dateArray[4],
+            dateArray[5]
+        );
+        return dateObject.toLocaleString(); // Format the date as needed
+    };
 
-  return (
-    <Container>
-      {notifications.map((notification) => (
-        <Link
-          to={`/user_setting_page/notification_page/${notification.id}`}
-          style={{ textDecoration: "none" }}
-        >
-          <div
-            className="p-3 m-3 text-black"
-            style={{ border: "1px solid black", borderRadius: "20px" }}
-            key={notification.id}
-          >
-            <h4>{notification.report.title}</h4>
-            <p>{notification.report.description}</p>
-            <p>{notification.report.createdDate}</p>
-          </div>
-        </Link>
-      ))}
-    </Container>
-  );
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    return (
+        <Container>
+            {notifications.map((notification) => (
+                <Link
+                    to={`/user_setting_page/notification_page/${notification.id}`}
+                    style={{textDecoration: "none"}}
+                >
+                    <div
+                        className="p-3 m-3 text-black"
+                        style={{border: "1px solid black", borderRadius: "20px"}}
+                        key={notification.id}
+                    >
+                        <h4>{notification.report.title}</h4>
+                        <p>{notification.report.description}</p>
+                        <p>{arrayToDate(notification.report.createdDate)}</p>
+                    </div>
+                </Link>
+            ))}
+        </Container>
+    );
 };
 
 export default NotificationPage;
