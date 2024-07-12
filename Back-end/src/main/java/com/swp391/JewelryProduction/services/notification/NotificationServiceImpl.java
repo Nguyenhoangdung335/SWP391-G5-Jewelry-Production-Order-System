@@ -10,6 +10,9 @@ import com.swp391.JewelryProduction.util.exceptions.ObjectNotFoundException;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -29,17 +32,29 @@ public class NotificationServiceImpl implements NotificationService {
 
     //<editor-fold desc="MVC Service methods" defaultstate="collapsed">
     @Override
-    public List<Notification> findAllByReceiver_Id(String receiverId) {
-        return notificationRepository.findAllByReceiverId(receiverId);
+    public Page<Notification> findAllByReceiverId(String receiverId, int page, int size) {
+        return notificationRepository.findAllByReceiverId(receiverId,
+                PageRequest.of(page, size,
+                        Sort.by("read").ascending()
+                                .and(Sort.by("report.createdDate").descending()))
+        );
     }
 
     @Override
-    public void deleteNotification(UUID id) {
+    public Page<Notification> findAllByReceiverIdAndUnread(String receiverId, int page, int size) {
+        return notificationRepository.findAllByReceiverIdAndReadFalse(receiverId,
+                PageRequest.of(page, size,
+                        Sort.by("report.createdDate").descending())
+        );
+    }
+
+    @Override
+    public void deleteNotification(Integer id) {
         notificationRepository.deleteById(id);
     }
 
     @Override
-    public Notification getNotificationById(UUID id) {
+    public Notification getNotificationById(Integer id) {
         Notification notification = notificationRepository.findById(id)
                 .orElseThrow(() -> new ObjectNotFoundException("Notification id "+id+" not found"));
         notification.setRead(true);

@@ -4,6 +4,7 @@ import com.swp391.JewelryProduction.dto.ResponseDTOs.NotificationResponse;
 import com.swp391.JewelryProduction.pojos.Account;
 import com.swp391.JewelryProduction.pojos.Notification;
 import jakarta.mail.MessagingException;
+import org.springframework.data.domain.Page;
 import org.springframework.http.codec.ServerSentEvent;
 import reactor.core.publisher.Flux;
 
@@ -15,7 +16,7 @@ public interface NotificationService {
     Notification createNotification(Notification notification) throws MessagingException;
     Notification createNotification(Notification notification, boolean isOption) throws MessagingException;
     Notification createNotification(Notification notification, boolean isOption, boolean sendEmail) throws MessagingException;
-    Notification getNotificationById(UUID id);
+    Notification getNotificationById(Integer id);
     List<Notification> getAllNotificationsByReceiverNotRead(Account receiver);
     List<Notification> getAllNotificationsByReceiver(Account receiver);
     void clearAllNotifications();
@@ -23,7 +24,9 @@ public interface NotificationService {
 
 
     Flux<ServerSentEvent<List<NotificationResponse>>> subscribeNotificationStream(Account receiver);
-    List<Notification> findAllByReceiver_Id(String receiverId);
-    void deleteNotification(UUID id);
 
+    void deleteNotification(Integer id);
+
+    Page<Notification> findAllByReceiverId(String receiverId, int page, int size);
+    Page<Notification> findAllByReceiverIdAndUnread (String receiverId, int page, int size);
 }
