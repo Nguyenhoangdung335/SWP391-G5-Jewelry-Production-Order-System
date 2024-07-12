@@ -54,7 +54,7 @@ public class PaypalController {
 
     @PostMapping("/create/{orderId}")
     public RedirectView createPayment(
-            @RequestBody String quotationId,
+            @RequestParam("quotationId") String quotationId,
             @PathVariable("orderId") String orderId,
             @RequestParam(name = "resultURL", required = false, defaultValue = "") String resultURL,
             HttpServletRequest request
