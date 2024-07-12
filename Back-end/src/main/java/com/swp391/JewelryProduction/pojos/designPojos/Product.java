@@ -17,7 +17,7 @@ import org.hibernate.annotations.Parameter;
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "id"
 )
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+//@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Product {
     @Id
     @GeneratedValue(generator = "product_seq")
@@ -31,17 +31,27 @@ public class Product {
             }
     )
     @Column(length = 8, nullable = false, updatable = false, unique = true)
+    @ToString.Include
+    @EqualsAndHashCode.Include
     private String id;
+    @ToString.Include
+    @EqualsAndHashCode.Include
     private String name;
+    @ToString.Include
+    @EqualsAndHashCode.Include
     private String description;
     @Column(length = 1024)
+    @ToString.Include
+    @EqualsAndHashCode.Include
     private String imageURL;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ToString.Include
+    @EqualsAndHashCode.Include
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private ProductSpecification specification;
 
     @ToString.Exclude
-    @OneToOne(mappedBy = "product", fetch = FetchType.EAGER)
+    @OneToOne(mappedBy = "product", fetch = FetchType.LAZY)
     @JsonBackReference("Order-Product")
     private Order order;
 }

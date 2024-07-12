@@ -23,7 +23,7 @@ public class ProductController {
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "5") int size
     ) {
-        Page<ProductDTO> productPage = productService.findAll(page, size);
+        Page<Product> productPage = productService.findAll(page, size);
         return Response.builder()
                 .status(HttpStatus.OK)
                 .message("Get products successfully")
