@@ -12,13 +12,16 @@ import {
   Table,
 } from "react-bootstrap";
 import snowfall from "../../assets/snowfall.jpg";
+import qrCode from "../../assets/qrCode.jpg";
 import { jwtDecode } from "jwt-decode";
+import { _setMinAndMaxByKey } from "chart.js/helpers";
 
 function OrderDetail() {
   const state = useLocation();
   const [data, setData] = useState();
   const [showQuotation, setShowQuotation] = useState(false);
   const [imageLink, setImageLink] = useState(null);
+  const [showPayment, setShowPayment] = useState(false);
   const id = state.state;
 
   const arrayToDate = (date) => {
@@ -57,6 +60,10 @@ function OrderDetail() {
     setShowQuotation(true);
   };
 
+  const handleShowPayment = () => {
+    setShowPayment(true);
+  };
+
   return (
     <>
       <Container className="pt-4 pb-4">
@@ -64,7 +71,7 @@ function OrderDetail() {
           <Col md={8}>
             <div className="pb-2">
               <img
-                src={imageLink || snowfall}
+                src={data?.design?.designLink || snowfall}
                 alt="Product Image"
                 className="w-100 h-100"
               />
@@ -224,6 +231,7 @@ function OrderDetail() {
 
       {data.quotation && (<MyVerticallyCenteredModal
         quotation={data.quotation}
+        orderId={data.id}
         show={showQuotation}
         onHide={() => setShowQuotation(false)}
       />)
@@ -233,57 +241,86 @@ function OrderDetail() {
 }
 
 function MyVerticallyCenteredModal(props) {
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+
   const quotationItems = props.quotation.quotationItems;
-  console.log(quotationItems);
-  const getQuotationItems = quotationItems.map((item) => {
-    return (
-      <>
-        <tr key={item.itemID}>
-          <td>{item.itemID}</td>
-          <td>{item.name}</td>
-          <td>{item.quantity}</td>
-          <td>{item.unitPrice}</td>
-          <td>{item.totalPrice}</td>
-        </tr>
-      </>
-    );
-  });
+
+  const getQuotationItems = quotationItems.map((item) => (
+    <tr key={item.itemID}>
+      <td>{item.itemID}</td>
+      <td>{item.name}</td>
+      <td>{item.quantity}</td>
+      <td>{item.unitPrice}</td>
+      <td>{item.totalPrice}</td>
+    </tr>
+  ));
+
+  const handleShowPayment = async (ev) => {
+    // Uncomment and configure the axios request as needed
+    // const response = await axios.post(`${ServerUrl}/api/payment/create/${props.orderId}`, {
+    //   param: {
+    //     quotationId: props.quotation.id,
+    //     resultURL:
+    //   }
+    // });
+    setShowPaymentModal(true);
+    props.onHide();
+  };
 
   return (
-    <Modal
-      {...props}
-      size="lg"
-      aria-labelledby="contained-modal-title-vcenter"
-      centered
-    >
-      <Modal.Header className="w-100" closeButton>
-        <Modal.Title id="contained-modal-title-vcenter">Quotations</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <Table bordered hover striped>
-          <thead>
-            <tr>
-              <th>Id</th>
-              <th>Name</th>
-              <th>Quantity</th>
-              <th>Unit Price</th>
-              <th>Total Price</th>
-            </tr>
-          </thead>
-          <tbody>
-            {getQuotationItems}
-            <tr>
-              <td colSpan={4}>Final Price</td>
-              <td>{props.quotation.totalPrice}</td>
-            </tr>
-          </tbody>
-        </Table>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button onClick={props.onHide}>Decline Quotation</Button>
-        <Button>Accept Quotation</Button>
-      </Modal.Footer>
-    </Modal>
+    <>
+      <Modal
+        {...props}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="contained-modal-title-vcenter">
+            Quotations
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Table bordered hover striped>
+            <thead>
+              <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Quantity</th>
+                <th>Unit Price</th>
+                <th>Total Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              {getQuotationItems}
+              <tr>
+                <td colSpan={4}>Final Price</td>
+                <td>{props.quotation.totalPrice}</td>
+              </tr>
+            </tbody>
+          </Table>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={props.onHide}>Decline Quotation</Button>
+          <Button onClick={handleShowPayment}>Make Payment</Button>
+        </Modal.Footer>
+      </Modal>
+
+      {showPaymentModal && (
+        <Modal
+          show={showPaymentModal}
+          onHide={() => setShowPaymentModal(false)}
+          centered
+        >
+          <Modal.Header className="w-100" closeButton>
+            <Modal.Title>Payment</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <img src={qrCode} alt="QR for payment" className="w-100 h-100" />
+          </Modal.Body>
+        </Modal>
+      )}
+    </>
   );
 }
 
