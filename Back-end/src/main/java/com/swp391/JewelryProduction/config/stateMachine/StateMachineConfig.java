@@ -73,6 +73,7 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
                 .state(OrderStatus.CANCEL)
 //                .history(OrderStatus.ORDER_RESTORED, StateConfigurer.History.DEEP)          //History state for reverting back
                 .end(OrderStatus.ORDER_COMPLETED)                                           //End state for finalize the order
+                .state(OrderStatus.ORDER_COMPLETED, actionAndGuardConfiguration.notifyOrderCompleteAction(), null)
 
                 .and()
                     .withStates()
@@ -336,7 +337,7 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
 
                 .and()
                 .withExternal()
-                .source(OrderStatus.PRO_APPROVED).target(OrderStatus.ON_DELIVERING)
+                .source(OrderStatus.PRO_APPROVED).target(OrderStatus.ORDER_COMPLETED)
                 .event(OrderEvent.PRO_APPROVE)
 
                 /*-----------------------------------------------------------------------------------------------------*/

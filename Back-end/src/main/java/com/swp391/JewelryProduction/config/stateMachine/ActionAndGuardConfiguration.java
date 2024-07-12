@@ -508,6 +508,13 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
         };
     }
 
+    @Bean
+    public Action<OrderStatus, OrderEvent> notifyOrderCompleteAction () {
+        return context -> {
+
+        };
+    }
+
     //Comment for later updates
 
 //    @Bean
