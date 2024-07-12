@@ -72,6 +72,7 @@ public class FirestoreService {
     @EventListener(ApplicationReadyEvent.class)
 //    @Scheduled(fixedRate = 60000)
     @Async
+    @Transactional
     public void syncUsersToFirestore() {
         Firestore db = FirestoreClient.getFirestore();
         List<Account> accounts;
@@ -103,7 +104,6 @@ public class FirestoreService {
             Order currentOrder = orders.get(orders.size() - 1); // Get the last order
             Hibernate.initialize(currentOrder.getStaffOrderHistory()); // Initialize staff history
 
-            // Access staff from the last order's staff history
             StaffOrderHistory staffOrderHistory = currentOrder.getStaffOrderHistory().stream()
                     .filter(history -> history.getOrder().getId().equals(currentOrder.getId()))
                     .findFirst()
