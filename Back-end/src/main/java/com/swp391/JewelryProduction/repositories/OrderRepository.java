@@ -16,9 +16,14 @@ import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<Order, String> {
     @NotNull
-    @EntityGraph( attributePaths = {"staffOrderHistory", "quotation", "design", "product", "transactions", "warranty"} )
+    @EntityGraph( attributePaths = {"owner.userInfo", "staffOrderHistory.staff", "quotation.quotationItems", "design", "product.specification", "transactions", "warranty"} )
     @Override
     Optional<Order> findById(@NotNull String s);
+
+    @NotNull
+    @Override
+    @EntityGraph( attributePaths = {"owner.userInfo", "staffOrderHistory.staff", "quotation.quotationItems", "design", "product.specification", "transactions", "warranty"} )
+    List<Order> findAll();
 
     @Query(value = "SELECT o FROM Order o WHERE MONTH(o.createdDate) = :month AND YEAR(o.createdDate) = :year")
     List<Order> findAllByMonthAndYear(@Param("month") int month, @Param("year") int year);
