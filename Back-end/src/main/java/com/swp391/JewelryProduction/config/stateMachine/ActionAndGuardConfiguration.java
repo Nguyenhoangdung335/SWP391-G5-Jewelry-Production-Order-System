@@ -123,8 +123,7 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
                 order.getNotifications().add(notification);
                 try {
                     notification = notificationService.createNotification(notification, true, true);
-                } catch (MessagingException e) {
-                    throw new RuntimeException(e);
+                } catch (MessagingException ignored) {
                 }
                 log.info("Notification with id {} of order id {} sent to user {} of role {}",
                         notification.getId(), order.getId(), manager.getId(), manager.getRole()
@@ -156,8 +155,7 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
             order.getNotifications().add(notification);
             try {
                 notification = notificationService.createNotification(notification, true, true);
-            } catch (MessagingException e) {
-                throw new RuntimeException(e);
+            } catch (MessagingException ignored) {
             }
             log.info("Notification with id {} of order id {} sent to owner {}",
                     notification.getId(), order.getId(), owner.getId()
@@ -193,8 +191,7 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
 
             try {
                 notificationService.createNotification(notification, false, true);
-            } catch (MessagingException e) {
-                throw new RuntimeException(e);
+            } catch (MessagingException ignored) {
             }
             log.info("Notification approved message for owner id {}", order.getOwner().getId());
         };
@@ -225,8 +222,7 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
 
             try {
                 notification = notificationService.createNotification(notification);
-            } catch (MessagingException e) {
-                throw new RuntimeException(e);
+            } catch (MessagingException ignored) {
             }
 
             log.info("Notification cancel order id {} of owner id {}", order.getId(), owner.getId());
@@ -263,8 +259,7 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
 
             try {
                 notification = notificationService.createNotification(notification, false, true);
-            } catch (MessagingException e) {
-                throw new RuntimeException(e);
+            } catch (MessagingException ignored) {
             }
 
             //Notify logic using NotificationService
@@ -304,8 +299,7 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
 
             try {
                 notification = notificationService.createNotification(notification, false, true);
-            } catch (MessagingException e) {
-                throw new RuntimeException(e);
+            } catch (MessagingException ignored) {
             }
 
             //Notify logic using NotificationService
@@ -345,8 +339,7 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
 
             try {
                 notification = notificationService.createNotification(notification, false, true);
-            } catch (MessagingException e) {
-                throw new RuntimeException(e);
+            } catch (MessagingException ignored) {
             }
 
             //Notify logic using NotificationService
@@ -451,8 +444,7 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
                 variables.put("currentYear", 2024);
 
                 emailService.sendInvoiceEmail(owner.getEmail(), "Receipt for order " + order.getId(), variables);
-            } catch (MessagingException e) {
-                throw new RuntimeException("System error, cannot send receipt designated email address",e);
+            } catch (MessagingException ignored) {
             }
         };
     }
@@ -511,8 +503,7 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
                 emailService.sendReceiptEmail(owner.getEmail(), "Receipt for order " + order.getId(), variables);
             } catch (PayPalRESTException e) {
                 throw new RuntimeException("System error, cannot get Paypal payer details", e);
-            } catch (MessagingException e) {
-                throw new RuntimeException("System error, cannot send receipt designated email address",e);
+            } catch (MessagingException ignored) {
             }
         };
     }

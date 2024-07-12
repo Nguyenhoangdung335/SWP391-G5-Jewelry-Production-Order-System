@@ -22,8 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class GlobalEntityListener implements ApplicationContextAware {
     private ApplicationContext applicationContext;
 
-    private static boolean initialized = true;
-
     @PostPersist
     @PostUpdate
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -32,8 +30,8 @@ public class GlobalEntityListener implements ApplicationContextAware {
         log.info("Entity changed: {}", entity);
 
         // Sync account changes to Firestore
-        log.info((entity instanceof Account && !initialized) + "");
-        if (entity instanceof Account && !initialized) {
+        log.info((entity instanceof Account) + "");
+        if (entity instanceof Account) {
             saveOrUpdateUser((Account) entity);
         }
     }
@@ -45,7 +43,7 @@ public class GlobalEntityListener implements ApplicationContextAware {
         log.info("Entity removed: {}", entity);
 
         // Delete user from Firestore
-        if (entity instanceof Account && !initialized) {
+        if (entity instanceof Account) {
             deleteUser((Account) entity);
         }
     }
@@ -72,9 +70,5 @@ public class GlobalEntityListener implements ApplicationContextAware {
     @Override
     public void setApplicationContext(@NotNull ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
-    }
-
-    public static void setInitializedDone() {
-        initialized = false;
     }
 }

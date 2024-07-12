@@ -235,7 +235,7 @@ function OrderDetail() {
         show={showQuotation}
         onHide={() => setShowQuotation(false)}
       />)
-      } 
+      }
     </>
   );
 }
@@ -256,15 +256,18 @@ function MyVerticallyCenteredModal(props) {
   ));
 
   const handleShowPayment = async (ev) => {
-    // Uncomment and configure the axios request as needed
-    // const response = await axios.post(`${ServerUrl}/api/payment/create/${props.orderId}`, {
-    //   param: {
-    //     quotationId: props.quotation.id,
-    //     resultURL:
-    //   }
-    // });
-    setShowPaymentModal(true);
-    props.onHide();
+    const resultURL = `${window.location.origin}/transactions/results`;
+    try {
+      // Uncomment and configure the axios request as needed
+      const response = await axios.post(`${ServerUrl}/api/payment/create/${props.orderId}?quotationId=${props.quotation.id}&resultURL=${resultURL}`);
+      if (response.status === 200) {
+        window.location.href = response.data.responseList.url;
+      }
+    } catch (error) {
+      console.error("Error creating payment:", error);
+    }
+    // setShowPaymentModal(true);
+    // props.onHide();
   };
 
   return (
