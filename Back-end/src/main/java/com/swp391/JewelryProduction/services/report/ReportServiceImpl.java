@@ -6,8 +6,10 @@ import com.swp391.JewelryProduction.enums.OrderStatus;
 import com.swp391.JewelryProduction.enums.ReportType;
 import com.swp391.JewelryProduction.pojos.*;
 import com.swp391.JewelryProduction.pojos.designPojos.Product;
+import com.swp391.JewelryProduction.repositories.NotificationRepository;
 import com.swp391.JewelryProduction.repositories.ReportRepository;
 import com.swp391.JewelryProduction.services.account.AccountService;
+import com.swp391.JewelryProduction.services.notification.NotificationService;
 import com.swp391.JewelryProduction.services.order.OrderService;
 import com.swp391.JewelryProduction.util.exceptions.ObjectNotFoundException;
 import jakarta.transaction.Transactional;
@@ -22,6 +24,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static com.swp391.JewelryProduction.config.stateMachine.StateMachineUtil.*;
 import static com.swp391.JewelryProduction.config.stateMachine.StateMachineUtil.Keywords.*;
@@ -34,6 +37,7 @@ public class ReportServiceImpl implements ReportService {
     private final ReportRepository reportRepository;
     private final AccountService accountService;
     private final OrderService orderService;
+    private final NotificationRepository notificationRepository;
 
     private final ModelMapper modelMapper;
 
@@ -125,7 +129,12 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     @Transactional
-    public void handleUserResponse(String orderId, boolean isApproved) throws RuntimeException {
+    public void handleUserResponse(int notificationId, String orderId, boolean isApproved) throws RuntimeException {
+        Optional<Notification> notification = notificationRepository.findById(notificationId);
+        if(notification.get().isOption()){
+            notification.get().setOption(false);
+        }
+
         StateMachine<OrderStatus, OrderEvent> stateMachine = getStateMachine(orderId, stateMachineService);
         State<OrderStatus, OrderEvent> currentState = getCurrentState(stateMachine);
 

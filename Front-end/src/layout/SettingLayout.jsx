@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
 import SideBar from "../components/SideBar";
-import { Col, Container, Row } from "react-bootstrap";
-import SplitPane from "split-pane-react";
+import { Button, Col, Container, Row } from "react-bootstrap";
+import SplitPane, { Pane } from "split-pane-react";
 import Chat from "../chat/MainChat";
+import { AiOutlineMessage } from "react-icons/ai";
 
 function SettingPageLayout() {
   const [showChat, setShowChat] = useState(false);
@@ -20,33 +21,36 @@ function SettingPageLayout() {
         </div>
       </Col>
       <Col md={9}>
-        <SplitPane
-          split="vertical"
-          sizes={showChat ? "20%" : "100%"}
-          onChange={() => {
-            // Optional: Handle resize events
-          }}
-        >
-          <Container className="d-flex justify-content-center w-100 h-100">
-            <Outlet />
-          </Container>
-          {showChat && (
-            <div className="chat-content">
-              {/* Your Chat component */}
-              <div style={{ backgroundColor: "#f0f0f0", padding: "10px", }}>
-                <Chat />
-              </div>
-            </div>
-          )}
-        </SplitPane>
-        <button
-          className="toggle-chat-btn"
-          onClick={toggleChat}
-          style={{ position: "absolute", bottom: "20px", right: "20px" }}
-        >
-          {showChat ? "Hide Chat" : "Show Chat"}
-        </button>
+        <Container className="d-flex justify-content-center w-100 h-100">
+          <Outlet />
+        </Container>
       </Col>
+      {showChat && (
+        // <div className="chat-content position-fixed">
+        <div
+          className="position-fixed mt-4 mb-4"
+          style={{ margin: "0px auto" }}
+        >
+          <Chat />
+        </div>
+        // </div>
+      )}
+      <Button
+        className="toggle-chat-btn"
+        variant="outline-dark"
+        onClick={toggleChat}
+        style={{
+          position: "fixed",
+          bottom: "3vh",
+          right: "30px",
+          width: "50px",
+          height: "50px",
+          borderRadius: "100%",
+          transition: "right 0.3s ease",
+        }}
+      >
+        <AiOutlineMessage size="25px" />
+      </Button>
     </Row>
   );
 }
