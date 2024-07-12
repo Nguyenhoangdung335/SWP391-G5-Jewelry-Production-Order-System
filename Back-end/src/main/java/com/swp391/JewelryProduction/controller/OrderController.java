@@ -28,6 +28,8 @@ import reactor.core.publisher.Mono;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
+import static com.swp391.JewelryProduction.config.stateMachine.StateMachineUtil.Keywords.*;
+import static com.swp391.JewelryProduction.config.stateMachine.StateMachineUtil.getCurrentState;
 import static com.swp391.JewelryProduction.config.stateMachine.StateMachineUtil.getStateMachine;
 
 @RestController
@@ -46,7 +48,7 @@ public class OrderController {
         return Response.builder()
                 .status(HttpStatus.OK)
                 .message("Request sent successfully")
-                .response("order-list", orderService.findAllOrders())
+                .response("orders", orderService.findAllOrders())
                 .buildEntity();
     }
 
@@ -79,6 +81,26 @@ public class OrderController {
         stateMachine.sendEvent(
                 Mono.just(MessageBuilder.
                         withPayload(OrderEvent.QUO_MANA_PROCESS)
+                        .build()
+                )
+        ).subscribe();
+
+        return Response.builder()
+                .status(HttpStatus.OK)
+                .message("Request sent successfully")
+                .buildEntity();
+    }
+
+    @PostMapping("/{orderId}/detail/transaction-confirm")
+    public ResponseEntity<Response> handleTransactionConfirm (
+            @PathVariable("orderId") String orderId,
+            @RequestParam("confirmed") Boolean confirmed
+    ) {
+        StateMachine<OrderStatus, OrderEvent> stateMachine = getStateMachine(orderId, stateMachineService);
+        stateMachine.getExtendedState().getVariables().put(TRANSACTION_CHOICE, confirmed);
+        stateMachine.sendEvent(
+                Mono.just(MessageBuilder.
+                        withPayload(OrderEvent.TRANSACTION_MAKE)
                         .build()
                 )
         ).subscribe();
