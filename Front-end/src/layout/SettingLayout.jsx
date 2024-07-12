@@ -19,21 +19,21 @@ function SettingPageLayout() {
           <SideBar />
         </div>
       </Col>
-      <Col  md={9}>
-      <SplitPane
+      <Col md={9}>
+        <SplitPane
           split="vertical"
           sizes={showChat ? "20%" : "100%"}
           onChange={() => {
             // Optional: Handle resize events
           }}
         >
-        <Container className="d-flex justify-content-center w-100 h-100">
-          <Outlet />
-        </Container>
-        {showChat && (
+          <Container className="d-flex justify-content-center w-100 h-100">
+            <Outlet />
+          </Container>
+          {showChat && (
             <div className="chat-content">
               {/* Your Chat component */}
-              <div style={{ backgroundColor: "#f0f0f0", padding: "10px" }}>
+              <div style={{ backgroundColor: "#f0f0f0", padding: "10px", }}>
                 <Chat />
               </div>
             </div>

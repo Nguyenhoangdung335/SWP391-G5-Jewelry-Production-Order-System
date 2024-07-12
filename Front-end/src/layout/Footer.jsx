@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Link, Navigate} from "react-router-dom";
+import {Link, Navigate, useNavigate} from "react-router-dom";
 import { IoLogoFacebook } from "react-icons/io5";
 import { FaInstagram } from "react-icons/fa";
 import { FaYoutube } from "react-icons/fa";
@@ -13,6 +13,7 @@ export default function Footer() {
   const {token} = useAuth();
   const [decodedToken, setDecodedToken] = useState(null);
   const [requestSent, setRequestSent] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (token) {
@@ -35,7 +36,8 @@ export default function Footer() {
                   "You already have an ongoing order. Please complete it before designing new jewelry."
               );
             } else {
-              setRequestSent(true);
+              // setRequestSent(true);
+              navigate("/order_page");
             }
           })
           .catch((error) => {
@@ -48,10 +50,6 @@ export default function Footer() {
 
   const handleClick = () => {
     checkCurrentOrder();
-  }
-
-  if (requestSent) {
-    return <Navigate to="/order_page"/>;
   }
 
   return (

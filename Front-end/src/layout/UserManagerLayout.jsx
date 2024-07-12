@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import HeaderManager from "./HeaderManager";
 import { Outlet } from "react-router-dom";
 import NavBar from "./NavBar";
 import Chat from "../chat/MainChat";
+import { AiOutlineMessage } from "react-icons/ai";
+import { Button } from "react-bootstrap";
 
 export default function UserManagerLayout() {
   const [showChat, setShowChat] = useState(false);
@@ -23,43 +24,44 @@ export default function UserManagerLayout() {
       >
         <NavBar />
       </div>
+
       <div
-        style={{ padding: 0, maxHeight: "100vh", overflowY: "auto", height: "100vh" }}
+        style={{
+          // padding: 0,
+          maxHeight: "100vh",
+          overflowY: "auto",
+          height: "100vh",
+        }}
         className="col-10 d-flex flex-column h-100 flex-grow-1"
       >
         {/* <HeaderManager /> */}
         <Outlet />
+
+        {showChat && (
+          <div className="chat-overlay position-fixed d-flex align-center mt-4">
+            {/* Your Chat component */}
+            <Chat />
+          </div>
+        )}
       </div>
-      {showChat && (
-        <div
-          className="chat-overlay"
-          style={{
-            position: "absolute",
-            right: "0",
-            width: "300px",
-            height: "98vh",
-            boxShadow: "0 0 10px rgba(0,0,0,0.5)",
-            zIndex: 1000,
-            padding: "10px",
-          }}
-        >
-          {/* Your Chat component */}
-          <Chat />
-        </div>
-      )}
-      <button
+      <Button
         className="toggle-chat-btn"
+        variant="outline-dark"
         onClick={toggleChat}
-        style={{ 
-          position: "fixed", 
-          bottom: "20px", 
-          right: showChat ? "340px" : "20px", 
-          width: "auto", 
-          transition: "right 0.3s ease" 
+        style={{
+          position: "fixed",
+          bottom: "3vh",
+          right: "30px",
+          width: "50px",
+          height: "50px",
+          borderRadius: "100%",
+          transition: "right 0.3s ease",
         }}
       >
-        {showChat ? "Hide Chat" : "Show Chat"}
-      </button>
+        {/* {showChat ? "Hide Chat" : "Show Chat"} */}
+
+        <AiOutlineMessage size="25px"/>
+      </Button>
     </div>
   );
 }

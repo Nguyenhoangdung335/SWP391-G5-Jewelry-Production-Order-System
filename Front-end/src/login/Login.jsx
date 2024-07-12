@@ -31,7 +31,6 @@ export default function Login() {
       })
         .then((response) => {
           if (response.status === 200) {
-            alert(response.data.message);
             setToken(response.data.responseList.token);
             navigate("/userManager");
           } else if (response.status === 400) {
