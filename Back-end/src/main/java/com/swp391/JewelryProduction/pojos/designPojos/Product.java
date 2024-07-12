@@ -17,7 +17,7 @@ import org.hibernate.annotations.Parameter;
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "id"
 )
-//@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Product {
     @Id
     @GeneratedValue(generator = "product_seq")

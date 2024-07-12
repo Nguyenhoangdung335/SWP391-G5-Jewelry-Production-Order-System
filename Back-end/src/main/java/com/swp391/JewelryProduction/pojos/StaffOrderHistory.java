@@ -2,6 +2,7 @@ package com.swp391.JewelryProduction.pojos;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.swp391.JewelryProduction.util.embeddedID.StaffOrderID;
 import jakarta.persistence.*;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "Staff_Order_History")
 @IdClass(StaffOrderID.class)
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class StaffOrderHistory {
     @ToString.Include
     @EqualsAndHashCode.Include

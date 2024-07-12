@@ -21,6 +21,7 @@ import java.util.List;
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "id"
 )
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Quotation {
     @Id
     @GeneratedValue(generator = "quotation_seq")

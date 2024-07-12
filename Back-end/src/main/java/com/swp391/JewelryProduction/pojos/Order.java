@@ -1,9 +1,6 @@
 package com.swp391.JewelryProduction.pojos;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import com.swp391.JewelryProduction.enums.OrderStatus;
 import com.swp391.JewelryProduction.enums.Role;
 import com.swp391.JewelryProduction.pojos.designPojos.Product;
@@ -28,6 +25,7 @@ import java.util.List;
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "id"
 )
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Order {
     @ToString.Include
     @EqualsAndHashCode.Include
@@ -76,7 +74,7 @@ public class Order {
 
     @ToString.Include
     @EqualsAndHashCode.Include
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "quotation_id")
     @JsonManagedReference("Order-Quotation")
     private Quotation quotation;
@@ -135,23 +133,31 @@ public class Order {
     @ToString.Exclude
     private List<Report> relatedReports = new LinkedList<>();
 
+    @ToString.Include
     @Transient
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonIdentityReference(alwaysAsId = true)
     private Staff saleStaff;
+
+    @ToString.Include
     @Transient
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonIdentityReference(alwaysAsId = true)
     private Staff designStaff;
+
+    @ToString.Include
     @Transient
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonIdentityReference(alwaysAsId = true)
     private Staff productionStaff;
 
-    //<editor-fold desc="STAFF SETTERS" defaultstate="collapsed">
-    @ToString.Include
+    //<editor-fold desc="STAFF GETTERS AND SETTERS" defaultstate="collapsed">
     public Staff getSaleStaff() {
         return getStaffByRole(Role.SALE_STAFF);
     }
-    @ToString.Include
     public Staff getDesignStaff() {
         return getStaffByRole(Role.DESIGN_STAFF);
     }
-    @ToString.Include
     public Staff getProductionStaff() {
         return getStaffByRole(Role.PRODUCTION_STAFF);
     }

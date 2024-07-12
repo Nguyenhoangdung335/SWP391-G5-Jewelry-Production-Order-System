@@ -2,6 +2,7 @@ package com.swp391.JewelryProduction.pojos;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
@@ -14,6 +15,7 @@ import java.util.UUID;
 @Builder
 @Entity
 @Table(name = "Notification")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Notification {
     @ToString.Include
     @EqualsAndHashCode.Include

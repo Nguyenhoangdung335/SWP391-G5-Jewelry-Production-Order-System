@@ -19,6 +19,7 @@ import java.util.List;
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "id"
 )
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Report {
     @ToString.Include
     @EqualsAndHashCode.Exclude
