@@ -33,10 +33,10 @@ export default function Header() {
 
       // Fetch notifications
       axios
-        .get(`${ServerUrl}/api/notification/${decodedToken.id}/get-all`)
+        .get(`${ServerUrl}/api/notifications/receiver/${decodedToken.id}/unread`)
         .then((response) => {
           if (response.data.status === "OK") {
-            setNotifications(response.data.responseList.notificationList);
+            setNotifications(response.data.responseList.notifications);
           }
         })
         .catch((error) => {
