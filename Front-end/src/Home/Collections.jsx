@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import Pin from "../components/Pin";
 import CreateRequest from "../orderFlows/CreateRequest";
@@ -12,6 +12,7 @@ import { useAuth } from "../provider/AuthProvider";
 import {Navigate} from "react-router-dom";
 
 const size = ["small", "medium", "large"];
+const pageSize = 5;
 
 const getImageSize = () => {
     const getIndex = Math.floor(Math.random() * size.length);
@@ -33,6 +34,9 @@ function Collections() {
     const [showProductModal, setShowProductModal] = useState(false);
     const [showCreateRequestModal, setShowCreateRequestModal] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
+    const [page, setPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
+    const loader = useRef(null);
 
     useEffect(() => {
         if (token) {
@@ -42,15 +46,20 @@ function Collections() {
     }, [token]);
 
     useEffect(() => {
-        axios
-            .get(serverUrl + "/api/product/get-product-list")
-            .then((response) => {
-                setProducts(response.data.responseList.productList);
-            })
-            .catch((error) => {
-                console.error("There was an error fetching the product list!", error);
-            });
-    }, []);
+        console.log("Fetching");
+        const fetchProducts = async () => {
+            try {
+              const response = await axios.get(`${ServerUrl}/api/products?page=${page}&size=${pageSize}`);
+              const newProducts = response.data.responseList.products;
+              setProducts(prevProducts => [...prevProducts, ...newProducts]);
+              setTotalPages(response.data.responseList.totalPages)
+            } catch (error) {
+              console.error('Error fetching products:', error);
+            }
+          };
+      
+          fetchProducts();
+    }, [page]);
 
     const handlePinClick = (product) => {
         setSelectedProduct(product);
@@ -94,6 +103,25 @@ function Collections() {
         checkCurrentOrder()
     };
 
+    useEffect(() => {
+        const observer = new IntersectionObserver(entries => {
+            const entry = entries[0];
+            if (entry.isIntersecting && page < totalPages) {
+                setPage(prevPage => prevPage + 1);
+            }
+        });
+
+        if (loader.current) {
+            observer.observe(loader.current);
+        }
+
+        return () => {
+            if (loader.current) {
+                observer.unobserve(loader.current);
+            }
+        };
+    }, [page, totalPages]);
+
     return (
         <Container style={{ paddingTop: "10px" }}>
             <div className="view" style={styles.pin_container}>
@@ -105,6 +133,7 @@ function Collections() {
                         onClick={() => handlePinClick(product)}
                     />
                 ))}
+                <div ref={loader} style={{ height: "50px" }} />
             </div>
 
             {selectedProduct && (
