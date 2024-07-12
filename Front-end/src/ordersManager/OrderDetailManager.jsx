@@ -33,25 +33,26 @@ function OrderDetailManager() {
   const [alertText, setAlertText] = useState('');
   const [showAlert, setShowAlert] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios(`${ServerUrl}/api/order/${id}/detail`, {
-          headers: { "Content-Type": "application/json" },
-        });
-        if (response.status === 200) {
-          const orderDetail = response.data.responseList.orderDetail;
-          setData(orderDetail);
-          setImageLink(orderDetail.design?.designLink || snowfall);
-          setAlertText('Confirmed Payment successfully');
-        }
-      } catch (error) {
-        console.error("Error fetching data", error);
-      } finally {
-        setShowAlert(true);
+  const fetchData = async () => {
+    try {
+      const response = await axios(`${ServerUrl}/api/order/${id}/detail`, {
+        headers: { "Content-Type": "application/json" },
+      });
+      if (response.status === 200) {
+        const orderDetail = response.data.responseList.orderDetail;
+        setData(orderDetail);
+        setImageLink(orderDetail.design?.designLink || snowfall);
+        setAlertText('Confirmed Payment successfully');
       }
-    };
-    fetchData();
+    } catch (error) {
+      console.error("Error fetching data", error);
+    } finally {
+      setShowAlert(true);
+    }
+  };
+
+  useEffect(() => {
+        fetchData();
   }, [id]);
 
   if (!data) {
@@ -81,8 +82,11 @@ function OrderDetailManager() {
           headers: { "Content-Type": "multipart/form-data" },
         }
       );
-      setImageLink(response.data.responseList.designUrl);
-      setShowDesignReport(true);
+      if (response.status === 200) {
+        fetchData();
+        setImageLink(response.data.responseList.designUrl);
+        setShowDesignReport(true);
+      }
     } else {
       console.error("designImage is not a File");
     }
@@ -364,9 +368,9 @@ function OrderDetailManager() {
         onHide={() => setShowQuotation(false)}
       />
 
-      {showDesignReport && (
+      {(showDesignReport && data.design) && (
         <CreateReport
-          reportContentId={data.design.id}
+          reportContentId={data?.design?.id}
           orderId={data.id}
           reportType="DESIGN"
           onHide={() => setShowDesignReport(false)}

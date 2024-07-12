@@ -37,7 +37,7 @@ function OrderHistory() {
           className=" link-opacity-50-hover text-decoration-none"
         >
           <Card className=" link-opacity-50-hover" style={{ width: "20rem" }}>
-            <Card.Img onError={(ev)=> ev.target.src=snowfall} variant="top" src={i.imageURL | snowfall} alt="Order Image" />
+            <Card.Img onError={(ev)=> ev.target.src=snowfall} variant="top" src={i.imageURL || snowfall} alt="Order Image" />
             <Card.Body>
               <Card.Title className="fw-semibold" style={{ height: "50px" }}>{i.name}</Card.Title>
               <Card.Text>{i.id}</Card.Text>

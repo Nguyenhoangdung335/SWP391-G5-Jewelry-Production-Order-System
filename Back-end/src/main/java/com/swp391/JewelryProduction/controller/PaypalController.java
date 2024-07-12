@@ -5,6 +5,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.paypal.api.payments.*;
 import com.paypal.base.rest.PayPalRESTException;
+import com.swp391.JewelryProduction.enums.PaymentMethods;
 import com.swp391.JewelryProduction.pojos.Order;
 import com.swp391.JewelryProduction.pojos.Quotation;
 import com.swp391.JewelryProduction.pojos.Transactions;
@@ -28,11 +29,12 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/api/payment")
@@ -53,7 +55,7 @@ public class PaypalController {
     private final OrderServiceImpl orderServiceImpl;
 
     @PostMapping("/create/{orderId}")
-    public RedirectView createPayment(
+    public ResponseEntity<Response> createPayment(
             @RequestParam("quotationId") String quotationId,
             @PathVariable("orderId") String orderId,
             @RequestParam(name = "resultURL", required = false, defaultValue = "") String resultURL,
@@ -62,7 +64,6 @@ public class PaypalController {
         String baseURL = String.format("%s://%s:%d", request.getScheme(), request.getServerName(), request.getServerPort());
         String cancelURL = baseURL + "/api/payment/cancel?orderId="+orderId;
         String successURL = baseURL + "/api/payment/success?orderId="+orderId;
-        String errorURL = baseURL + "/api/payment/error?orderId="+orderId;
 
         urlCache.put("resultURL", resultURL);
 
@@ -73,7 +74,7 @@ public class PaypalController {
             Payment payment = paypalService.makePayment(
                     quotation.getTotalPrice(),
                     "USD",
-                    "Paypal Wallet payment",
+                    PaymentMethods.PAYPAL.name(),
                     "sale",
                     quotation.getTitle(),
                     cancelURL,
@@ -84,20 +85,25 @@ public class PaypalController {
             for (Links links: payment.getLinks()) {
                 if (links.getRel().equals("approval_url")) {
                     log.info("Endpoint /api/payment/create: redirect to " + links.getHref());
-                    return new RedirectView(links.getHref());
+                    return Response.builder()
+                            .response("url", links.getHref())
+                            .buildEntity();
                 }
             }
         } catch (PayPalRESTException e) {
             log.error("Error occurred:: ", e);
         }
-        return new RedirectView(errorURL);
+        return Response.builder()
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .message("Error creating PayPal payment")
+                .buildEntity();
     }
 
     @GetMapping("/success")
-    public RedirectView paymentSuccess(
+    public ResponseEntity<Void> paymentSuccess(
             @RequestParam("orderId") String orderId,
             @RequestParam("paymentId") String paymentId,
-            @RequestParam("payerID") String payerId
+            @RequestParam("PayerID") String payerId
     ) {
         String resultURL = urlCache.getIfPresent("resultURL");
         if (resultURL == null)
@@ -112,11 +118,13 @@ public class PaypalController {
         } catch (PayPalRESTException e) {
             log.error("Error occurred:: ", e);
         }
-        return new RedirectView(resultURL);
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .location(URI.create(resultURL))
+                .build();
     }
 
     @GetMapping("/cancel")
-    public RedirectView paymentCancel(@RequestParam("orderId") String orderId) {
+    public ResponseEntity<Void> paymentCancel(@RequestParam("orderId") String orderId) {
         String resultURL = urlCache.getIfPresent("resultURL");
         if (resultURL == null)
             throw new RuntimeException("Server Error, the transaction result page url cannot be found");
@@ -124,17 +132,9 @@ public class PaypalController {
 
         Order order = orderService.findOrderById(orderId);
         transactionService.handleTransactionChoice(order.getTransactions(), orderId, false);
-        return new RedirectView(resultURL);
-    }
-
-    @GetMapping("/error")
-    public RedirectView paymentError(@RequestParam("orderId") String orderId) {
-        String resultURL = urlCache.getIfPresent("resultURL");
-        if (resultURL == null)
-            throw new RuntimeException("Server Error, the transaction result page url cannot be found");
-        resultURL += "?status=error";
-
-        return new RedirectView(resultURL);
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .location(URI.create(resultURL))
+                .build();
     }
 
     @GetMapping("/receipt")

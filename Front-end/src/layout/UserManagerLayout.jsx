@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import HeaderManager from "./HeaderManager";
 import { Outlet } from "react-router-dom";
 import NavBar from "./NavBar";
 import Chat from "../chat/MainChat";

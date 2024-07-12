@@ -182,7 +182,7 @@ public class OrderServiceImpl implements OrderService {
         );
         order = this.updateOrder(order);
 
-        firestoreService.saveOrUpdateUser(db,order.getOwner().getId());
+        firestoreService.saveOrUpdateUser(db,order.getOwner());
 
         StateMachine<OrderStatus, OrderEvent> stateMachine = getStateMachine(orderId, stateMachineService);
         stateMachine.sendEvent(

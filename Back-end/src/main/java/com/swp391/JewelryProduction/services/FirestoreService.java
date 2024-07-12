@@ -6,23 +6,17 @@ import com.google.firebase.cloud.FirestoreClient;
 import com.swp391.JewelryProduction.dto.Blog;
 import com.swp391.JewelryProduction.pojos.Account;
 import com.swp391.JewelryProduction.pojos.Order;
-import com.swp391.JewelryProduction.pojos.Staff;
-import com.swp391.JewelryProduction.pojos.StaffOrderHistory;
 import com.swp391.JewelryProduction.services.account.AccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
@@ -69,29 +63,10 @@ public class FirestoreService {
         writeResult.get();
     }
 
-    @EventListener(ApplicationReadyEvent.class)
-//    @Scheduled(fixedRate = 60000)
-    @Async
-    @Transactional
-    public void syncUsersToFirestore() {
-        Firestore db = FirestoreClient.getFirestore();
-        List<Account> accounts;
-        try {
-            accounts = accountService.findAllAccounts(); // Fetch all accounts
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to fetch accounts from SQL", e);
-        }
-
-        for (Account account : accounts) {
-            saveOrUpdateUser(db, account.getId());
-        }
-    }
-
-    @Async
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void saveOrUpdateUser(Firestore db, String ownerId) {
+    public void saveOrUpdateUser(Firestore db, Account owner) {
         log.info("Begin syncing");
-        Account owner = accountService.findAccountForFirestoreSync(ownerId);
+//        Account owner = accountService.findAccountForFirestoreSync(ownerId);
 
         DocumentReference docRef = db.collection(USER_COLLECTION_NAME).document(owner.getId());
         Map<String, Object> userData = new HashMap<>();
@@ -99,12 +74,13 @@ public class FirestoreService {
         userData.put("name", (owner.getUserInfo() == null) ? owner.getEmail() : owner.getUserInfo().getFirstName());
         userData.put("role", owner.getRole().toString());
 
+        Hibernate.initialize(owner.getPastOrder());
         Order currentOrder = owner.getCurrentOrder();
         if (currentOrder != null)
-            userData.put("saleStaff", currentOrder.getSaleStaff());
+            userData.put("saleStaff", currentOrder.getSaleStaff().getId());
 
         ApiFuture<WriteResult> result = docRef.set(userData, SetOptions.merge());
-        try {
+            try {
             result.get();
             // Log success
             System.out.println("Synced user " + owner.getId() + " to Firestore " + docRef.getId());

@@ -73,7 +73,7 @@ function AssignedStaff({ data, onSubmit }) {
             />
           <StaffField
               label="Design Staff"
-              value={selectedSaleStaff}
+              value={selectedDesignStaff}
               onChange={(e) => setSelectedDesignStaff(e.target.value)}
               disabled={staff?.designStaffs === null}
               role={decodedToken.role}
@@ -82,7 +82,7 @@ function AssignedStaff({ data, onSubmit }) {
             />
             <StaffField
               label="Production Staff"
-              value={selectedSaleStaff}
+              value={selectedProductionStaff}
               onChange={(e) => setSelectedProductionStaff(e.target.value)}
               disabled={staff?.productionStaffs === null}
               role={decodedToken.role}

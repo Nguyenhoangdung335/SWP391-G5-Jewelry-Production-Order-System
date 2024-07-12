@@ -112,7 +112,7 @@ public class    CrawlDataService implements ICrawlDataService {
                         .build());
     }
 
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 3600000)
     public void scheduledCrawl() {
         try {
             crawData();
