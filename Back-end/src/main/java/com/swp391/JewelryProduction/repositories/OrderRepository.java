@@ -28,7 +28,7 @@ public interface OrderRepository extends JpaRepository<Order, String> {
 
     @NotNull
     @Override
-    @EntityGraph( attributePaths = {"owner.userInfo", "staffOrderHistory.staff", "quotation.quotationItems", "design", "product.specification", "transactions", "warranty"} )
+    @EntityGraph( attributePaths = {"owner.userInfo", "staffOrderHistory.staff", "design", "product.specification", "transactions", "warranty"} )
     Page<Order> findAll(@NotNull Pageable pageable);
 
     @Query(value = "SELECT o FROM Order o WHERE MONTH(o.createdDate) = :month AND YEAR(o.createdDate) = :year")
