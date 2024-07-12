@@ -83,15 +83,14 @@ public class FirestoreService {
         }
 
         for (Account account : accounts) {
-            saveOrUpdateUser(db, account.getId());
+            saveOrUpdateUser(db, account);
         }
     }
 
-    @Async
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void saveOrUpdateUser(Firestore db, String ownerId) {
+    public void saveOrUpdateUser(Firestore db, Account owner) {
         log.info("Begin syncing");
-        Account owner = accountService.findAccountForFirestoreSync(ownerId);
+//        Account owner = accountService.findAccountForFirestoreSync(ownerId);
 
         DocumentReference docRef = db.collection(USER_COLLECTION_NAME).document(owner.getId());
         Map<String, Object> userData = new HashMap<>();
@@ -99,12 +98,13 @@ public class FirestoreService {
         userData.put("name", (owner.getUserInfo() == null) ? owner.getEmail() : owner.getUserInfo().getFirstName());
         userData.put("role", owner.getRole().toString());
 
+        Hibernate.initialize(owner.getPastOrder());
         Order currentOrder = owner.getCurrentOrder();
         if (currentOrder != null)
-            userData.put("saleStaff", currentOrder.getSaleStaff());
+            userData.put("saleStaff", currentOrder.getSaleStaff().getId());
 
         ApiFuture<WriteResult> result = docRef.set(userData, SetOptions.merge());
-        try {
+            try {
             result.get();
             // Log success
             System.out.println("Synced user " + owner.getId() + " to Firestore " + docRef.getId());
