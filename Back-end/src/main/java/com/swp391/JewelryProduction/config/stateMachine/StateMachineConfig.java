@@ -265,7 +265,7 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
             .and()
             .withLocal()
                 .source(OrderStatus.IN_DESIGNING).target(OrderStatus.DES_AWAIT_MANA_APPROVAL)
-                .event(OrderEvent.QUO_FINISH)
+                .event(OrderEvent.DES_FINISH)
                 .action(actionAndGuardConfiguration.notifyManagerApprovalAction())
             .and()
             .withLocal()
