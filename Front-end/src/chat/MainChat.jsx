@@ -359,8 +359,8 @@ const Chat = () => {
     // }, [userId]);
 
     return (
-        <div className="container w-100 h-100">
-            <div ref={chatPageRef} id="chat-page">
+        <div className=" container w-100 h-100">
+            <div ref={chatPageRef} id="chat-page" className='d-flex justify-content-center'>
                 <div className="chat-container shadow-lg">
                     <div className="users-list">
                         <div className="users-list-container">
