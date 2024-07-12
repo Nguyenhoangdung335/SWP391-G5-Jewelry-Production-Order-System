@@ -10,7 +10,7 @@ import java.util.UUID;
 @Data
 @Builder
 public class NotificationResponse {
-    private UUID id;
+    private Integer id;
     private Integer reportID;
     private String reportTitle;
     private String reportDescription;
