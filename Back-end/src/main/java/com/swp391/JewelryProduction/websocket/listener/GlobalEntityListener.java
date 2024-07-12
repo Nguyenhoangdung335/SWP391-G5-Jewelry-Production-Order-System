@@ -54,7 +54,7 @@ public class GlobalEntityListener implements ApplicationContextAware {
         FirestoreService firestoreService = applicationContext.getBean(FirestoreService.class);
         try {
             Firestore db = FirestoreClient.getFirestore();
-            firestoreService.saveOrUpdateUser(db, account);
+            firestoreService.saveOrUpdateUser(db, account.getId());
         } catch (Exception e) {
             log.error("Error saving or updating user {} to Firestore: {}", account.getId(), e.getMessage());
         }
