@@ -126,24 +126,36 @@ public class OrderController {
                     .build();
             order.setDesign(design);
 
-            Product product = order.getProduct();
-            product.setImageURL(designUrl);
-            productService.saveProduct(product);
-
             orderService.updateOrder(order);
-    
-            StateMachine<OrderStatus, OrderEvent> stateMachine = getStateMachine(orderId, stateMachineService);
-            stateMachine.sendEvent(
-                    Mono.just(MessageBuilder.
-                            withPayload(OrderEvent.DES_MANA_PROCESS)
-                            .build()
-                    )
-            ).subscribe();
 
             return Response.builder()
                     .status(HttpStatus.OK)
                     .message("Request sent successfully")
                     .response("designUrl", designUrl)
+                    .buildEntity();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to upload image", e);
+        }
+    }
+
+    @PostMapping("/{orderId}/detail/edit-product")
+    public ResponseEntity<Response> editFinalProduct(
+            @PathVariable("orderId") String orderId,
+            @RequestParam MultipartFile file
+    ) {
+        try {
+            String finalProductURL = imageService.uploadImage(file, "product-images");
+            Order order = orderService.findOrderById(orderId);
+
+            Product product = order.getProduct();
+            product.setImageURL(finalProductURL);
+
+            orderService.updateOrder(order);
+
+            return Response.builder()
+                    .status(HttpStatus.OK)
+                    .message("Request sent successfully")
+                    .response("designUrl", finalProductURL)
                     .buildEntity();
         } catch (IOException e) {
             throw new RuntimeException("Failed to upload image", e);
