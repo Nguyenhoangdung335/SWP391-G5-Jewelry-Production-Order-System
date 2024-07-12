@@ -2,6 +2,7 @@ package com.swp391.JewelryProduction.config;
 
 import com.swp391.JewelryProduction.enums.*;
 import com.swp391.JewelryProduction.util.StringToEnum;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -60,5 +61,17 @@ public class WebConfig implements WebMvcConfigurer {
     public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
         configurer.setTaskExecutor(taskExecutor);
         configurer.setDefaultTimeout(5000);
+    }
+
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(@NotNull CorsRegistry registry) {
+                registry.addMapping("/**")
+                        .allowedOrigins("http://localhost:3000")
+                        .allowedMethods("HEAD","GET","POST","PUT","DELETE","PATCH","OPTIONS");
+            }
+        };
     }
 }
