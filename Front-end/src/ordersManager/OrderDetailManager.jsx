@@ -25,6 +25,7 @@ function OrderDetailManager() {
   const state = useLocation();
   const [data, setData] = useState(null);
   const [showQuotation, setShowQuotation] = useState(false);
+  const [showDesignReport, setShowDesignReport] = useState(false);
   const [designImage, setDesignImage] = useState(null);
   const id = state.state;
   const { token } = useAuth();
@@ -78,6 +79,7 @@ function OrderDetailManager() {
         }
       );
       setImageLink(response.data.responseList.designUrl);
+      setShowDesignReport(true);
     } else {
       console.error("designImage is not a File");
     }
@@ -85,12 +87,29 @@ function OrderDetailManager() {
 
   const handleStaffSubmit = async (updatedStaff) => {
     try {
-      await axios.post(`${ServerUrl}/api/order/${data.id}/detail/assign-staff`, updatedStaff);
+      await axios.post(
+        `${ServerUrl}/api/order/${data.id}/detail/assign-staff`,
+        updatedStaff
+      );
       alert("Staff assignments updated successfully");
       // Optionally, update the local state if necessary
     } catch (error) {
       console.error("Error updating staff assignments:", error);
       alert("Error updating staff assignments");
+    }
+  };
+
+  const handleConfirmTransaction = async (isConfirmed) => {
+    try {
+      await axios.post(
+        `${ServerUrl}/api/order/${
+          data.id
+        }/detail/transaction-confirm?confirmed=${Boolean(isConfirmed)}`
+      );
+      alert("Confirmed Payment successfully");
+    } catch (error) {
+      console.error("Error confirming payment: ", error);
+      alert("Error confirming payment");
     }
   };
 
@@ -182,9 +201,7 @@ function OrderDetailManager() {
                 </div>
               </div>
             </Row>
-            {data && (
-              <AssignedStaff data={data} onSubmit={handleStaffSubmit} />
-            )}
+            {data && <AssignedStaff data={data} onSubmit={handleStaffSubmit} />}
             <Row className="pb-2">
               <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
                 <div className="p-2">
@@ -280,6 +297,41 @@ function OrderDetailManager() {
                       borderBottom: "1px solid rgba(166, 166, 166, 0.5)",
                     }}
                   >
+                    <div
+                      className="mb-2"
+                      style={{
+                        borderBottom: "1px solid rgba(166, 166, 166, 0.5)",
+                      }}
+                    >
+                      <h4>Confirm Transactions</h4>
+                    </div>
+                    <div className="d-flex justify-content-between">
+                      <Button
+                        onClick={() => handleConfirmTransaction(true)}
+                        className="mt-2 mb-2"
+                      >
+                        Confirm
+                      </Button>
+                      <Button
+                        onClick={() => handleConfirmTransaction(false)}
+                        className="mt-2 mb-2"
+                      >
+                        Declined
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Row>
+            <Row className="pb-2">
+              <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
+                <div className="p-2">
+                  <div
+                    className="mb-2"
+                    style={{
+                      borderBottom: "1px solid rgba(166, 166, 166, 0.5)",
+                    }}
+                  >
                     <h4>Upload Image</h4>
                   </div>
                   <Form noValidate onSubmit={handleSubmit}>
@@ -308,6 +360,15 @@ function OrderDetailManager() {
         show={showQuotation}
         onHide={() => setShowQuotation(false)}
       />
+
+      {showDesignReport && (
+        <CreateReport
+          reportContentId={data.design.id}
+          orderId={data.id}
+          reportType="DESIGN"
+          onHide={() => setShowDesignReport(false)}
+        />
+      )}
     </>
   );
 }

@@ -20,7 +20,7 @@ export default function ProductManager() {
     useEffect(() => {
         axios({
             method: "GET",
-            url: `${ServerUrl}/api/product/get-product-list`,
+            url: `${ServerUrl}/api/products?size=100`,
             headers: { "Content-Type": "application/json" },
         })
             .then((res) => {
@@ -48,7 +48,7 @@ export default function ProductManager() {
         const productId = deleteProduct.id;
         axios({
             method: "DELETE",
-            url: `${ServerUrl}/api/product/${productId}/remove`,
+            url: `${ServerUrl}/api/products/${productId}/remove`,
             headers: { "Content-Type": "application/json" },
         })
             .then((res) => {
