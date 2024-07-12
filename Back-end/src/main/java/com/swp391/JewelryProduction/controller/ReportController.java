@@ -97,4 +97,20 @@ public class ReportController {
                 .message("Report created successfully.")
                 .buildEntity();
     }
+
+    @PostMapping("/{accountId}/{orderId}/create/product")
+    public ResponseEntity<Response> createProductionReport(
+            @Valid @RequestBody ReportRequest designReport,
+            @PathVariable("accountId") String accountId,
+            @PathVariable("orderId") String orderId)
+    {
+        designReport.setReportContentID(designReport.getReportContentID());
+        designReport.setSenderId(accountId);
+        Design design = designService.findById(designReport.getReportContentID());
+        reportService.createDesignReport(designReport, orderService.findOrderById(orderId), design);
+        return Response.builder()
+                .status(HttpStatus.OK)
+                .message("Report created successfully.")
+                .buildEntity();
+    }
 }

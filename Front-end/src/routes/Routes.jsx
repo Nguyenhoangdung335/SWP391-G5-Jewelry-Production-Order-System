@@ -67,14 +67,15 @@ function RouteMap() {
         <Route
           index
           element={
-            <ProtectedRoute roles={[
-              "ADMIN",
-              "MANAGER",
-              "PRODUCTION_STAFF",
-              "DESIGN_STAFF",
-              "SALE_STAFF",
-            ]}>
-            </ProtectedRoute>
+            <ProtectedRoute
+              roles={[
+                "ADMIN",
+                "MANAGER",
+                "PRODUCTION_STAFF",
+                "DESIGN_STAFF",
+                "SALE_STAFF",
+              ]}
+            ></ProtectedRoute>
           }
         />
         <Route
@@ -146,6 +147,38 @@ function RouteMap() {
           element={
             <ProtectedRoute roles={["ADMIN", "MANAGER", "SALE_STAFF"]}>
               <ProductManager />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/userManager/profile"
+          element={
+            <ProtectedRoute
+              roles={[
+                "ADMIN",
+                "MANAGER",
+                "PRODUCTION_STAFF",
+                "DESIGN_STAFF",
+                "SALE_STAFF",
+              ]}
+            >
+              <UserInfo />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/userManager/notifications"
+          element={
+            <ProtectedRoute
+              roles={[
+                "ADMIN",
+                "MANAGER",
+                "PRODUCTION_STAFF",
+                "DESIGN_STAFF",
+                "SALE_STAFF",
+              ]}
+            >
+              <NotificationPage />
             </ProtectedRoute>
           }
         />

@@ -13,6 +13,7 @@ export const AuthProvider = ({ children }) => {
 
   const setToken = (newToken) => {
     setToken_(newToken);
+    localStorage.removeItem("token");
   };
 
   useEffect(() => {

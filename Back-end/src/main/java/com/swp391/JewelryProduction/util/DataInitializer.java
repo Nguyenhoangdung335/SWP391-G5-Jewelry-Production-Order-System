@@ -141,7 +141,7 @@ public class DataInitializer implements CommandLineRunner {
         staffRepository.save(staff);
 
         staff = Staff.builder()
-                .email("")
+                .email("dung1234@gmail.com")
                 .password(passwordEncoder.encode("#Dung111004"))
                 .dateCreated(LocalDateTime.now())
                 .role(Role.PRODUCTION_STAFF)
@@ -555,7 +555,7 @@ public class DataInitializer implements CommandLineRunner {
                     .isOption(true)
                     .build();
             notificaition.setReport(reportRepository.save(Report.builder()
-                    .type(ReportType.REPORT)
+                    .type(ReportType.NONE)
                     .title(faker.name().title())
                     .description(faker.weather().description())
                     .createdDate(LocalDateTime.now())
