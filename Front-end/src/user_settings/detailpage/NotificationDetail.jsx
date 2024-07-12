@@ -56,7 +56,7 @@ const NotificationDetail = () => {
   const handleConfirm = async (confirmed) => {
     console.log(confirmed);
     const confirmedBool = Boolean(confirmed);
-    const url = `${ServerUrl}/api/notifications/${notification.orderId}/confirm?confirmed=${confirmedBool}`;
+    const url = `${ServerUrl}/api/notifications/${notification.orderId}/${notificationId}/confirm?confirmed=${confirmedBool}`;
 
     try {
       const response = await axios.post(url);
