@@ -98,15 +98,15 @@ function OrderDetail() {
                   </tr>
                   <tr>
                     <th>Sale Staff</th>
-                    <td>{data.saleStaff.userInfo.firstName} {data.saleStaff.userInfo.lastName}</td>
+                    <td>{data?.saleStaff?.userInfo?.firstName} {data?.saleStaff?.userInfo?.lastName}</td>
                   </tr>
                   <tr>
                     <th>Design Staff</th>
-                    <td>{data.designStaff.userInfo.firstName} {data.designStaff.userInfo.lastName}</td>
+                    <td>{data?.designStaff?.userInfo?.firstName} {data?.designStaff?.userInfo?.lastName}</td>
                   </tr>
                   <tr>
                     <th>Production Staff</th>
-                    <td>{data.productionStaff.userInfo.firstName} {data.productionStaff.userInfo.lastName}</td>
+                    <td>{data?.productionStaff?.userInfo?.firstName} {data?.productionStaff?.userInfo?.lastName}</td>
                   </tr>
                   <tr>
                     <th>Total Price</th>

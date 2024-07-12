@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Badge, Button, Col, Container, Row } from "react-bootstrap";
 import ServerUrl from "../../reusable/ServerUrl";
+import { jwtDecode } from "jwt-decode";
+import { useAuth } from "../../provider/AuthProvider";
+
 
 const NotificationDetail = () => {
   const [notification, setNotification] = useState(null);
+  const { token } = useAuth();
   const { notificationId } = useParams();
+  const navigation = useNavigate();
 
   const arrayToDate = (dateArray) => {
     const dateObject = new Date(
@@ -24,7 +29,7 @@ const NotificationDetail = () => {
     const fetchNotification = async () => {
       try {
         const response = await axios.get(
-          `${ServerUrl}/api/notification/get/${notificationId.toUpperCase()}`
+          `${ServerUrl}/api/notifications/${notificationId}`
         );
         if (response.status === 200) {
           const notificationData = response.data.responseList.notification;
@@ -33,7 +38,7 @@ const NotificationDetail = () => {
             description: notificationData.report.description,
             createdDate: arrayToDate(notificationData.report.createdDate),
             option: notificationData.option,
-            orderId: notificationData.order.id,
+            orderId: notificationData.order,
           });
         }
       } catch (error) {
@@ -51,13 +56,16 @@ const NotificationDetail = () => {
   const handleConfirm = async (confirmed) => {
     console.log(confirmed);
     const confirmedBool = Boolean(confirmed);
-    const url = `${ServerUrl}/api/notification/${notification.orderId}/confirm?confirmed=${confirmedBool}`;
+    const url = `${ServerUrl}/api/notifications/${notification.orderId}/confirm?confirmed=${confirmedBool}`;
 
     try {
       const response = await axios.post(url);
       if (response.status === 200) {
         // Handle success, maybe show a message or update UI
         alert("Confirmation successful");
+        const decodedToken = jwtDecode(token);
+        if (decodedToken.role === "MANAGER")
+            navigation("/userManager/orders_manager/order_detail", { state: notification.orderId });
       }
     } catch (error) {
       console.error("Error confirming notification:", error);

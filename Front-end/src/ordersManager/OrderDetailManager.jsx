@@ -8,11 +8,8 @@ import {
   Col,
   Container,
   Form,
-  Modal,
   Row,
   Table,
-  FormControl,
-  Spinner,
 } from "react-bootstrap";
 import snowfall from "../assets/snowfall.jpg";
 import { jwtDecode } from "jwt-decode";
@@ -20,6 +17,8 @@ import { useAuth } from "../provider/AuthProvider";
 import ResizeImage from "../reusable/ResizeImage";
 import CreateReport from "../orderFlows/CreateReport";
 import AssignedStaff from "./AssignedStaff";
+import QuotationModal from "./QuotationModal";
+import CustomAlert from "../reusable/CustomAlert";
 
 function OrderDetailManager() {
   const state = useLocation();
@@ -31,6 +30,8 @@ function OrderDetailManager() {
   const { token } = useAuth();
   const decodedToken = jwtDecode(token);
   const [imageLink, setImageLink] = useState(null);
+  const [alertText, setAlertText] = useState('');
+  const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -42,9 +43,12 @@ function OrderDetailManager() {
           const orderDetail = response.data.responseList.orderDetail;
           setData(orderDetail);
           setImageLink(orderDetail.design?.designLink || snowfall);
+          setAlertText('Confirmed Payment successfully');
         }
       } catch (error) {
         console.error("Error fetching data", error);
+      } finally {
+        setShowAlert(true);
       }
     };
     fetchData();
@@ -61,7 +65,6 @@ function OrderDetailManager() {
     return isoString.substring(0, 10);
   };
 
-  const handleClose = () => setShowQuotation(false);
   const handleShowQuotations = () => setShowQuotation(true);
 
   const handleSubmit = async (e) => {
@@ -115,13 +118,13 @@ function OrderDetailManager() {
 
   return (
     <>
-      <Container className="pt-4 pb-4">
+      <Container style={{ overflowY: "hidden"}}>
         <Row>
-          <Col md={8}>
+          <Col md={8} style={{ height: "100vh", overflowY: "auto", paddingTop: "1%", paddingBottom: "1%" }}>
             <div className="pb-2">
               <img
                 src={imageLink || snowfall}
-                alt="Product Image"
+                alt="Product"
                 className="w-100 h-100"
               />
             </div>
@@ -169,7 +172,7 @@ function OrderDetailManager() {
                 </Table>
               </div>
             </div>
-          </Col>
+          </Col>  
 
           <Col md={4} style={{ height: "100vh", overflowY: "auto" }}>
             <Row className="pb-2">
@@ -288,7 +291,7 @@ function OrderDetailManager() {
                 </div>
               </div>
             </Row>
-            <Row className="pb-2">
+            {["SALE_STAFF", "ADMIN"].includes(decodedToken.role) && <Row className="pb-2">
               <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
                 <div className="p-2">
                   <div
@@ -322,8 +325,8 @@ function OrderDetailManager() {
                   </div>
                 </div>
               </div>
-            </Row>
-            <Row className="pb-2">
+            </Row>}
+            {["DESIGN_STAFF", "ADMIN"].includes(decodedToken.role) && <Row className="pb-2">
               <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
                 <div className="p-2">
                   <div
@@ -349,12 +352,12 @@ function OrderDetailManager() {
                   </Form>
                 </div>
               </div>
-            </Row>
+            </Row>}
           </Col>
         </Row>
       </Container>
 
-      <MyVerticallyCenteredModal
+      <QuotationModal
         quotation={data.quotation}
         orderId={data.id}
         show={showQuotation}
@@ -369,245 +372,9 @@ function OrderDetailManager() {
           onHide={() => setShowDesignReport(false)}
         />
       )}
-    </>
-  );
-}
 
-function MyVerticallyCenteredModal(props) {
-  console.log(props);
-  console.log(props.orderId);
-  // Initialize the state with an empty quotation object if props.quotation is null
-  const initialQuotation = props.quotation
-    ? props.quotation
-    : {
-        title: "",
-        createdDate: new Date().toISOString().split("T")[0],
-        expiredDate: "",
-        quotationItems: [],
-      };
-
-  const [quotationItems, setQuotationItems] = useState(
-    initialQuotation.quotationItems
-  );
-  const [currId, setCurrentId] = useState(quotationItems.length);
-  const [title, setTitle] = useState(initialQuotation.title);
-  const [createdDate, setCreatedDate] = useState(initialQuotation.createdDate);
-  const [expiredDate, setExpiredDate] = useState(initialQuotation.expiredDate);
-  const [showCreateReport, setShowCreateReport] = useState(false);
-  const [quotationId, setQuotationId] = useState(null);
-
-  useEffect(() => {
-    // Update the quotationItems state if props.quotation changes
-    if (props.quotation) {
-      setQuotationItems(props.quotation.quotationItems);
-      setCurrentId(props.quotation.quotationItems.length);
-      setTitle(props.quotation.title);
-      setCreatedDate(props.quotation.createdDate);
-      setExpiredDate(props.quotation.expiredDate);
-    }
-  }, [props.quotation]);
-
-  const handleAddItem = () => {
-    const newItem = {
-      itemID: currId, // Unique ID
-      name: "",
-      quantity: 1,
-      unitPrice: 0,
-      totalPrice: 0,
-    };
-    setQuotationItems([...quotationItems, newItem]);
-    setCurrentId(currId + 1);
-  };
-
-  const handleRemoveItem = (itemID) => {
-    const updatedItems = quotationItems.filter(
-      (item) => item.itemID !== itemID
-    );
-    setQuotationItems(updatedItems);
-    setCurrentId(currId - 1);
-  };
-
-  const handleInputChange = (itemID, field, value) => {
-    const updatedItems = quotationItems.map((item) => {
-      if (item.itemID === itemID) {
-        const updatedItem = { ...item, [field]: value };
-        if (field === "quantity" || field === "unitPrice") {
-          const quantity = updatedItem.quantity || 0;
-          const unitPrice = updatedItem.unitPrice || 0;
-          updatedItem.totalPrice = quantity * unitPrice;
-        }
-        return updatedItem;
-      }
-      return item;
-    });
-    setQuotationItems(updatedItems);
-  };
-
-  const getQuotationItems = quotationItems.map((item) => {
-    return (
-      <tr key={item.itemID}>
-        <td>{item.itemID}</td>
-        <td>
-          <FormControl
-            type="text"
-            value={item.name}
-            onChange={(e) =>
-              handleInputChange(item.itemID, "name", e.target.value)
-            }
-          />
-        </td>
-        <td>
-          <FormControl
-            type="number"
-            value={item.quantity}
-            onChange={(e) =>
-              handleInputChange(
-                item.itemID,
-                "quantity",
-                parseFloat(e.target.value)
-              )
-            }
-          />
-        </td>
-        <td>
-          <FormControl
-            type="number"
-            value={item.unitPrice}
-            onChange={(e) =>
-              handleInputChange(
-                item.itemID,
-                "unitPrice",
-                parseFloat(e.target.value)
-              )
-            }
-          />
-        </td>
-        <td>{item.totalPrice || 0}</td>
-        <td>
-          <Button
-            variant="danger"
-            onClick={() => handleRemoveItem(item.itemID)}
-          >
-            Remove
-          </Button>
-        </td>
-      </tr>
-    );
-  });
-
-  const finalPrice = quotationItems.reduce(
-    (acc, item) => acc + (item.totalPrice || 0),
-    0
-  );
-
-  const formatDate = (date) => {
-    const d = new Date(date);
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, "0");
-    const day = String(d.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const quotationData = {
-      title,
-      createdDate: formatDate(createdDate),
-      expiredDate: formatDate(expiredDate),
-      quotationItems,
-    };
-    try {
-      const response = await axios.post(
-        `${ServerUrl}/api/${props.orderId}/quotation/submit`,
-        quotationData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (response.status === 200) {
-        setQuotationId(response.data.responseList.quotation.id);
-        setShowCreateReport(true);
-        props.onHide();
-      }
-    } catch (error) {
-      console.error("Error submitting quotation:", error);
-    }
-  };
-
-  return (
-    <>
-      <Modal
-        {...props}
-        size="lg"
-        aria-labelledby="contained-modal-title-vcenter"
-        centered
-      >
-        <Modal.Header className="w-100" closeButton>
-          <Modal.Title id="contained-modal-title-vcenter">
-            Quotations
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form.Group>
-            <Form.Label>Title</Form.Label>
-            <FormControl
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
-          </Form.Group>
-          <Form.Group>
-            <Form.Label>Created Date</Form.Label>
-            <FormControl
-              type="date"
-              value={createdDate}
-              onChange={(e) => setCreatedDate(e.target.value)}
-            />
-          </Form.Group>
-          <Form.Group>
-            <Form.Label>Expired Date</Form.Label>
-            <FormControl
-              type="date"
-              value={expiredDate}
-              onChange={(e) => setExpiredDate(e.target.value)}
-            />
-          </Form.Group>
-          <Table bordered hover striped>
-            <thead>
-              <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Quantity</th>
-                <th>Unit Price</th>
-                <th>Total Price</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {getQuotationItems}
-              <tr>
-                <td colSpan={4}>Final Price</td>
-                <td>{finalPrice}</td>
-              </tr>
-            </tbody>
-          </Table>
-          <Button onClick={handleAddItem}>Add Item</Button>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button onClick={props.onHide}>Close</Button>
-          <Button onClick={handleSubmit}>Submit quotation</Button>
-        </Modal.Footer>
-      </Modal>
-
-      {showCreateReport && (
-        <CreateReport
-          reportContentId={quotationId}
-          orderId={props.orderId}
-          reportType="QUOTATION"
-          onHide={() => setShowCreateReport(false)}
-        />
+      {showAlert && (
+        <CustomAlert text={alertText} isShow={showAlert} onClose={() => setShowAlert(false)} />
       )}
     </>
   );
