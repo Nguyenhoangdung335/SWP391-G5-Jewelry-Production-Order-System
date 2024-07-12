@@ -33,7 +33,9 @@ export default function Header() {
 
       // Fetch notifications
       axios
-        .get(`${ServerUrl}/api/notifications/receiver/${decodedToken.id}/unread`)
+        .get(
+          `${ServerUrl}/api/notifications/receiver/${decodedToken.id}/unread`
+        )
         .then((response) => {
           if (response.data.status === "OK") {
             setNotifications(response.data.responseList.notifications);
@@ -63,7 +65,8 @@ export default function Header() {
               "You already have an ongoing order. Please complete it before designing new jewelry."
             );
           } else {
-            setRequestSent(true);
+            // setRequestSent(true);
+            navigate("/order_page");
           }
         })
         .catch((error) => {
@@ -142,10 +145,6 @@ export default function Header() {
   const handleClick = () => {
     checkCurrentOrder();
   };
-
-  if (requestSent) {
-    return <Navigate to="/order_page" />;
-  }
 
   const handleLoadMore = () => {
     setRowsToShow(rowsToShow + 5);
