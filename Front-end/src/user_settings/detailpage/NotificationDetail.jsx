@@ -6,7 +6,6 @@ import ServerUrl from "../../reusable/ServerUrl";
 import { jwtDecode } from "jwt-decode";
 import { useAuth } from "../../provider/AuthProvider";
 
-
 const NotificationDetail = () => {
   const [notification, setNotification] = useState(null);
   const { token } = useAuth();
@@ -65,7 +64,9 @@ const NotificationDetail = () => {
         alert("Confirmation successful");
         const decodedToken = jwtDecode(token);
         if (decodedToken.role === "MANAGER")
-            navigation("/userManager/orders_manager/order_detail", { state: notification.orderId });
+          navigation("/userManager/orders_manager/order_detail", {
+            state: notification.orderId,
+          });
       }
     } catch (error) {
       console.error("Error confirming notification:", error);
@@ -75,12 +76,12 @@ const NotificationDetail = () => {
   return (
     <Container className="p-4 m-4">
       <Row>
-        <div
-          className="p-4"
-          style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}
-        >
-          <div className="pb-2">
-            <h3>{notification.title}</h3>
+        <div className="p-4">
+          <div
+            className="mb-3"
+            style={{ borderBottom: "1px solid rgba(166, 166, 166, 0.5)", lineHeight:"10px" }}
+          >
+            <h2>{notification.title}</h2>
             <p>{notification.createdDate}</p>
           </div>
           <div>
@@ -93,7 +94,7 @@ const NotificationDetail = () => {
         <Col md={4}>
           {notification.option && (
             <Row className="mt-2">
-              <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
+              <div style={{borderTop: "1px solid rgba(166, 166, 166, 0.5)"}}>
                 <div className="p-2">
                   <div className="mb-2">
                     <h4 className="text-center">Actions</h4>
