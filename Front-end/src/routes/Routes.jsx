@@ -67,8 +67,13 @@ function RouteMap() {
         <Route
           index
           element={
-            <ProtectedRoute roles={["ADMIN"]}>
-              <DashboardManger />
+            <ProtectedRoute roles={[
+              "ADMIN",
+              "MANAGER",
+              "PRODUCTION_STAFF",
+              "DESIGN_STAFF",
+              "SALE_STAFF",
+            ]}>
             </ProtectedRoute>
           }
         />
@@ -159,6 +164,14 @@ function RouteMap() {
           element={
             <ProtectedRoute>
               <OrderHistory />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user_setting_page/order_detail_page"
+          element={
+            <ProtectedRoute>
+              <OrderDetail />
             </ProtectedRoute>
           }
         />
