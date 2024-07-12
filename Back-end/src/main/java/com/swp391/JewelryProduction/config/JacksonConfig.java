@@ -19,12 +19,12 @@ public class JacksonConfig {
         SimpleModule module = new SimpleModule();
         module.addDeserializer(Timestamp.class, new TimestampDeserializer());
         mapper.registerModule(module);
-        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 
-        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
-        mapper.registerModule(new Hibernate5Module());
+        Hibernate5Module hibernate5Module = new Hibernate5Module();
+        hibernate5Module.configure(Hibernate5Module.Feature.SERIALIZE_IDENTIFIER_FOR_LAZY_NOT_LOADED_OBJECTS, true);
+        mapper.registerModule(hibernate5Module);
         return mapper;
     }
 }
