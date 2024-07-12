@@ -33,22 +33,33 @@ public class Quotation {
                     @Parameter(name = IdGenerator.NUMBER_FORMAT_PARAMETER, value = "%05d")
             }
     )
+    @ToString.Include
+    @EqualsAndHashCode.Include
     @Column(length = 8, nullable = false, unique = true)
     private String id;
+    @ToString.Include
+    @EqualsAndHashCode.Include
     private String title;
+    @ToString.Include
+    @EqualsAndHashCode.Include
     @JsonFormat(pattern="yyyy-MM-dd")
     @Column(name = "created_date", nullable = false)
     private LocalDate createdDate;
+    @ToString.Include
+    @EqualsAndHashCode.Include
     @JsonFormat(pattern="yyyy-MM-dd")
     @Column(name = "expired_date", nullable = false)
     private LocalDate expiredDate;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "quotation", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonManagedReference("Quotation-Items")
     @Builder.Default
     private List<QuotationItem> quotationItems = new LinkedList<>();
 
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @OneToOne(mappedBy = "quotation", fetch = FetchType.LAZY)
     @JsonBackReference("Order-Quotation")
     private Order order;

@@ -22,9 +22,12 @@ import java.util.List;
 public class Staff extends Account{
     @Enumerated(EnumType.STRING)
     @Builder.Default
+    @ToString.Include
+    @EqualsAndHashCode.Include
     private WorkStatus workStatus = WorkStatus.FREE;
 
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @JsonIgnore
     @OneToMany(
             mappedBy = "staff",

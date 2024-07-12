@@ -1,10 +1,10 @@
 package com.swp391.JewelryProduction.pojos;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.UUID;
 
@@ -15,28 +15,44 @@ import java.util.UUID;
 @Entity
 @Table(name = "Notification")
 public class Notification {
+    @ToString.Include
+    @EqualsAndHashCode.Include
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @GeneratedValue
+    private Integer id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ToString.Include
+    @EqualsAndHashCode.Include
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "report_id")
     private Report report;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = true)
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonIdentityReference(alwaysAsId = true)
     private Order order;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ToString.Include
+    @EqualsAndHashCode.Exclude
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
     private Account receiver;
 
+    @ToString.Include
+    @EqualsAndHashCode.Include
     @Column(name = "is_delivered")
     private boolean delivered;
 
+    @ToString.Include
+    @EqualsAndHashCode.Include
     @Column(name = "is_read")
     private boolean read;
 
+    @ToString.Include
+    @EqualsAndHashCode.Include
     @Column(name = "is_option")
     private boolean isOption;
 }

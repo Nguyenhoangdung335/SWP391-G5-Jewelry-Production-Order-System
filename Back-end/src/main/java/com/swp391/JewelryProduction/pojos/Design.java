@@ -4,10 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.swp391.JewelryProduction.util.IdGenerator;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
@@ -32,12 +29,20 @@ public class Design {
             }
     )
     @Column(length = 8, nullable = false, updatable = false, unique = true)
+    @ToString.Include
+    @EqualsAndHashCode.Include
     private String id;
     @Column(name = "last_updated")
+    @ToString.Include
+    @EqualsAndHashCode.Include
     private LocalDateTime lastUpdated;
+    @ToString.Include
+    @EqualsAndHashCode.Include
     @Column(name = "design_link")
     private String designLink;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @OneToOne(mappedBy = "design")
     @JsonBackReference("Order-Design")
     private Order order;

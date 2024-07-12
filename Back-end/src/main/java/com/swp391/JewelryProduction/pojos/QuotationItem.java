@@ -16,20 +16,28 @@ public class QuotationItem {
     @GeneratedValue
     @JsonIgnore
     @ToString.Include
+    @EqualsAndHashCode.Include
     private Integer id;
     @ToString.Include
+    @EqualsAndHashCode.Include
     private Integer itemID;
     @ToString.Include
+    @EqualsAndHashCode.Include
     private String name;
     @ToString.Include
-    private int quantity;
+    @EqualsAndHashCode.Include
+    private double quantity;
     @ToString.Include
+    @EqualsAndHashCode.Include
     @Column(name = "unit_price", columnDefinition = "decimal(15,2)")
     private double unitPrice;
+    @ToString.Include
+    @EqualsAndHashCode.Include
     @Formula("quantity * unit_price")
     private double totalPrice;
 
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @ManyToOne
     @JoinColumn(name = "quotation_id")
     @JsonBackReference("Quotation-Items")

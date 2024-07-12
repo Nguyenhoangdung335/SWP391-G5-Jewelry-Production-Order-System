@@ -24,13 +24,13 @@ import java.util.List;
 @Entity
 @Table(name = "[Order]")
 @ToString(onlyExplicitlyIncluded = true)
-@EqualsAndHashCode(exclude = {"staffOrderHistory", "notifications", "relatedReports"})
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "id"
 )
 public class Order {
     @ToString.Include
+    @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_seq")
     @GenericGenerator(
@@ -44,74 +44,97 @@ public class Order {
     )
     @Column(length = 8, nullable = false, updatable = false, unique = true)
     private String id;
+
     @ToString.Include
+    @EqualsAndHashCode.Include
     private String name;
+
     @ToString.Include
+    @EqualsAndHashCode.Include
     private double budget;
+
     @ToString.Include
+    @EqualsAndHashCode.Include
     @Column(name = "date_created", nullable = false)
     private LocalDateTime createdDate;
+
     @ToString.Include
+    @EqualsAndHashCode.Include
     @Column(name = "date_completed")
     private LocalDateTime completedDate;
+
     @ToString.Include
+    @EqualsAndHashCode.Include
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
+
     @ToString.Include
-    @ManyToOne(fetch = FetchType.EAGER)
+    @EqualsAndHashCode.Include
+    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "owner_id")
     private Account owner;
 
     @ToString.Include
-    @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
+    @EqualsAndHashCode.Include
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "quotation_id")
     @JsonManagedReference("Order-Quotation")
     private Quotation quotation;
 
     @ToString.Include
-    @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
+    @EqualsAndHashCode.Include
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "design_id")
     @JsonManagedReference("Order-Design")
     private Design design;
 
     @ToString.Include
-    @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @EqualsAndHashCode.Include
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "transaction_id")
     @JsonManagedReference("Order-Transactions")
     private Transactions transactions;
 
-    @JsonIgnore
-    @OneToMany(
-            mappedBy = "order",
-            cascade = {CascadeType.MERGE, CascadeType.DETACH, CascadeType.REMOVE},
-            fetch = FetchType.EAGER
-    )
-    @Builder.Default
-    private List<StaffOrderHistory> staffOrderHistory = new LinkedList<>();
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @Builder.Default
-    @JsonManagedReference("Order-Notification")
-    private List<Notification> notifications = new LinkedList<>();
-
     @ToString.Include
-    @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
+    @EqualsAndHashCode.Include
+    @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     @JsonManagedReference("Order-Product")
     private Product product;
 
     @ToString.Include
-    @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
+    @EqualsAndHashCode.Include
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "warranty_id")
     @JsonManagedReference("Order-Warranty")
     private Warranty warranty;
 
+    @JsonIgnore
+    @OneToMany(
+            mappedBy = "order",
+            cascade = {CascadeType.MERGE, CascadeType.DETACH, CascadeType.REMOVE},
+            fetch = FetchType.LAZY
+    )
+    @Builder.Default
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private List<StaffOrderHistory> staffOrderHistory = new LinkedList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
+    @Builder.Default
+    @JsonManagedReference("Order-Notification")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private List<Notification> notifications = new LinkedList<>();
 
     @JsonManagedReference("Order-Report")
-    @OneToMany(mappedBy = "reportingOrder", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "reportingOrder", fetch = FetchType.LAZY)
     @Builder.Default
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private List<Report> relatedReports = new LinkedList<>();
+
     @Transient
     private Staff saleStaff;
     @Transient
@@ -119,6 +142,7 @@ public class Order {
     @Transient
     private Staff productionStaff;
 
+    //<editor-fold desc="STAFF SETTERS" defaultstate="collapsed">
     @ToString.Include
     public Staff getSaleStaff() {
         return getStaffByRole(Role.SALE_STAFF);
@@ -178,4 +202,5 @@ public class Order {
                 .build()
         );
     }
+    //</editor-fold>
 }

@@ -5,10 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.swp391.JewelryProduction.util.embeddedID.StaffOrderID;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -20,22 +17,34 @@ import java.time.LocalDateTime;
 @Table(name = "Staff_Order_History")
 @IdClass(StaffOrderID.class)
 public class StaffOrderHistory {
+    @ToString.Include
+    @EqualsAndHashCode.Include
     @Id
     @Column(name = "staff_id", length = 8, nullable = false)
     private String staffID;
+    @ToString.Include
+    @EqualsAndHashCode.Include
     @Id
     @Column(name = "order_id", length = 8, nullable = false)
     private String orderID;
+    @ToString.Include
+    @EqualsAndHashCode.Include
     @Column(name = "start_date")
     private LocalDateTime startDate;
+    @ToString.Include
+    @EqualsAndHashCode.Include
     @Column(name = "end_date")
     private LocalDateTime endDate;
 
+    @ToString.Include
+    @EqualsAndHashCode.Exclude
     @ManyToOne(fetch = FetchType.EAGER)
     @MapsId
     @JoinColumn(name = "staff_id")
     private Staff staff;
 
+    @ToString.Include
+    @EqualsAndHashCode.Exclude
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId
