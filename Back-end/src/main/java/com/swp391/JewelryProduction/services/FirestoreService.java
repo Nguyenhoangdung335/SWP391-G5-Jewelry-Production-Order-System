@@ -83,45 +83,31 @@ public class FirestoreService {
         }
 
         for (Account account : accounts) {
-            saveOrUpdateUser(db, account);
+            saveOrUpdateUser(db, account.getId());
         }
     }
 
     @Async
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void saveOrUpdateUser(Firestore db, Account account) {
-        DocumentReference docRef = db.collection(USER_COLLECTION_NAME).document(account.getId());
+    public void saveOrUpdateUser(Firestore db, String ownerId) {
+        log.info("Begin syncing");
+        Account owner = accountService.findAccountForFirestoreSync(ownerId);
+
+        DocumentReference docRef = db.collection(USER_COLLECTION_NAME).document(owner.getId());
         Map<String, Object> userData = new HashMap<>();
-        Hibernate.initialize(account.getUserInfo());
-        userData.put("id", account.getId());
-        userData.put("name", (account.getUserInfo() == null) ? account.getEmail() : account.getUserInfo().getFirstName());
-        userData.put("role", account.getRole().toString());
+        userData.put("id", owner.getId());
+        userData.put("name", (owner.getUserInfo() == null) ? owner.getEmail() : owner.getUserInfo().getFirstName());
+        userData.put("role", owner.getRole().toString());
 
-        Hibernate.initialize(account.getPastOrder());
-
-        List<Order> orders = account.getPastOrder();
-        if (orders != null && !orders.isEmpty()) {
-            Order currentOrder = orders.get(orders.size() - 1); // Get the last order
-            Hibernate.initialize(currentOrder.getStaffOrderHistory()); // Initialize staff history
-
-            StaffOrderHistory staffOrderHistory = currentOrder.getStaffOrderHistory().stream()
-                    .filter(history -> history.getOrder().getId().equals(currentOrder.getId()))
-                    .findFirst()
-                    .orElse(null);
-
-            if (staffOrderHistory != null) {
-                Staff staff = staffOrderHistory.getStaff();
-                if (staff != null) {
-                    userData.put("saleStaff", staff.getId()); // Assuming saleStaff here
-                }
-            }
-        }
+        Order currentOrder = owner.getCurrentOrder();
+        if (currentOrder != null)
+            userData.put("saleStaff", currentOrder.getSaleStaff());
 
         ApiFuture<WriteResult> result = docRef.set(userData, SetOptions.merge());
         try {
             result.get();
             // Log success
-            System.out.println("Synced user " + account.getId() + " to Firestore " + docRef.getId());
+            System.out.println("Synced user " + owner.getId() + " to Firestore " + docRef.getId());
         } catch (InterruptedException | ExecutionException e) {
             // Log error
             System.err.println("Error writing document: " + e.getMessage());

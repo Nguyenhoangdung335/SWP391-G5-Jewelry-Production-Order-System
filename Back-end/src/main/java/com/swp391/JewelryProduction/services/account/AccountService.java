@@ -36,4 +36,6 @@ public interface AccountService {
     List<Account> findAccountsByRoles(List<Role> role);
 
     Long countAllAccountByRole (List<Role> role);
+
+    Account findAccountForFirestoreSync (String accountId);
 }

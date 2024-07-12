@@ -290,6 +290,13 @@ public class AccountServiceImpl implements AccountService {
         return accountRepository.countAllByRoleIn(role);
     }
 
+    @Override
+    public Account findAccountForFirestoreSync(String accountId) {
+        return accountRepository.findAccountByIdForSync(accountId).orElseThrow(
+                () -> new ObjectNotFoundException("Account with id "+accountId+" does not exist")
+        );
+    }
+
     @Transactional
     @Override
     public void deleteAccount(String accountId) {

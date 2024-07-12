@@ -36,4 +36,8 @@ public interface AccountRepository extends JpaRepository<Account, String> {
 
     @Query("SELECT h FROM StaffOrderHistory h WHERE h.order.id IN :orderIds")
     List<StaffOrderHistory> findHistoriesByOrderIds(@Param("orderIds") List<String> orderIds);
+
+    @EntityGraph(attributePaths = {"userInfo", "pastOrder"})
+    @Query("SELECT a from Account a WHERE a.id = :accountId")
+    Optional<Account> findAccountByIdForSync (@Param("accountId") String accountId);
 }
