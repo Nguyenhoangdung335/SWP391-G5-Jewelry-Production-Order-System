@@ -3,7 +3,7 @@ import { Link, NavLink } from "react-router-dom";
 import { MdSpaceDashboard } from "react-icons/md";
 import { FaUsers } from "react-icons/fa";
 import { IoMdCart } from "react-icons/io";
-import { IoChatboxEllipses } from "react-icons/io5";
+import { IoChatboxEllipses, IoLogOutOutline } from "react-icons/io5";
 import { LuUser2 } from "react-icons/lu";
 import { FiBox } from "react-icons/fi";
 import { useAuth } from "../provider/AuthProvider";
@@ -94,6 +94,7 @@ export default function NavBar() {
               })}
           to="/login" onClick={() => handleLogout()}
         >
+          <IoLogOutOutline size={22} color="white" />
           <p style={{ color: "white", margin: 0, fontSize: 20 }}>Log out</p>
         </NavLink>
       </div>
