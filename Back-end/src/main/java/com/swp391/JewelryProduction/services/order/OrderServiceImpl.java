@@ -51,7 +51,7 @@ public class OrderServiceImpl implements OrderService {
     //<editor-fold desc="READ OPERATIONS" defaultstate="collapsed">
     @Override
     public List<Order> findAllOrders() {
-        return orderRepository.findAll().stream().toList();
+        return orderRepository.findAll();
     }
 
     @Transactional
