@@ -7,6 +7,7 @@ import com.swp391.JewelryProduction.pojos.Order;
 import com.swp391.JewelryProduction.pojos.Quotation;
 import com.swp391.JewelryProduction.pojos.Report;
 import com.swp391.JewelryProduction.pojos.designPojos.Product;
+import jakarta.transaction.Transactional;
 
 public interface ReportService {
 
@@ -14,6 +15,10 @@ public interface ReportService {
     Report createRequest(ReportRequest report, Order order, Product product);
     Report createQuotationReport(ReportRequest report, Order order, Quotation quotation);
     Report createDesignReport(ReportRequest report, Order order, Design design);
+
+    @Transactional
+    Report createFinishedProductReport(ReportRequest report, Order order);
+
     void handleUserResponse(int notificationId, String orderId, boolean isApproved) throws Exception;
     Report createNormalReport(Order order, String title, String content);
     Report findReportByID (Integer id);

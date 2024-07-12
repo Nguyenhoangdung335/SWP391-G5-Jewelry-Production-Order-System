@@ -9,7 +9,6 @@ import com.swp391.JewelryProduction.pojos.designPojos.Product;
 import com.swp391.JewelryProduction.repositories.NotificationRepository;
 import com.swp391.JewelryProduction.repositories.ReportRepository;
 import com.swp391.JewelryProduction.services.account.AccountService;
-import com.swp391.JewelryProduction.services.notification.NotificationService;
 import com.swp391.JewelryProduction.services.order.OrderService;
 import com.swp391.JewelryProduction.util.exceptions.ObjectNotFoundException;
 import jakarta.transaction.Transactional;
@@ -114,9 +113,6 @@ public class ReportServiceImpl implements ReportService {
                 .sender(modelMapper.map(accountService.findAccountById(report.getSenderId()), Account.class))
                 .build();
         order.getRelatedReports().add(designReport);
-        order.setDesign(design);
-        designReport = reportRepository.save(designReport);
-        design.setOrder(order);
         orderService.updateOrder(order);
 
         StateMachine<OrderStatus, OrderEvent> stateMachine = getStateMachine(order.getId(), stateMachineService);
@@ -125,6 +121,28 @@ public class ReportServiceImpl implements ReportService {
                 .withPayload(OrderEvent.DES_FINISH).build())
         ).subscribe();
         return designReport;
+    }
+
+    @Transactional
+    @Override
+    public Report createFinishedProductReport(ReportRequest report, Order order) {
+        Report productReport = Report.builder()
+                .reportingOrder(order)
+                .title(report.getTitle())
+                .description(report.getDescription())
+                .createdDate(LocalDateTime.now())
+                .type(ReportType.FINISHED_PRODUCT)
+                .sender(accountService.findAccountById(report.getSenderId()))
+                .build();
+        order.getRelatedReports().add(productReport);
+        orderService.updateOrder(order);
+
+        StateMachine<OrderStatus, OrderEvent> stateMachine = getStateMachine(order.getId(), stateMachineService);
+        stateMachine.getExtendedState().getVariables().put(REPORT_ID, productReport.getId());
+        stateMachine.sendEvent(Mono.just(MessageBuilder
+                .withPayload(OrderEvent.PRO_FINISH).build())
+        ).subscribe();
+        return productReport;
     }
 
     @Override
