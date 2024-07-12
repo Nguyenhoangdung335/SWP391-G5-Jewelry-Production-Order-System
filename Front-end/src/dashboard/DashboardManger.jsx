@@ -205,11 +205,6 @@ export default function DashboardManager() {
       key: "customerID",
     },
     {
-      title: <span style={{ fontSize: 20, fontWeight: 400 }}>Budget</span>,
-      dataIndex: "date",
-      key: "date",
-    },
-    {
       title: <span style={{ fontSize: 20, fontWeight: 400 }}>totalPrice</span>,
       key: "total",
       dataIndex: "total",
@@ -472,7 +467,7 @@ export default function DashboardManager() {
                   <tr key={row.id}>
                     <td>{row.id}</td>
                     <td>{row.name}</td>
-                    <td>{row.budget}</td>
+                    {/* <td>{row.budget}</td> */}
                     <td>{row.quotation.totalPrice}</td>
                     <td>
                       <Badge bg={row.status === "paid" ? "success" : "danger"}>

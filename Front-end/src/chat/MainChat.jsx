@@ -359,9 +359,9 @@ const Chat = () => {
     // }, [userId]);
 
     return (
-        <div className="container mt-5">
+        <div className="container w-100 h-100">
             <div ref={chatPageRef} id="chat-page">
-                <div className="chat-container">
+                <div className="chat-container shadow-lg">
                     <div className="users-list">
                         <div className="users-list-container">
                             <div ref={roleSelectListRef} className="role-select-list hidden">
