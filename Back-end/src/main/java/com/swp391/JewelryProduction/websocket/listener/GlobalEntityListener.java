@@ -5,6 +5,7 @@ import com.google.firebase.cloud.FirestoreClient;
 import com.swp391.JewelryProduction.pojos.Account;
 import com.swp391.JewelryProduction.services.FirestoreService;
 import com.swp391.JewelryProduction.websocket.user.UserService;
+import jakarta.persistence.PostLoad;
 import jakarta.persistence.PostPersist;
 import jakarta.persistence.PostRemove;
 import jakarta.persistence.PostUpdate;
@@ -22,8 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class GlobalEntityListener implements ApplicationContextAware {
     private ApplicationContext applicationContext;
 
-    @PostPersist
-    @PostUpdate
+    @PostLoad
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void onPersistAndUpdate(Object entity) {
         // Log the entity change
