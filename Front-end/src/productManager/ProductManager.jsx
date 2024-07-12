@@ -24,7 +24,7 @@ export default function ProductManager() {
             headers: { "Content-Type": "application/json" },
         })
             .then((res) => {
-                setData(res.data.responseList.productList);
+                setData(res.data.responseList.products);
             })
             .catch((err) => console.log(err));
     }, [currentPage]);
@@ -48,7 +48,7 @@ export default function ProductManager() {
         const productId = deleteProduct.id;
         axios({
             method: "DELETE",
-            url: `${ServerUrl}/api/products/${productId}/remove`,
+            url: `${ServerUrl}/api/products/${productId}/delete`,
             headers: { "Content-Type": "application/json" },
         })
             .then((res) => {
@@ -71,16 +71,16 @@ export default function ProductManager() {
     };
 
     const handleSave = (event) => {
-        event.preventDefault();// được gọi để ngăn chặn hành vi mặc định của form khi người dùng nhấn nút submit, tránh việc reload trang.
-        const form = event.currentTarget;//là form HTML hiện tại đang được submit. Dòng này lấy tham chiếu đến form đó để có thể truy cập vào các giá trị của các trường trong form.
+        event.preventDefault();
+        const form = event.currentTarget;
         const values = {
             id: form.formProductId.value,
             name: form.formProductName.value,
             description: form.formProductDescription.value,
         };
-        const newData = data.map((item) =>//data.map() được sử dụng để tạo một mảng mới newData,
-            item.id === values.id ? values : item// trong đó mỗi sản phẩm (item) sẽ được so sánh với values.id. 
-        );//Nếu item.id trùng với values.id, sản phẩm đó sẽ được thay thế bằng đối tượng values mới, nếu không, sản phẩm sẽ giữ nguyên.
+        const newData = data.map((item) =>
+            item.id === values.id ? values : item
+        );
         setData(newData);
         setIsModalVisible(false);
         setSelectedProduct(null);
@@ -94,10 +94,30 @@ export default function ProductManager() {
             name: form.formProductName.value,
             description: form.formProductDescription.value,
         };
-        setData([...data, newProduct]);
-        setIsCreateModalVisible(false);
-    };
 
+        // Kiểm tra nếu bất kỳ trường nào bị bỏ trống
+        if (!newProduct.id || !newProduct.name || !newProduct.description) {
+            alert("Please fill in all fields");
+            return;
+        }
+
+        // Gửi yêu cầu POST tới back-end
+        axios({
+            method: "POST",
+            url: `${ServerUrl}/api/products`,
+            headers: { "Content-Type": "application/json" },
+            data: newProduct,
+        })
+        .then((res) => {
+            // Thêm sản phẩm mới vào trạng thái data nếu thành công
+            setData([...data, res.data]);
+            setIsCreateModalVisible(false);
+        })
+        .catch((err) => {
+            console.error("Error creating product:", err);
+            alert("There was an error creating the product. Please try again.");
+        });
+    };
 
     const handleCancelDelete = () => {
         setIsDeleteModalVisible(false);

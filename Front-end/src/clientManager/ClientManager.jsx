@@ -22,7 +22,6 @@ export default function ClientManager() {
         const res = await axios.get(`${ServerUrl}/api/admin/get/account/${currentPage - 1}?role=${filterRole}`, {
           headers: { "Content-Type": "application/json" },
         });
-        console.log(res.data.responseList.accounts);
         setData(res.data.responseList.accounts);
         setTotalPages(res.data.responseList.totalPages);
       } catch (err) {
@@ -31,7 +30,7 @@ export default function ClientManager() {
     };
 
     fetchData();
-  }, [filterRole, currentPage, deleteUser]);
+  }, [filterRole, currentPage]);
 
   const handleFilterChange = (event) => {
     const selectedValue = event.target.value;
@@ -74,27 +73,26 @@ export default function ClientManager() {
         headers: { "Content-Type": "application/json" },
       });
       console.log('Update Response:', res.data);
+
+      // Cập nhật trạng thái dữ liệu trên client sau khi chỉnh sửa thành công
+      const updatedData = data.map((item) => (item.id === values.id ? values : item));
+      setData(updatedData);
+      setIsModalVisible(false);
+      setSelectedUser(null);
     } catch (err) {
       console.error('Error updating account:', err);
     }
-
-    const newData = data.map((item) => (item.id === values.id ? values : item));
-    setData(newData); // Update state immutably
-    setIsModalVisible(false);
-    setSelectedUser(null);
   };
 
   const handleAdd = async (event) => {
     event.preventDefault();
     const form = event.currentTarget;
     const newEmployee = {
-      id: `ID_${data.length + 1}`,
-      role: form.role.value,
+      role: "CUSTOMER",
       email: form.gmail.value,
       phone: form.phone.value,
       status: "active",
       userInfo: {
-        id: `ID_${data.length + 1}`,
         firstName: form.firstName.value,
         lastName: form.lastName.value,
         birthDate: form.birthDate.value,
@@ -109,12 +107,12 @@ export default function ClientManager() {
         headers: { "Content-Type": "application/json" },
       });
       console.log('Add Response:', res.data);
+
+      setData([...data, res.data]); // Cập nhật trạng thái dữ liệu trên client sau khi thêm thành công
+      setIsAddModalVisible(false);
     } catch (err) {
       console.error('Error adding account:', err);
     }
-
-    setData([...data, newEmployee]); // Update state immutably
-    setIsAddModalVisible(false);
   };
 
   const handleAddClick = () => {
@@ -128,10 +126,14 @@ export default function ClientManager() {
 
   const handleConfirmDelete = async () => {
     try {
-      const res = await axios.delete(`http://localhost:8080/api/admin/delete/account?accountId=${deleteUser}`, {
+      const res = await axios.delete(`${ServerUrl}/api/admin/delete/account?accountId=${deleteUser}`, {
         headers: { "Content-Type": "application/json" },
       });
       console.log('Delete Response:', res.data);
+
+      // Cập nhật trạng thái dữ liệu trên client sau khi xóa thành công
+      const updatedData = data.filter((item) => item.id !== deleteUser);
+      setData(updatedData);
     } catch (err) {
       console.log('Error deleting account:', err);
     }
@@ -344,12 +346,9 @@ export default function ClientManager() {
                   as="select"
                   defaultValue={selectedUser.role}
                   required
+                  disabled
                 >
-                  {roles.map((role) => (
-                    <option key={role.value} value={role.value}>
-                      {role.name}
-                    </option>
-                  ))}
+                  <option value="CUSTOMER">CUSTOMER</option>
                 </Form.Control>
               </Form.Group>
 
@@ -424,9 +423,14 @@ export default function ClientManager() {
                 />
               </Form.Group>
 
-              <Button variant="primary" type="submit" className="mt-3">
-                Save Changes
-              </Button>
+              <div className="d-flex justify-content-between">
+                <Button variant="primary" type="submit" className="mt-3">
+                  Save Changes
+                </Button>
+                <Button variant="secondary" onClick={handleCancel} className="mt-3">
+                  Back
+                </Button>
+              </div>
             </Form>
           )}
         </Modal.Body>
@@ -438,17 +442,13 @@ export default function ClientManager() {
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={handleAdd}>
+            {/* Hiển thị trường Role với CUSTOMER mặc định và disabled */}
             <Form.Group controlId="role">
               <Form.Label>Role</Form.Label>
-              <Form.Control as="select" required>
-                {roles.map((role) => (
-                  <option key={role.value} value={role.value}>
-                    {role.name}
-                  </option>
-                ))}
+              <Form.Control as="select" defaultValue="CUSTOMER" disabled>
+                <option value="CUSTOMER">CUSTOMER</option>
               </Form.Control>
             </Form.Group>
-
             <Row>
               <Col>
                 <Form.Group controlId="firstName">
