@@ -230,7 +230,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order findOrderByProductId(String productId) {
-        return orderRepository.findByProductId(productId).orElseThrow(() -> new ObjectNotFoundException("Order not found"));
+        return orderRepository.findByProductId(productId).orElse(null);
     }
 
     private Order setOrder(OrderDTO orderDTO) {

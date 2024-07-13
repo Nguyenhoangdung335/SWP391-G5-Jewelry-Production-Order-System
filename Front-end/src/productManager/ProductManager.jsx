@@ -48,7 +48,7 @@ export default function ProductManager() {
         const productId = deleteProduct.id;
         axios({
             method: "DELETE",
-            url: `${ServerUrl}/api/products/${productId}/delete`,
+            url: `${ServerUrl}/api/products/${productId}`,
             headers: { "Content-Type": "application/json" },
         })
             .then((res) => {
