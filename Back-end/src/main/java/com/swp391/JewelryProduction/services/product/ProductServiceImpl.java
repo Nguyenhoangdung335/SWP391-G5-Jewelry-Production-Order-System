@@ -1,6 +1,7 @@
 package com.swp391.JewelryProduction.services.product;
 
 import com.swp391.JewelryProduction.dto.ProductDTO;
+import com.swp391.JewelryProduction.pojos.Order;
 import com.swp391.JewelryProduction.pojos.designPojos.Product;
 import com.swp391.JewelryProduction.pojos.designPojos.ProductSpecification;
 import com.swp391.JewelryProduction.repositories.ProductRepository;
@@ -45,7 +46,9 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     @Override
     public void deleteProduct(String id) {
-        orderService.findOrderByProductId(id).setProduct(null);
+        Order order = orderService.findOrderByProductId(id);
+        if (order != null)
+            order.setProduct(null);
         productRepository.deleteById(id);
     }
     //</editor-fold>

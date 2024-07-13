@@ -109,7 +109,6 @@ export default function ClientManager() {
         headers: { "Content-Type": "application/json" },
       });
       console.log('Add Response:', res.data.responseList.account);
-
       setData([...data, res.data.responseList.account]); // Cập nhật trạng thái dữ liệu trên client sau khi thêm thành công
       setIsAddModalVisible(false);
     } catch (err) {
