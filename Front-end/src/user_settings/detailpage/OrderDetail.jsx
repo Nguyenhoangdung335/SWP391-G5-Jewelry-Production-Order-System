@@ -23,6 +23,8 @@ function OrderDetail() {
   const [imageLink, setImageLink] = useState(null);
   const [showPayment, setShowPayment] = useState(false);
   const id = state.state;
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
 
   const arrayToDate = (date) => {
     if(date===null || date===0){
@@ -256,7 +258,7 @@ function MyVerticallyCenteredModal(props) {
   ));
 
   const handleShowPayment = async (ev) => {
-    const resultURL = `${window.location.origin}/transactions/results`;
+    const resultURL = `${window.location.origin}/user_setting_page/order_history_page`;
     try {
       // Uncomment and configure the axios request as needed
       const response = await axios.post(`${ServerUrl}/api/payment/create/${props.orderId}?quotationId=${props.quotation.id}&resultURL=${resultURL}`);

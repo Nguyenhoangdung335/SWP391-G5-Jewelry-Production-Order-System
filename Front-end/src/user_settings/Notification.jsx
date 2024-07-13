@@ -70,7 +70,7 @@ const NotificationPage = () => {
     <Container>
       {notifications.map((notification) => (
         <Link
-          to={`/user_setting_page/notification_page/${notification.id}`}
+          to={`${notification.id}`}
           style={{ textDecoration: "none" }}
         >
           <HoverDiv key={notification.id}>

@@ -4,15 +4,24 @@ import { useAuth } from "../provider/AuthProvider";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import ServerUrl from "../reusable/ServerUrl";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import snowfall from "../assets/snowfall.jpg";
 
 function OrderHistory() {
   const [data, setData] = useState([]);
   const { token } = useAuth();
+  const location = useLocation
+  const searchParams = new URLSearchParams(location.search);
 
   useEffect(() => {
     if (token) {
+      const status = searchParams.get('status');
+      if (status === "success") 
+        alert("Successfully make payment");
+      else if (status === "cancel")
+        alert("Payment cancelled")
+
+
       const decodedToken = jwtDecode(token);
       axios(`${ServerUrl}/api/order/account/${decodedToken.id}`, {
         method: "GET",
