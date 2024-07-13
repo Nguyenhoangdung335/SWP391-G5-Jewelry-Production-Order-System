@@ -113,6 +113,9 @@ public class ReportServiceImpl implements ReportService {
                 .sender(modelMapper.map(accountService.findAccountById(report.getSenderId()), Account.class))
                 .build();
         order.getRelatedReports().add(designReport);
+        order.setDesign(design);
+        designReport = reportRepository.save(designReport);
+        design.setOrder(order);
         orderService.updateOrder(order);
 
         StateMachine<OrderStatus, OrderEvent> stateMachine = getStateMachine(order.getId(), stateMachineService);
@@ -135,6 +138,7 @@ public class ReportServiceImpl implements ReportService {
                 .sender(accountService.findAccountById(report.getSenderId()))
                 .build();
         order.getRelatedReports().add(productReport);
+        productReport = reportRepository.save(productReport);
         orderService.updateOrder(order);
 
         StateMachine<OrderStatus, OrderEvent> stateMachine = getStateMachine(order.getId(), stateMachineService);
