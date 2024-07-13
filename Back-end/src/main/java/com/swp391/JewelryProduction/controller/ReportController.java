@@ -72,7 +72,6 @@ public class ReportController {
             @PathVariable("accountId") String accountId,
             @PathVariable("orderId") String orderId)
     {
-        quoteReport.setReportContentID(quoteReport.getReportContentID());
         quoteReport.setSenderId(accountId);
         Quotation quotation = quotationService.findById(quoteReport.getReportContentID());
         reportService.createQuotationReport(quoteReport, orderService.findOrderById(orderId), quotation);
@@ -88,7 +87,6 @@ public class ReportController {
             @PathVariable("accountId") String accountId,
             @PathVariable("orderId") String orderId)
     {
-        designReport.setReportContentID(designReport.getReportContentID());
         designReport.setSenderId(accountId);
         Design design = designService.findById(designReport.getReportContentID());
         reportService.createDesignReport(designReport, orderService.findOrderById(orderId), design);
@@ -100,14 +98,12 @@ public class ReportController {
 
     @PostMapping("/{accountId}/{orderId}/create/product")
     public ResponseEntity<Response> createProductionReport(
-            @Valid @RequestBody ReportRequest designReport,
+            @Valid @RequestBody ReportRequest productReport,
             @PathVariable("accountId") String accountId,
             @PathVariable("orderId") String orderId)
     {
-        designReport.setReportContentID(designReport.getReportContentID());
-        designReport.setSenderId(accountId);
-        Design design = designService.findById(designReport.getReportContentID());
-        reportService.createDesignReport(designReport, orderService.findOrderById(orderId), design);
+        productReport.setSenderId(accountId);
+        reportService.createFinishedProductReport(productReport, orderService.findOrderById(orderId));
         return Response.builder()
                 .status(HttpStatus.OK)
                 .message("Report created successfully.")
