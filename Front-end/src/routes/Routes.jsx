@@ -182,6 +182,14 @@ function RouteMap() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/userManager/notifications/:notificationId"
+          element={
+            <ProtectedRoute>
+              <NotificationDetail />
+            </ProtectedRoute>
+          }
+        />
       </Route>
       <Route path="/user_setting_page" element={<SettingPageLayout />}>
         <Route
