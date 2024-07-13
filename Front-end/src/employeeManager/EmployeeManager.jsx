@@ -72,10 +72,10 @@ export default function EmployeeManager() {
         const form = event.currentTarget;
         const values = {
             id: selectedUser.id,
-            email: form.gmail.value,
-            password: selectedUser.password,
-            dateCreated: selectedUser.dateCreated,
             role: form.role.value,
+            email: form.gmail.value,
+            phone: form.phone.value,
+            dateCreated: selectedUser.dateCreated,
             status: selectedUser.status,
             userInfo: {
                 id: selectedUser.userInfo.id,
@@ -93,6 +93,10 @@ export default function EmployeeManager() {
                 headers: { "Content-Type": "application/json" },
             });
             console.log('Update Response:', res.data);
+            const updatedData = data.map((item) => (item.id === values.id ? values : item));
+            setData(updatedData);
+            setIsModalVisible(false);
+            setSelectedUser(null);
         } catch (err) {
             console.error('Error updating account:', err);
         }
@@ -100,23 +104,18 @@ export default function EmployeeManager() {
         const newData = data.map((item) =>
             item.id === values.id ? values : item
         );
-        setData(newData); // Update state immutably
-        setIsModalVisible(false);
-        setSelectedUser(null);
     };
 
     const handleAdd = async (event) => {
         event.preventDefault();
         const form = event.currentTarget;
         const newEmployee = {
-            id: `ID_${data.length + 1}`,
-            email: form.gmail.value,
-            password: "defaultPassword",
-            dateCreated: new Date().toISOString(),
             role: form.role.value,
-            status: "active",
+            email: form.gmail.value,
+            password: "#User1234",
+            phone: form.phone.value,
+            status: "ACTIVE",
             userInfo: {
-                id: `ID_${data.length + 1}`,
                 firstName: form.firstName.value,
                 lastName: form.lastName.value,
                 birthDate: form.birthDate.value,
@@ -127,16 +126,15 @@ export default function EmployeeManager() {
         };
 
         try {
-            const res = await axios.post(`${ServerUrl}/api/admin/add/account`, newEmployee, {
+            const res = await axios.post(`${ServerUrl}/api/admin/create/account`, newEmployee, {
                 headers: { "Content-Type": "application/json" },
             });
-            console.log('Add Response:', res.data);
+            console.log('Add Response:', res.data.responseList.account);
+            setData([...data, res.data.responseList.account]); // Cập nhật trạng thái dữ liệu trên client sau khi thêm thành công
+            setIsAddModalVisible(false);
         } catch (err) {
             console.error('Error adding account:', err);
         }
-
-        setData([...data, newEmployee]); // Update state immutably
-        setIsAddModalVisible(false);
     };
 
     const handleAddClick = () => {
@@ -150,10 +148,12 @@ export default function EmployeeManager() {
 
     const handleConfirmDelete = async () => {
         try {
-            const res = await axios.delete(`http://localhost:8080/api/admin/delete/account?accountId=${deleteUser}`, {
+            const res = await axios.delete(`${ServerUrl}/api/admin/delete/account?accountId=${deleteUser}`, {
                 headers: { "Content-Type": "application/json" },
             });
             console.log('Delete Response:', res.data);
+            const updatedData = data.filter((item) => item.id !== deleteUser);
+            setData(updatedData);
         } catch (err) {
             console.log('Error deleting account:', err);
         }
