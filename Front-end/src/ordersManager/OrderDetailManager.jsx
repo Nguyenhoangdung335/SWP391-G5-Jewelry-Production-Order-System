@@ -25,12 +25,13 @@ function OrderDetailManager() {
   const [data, setData] = useState(null);
   const [showQuotation, setShowQuotation] = useState(false);
   const [showDesignReport, setShowDesignReport] = useState(false);
+  const [showProductReport, setShowProductReport] = useState(false);
   const [designImage, setDesignImage] = useState(null);
   const id = state.state;
   const { token } = useAuth();
   const decodedToken = jwtDecode(token);
   const [imageLink, setImageLink] = useState(null);
-  const [alertText, setAlertText] = useState('');
+  const [alertText, setAlertText] = useState("");
   const [showAlert, setShowAlert] = useState(false);
 
   const fetchData = async () => {
@@ -42,7 +43,7 @@ function OrderDetailManager() {
         const orderDetail = response.data.responseList.orderDetail;
         setData(orderDetail);
         setImageLink(orderDetail.design?.designLink || snowfall);
-        setAlertText('Confirmed Payment successfully');
+        setAlertText("Confirmed Payment successfully");
       }
     } catch (error) {
       console.error("Error fetching data", error);
@@ -52,7 +53,7 @@ function OrderDetailManager() {
   };
 
   useEffect(() => {
-        fetchData();
+    fetchData();
   }, [id]);
 
   if (!data) {
@@ -68,7 +69,7 @@ function OrderDetailManager() {
 
   const handleShowQuotations = () => setShowQuotation(true);
 
-  const handleSubmit = async (e) => {
+  const handleDesignImageSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
 
@@ -86,6 +87,30 @@ function OrderDetailManager() {
         fetchData();
         setImageLink(response.data.responseList.designUrl);
         setShowDesignReport(true);
+      }
+    } else {
+      console.error("designImage is not a File");
+    }
+  };
+
+  const handleProductImageSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+
+    if (designImage instanceof File) {
+      const resizedImageFile = await ResizeImage(designImage);
+      formData.append("file", resizedImageFile);
+      const response = await axios.post(
+        `${ServerUrl}/api/order/${data.id}/detail/edit-product`,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+      if (response.status === 200) {
+        fetchData();
+        setImageLink(response.data.responseList.designUrl);
+        setShowProductReport(true);
       }
     } else {
       console.error("designImage is not a File");
@@ -122,9 +147,17 @@ function OrderDetailManager() {
 
   return (
     <>
-      <Container style={{ overflowY: "hidden"}}>
+      <Container style={{ overflowY: "hidden" }}>
         <Row>
-          <Col md={8} style={{ height: "100vh", overflowY: "auto", paddingTop: "1%", paddingBottom: "1%" }}>
+          <Col
+            md={8}
+            style={{
+              height: "100vh",
+              overflowY: "auto",
+              paddingTop: "1%",
+              paddingBottom: "1%",
+            }}
+          >
             <div className="pb-2">
               <img
                 src={imageLink || snowfall}
@@ -176,7 +209,7 @@ function OrderDetailManager() {
                 </Table>
               </div>
             </div>
-          </Col>  
+          </Col>
 
           <Col md={4} style={{ height: "100vh", overflowY: "auto" }}>
             <Row className="pb-2">
@@ -295,68 +328,101 @@ function OrderDetailManager() {
                 </div>
               </div>
             </Row>
-            {["SALE_STAFF", "ADMIN"].includes(decodedToken.role) && <Row className="pb-2">
-              <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
-                <div className="p-2">
-                  <div
-                    className="mb-2"
-                    style={{
-                      borderBottom: "1px solid rgba(166, 166, 166, 0.5)",
-                    }}
-                  >
+            {["SALE_STAFF", "ADMIN"].includes(decodedToken.role) && (
+              <Row className="pb-2">
+                <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
+                  <div className="p-2">
                     <div
                       className="mb-2"
                       style={{
                         borderBottom: "1px solid rgba(166, 166, 166, 0.5)",
                       }}
                     >
-                      <h4>Confirm Transactions</h4>
-                    </div>
-                    <div className="d-flex justify-content-between">
-                      <Button
-                        onClick={() => handleConfirmTransaction(true)}
-                        className="mt-2 mb-2"
+                      <div
+                        className="mb-2"
+                        style={{
+                          borderBottom: "1px solid rgba(166, 166, 166, 0.5)",
+                        }}
                       >
-                        Confirm
-                      </Button>
-                      <Button
-                        onClick={() => handleConfirmTransaction(false)}
-                        className="mt-2 mb-2"
-                      >
-                        Declined
-                      </Button>
+                        <h4>Confirm Transactions</h4>
+                      </div>
+                      <div className="d-flex justify-content-between">
+                        <Button
+                          onClick={() => handleConfirmTransaction(true)}
+                          className="mt-2 mb-2"
+                        >
+                          Confirm
+                        </Button>
+                        <Button
+                          onClick={() => handleConfirmTransaction(false)}
+                          className="mt-2 mb-2"
+                        >
+                          Declined
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </Row>}
-            {["DESIGN_STAFF", "ADMIN"].includes(decodedToken.role) && <Row className="pb-2">
-              <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
-                <div className="p-2">
-                  <div
-                    className="mb-2"
-                    style={{
-                      borderBottom: "1px solid rgba(166, 166, 166, 0.5)",
-                    }}
-                  >
-                    <h4>Upload Image</h4>
-                  </div>
-                  <Form noValidate onSubmit={handleSubmit}>
-                    <Form.Control
-                      type="file"
-                      name="designImage"
-                      accept="image/png, image/gif, image/jpeg, image/jpg"
-                      onChange={(e) => setDesignImage(e.target.files[0])}
-                    />
-                    <div className="d-flex justify-content-end">
-                      <Button type="submit" className="mt-2 mb-2">
-                        Upload
-                      </Button>
+              </Row>
+            )}
+            {["DESIGN_STAFF", "ADMIN"].includes(decodedToken.role) && (
+              <Row className="pb-2">
+                <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
+                  <div className="p-2">
+                    <div
+                      className="mb-2"
+                      style={{
+                        borderBottom: "1px solid rgba(166, 166, 166, 0.5)",
+                      }}
+                    >
+                      <h4>Upload Image</h4>
                     </div>
-                  </Form>
+                    <Form noValidate onSubmit={handleDesignImageSubmit}>
+                      <Form.Control
+                        type="file"
+                        name="designImage"
+                        accept="image/png, image/gif, image/jpeg, image/jpg"
+                        onChange={(e) => setDesignImage(e.target.files[0])}
+                      />
+                      <div className="d-flex justify-content-end">
+                        <Button type="submit" className="mt-2 mb-2">
+                          Upload
+                        </Button>
+                      </div>
+                    </Form>
+                  </div>
                 </div>
-              </div>
-            </Row>}
+              </Row>
+            )}
+            {["PRODUCTION_STAFF", "ADMIN"].includes(decodedToken.role) && (
+              <Row className="pb-2">
+                <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
+                  <div className="p-2">
+                    <div
+                      className="mb-2"
+                      style={{
+                        borderBottom: "1px solid rgba(166, 166, 166, 0.5)",
+                      }}
+                    >
+                      <h4>Upload Final Product</h4>
+                    </div>
+                    <Form noValidate onSubmit={handleProductImageSubmit}>
+                      <Form.Control
+                        type="file"
+                        name="designImage"
+                        accept="image/png, image/gif, image/jpeg, image/jpg"
+                        onChange={(e) => setDesignImage(e.target.files[0])}
+                      />
+                      <div className="d-flex justify-content-end">
+                        <Button type="submit" className="mt-2 mb-2">
+                          Upload
+                        </Button>
+                      </div>
+                    </Form>
+                  </div>
+                </div>
+              </Row>
+            )}
           </Col>
         </Row>
       </Container>
@@ -368,7 +434,7 @@ function OrderDetailManager() {
         onHide={() => setShowQuotation(false)}
       />
 
-      {(showDesignReport && data.design) && (
+      {showDesignReport && data.design && (
         <CreateReport
           reportContentId={data?.design?.id}
           orderId={data.id}
@@ -377,8 +443,22 @@ function OrderDetailManager() {
         />
       )}
 
+      {showProductReport && data.design && (
+        <CreateReport
+          reportContentId={data?.design?.id}
+          orderId={data.id}
+          reportType="FINISHED_PRODUCT"
+          onHide={() => setShowProductReport(false)}
+        />
+      )}
+
+
       {showAlert && (
-        <CustomAlert text={alertText} isShow={showAlert} onClose={() => setShowAlert(false)} />
+        <CustomAlert
+          text={alertText}
+          isShow={showAlert}
+          onClose={() => setShowAlert(false)}
+        />
       )}
     </>
   );
