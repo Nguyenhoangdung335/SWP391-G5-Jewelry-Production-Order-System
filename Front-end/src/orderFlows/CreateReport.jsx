@@ -29,6 +29,8 @@ function CreateReport({ reportContentId, orderId, reportType, onHide }) {
         return `${serverUrl}/api/report/${decodedToken.id}/${orderId}/create/quote`;
       else if (reportType === "DESIGN")
         return `${serverUrl}/api/report/${decodedToken.id}/${orderId}/create/design`;
+      else if (reportType === "FINISHED_PRODUCT")
+        return `${serverUrl}/api/report/${decodedToken.id}/${orderId}/create/product`
       else
         return `${serverUrl}/api/report/${decodedToken.id}/${reportContentId}/create/request`;
     };
