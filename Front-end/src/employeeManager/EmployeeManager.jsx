@@ -10,7 +10,6 @@ import {
 } from "react-bootstrap";
 import { FiPlus } from "react-icons/fi";
 import axios from "axios";
-import { roles } from "../data/Roles";
 import { Icon } from "@iconify/react";
 import ServerUrl from "../reusable/ServerUrl";
 
@@ -29,13 +28,16 @@ export default function EmployeeManager() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const res = await axios.get(`${ServerUrl}/api/admin/get/account/${currentPage - 1}`, {
-                    headers: { "Content-Type": "application/json" },
-                    params: {
-                        role: filterRole,
-                        size: itemsPerPage,
+                const res = await axios.get(
+                    `${ServerUrl}/api/admin/get/account/${currentPage - 1}`,
+                    {
+                        headers: { "Content-Type": "application/json" },
+                        params: {
+                            role: filterRole,
+                            size: itemsPerPage,
+                        },
                     }
-                });
+                );
                 console.log("API response:", res.data);
                 setData(res.data.responseList.accounts);
                 setTotalPages(res.data.responseList.totalPages);
@@ -64,7 +66,7 @@ export default function EmployeeManager() {
 
     const formatDate = (dateArray) => {
         const [year, month, day] = dateArray;
-        return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
     };
 
     const handleSave = async (event) => {
@@ -89,21 +91,23 @@ export default function EmployeeManager() {
         };
 
         try {
-            const res = await axios.put(`${ServerUrl}/api/admin/update/account`, values, {
-                headers: { "Content-Type": "application/json" },
-            });
-            console.log('Update Response:', res.data);
-            const updatedData = data.map((item) => (item.id === values.id ? values : item));
+            const res = await axios.put(
+                `${ServerUrl}/api/admin/update/account`,
+                values,
+                {
+                    headers: { "Content-Type": "application/json" },
+                }
+            );
+            console.log("Update Response:", res.data);
+            const updatedData = data.map((item) =>
+                item.id === values.id ? values : item
+            );
             setData(updatedData);
             setIsModalVisible(false);
             setSelectedUser(null);
         } catch (err) {
-            console.error('Error updating account:', err);
+            console.error("Error updating account:", err);
         }
-
-        const newData = data.map((item) =>
-            item.id === values.id ? values : item
-        );
     };
 
     const handleAdd = async (event) => {
@@ -112,7 +116,7 @@ export default function EmployeeManager() {
         const newEmployee = {
             role: form.role.value,
             email: form.gmail.value,
-            password: "#User1234",
+            password: form.password.value,
             phone: form.phone.value,
             status: "ACTIVE",
             userInfo: {
@@ -126,14 +130,18 @@ export default function EmployeeManager() {
         };
 
         try {
-            const res = await axios.post(`${ServerUrl}/api/admin/create/account`, newEmployee, {
-                headers: { "Content-Type": "application/json" },
-            });
-            console.log('Add Response:', res.data.responseList.account);
-            setData([...data, res.data.responseList.account]); // Cập nhật trạng thái dữ liệu trên client sau khi thêm thành công
+            const res = await axios.post(
+                `${ServerUrl}/api/admin/create/account`,
+                newEmployee,
+                {
+                    headers: { "Content-Type": "application/json" },
+                }
+            );
+            console.log("Add Response:", res.data.responseList.account);
+            setData([...data, res.data.responseList.account]); // Update state with new data
             setIsAddModalVisible(false);
         } catch (err) {
-            console.error('Error adding account:', err);
+            console.error("Error adding account:", err);
         }
     };
 
@@ -148,14 +156,17 @@ export default function EmployeeManager() {
 
     const handleConfirmDelete = async () => {
         try {
-            const res = await axios.delete(`${ServerUrl}/api/admin/delete/account?accountId=${deleteUser}`, {
-                headers: { "Content-Type": "application/json" },
-            });
-            console.log('Delete Response:', res.data);
+            const res = await axios.delete(
+                `${ServerUrl}/api/admin/delete/account?accountId=${deleteUser}`,
+                {
+                    headers: { "Content-Type": "application/json" },
+                }
+            );
+            console.log("Delete Response:", res.data);
             const updatedData = data.filter((item) => item.id !== deleteUser);
             setData(updatedData);
         } catch (err) {
-            console.log('Error deleting account:', err);
+            console.log("Error deleting account:", err);
         }
         setDeleteModalVisible(false);
         setDeleteUser(null);
@@ -173,8 +184,8 @@ export default function EmployeeManager() {
     const filteredData =
         filterRole !== "ALL"
             ? data.filter(
-                (item) => item.role.toLowerCase() === filterRole.toLowerCase()
-            )
+                  (item) => item.role.toLowerCase() === filterRole.toLowerCase()
+              )
             : data;
 
     const paginatedData = filteredData.slice(
@@ -278,15 +289,13 @@ export default function EmployeeManager() {
                         className="bg-neutral-500 inline-block text-orange-500 w-44"
                         onChange={handleFilterChange}
                     >
-                        {roles.map((role) => (
-                            <option
-                                key={role.name}
-                                value={role.name}
-                                className="bg-white text-black"
-                            >
-                                {role.show}
-                            </option>
-                        ))}
+                        <option value="ALL" className="bg-white text-black">ALL</option>
+                        <option value="CUSTOMER" className="bg-white text-black">Customer</option>
+                        <option value="ADMIN" className="bg-white text-black">Admin</option>
+                        <option value="SALE_STAFF" className="bg-white text-black">Sale Staff</option>
+                        <option value="DESIGN_STAFF" className="bg-white text-black">Design Staff</option>
+                        <option value="PRODUCTION_STAFF" className="bg-white text-black">Production Staff</option>
+                        <option value="MANAGER" className="bg-white text-black">Manager</option>
                     </select>
                     <div className="relative right-6 pb-2">
                         <Icon icon="fa:sort-down" />
@@ -428,10 +437,17 @@ export default function EmployeeManager() {
                             <Form.Group>
                                 <Form.Label>Role</Form.Label>
                                 <FormControl
-                                    type="text"
+                                    as="select"
                                     defaultValue={selectedUser.role}
                                     name="role"
-                                />
+                                >
+                                    <option value="CUSTOMER">Customer</option>
+                                    <option value="ADMIN">Admin</option>
+                                    <option value="SALE_STAFF">Sale Staff</option>
+                                    <option value="DESIGN_STAFF">Design Staff</option>
+                                    <option value="PRODUCTION_STAFF">Production Staff</option>
+                                    <option value="MANAGER">Manager</option>
+                                </FormControl>
                             </Form.Group>
                             <Row>
                                 <Col>
@@ -473,7 +489,9 @@ export default function EmployeeManager() {
                                 <Form.Label>Birth Date</Form.Label>
                                 <FormControl
                                     type="date"
-                                    defaultValue={formatDate(selectedUser.userInfo.birthDate)}
+                                    defaultValue={formatDate(
+                                        selectedUser.userInfo.birthDate
+                                    )}
                                     name="birthDate"
                                 />
                             </Form.Group>
@@ -486,9 +504,7 @@ export default function EmployeeManager() {
                                 >
                                     <option value="MALE">Male</option>
                                     <option value="FEMALE">Female</option>
-                                    <option value="NON_BINARY">
-                                        Non-binary
-                                    </option>
+                                    <option value="NON_BINARY">Non-binary</option>
                                     <option value="OTHER">Other</option>
                                 </FormControl>
                             </Form.Group>
@@ -500,13 +516,17 @@ export default function EmployeeManager() {
                                     name="address"
                                 />
                             </Form.Group>
-                            <Button variant="primary" type="submit" style={{marginTop: 20}}>
+                            <Button
+                                variant="primary"
+                                type="submit"
+                                style={{ marginTop: 20 }}
+                            >
                                 Save changes
                             </Button>
                             <Button
                                 variant="secondary"
                                 onClick={handleCancel}
-                                style={{ marginLeft: 8,marginTop: 20 }}
+                                style={{ marginLeft: 8, marginTop: 20 }}
                             >
                                 Back
                             </Button>
@@ -536,14 +556,21 @@ export default function EmployeeManager() {
                 show={isAddModalVisible}
                 onHide={() => setIsAddModalVisible(false)}
             >
-                <Modal.Header closeButton>
+                <Modal.Header className="w-100" closeButton>
                     <Modal.Title>Add Employee</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form onSubmit={handleAdd}>
                         <Form.Group controlId="formRole">
                             <Form.Label>Role</Form.Label>
-                            <FormControl type="text" name="role" required />
+                            <FormControl as="select" name="role" required>
+                                <option value="CUSTOMER">Customer</option>
+                                <option value="ADMIN">Admin</option>
+                                <option value="SALE_STAFF">Sale Staff</option>
+                                <option value="DESIGN_STAFF">Design Staff</option>
+                                <option value="PRODUCTION_STAFF">Production Staff</option>
+                                <option value="MANAGER">Manager</option>
+                            </FormControl>
                         </Form.Group>
                         <Row>
                             <Col>
@@ -596,13 +623,21 @@ export default function EmployeeManager() {
                             <Form.Label>Address</Form.Label>
                             <FormControl type="text" name="address" required />
                         </Form.Group>
-                        <Button variant="primary" type="submit">
+                        <Form.Group controlId="formPassword">
+                            <Form.Label>Password</Form.Label>
+                            <FormControl
+                                type="password"
+                                name="password"
+                                required
+                            />
+                        </Form.Group>
+                        <Button className="mt-2" variant="primary" type="submit">
                             Add Employee
                         </Button>
                         <Button
                             variant="secondary"
                             onClick={() => setIsAddModalVisible(false)}
-                            style={{ marginLeft: 8 }}
+                            style={{ marginLeft: 20 }}
                         >
                             Back
                         </Button>

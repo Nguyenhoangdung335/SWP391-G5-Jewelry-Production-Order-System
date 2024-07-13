@@ -249,7 +249,7 @@ export default function ClientManager() {
           variant="secondary"
           className="add-client-button"
           onClick={handleAddClick}
-          style={{ marginLeft: "auto" }} // Align to the right
+          style={{ marginLeft: "1px" }} 
         >
           <FiPlus color="rgba(224, 215, 234, 1)" />
           Add Client
@@ -494,10 +494,10 @@ export default function ClientManager() {
             </Form.Group>
 
             <div className="d-flex justify-content-between">
-              <Button variant="primary" type="submit" className="mt-3">
+              <Button variant="primary" type="submit" className="mt-2">
                 Add Client
               </Button>
-              <Button variant="secondary" onClick={() => setIsAddModalVisible(false)} className="mt-3">
+              <Button variant="secondary" onClick={() => setIsAddModalVisible(false)} className="mt-2">
                 Back
               </Button>
             </div>
