@@ -57,25 +57,6 @@ export default function DashboardManager() {
     }
     fetchDashboard();
   }, []);
-  
-  // useEffect(() => {
-  //   async function fetchInfo() {
-  //     try {
-  //       const response = await axios.get("http://localhost:8080/actuator/info");
-  //       if (response.data.status === "OK") {
-  //         const info = response.data
-  //         console.log(info);
-  //         setInfo(info)
-  //       } else {
-  //         console.error("Failed to fetch info:", response.data.message);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching info:", error);
-  //     }
-  //   }
-  //   fetchInfo();
-  // }, []);
-
 
   const columnsClient = [
     {
