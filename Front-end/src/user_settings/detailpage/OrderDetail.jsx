@@ -10,21 +10,21 @@ import {
   Modal,
   Row,
   Table,
+  Form,
 } from "react-bootstrap";
 import snowfall from "../../assets/snowfall.jpg";
 import qrCode from "../../assets/qrCode.jpg";
-import { jwtDecode } from "jwt-decode";
-import { _setMinAndMaxByKey } from "chart.js/helpers";
+import QuotationModal from "../../ordersManager/QuotationModal";
 
 function OrderDetail() {
   const state = useLocation();
   const [data, setData] = useState();
   const [showQuotation, setShowQuotation] = useState(false);
-  const [imageLink, setImageLink] = useState(null);
-  const [showPayment, setShowPayment] = useState(false);
   const id = state.state;
   const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
+  const [showWarranty, setShowWarranty] = useState(false);
+  const [imageLink, setImageLink] = useState(null);
+  const [showPayment, setShowPayment] = useState(false);
 
   const arrayToDate = (date) => {
     if(date===null || date===0){
@@ -62,9 +62,9 @@ function OrderDetail() {
     setShowQuotation(true);
   };
 
-  const handleShowPayment = () => {
-    setShowPayment(true);
-  };
+  // const handleShowPayment = () => {
+  //   setShowPayment(true);
+  // };
 
   return (
     <>
@@ -227,17 +227,37 @@ function OrderDetail() {
                 </div>
               </div>
             </Row>
+            {data.status === "ORDER_COMPLETED" && <Row>
+              <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
+                <div className="p-2">
+                  <div
+                    className="mb-2"
+                    style={{
+                      borderBottom: "1px solid rgba(166, 166, 166, 0.5)",
+                    }}
+                  >
+                    <div className="d-flex justify-content-between mb-2">
+                      <h4 style={{ display: "inline-block" }}>Warranty</h4>
+                      {/* <Button onClick={handleShowWarranty}>
+                        Show Warranty
+                      </Button> */}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Row>}
           </Col>
         </Row>
       </Container>
 
-      {data.quotation && (<MyVerticallyCenteredModal
+      {data.quotation && (<QuotationModal
         quotation={data.quotation}
         orderId={data.id}
         show={showQuotation}
         onHide={() => setShowQuotation(false)}
       />)
       }
+      {showWarranty && <WarrantyModal/>}
     </>
   );
 }
@@ -327,6 +347,10 @@ function MyVerticallyCenteredModal(props) {
       )}
     </>
   );
+}
+
+function WarrantyModal(props) {
+  
 }
 
 export default OrderDetail;
