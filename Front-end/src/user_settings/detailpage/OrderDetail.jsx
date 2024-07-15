@@ -15,6 +15,7 @@ import {
 import snowfall from "../../assets/snowfall.jpg";
 import qrCode from "../../assets/qrCode.jpg";
 import QuotationModal from "../../ordersManager/QuotationModal";
+import WarrantyCertificateModal from "../../warranty/WarrantyCertificateModal";
 
 function OrderDetail() {
   const state = useLocation();
@@ -227,7 +228,8 @@ function OrderDetail() {
                 </div>
               </div>
             </Row>
-            {data.status === "ORDER_COMPLETED" && <Row>
+            {/* {data.status === "ORDER_COMPLETED" &&  */}
+            <Row>
               <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
                 <div className="p-2">
                   <div
@@ -238,14 +240,14 @@ function OrderDetail() {
                   >
                     <div className="d-flex justify-content-between mb-2">
                       <h4 style={{ display: "inline-block" }}>Warranty</h4>
-                      {/* <Button onClick={handleShowWarranty}>
+                      <Button onClick={() => setShowWarranty(true)}>
                         Show Warranty
-                      </Button> */}
+                      </Button>
                     </div>
                   </div>
                 </div>
               </div>
-            </Row>}
+            </Row>
           </Col>
         </Row>
       </Container>
@@ -257,7 +259,7 @@ function OrderDetail() {
         onHide={() => setShowQuotation(false)}
       />)
       }
-      {showWarranty && <WarrantyModal/>}
+      <WarrantyCertificateModal show={showWarranty} handleClose={() => setShowWarranty(false)} />
     </>
   );
 }
@@ -330,21 +332,6 @@ function MyVerticallyCenteredModal(props) {
           <Button onClick={handleShowPayment}>Make Payment</Button>
         </Modal.Footer>
       </Modal>
-
-      {showPaymentModal && (
-        <Modal
-          show={showPaymentModal}
-          onHide={() => setShowPaymentModal(false)}
-          centered
-        >
-          <Modal.Header className="w-100" closeButton>
-            <Modal.Title>Payment</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <img src={qrCode} alt="QR for payment" className="w-100 h-100" />
-          </Modal.Body>
-        </Modal>
-      )}
     </>
   );
 }
