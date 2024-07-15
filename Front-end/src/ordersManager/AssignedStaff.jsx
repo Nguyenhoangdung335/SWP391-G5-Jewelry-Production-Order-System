@@ -102,6 +102,7 @@ function AssignedStaff({ data, onSubmit }) {
 
 function StaffField(props) {
   const isAuthorized = ["MANAGER", "ADMIN"].includes(props.role);
+  const chosenStaff = props.staffOptions.find(staff => staff.id === props.value);
 
   return (
     <>
@@ -119,16 +120,17 @@ function StaffField(props) {
             </option>
             {props.staffOptions.map((staff) => (
               <option key={staff.id} value={staff.id}>
-                {staff.id}-{staff.userInfo.firstName} {staff.userInfo.lastName}
+                {staff.id}-{staff.userInfo?.firstName} {staff.userInfo?.lastName}
               </option>
             ))}
           </Form.Control>
         </Form.Group>
       }
       {!isAuthorized && <Form.Group>
-        <Form.Group controlId="formProductionStaff">
-          <Form.Label>{props.label}</Form.Label>
-          <Form.Control
+        <Form.Group controlId={props.controlId} className="d-flex justify-content-between">
+          <Form.Label style={{minWidth: "32%"}}>{props.label}</Form.Label>
+          <Form.Control style={{textAlign: "right"}}
+            as="input"
             plaintext readOnly
             value={props.value}
           />
