@@ -15,9 +15,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 
 @CrossOrigin("*")
 @RestController
@@ -157,17 +160,19 @@ public class AdminController {
                 .message("Request sent successfully")
                 .buildEntity();
     }
+    //</editor-fold>
 
+    //<editor-fold desc="DASHBOARD ENDPOINT" defaultstate="collapsed">
     @GetMapping("/dashboard-test")
     public ResponseEntity<Response> getDashboard() {
         return Response.builder()
                 .responseList(adminService.dashboardDataProvider())
                 .buildEntity();
     }
-    //</editor-fold>
 
-
-
-
+    @GetMapping("/dashboard")
+    public Flux<ServerSentEvent<HashMap<String, Object>>> subscribeDashboard () {
+        return adminService.subscribeDashboard();
+    }
     //</editor-fold>
 }

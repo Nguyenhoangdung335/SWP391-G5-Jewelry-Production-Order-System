@@ -4,9 +4,13 @@ import com.swp391.JewelryProduction.enums.Role;
 import com.swp391.JewelryProduction.services.account.AccountService;
 import com.swp391.JewelryProduction.services.order.OrderService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.scheduler.Schedulers;
 
 import java.text.DateFormatSymbols;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,5 +42,31 @@ public class AdminServiceImpl implements AdminService{
         data.put("dataList", monthlyRevenue);
         data.put("revenue", String.format("%.2f", revenue));
         return data;
+    }
+
+    @Override
+    public Flux<ServerSentEvent<HashMap<String, Object>>> subscribeDashboard() {
+        return Flux.merge(getData(), getHeartbeat());
+    }
+
+    private Flux<ServerSentEvent<HashMap<String, Object>>> getData () {
+        return Flux.interval(Duration.ofSeconds(10))
+                .publishOn(Schedulers.boundedElastic())
+                .map(priceData -> ServerSentEvent.<HashMap<String, Object>>builder()
+                        .event("live")
+                        .data(dashboardDataProvider())
+                        .build())
+                .startWith(ServerSentEvent.<HashMap<String, Object>>builder()
+                        .event("live")
+                        .data(dashboardDataProvider())
+                        .build());
+    }
+
+    private Flux<ServerSentEvent<HashMap<String, Object>>> getHeartbeat () {
+        return Flux.interval(Duration.ofSeconds(3))
+                .map(seq -> ServerSentEvent.<HashMap<String, Object>>builder()
+                        .id("heartbeat")  // Use priceData size as ID
+                        .event("heartbeat")
+                        .build());
     }
 }

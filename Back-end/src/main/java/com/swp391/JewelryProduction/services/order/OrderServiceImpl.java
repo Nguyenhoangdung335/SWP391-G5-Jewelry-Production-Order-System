@@ -29,7 +29,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,6 +39,8 @@ import static com.swp391.JewelryProduction.config.stateMachine.StateMachineUtil.
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
+    private final List<OrderStatus> QUALIFIED_STATUS = List.of(OrderStatus.IN_DESIGNING, OrderStatus.DES_AWAIT_MANA_APPROVAL, OrderStatus.DES_AWAIT_CUST_APPROVAL, OrderStatus.IN_PRODUCTION, OrderStatus.PRO_AWAIT_APPROVAL, OrderStatus.ORDER_COMPLETED);
+
     private final OrderRepository orderRepository;
     private final AccountService accountService;
     private final StaffService staffService;
@@ -199,7 +200,8 @@ public class OrderServiceImpl implements OrderService {
     public double calculateTotalRevenueMonthly(int month) {
         double totalRevenue = 0;
         for(Order order : orderRepository.findAllByMonthAndYear(month, 2024)) {
-            totalRevenue += order.getBudget();
+            if (QUALIFIED_STATUS.contains(order.getStatus()))
+                totalRevenue += order.getQuotation().getTotalPrice();
         };
         return totalRevenue;
     }
