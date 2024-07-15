@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { Container, Table } from "react-bootstrap";
-import { ServerUrl } from "../reusable/ServerUrl";
+import ServerUrl from "../reusable/ServerUrl";
 
 const baseUrl = `${ServerUrl}0/api/v1/crawls`;
 
