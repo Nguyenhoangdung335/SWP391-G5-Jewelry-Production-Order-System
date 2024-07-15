@@ -10,6 +10,12 @@ function QuotationModal(props) {
   const { token } = useAuth();
   const decodedToken = jwtDecode(token);
 
+  const defaultItems = [
+    { itemID: 0, name: "Support cost", quantity: 1, unitPrice: 100, totalPrice: 100 },
+    { itemID: 1, name: "Design cost", quantity: 1, unitPrice: 100, totalPrice: 100 },
+    { itemID: 2, name: "Production cost", quantity: 1, unitPrice: 100, totalPrice: 100 },
+  ];
+
   const initialQuotation = props.quotation
     ? props.quotation
     : {
@@ -31,13 +37,12 @@ function QuotationModal(props) {
 
   useEffect(() => {
     // Update the quotationItems state if props.quotation changes
-    if (props.quotation) {
-      setQuotationItems(props.quotation.quotationItems);
-      setCurrentId(props.quotation.quotationItems.length);
-      setTitle(props.quotation.title);
-      setCreatedDate(props.quotation.createdDate);
-      setExpiredDate(props.quotation.expiredDate);
-    }
+    let updatedQuotationItems = (props.quotation && props.quotation.quotationItems.length > 0) ? props.quotation.quotationItems : defaultItems;
+    setQuotationItems(updatedQuotationItems);
+    setCurrentId(updatedQuotationItems.length);
+    setTitle(props.quotation?.title);
+    setCreatedDate(props.quotation?.createdDate);
+    setExpiredDate(props.quotation?.expiredDate);
   }, [props.quotation]);
 
   const handleAddItem = () => {
@@ -74,6 +79,21 @@ function QuotationModal(props) {
       return item;
     });
     setQuotationItems(updatedItems);
+  };
+
+  const formatDate = (date) => {
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  const formatPrice = (price) => {
+    return price.toLocaleString("en-US", {
+      style: "currency",
+      currency: "USD",
+    });
   };
 
   const getQuotationItems = quotationItems.map((item) => {
@@ -118,7 +138,7 @@ function QuotationModal(props) {
             readOnly={!["ADMIN", "SALE_STAFF"].includes(decodedToken.role)}
           />
         </td>
-        <td>{item.totalPrice || 0}</td>
+        <td>{formatPrice(item.totalPrice || 0)}</td>
         <td>
           {["ADMIN", "SALE_STAFF"].includes(decodedToken.role) && (
               <Button
@@ -137,14 +157,6 @@ function QuotationModal(props) {
     (acc, item) => acc + (item.totalPrice || 0),
     0
   );
-
-  const formatDate = (date) => {
-    const d = new Date(date);
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, "0");
-    const day = String(d.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -172,6 +184,21 @@ function QuotationModal(props) {
     } catch (error) {
       console.error("Error submitting quotation:", error);
     }
+  };
+
+  const handleShowPayment = async (ev) => {
+    const resultURL = `${window.location.origin}/user_setting_page/order_history_page`;
+    try {
+      // Uncomment and configure the axios request as needed
+      const response = await axios.post(`${ServerUrl}/api/payment/create/${props.orderId}?quotationId=${props.quotation.id}&resultURL=${resultURL}`);
+      if (response.status === 200) {
+        window.location.href = response.data.responseList.url;
+      }
+    } catch (error) {
+      console.error("Error creating payment:", error);
+    }
+    // setShowPaymentModal(true);
+    // props.onHide();
   };
 
   return (
@@ -230,7 +257,7 @@ function QuotationModal(props) {
               {getQuotationItems}
               <tr>
                 <td colSpan={4}>Final Price</td>
-                <td>{finalPrice}</td>
+                <td>{formatPrice(finalPrice)}</td>
               </tr>
             </tbody>
           </Table>
@@ -242,6 +269,9 @@ function QuotationModal(props) {
           <Button onClick={props.onHide}>Close</Button>
           {["ADMIN", "SALE_STAFF"].includes(decodedToken.role) && (
               <Button onClick={handleSubmit}>Submit quotation</Button>
+          )}
+          {decodedToken.role === "CUSTOMER" && (
+            <Button onClick={handleShowPayment}>Make Payment</Button>
           )}
         </Modal.Footer>
       </Modal>
