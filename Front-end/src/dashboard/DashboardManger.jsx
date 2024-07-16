@@ -43,19 +43,41 @@ export default function DashboardManager() {
       }
     }
     fetchOrder();
-    async function fetchDashboard() {
-      try {
-        const response = await axios.get(`${ServerUrl}/api/admin/dashboard-test`);
-        if (response.data.status === "OK") {
-          setDashboard(response.data.responseList);
-        } else {
-          console.error("Failed to fetch orders:", response.data.message);
-        }
-      } catch (error) {
-        console.error("Error fetching orders:", error);
-      }
-    }
-    fetchDashboard();
+    // async function fetchDashboard() {
+    //   try {
+    //     const response = await axios.get(`${ServerUrl}/api/admin/dashboard`);
+    //     if (response.data.status === "OK") {
+    //       setDashboard(response.data.responseList);
+    //     } else {
+    //       console.error("Failed to fetch orders:", response.data.message);
+    //     }
+    //   } catch (error) {
+    //     console.error("Error fetching orders:", error);
+    //   }
+    // }
+    // fetchDashboard();
+  }, []);
+
+  useEffect(() => {
+    const eventSource = new EventSource(`${ServerUrl}/api/admin/dashboard`);
+
+    eventSource.onmessage = (event) => {
+      const parsedData = JSON.parse(event.data);
+      setDashboard(parsedData);
+    };
+
+    eventSource.addEventListener('live', (event) => {
+      const parsedData = JSON.parse(event.data);
+      setDashboard(parsedData);
+    });
+
+    eventSource.addEventListener('heartbeat', () => {
+      console.log("Baduum!")
+    });
+
+    eventSource.onerror = (error) => {
+      console.error('Error in SSE connection:', error);
+    };
   }, []);
 
   const columnsClient = [
