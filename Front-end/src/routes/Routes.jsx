@@ -26,7 +26,7 @@ import UserInfo from "../user_settings/UserInfo";
 import SettingPageLayout from "../layout/SettingLayout";
 import OrderHistory from "../user_settings/OrderHistory";
 import NotificationPage from "../user_settings/Notification";
-import OrderDetail from "../user_settings/detailpage/OrderDetail";
+import OrderDetail from "../User_Menu/OrderDetail";
 import OrderDetailManager from "../ordersManager/OrderDetailManager";
 import NotificationDetail from "../user_settings/detailpage/NotificationDetail";
 
