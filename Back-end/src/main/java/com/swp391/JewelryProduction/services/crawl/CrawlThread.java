@@ -1,6 +1,6 @@
 package com.swp391.JewelryProduction.services.crawl;
 
-import com.swp391.JewelryProduction.pojos.Material;
+import com.swp391.JewelryProduction.pojos.Price.MetalPrice;
 import com.swp391.JewelryProduction.services.connection.ConnectionPage;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,14 +23,12 @@ import java.util.List;
 @Builder
 public class CrawlThread implements Runnable{
     private static final Logger log = LoggerFactory.getLogger(CrawlThread.class);
-    private List<Material> materials;
+    private List<MetalPrice> metalPrices;
     private ConnectionPage connection;
     @Value("${exchange.url}")
     private String urlExchange;
     @Value("${page.url}")
     private String urlPage;
-
-
 
     @Override
     public void run() {
@@ -44,13 +42,14 @@ public class CrawlThread implements Runnable{
             Elements materials = connectionPage.select("#gr24_spot_gold_widget-11 > table > tbody > tr");
 
             materials.stream().forEach(product ->{
-                Material material = Material.builder()
-                        .name(product.selectFirst("th").text())
+                MetalPrice metalPrice = MetalPrice.builder()
+                        .name("Gold")
+                        .unit(product.selectFirst("th").text())
                         .price(Double.parseDouble(product.selectFirst("td").text().replace("$", "").replace(",", "")) * rate)
-                        .crawlTime(LocalDateTime.now())
+                        .updatedTime(LocalDateTime.now())
                         .build();
                 synchronized (materials){
-                    this.materials.add(material);
+                    this.metalPrices.add(metalPrice);
                 }
             });
         } catch (IOException e) {
