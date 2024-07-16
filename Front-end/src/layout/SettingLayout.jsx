@@ -8,50 +8,47 @@ import { AiOutlineMessage } from "react-icons/ai";
 
 function SettingPageLayout() {
   const [showChat, setShowChat] = useState(false);
+  const [iconState, setIconState] = useState(false);
 
   const toggleChat = () => {
     setShowChat((prev) => !prev);
+    setIconState((prev) => !prev);
   };
 
   return (
-    <Row>
-      <Col md={3}>
-        <div className="position-fixed w-25">
+    <>
+      <Row>
+        <Col md={2}>
           <SideBar />
-        </div>
-      </Col>
-      <Col md={9}>
-        <Container className="d-flex justify-content-center w-100 h-100">
-          <Outlet />
-        </Container>
-      </Col>
-      {showChat && (
-        // <div className="chat-content position-fixed">
-        <div
-          className="position-fixed mt-4 mb-4"
-          style={{ margin: "0px auto" }}
+        </Col>
+        <Col md={10}>
+          <Container className="d-flex justify-content-center w-100 h-100">
+            <Outlet />
+          </Container>
+        </Col>
+        {showChat && (
+          <div className="chat-overlay position-fixed d-flex align-content-center justify-content-center h-100 w-100 bg-black bg-opacity-50">
+            {/* Your Chat component */}
+            <Chat />
+          </div>
+        )}
+        <Button
+          className="toggle-chat-btn"
+          variant={iconState ? "dark" : "outline-dark"}
+          onClick={toggleChat}
+          style={{
+            position: "fixed",
+            bottom: "3vh",
+            right: "30px",
+            width: "50px",
+            height: "50px",
+            borderRadius: "100%",
+          }}
         >
-          <Chat />
-        </div>
-        // </div>
-      )}
-      <Button
-        className="toggle-chat-btn"
-        variant="outline-dark"
-        onClick={toggleChat}
-        style={{
-          position: "fixed",
-          bottom: "3vh",
-          right: "30px",
-          width: "50px",
-          height: "50px",
-          borderRadius: "100%",
-          transition: "right 0.3s ease",
-        }}
-      >
-        <AiOutlineMessage size="25px" />
-      </Button>
-    </Row>
+          <AiOutlineMessage size="25px" />
+        </Button>
+      </Row>
+    </>
   );
 }
 
