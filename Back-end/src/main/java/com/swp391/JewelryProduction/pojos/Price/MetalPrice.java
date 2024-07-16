@@ -1,14 +1,14 @@
 package com.swp391.JewelryProduction.pojos.Price;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.swp391.JewelryProduction.pojos.designPojos.ProductSpecification;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -35,6 +35,12 @@ public class MetalPrice {
     @JsonFormat(pattern = "HH:mm dd-MM-yyyy")
     @DateTimeFormat(pattern = "HH:mm dd-MM-yyyy")
     private LocalDateTime updatedTime;
+
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @JsonIgnore
+    @OneToMany(mappedBy = "metal", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<ProductSpecification> specifications;
 
     @Override
     public String toString() {
