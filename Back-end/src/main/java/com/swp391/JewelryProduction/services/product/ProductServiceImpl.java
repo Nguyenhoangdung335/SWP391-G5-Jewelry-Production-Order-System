@@ -106,8 +106,6 @@ public class ProductServiceImpl implements ProductService {
         oldSpecs.setTexture(newSpecs.getTexture());
         oldSpecs.setChainType(newSpecs.getChainType());
         oldSpecs.setGemstone(newSpecs.getGemstone());
-        oldSpecs.setShape(newSpecs.getShape());
-        oldSpecs.setGemstoneWeight(newSpecs.getGemstoneWeight());
         return oldSpecs;
     }
 }
