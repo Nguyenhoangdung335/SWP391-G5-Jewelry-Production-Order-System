@@ -61,6 +61,10 @@ const NotificationDetail = () => {
       const response = await axios.post(url);
       if (response.status === 200) {
         // Handle success, maybe show a message or update UI
+        setNotification((prevNotification) => ({
+          ...prevNotification,
+          option: false,
+        }));
         alert("Confirmation successful");
         const decodedToken = jwtDecode(token);
         if (decodedToken.role === "MANAGER")
