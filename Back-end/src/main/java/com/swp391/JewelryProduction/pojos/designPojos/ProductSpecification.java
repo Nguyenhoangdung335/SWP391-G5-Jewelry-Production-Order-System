@@ -2,6 +2,8 @@ package com.swp391.JewelryProduction.pojos.designPojos;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.swp391.JewelryProduction.pojos.Price.GemstonePrice;
+import com.swp391.JewelryProduction.pojos.Price.MetalPrice;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -39,7 +41,9 @@ public class ProductSpecification {
 
     @ToString.Include
     @EqualsAndHashCode.Include
-    private String metal;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "metal_id")
+    private MetalPrice metal;
 
     @ToString.Include
     @EqualsAndHashCode.Include
@@ -51,15 +55,9 @@ public class ProductSpecification {
 
     @ToString.Include
     @EqualsAndHashCode.Include
-    private String gemstone;
-
-    @ToString.Include
-    @EqualsAndHashCode.Include
-    private String shape;
-
-    @ToString.Include
-    @EqualsAndHashCode.Include
-    private String gemstoneWeight;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "gemstone_id")
+    private GemstonePrice gemstone;
 
     @JsonIgnore
     @ToString.Exclude
