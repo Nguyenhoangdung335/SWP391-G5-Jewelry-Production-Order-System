@@ -162,6 +162,16 @@ public class OrderController {
         }
     }
 
+    @PostMapping("/cancel/{orderId}")
+    public ResponseEntity<Response> cancelOrder(@PathVariable("orderId") String orderId) {
+        Order order = orderService.findOrderById(orderId);
+        //PROVIDE SERVICE FOR CANCELING ORDER !!!
+        return Response.builder()
+                .status(HttpStatus.OK)
+                .message("Request sent successfully")
+                .buildEntity();
+    }
+
     @GetMapping("/account/{accountId}")
     public ResponseEntity<Response> getOrderByAccountId(
             @PathVariable("accountId") String accountId
