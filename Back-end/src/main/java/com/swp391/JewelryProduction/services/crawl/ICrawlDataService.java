@@ -11,5 +11,8 @@ public interface ICrawlDataService {
 
     void crawData() throws IOException, InterruptedException;
     Flux<ServerSentEvent<List<Material>>> getAll();
+    void addMaterial(Material material);
+    void deleteMaterial(Long id);
+    void updateMaterial(Material material);
 
 }
