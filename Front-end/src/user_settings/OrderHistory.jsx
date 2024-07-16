@@ -4,6 +4,7 @@ import { useAuth } from "../provider/AuthProvider";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import ServerUrl from "../reusable/ServerUrl";
+import arrayToDate from "../reusable/ArrayToDate";
 import { Link, useLocation } from "react-router-dom";
 import snowfall from "../assets/snowfall.jpg";
 
@@ -48,10 +49,9 @@ function OrderHistory() {
           <Card className=" link-opacity-50-hover" style={{ width: "20rem" }}>
             <Card.Img onError={(ev)=> ev.target.src=snowfall} variant="top" src={i.imageURL || snowfall} alt="Order Image" />
             <Card.Body>
-              <Card.Title className="fw-semibold" style={{ height: "50px" }}>{i.name}</Card.Title>
               <Card.Text>{i.id}</Card.Text>
               <Card.Text>{i.budget} $</Card.Text>
-              <Card.Text>{i.createdDate}</Card.Text>
+              <Card.Text>{arrayToDate(i.createdDate)}</Card.Text>
               <Badge>{i.status}</Badge>
             </Card.Body>
           </Card>

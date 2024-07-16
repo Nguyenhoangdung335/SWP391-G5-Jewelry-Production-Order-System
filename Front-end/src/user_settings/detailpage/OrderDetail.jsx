@@ -67,6 +67,21 @@ function OrderDetail() {
   //   setShowPayment(true);
   // };
 
+  const handleCancelOrder = async () => {
+    try {
+      const response = await axios.post(`${ServerUrl}/api/order/cancel/${id}`);
+      if (response.status === 200) {
+        alert("Order cancelled successfully.");
+        // Optionally, you can redirect or update the UI to reflect the cancellation
+      } else {
+        alert("Failed to cancel the order.");
+      }
+    } catch (error) {
+      console.error("Error cancelling order:", error);
+      alert("An error occurred while cancelling the order.");
+    }
+  };
+
   return (
     <>
       <Container className="pt-4 pb-4">
@@ -247,6 +262,11 @@ function OrderDetail() {
                   </div>
                 </div>
               </div>
+            </Row>
+            <Row className="mt-2">
+              <Button variant="danger" onClick={handleCancelOrder}>
+                Cancel Order
+              </Button>
             </Row>
           </Col>
         </Row>

@@ -5,24 +5,13 @@ import { Badge, Button, Col, Container, Row } from "react-bootstrap";
 import ServerUrl from "../../reusable/ServerUrl";
 import { jwtDecode } from "jwt-decode";
 import { useAuth } from "../../provider/AuthProvider";
+import arrayToDate from "../../reusable/ArrayToDate";
 
 const NotificationDetail = () => {
   const [notification, setNotification] = useState(null);
   const { token } = useAuth();
   const { notificationId } = useParams();
   const navigation = useNavigate();
-
-  const arrayToDate = (dateArray) => {
-    const dateObject = new Date(
-      dateArray[0],
-      dateArray[1] - 1,
-      dateArray[2],
-      dateArray[3],
-      dateArray[4],
-      dateArray[5]
-    );
-    return dateObject.toLocaleString(); // Format the date as needed
-  };
 
   useEffect(() => {
     const fetchNotification = async () => {
