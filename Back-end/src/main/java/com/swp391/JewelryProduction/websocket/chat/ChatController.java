@@ -93,9 +93,9 @@ public class ChatController {
         return ResponseEntity.ok(messages);
     }
 
-    @PostMapping("/mark-messages-as-read/{recipientId}")
-    public ResponseEntity<Void> markMessagesAsRead(@PathVariable String recipientId) {
-        chatMessageService.markMessagesAsRead(recipientId);
+    @PostMapping("/mark-messages-as-read/{recipientId}/{senderId}")
+    public ResponseEntity<Void> markMessagesAsRead(@PathVariable String recipientId, @PathVariable String senderId) {
+        chatMessageService.markMessagesAsRead(recipientId,senderId);
         return ResponseEntity.ok().build();
     }
 }
