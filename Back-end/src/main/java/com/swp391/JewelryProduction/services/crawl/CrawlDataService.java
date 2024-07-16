@@ -1,8 +1,11 @@
 package com.swp391.JewelryProduction.services.crawl;
 
+import com.swp391.JewelryProduction.pojos.Price.GemstonePrice;
 import com.swp391.JewelryProduction.pojos.Price.MetalPrice;
-import com.swp391.JewelryProduction.repositories.MaterialRepository;
+import com.swp391.JewelryProduction.repositories.GemstonePriceRepository;
+import com.swp391.JewelryProduction.repositories.MetalPriceRepository;
 import com.swp391.JewelryProduction.services.connection.ConnectionPage;
+import com.swp391.JewelryProduction.util.exceptions.ObjectNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,8 +28,9 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class    CrawlDataService implements ICrawlDataService {
 
-    private final MaterialRepository materialRepository;
+    private final MetalPriceRepository metalPriceRepository;
     private final ConnectionPage connection;
+    private final GemstonePriceRepository gemstonePriceRepository;
 
     @Value("${exchange.url}")
     private String urlExchange;
@@ -59,14 +63,14 @@ public class    CrawlDataService implements ICrawlDataService {
             }
 
             for (MetalPrice metalPrice : metalPrices) {
-                Optional<MetalPrice> existingMaterialOpt = materialRepository.findByName(metalPrice.getName());
+                Optional<MetalPrice> existingMaterialOpt = metalPriceRepository.findByName(metalPrice.getName());
                 if (existingMaterialOpt.isPresent()) {
                     MetalPrice existingMetalPrice = existingMaterialOpt.get();
                     existingMetalPrice.setPrice(metalPrice.getPrice());
                     existingMetalPrice.setUpdatedTime(metalPrice.getUpdatedTime());
-                    materialRepository.save(existingMetalPrice);
+                    metalPriceRepository.save(existingMetalPrice);
                 } else {
-                    materialRepository.save(metalPrice);
+                    metalPriceRepository.save(metalPrice);
                 }
             }            log.info("Finished crawling data!");
 
@@ -88,6 +92,28 @@ public class    CrawlDataService implements ICrawlDataService {
         return Flux.merge(getHeartBeat(), getPrice());
     }
 
+    @Override
+    public List<GemstonePrice> getGemstones() {
+        return gemstonePriceRepository.findAll().stream().toList();
+    }
+
+    @Override
+    public GemstonePrice createGemstone(GemstonePrice gemstone) {
+        return gemstonePriceRepository.save(gemstone);
+    }
+
+    @Override
+    public GemstonePrice updateGemstone(GemstonePrice gemstone) {
+        return gemstonePriceRepository.save(gemstonePriceRepository.findById(gemstone.getId())
+                .orElseThrow(() -> new ObjectNotFoundException("Gemstone with ID " + gemstone.getId() + " not found!")));
+    }
+
+    @Override
+    public void deleteGemstone(Integer id) {
+        gemstonePriceRepository.delete(gemstonePriceRepository.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException("Gemstone with ID " + id + " not found!")));
+    }
+
     private Flux<ServerSentEvent<List<MetalPrice>>> getHeartBeat() {
         return Flux.interval(Duration.ofSeconds(3))
                 .map(seq -> ServerSentEvent.<List<MetalPrice>>builder()
@@ -97,7 +123,7 @@ public class    CrawlDataService implements ICrawlDataService {
     }
 
     private Flux<ServerSentEvent<List<MetalPrice>>> getPrice() {
-        List<MetalPrice> list = materialRepository.findAll();
+        List<MetalPrice> list = metalPriceRepository.findAll();
         return Flux.interval(Duration.ofSeconds(10))
                 .publishOn(Schedulers.boundedElastic())
                 .map(priceData -> ServerSentEvent.<List<MetalPrice>>builder()
