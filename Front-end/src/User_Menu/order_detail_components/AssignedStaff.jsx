@@ -1,9 +1,9 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import ServerUrl from "../reusable/ServerUrl";
+import ServerUrl from "../../reusable/ServerUrl";
 import { Button, Form, Row } from "react-bootstrap";
 import { jwtDecode } from "jwt-decode";
-import { useAuth } from "../provider/AuthProvider";
+import { useAuth } from "../../provider/AuthProvider";
 
 function AssignedStaff({ data, onSubmit }) {
   const { token } = useAuth();
@@ -27,18 +27,20 @@ function AssignedStaff({ data, onSubmit }) {
   );
 
   useEffect(() => {
-    const fetchStaff = async () => {
-      try {
-        const response = await axios.get(
-          `${ServerUrl}/api/admin/get/staff?role=${decodedToken.role}`
-        );
-        setStaff(response.data.responseList);
-      } catch (error) {
-        console.error("Error fetching staff data:", error);
-      }
-    };
+    if (decodedToken.role === "MANAGER") {
+      const fetchStaff = async () => {
+        try {
+          const response = await axios.get(
+            `${ServerUrl}/api/admin/get/staff?role=${decodedToken.role}`
+          );
+          setStaff(response.data.responseList);
+        } catch (error) {
+          console.error("Error fetching staff data:", error);
+        }
+      };
 
-    fetchStaff();
+      fetchStaff();
+    }
   }, []);
 
   const handleSubmit = () => {
@@ -51,7 +53,7 @@ function AssignedStaff({ data, onSubmit }) {
   };
 
   return (
-    <Row className="pb-2">
+    <>
       <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
         <div className="p-2">
           <div
@@ -96,13 +98,13 @@ function AssignedStaff({ data, onSubmit }) {
           }
         </div>
       </div>
-    </Row>
+    </>
   );
 }
 
 function StaffField(props) {
   const isAuthorized = ["MANAGER", "ADMIN"].includes(props.role);
-  const chosenStaff = props.staffOptions.find(staff => staff.id === props.value);
+  // const chosenStaff = props.staffOptions.find(staff => staff.id === props.value);
 
   return (
     <>
@@ -132,7 +134,7 @@ function StaffField(props) {
           <Form.Control style={{textAlign: "right"}}
             as="input"
             plaintext readOnly
-            value={props.value}
+            value={(props.value) ?(props.value.id + "-" + props.value.userInfo.firstName + " " + props.value.userInfo.lastName) : "Pending"}
           />
         </Form.Group>
       </Form.Group>}

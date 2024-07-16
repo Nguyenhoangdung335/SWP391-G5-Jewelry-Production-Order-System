@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import ServerUrl from "../../reusable/ServerUrl";
+import ServerUrl from "../reusable/ServerUrl";
 import {
   Badge,
   Button,
@@ -10,22 +10,20 @@ import {
   Modal,
   Row,
   Table,
-  Form,
 } from "react-bootstrap";
-import snowfall from "../../assets/snowfall.jpg";
-import qrCode from "../../assets/qrCode.jpg";
-import QuotationModal from "../../ordersManager/QuotationModal";
-import WarrantyCertificateModal from "../../warranty/WarrantyCertificateModal";
+import snowfall from "../assets/snowfall.jpg"
+import QuotationModal from "./order_detail_components/QuotationModal";
+import WarrantyCertificateModal from "../warranty/WarrantyCertificateModal";
+import AssignedStaff from "./order_detail_components/AssignedStaff";
 
 function OrderDetail() {
+  const quotationQualified = ["AWAIT_TRANSACTION", "IN_DESIGNING", "DES_AWAIT_MANA_APPROVAL", "DES_AWAIT_CUST_APPROVAL", "IN_PRODUCTION", "PRO_AWAIT_APPROVAL", "ORDER_COMPLETED"];
   const state = useLocation();
   const [data, setData] = useState();
   const [showQuotation, setShowQuotation] = useState(false);
   const id = state.state;
-  const location = useLocation();
   const [showWarranty, setShowWarranty] = useState(false);
   const [imageLink, setImageLink] = useState(null);
-  const [showPayment, setShowPayment] = useState(false);
 
   const arrayToDate = (date) => {
     if(date===null || date===0){
@@ -84,13 +82,17 @@ function OrderDetail() {
 
   return (
     <>
-      <Container className="pt-4 pb-4">
         <Row>
-          <Col md={8}>
+          <Col md={8} style={{
+              height: "100vh",
+              overflowY: "auto",
+              paddingTop: "1%",
+              paddingBottom: "1%",
+            }}>
             <div className="pb-2">
               <img
-                src={data?.design?.designLink || snowfall}
-                alt="Product Image"
+                src={imageLink}
+                alt="Product"
                 className="w-100 h-100"
               />
             </div>
@@ -113,18 +115,6 @@ function OrderDetail() {
                   <tr>
                     <th>Completed Date</th>
                     <td>{arrayToDate(data.completedDate)}</td>
-                  </tr>
-                  <tr>
-                    <th>Sale Staff</th>
-                    <td>{data?.saleStaff?.userInfo?.firstName} {data?.saleStaff?.userInfo?.lastName}</td>
-                  </tr>
-                  <tr>
-                    <th>Design Staff</th>
-                    <td>{data?.designStaff?.userInfo?.firstName} {data?.designStaff?.userInfo?.lastName}</td>
-                  </tr>
-                  <tr>
-                    <th>Production Staff</th>
-                    <td>{data?.productionStaff?.userInfo?.firstName} {data?.productionStaff?.userInfo?.lastName}</td>
                   </tr>
                   <tr>
                     <th>Total Price</th>
@@ -150,7 +140,9 @@ function OrderDetail() {
             </div>
           </Col>
 
-          <Col md={4}>
+          <Col md={4} style={{
+              height: "100vh", overflowY: "auto"
+            }}>
             <Row className="pb-2">
               <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
                 <div className="p-2">
@@ -179,6 +171,9 @@ function OrderDetail() {
                   </div>
                 </div>
               </div>
+            </Row>
+            <Row className="pb-2">
+              <AssignedStaff data={data} />
             </Row>
             <Row className="pb-2">
               <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
@@ -234,16 +229,28 @@ function OrderDetail() {
                       <td>{data.product.specification.shape}</td>
                     </tr>
                   </Table>
-                  <div
-                    onClick={handleShowQuotations}
-                    className="d-flex justify-content-end mb-2"
-                  >
-                    <Button>Show Quotations</Button>
-                  </div>
                 </div>
               </div>
             </Row>
-            {/* {data.status === "ORDER_COMPLETED" &&  */}
+            {quotationQualified.includes(data.status) && <Row className="pb-2">
+              <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
+                <div className="p-2">
+                  <div
+                    className="mb-2"
+                    style={{
+                      borderBottom: "1px solid rgba(166, 166, 166, 0.5)",
+                    }}
+                  >
+                    <div className="d-flex justify-content-between mb-2">
+                      <h4 style={{ display: "inline-block" }}>Quotation</h4>
+                      <Button onClick={handleShowQuotations}>
+                        Show Quotations
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Row>}
             <Row>
               <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
                 <div className="p-2">
@@ -270,8 +277,6 @@ function OrderDetail() {
             </Row>
           </Col>
         </Row>
-      </Container>
-
       {data.quotation && (<QuotationModal
         quotation={data.quotation}
         orderId={data.id}
@@ -284,80 +289,5 @@ function OrderDetail() {
   );
 }
 
-function MyVerticallyCenteredModal(props) {
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
-
-  const quotationItems = props.quotation.quotationItems;
-
-  const getQuotationItems = quotationItems.map((item) => (
-    <tr key={item.itemID}>
-      <td>{item.itemID}</td>
-      <td>{item.name}</td>
-      <td>{item.quantity}</td>
-      <td>{item.unitPrice}</td>
-      <td>{item.totalPrice}</td>
-    </tr>
-  ));
-
-  const handleShowPayment = async (ev) => {
-    const resultURL = `${window.location.origin}/user_setting_page/order_history_page`;
-    try {
-      // Uncomment and configure the axios request as needed
-      const response = await axios.post(`${ServerUrl}/api/payment/create/${props.orderId}?quotationId=${props.quotation.id}&resultURL=${resultURL}`);
-      if (response.status === 200) {
-        window.location.href = response.data.responseList.url;
-      }
-    } catch (error) {
-      console.error("Error creating payment:", error);
-    }
-    // setShowPaymentModal(true);
-    // props.onHide();
-  };
-
-  return (
-    <>
-      <Modal
-        {...props}
-        size="lg"
-        aria-labelledby="contained-modal-title-vcenter"
-        centered
-      >
-        <Modal.Header closeButton>
-          <Modal.Title id="contained-modal-title-vcenter">
-            Quotations
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Table bordered hover striped>
-            <thead>
-              <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Quantity</th>
-                <th>Unit Price</th>
-                <th>Total Price</th>
-              </tr>
-            </thead>
-            <tbody>
-              {getQuotationItems}
-              <tr>
-                <td colSpan={4}>Final Price</td>
-                <td>{props.quotation.totalPrice}</td>
-              </tr>
-            </tbody>
-          </Table>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button onClick={props.onHide}>Decline Quotation</Button>
-          <Button onClick={handleShowPayment}>Make Payment</Button>
-        </Modal.Footer>
-      </Modal>
-    </>
-  );
-}
-
-function WarrantyModal(props) {
-  
-}
 
 export default OrderDetail;
