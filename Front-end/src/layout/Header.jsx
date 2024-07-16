@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {Link, Navigate, useNavigate} from "react-router-dom";
 import {IoChatbubbleOutline, IoNotificationsOutline} from "react-icons/io5";
 import {GoPerson} from "react-icons/go";
@@ -20,10 +20,11 @@ export default function Header() {
     const [role, setRole] = useState("GUEST");
     const [firstName, setFirstName] = useState("");
     const {token, setToken} = useAuth();
-    const [requestSent, setRequestSent] = useState(false);
     const [notifications, setNotifications] = useState([]);
+    const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
     const [rowsToShow, setRowsToShow] = useState(5);
     const navigate = useNavigate();
+
 
     useEffect(() => {
         if (token) {
@@ -44,6 +45,9 @@ export default function Header() {
                 .catch((error) => {
                     console.error("Error fetching notifications:", error);
                 });
+
+            fetchUnreadMessages(decodedToken.id);
+
         } else {
             setRole("GUEST");
         }
@@ -75,6 +79,19 @@ export default function Header() {
                 });
         } else {
             alert("You must login to use this feature");
+        }
+    };
+
+    const fetchUnreadMessages = async (userId) => {
+        try {
+            const response = await axios.get(`${ServerUrl}/unread-messages/${userId}`);
+            setUnreadMessagesCount(response.data.length || 0);
+        } catch (error) {
+            if (error.response?.status === 204) {
+                console.log('No unread messages found.');
+            } else {
+                console.error('Failed to fetch unread messages:', error.message);
+            }
         }
     };
 
@@ -142,7 +159,7 @@ export default function Header() {
         });
     }
 
-    const handleClick = () => {
+    const handleDesignClick = () => {
         checkCurrentOrder();
     };
 
@@ -156,6 +173,10 @@ export default function Header() {
 
     const handleNotificationClick = (notificationId) => {
         navigate(`/user_setting_page/notification_page/${notificationId}`);
+    };
+
+    const handleChatClick = () => {
+        setUnreadMessagesCount(0);
     };
 
     const notificationMenu = (
@@ -253,9 +274,29 @@ export default function Header() {
                     {role !== "GUEST" && token && (
                         <>
                             <NavLink>
-                                <Link to="/chat" style={{textDecoration: "none"}}>
-                                    <IoChatbubbleOutline size={30} color="black"/>
-                                </Link>
+                                <div style={{ position: "relative" }} onClick={handleChatClick}>
+                                    <Link to="/chat" style={{ textDecoration: "none" }}>
+                                        <IoChatbubbleOutline size={30} color="black" />
+                                        {unreadMessagesCount > 0 && (
+                                            <span
+                                                style={{
+                                                    position: "absolute",
+                                                    top: 0,
+                                                    right: 0,
+                                                    backgroundColor: "red",
+                                                    color: "white",
+                                                    borderRadius: "50%",
+                                                    padding: "0.25em 0.5em",
+                                                    fontSize: "0.75em",
+                                                    lineHeight: "1",
+                                                    transform: "translate(50%, -50%)",
+                                                }}
+                                            >
+                                                {unreadMessagesCount}
+                                            </span>
+                                        )}
+                                    </Link>
+                                </div>
                             </NavLink>
                             <NavLink>
                                 <div
@@ -287,8 +328,8 @@ export default function Header() {
                                                         transform: "translate(50%, -50%)",
                                                     }}
                                                 >
-                          {unreadCount}
-                        </span>
+                                                    {unreadCount}
+                                                </span>
                                             )}
                                         </div>
                                     </Dropdown>
@@ -336,7 +377,7 @@ export default function Header() {
                     )}
                     <Button
                         style={{borderRadius: "22px", width: "150px"}}
-                        onClick={handleClick}
+                        onClick={handleDesignClick}
                     >
                         Design Jewelry
                     </Button>
