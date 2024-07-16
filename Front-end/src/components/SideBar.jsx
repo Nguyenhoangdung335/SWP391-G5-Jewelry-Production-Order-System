@@ -12,15 +12,14 @@ function SideBar() {
 
   return (
     <div
+      className="w-100 position-sticky"
       style={{
-        backgroundColor: "white",
         height: "100vh",
-        width: "100%",
-        boxShadow: " 1px 0 10px -3px",
+        backgroundColor:"rgb(62, 62, 62)",
       }}
     >
       <div className="text-center p-4 text-decoration-none">
-        <Link to="/" className="text-decoration-none text-black">
+        <Link to="/" className="text-decoration-none text-white">
           <h1 className="fw-bold">宝石店</h1>
         </Link>
       </div>
@@ -28,7 +27,7 @@ function SideBar() {
         <div style={{ padding: "15px 30px 9px" }}>
           <Link
             to="/user_setting_page"
-            className="text-decoration-none text-black"
+            className="text-decoration-none text-white"
           >
             <h5>Profile</h5>
           </Link>
@@ -38,7 +37,7 @@ function SideBar() {
         <div style={{ padding: "15px 30px 9px" }}>
           <Link
             to="/user_setting_page/order_history_page"
-            className="text-decoration-none text-black"
+            className="text-decoration-none text-white"
           >
             <h5>Order History</h5>
           </Link>
@@ -48,7 +47,7 @@ function SideBar() {
         <div style={{ padding: "15px 30px 9px" }}>
           <Link
             to="/user_setting_page/notification_page"
-            className="text-decoration-none text-black"
+            className="text-decoration-none text-white"
           >
             <h5>Notification</h5>
           </Link>
@@ -59,7 +58,7 @@ function SideBar() {
           <Link
             to="/login"
             onClick={handleLogout}
-            className="text-decoration-none text-black"
+            className="text-decoration-none text-white"
           >
             <h5>Logout</h5>
           </Link>

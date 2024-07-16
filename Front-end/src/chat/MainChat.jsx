@@ -9,6 +9,7 @@ import serverUrl from "../reusable/ServerUrl";
 import './chat.css'
 import { useAuth } from "../provider/AuthProvider";
 import { jwtDecode } from "jwt-decode";
+import { Container } from 'react-bootstrap';
 
 const axiosInstance = axios.create({
     baseURL: serverUrl,
@@ -320,8 +321,8 @@ const Chat = () => {
     };
 
     return (
-        <div className=" container w-100 h-100">
-            <div ref={chatPageRef} id="chat-page" className='d-flex justify-content-center'>
+        <Container>
+            <div ref={chatPageRef} id="chat-page" className='d-flex justify-content-center mt-4'>
                 <div className="chat-container shadow-lg">
                     <div className="users-list">
                         <div className="users-list-container">
@@ -358,7 +359,7 @@ const Chat = () => {
                     </div>
                 </div>
             </div>
-        </div>
+        </Container>
     );
 };
 

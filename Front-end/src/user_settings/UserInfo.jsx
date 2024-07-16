@@ -139,7 +139,7 @@ function UserInfo() {
   };
 
   return (
-    <div className="w-75 h-100" style={{ paddingTop: "5%" }}>
+    <div className="w-50 h-100" style={{ paddingTop: "5%" }}>
       <div style={{ paddingBottom: "50px" }}>
         <h1 className="fw-bold">Profile</h1>
       </div>
