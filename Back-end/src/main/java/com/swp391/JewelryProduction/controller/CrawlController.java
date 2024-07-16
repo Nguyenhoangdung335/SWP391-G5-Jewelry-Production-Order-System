@@ -1,7 +1,7 @@
 package com.swp391.JewelryProduction.controller;
 
 import com.swp391.JewelryProduction.dto.DataDTO;
-import com.swp391.JewelryProduction.pojos.Material;
+import com.swp391.JewelryProduction.pojos.Price.MetalPrice;
 import com.swp391.JewelryProduction.services.crawl.ICrawlDataService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -38,7 +38,7 @@ public class CrawlController {
     }
 
     @GetMapping
-    public Flux<ServerSentEvent<List<Material>>> getPrice() throws IOException {
+    public Flux<ServerSentEvent<List<MetalPrice>>> getPrice() throws IOException {
         return CrawDataService.getAll();
     }
 
