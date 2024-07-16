@@ -309,6 +309,7 @@ function OrderDetailManager() {
                 </div>
               </div>
             </Row>
+            {["SALE_STAFF", "ADMIN"].includes(decodedToken.role) && (
             <Row className="pb-2">
               <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
                 <div className="p-2">
@@ -328,7 +329,8 @@ function OrderDetailManager() {
                 </div>
               </div>
             </Row>
-            {["SALE_STAFF", "ADMIN"].includes(decodedToken.role) && (
+            )}
+            {["SALE_STAFF", "ADMIN", "CUSTOMER", "MANAGER"].includes(decodedToken.role) && (
               <Row className="pb-2">
                 <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
                   <div className="p-2">

@@ -97,10 +97,6 @@ const Chat = () => {
 
         return () => {
             if (stompClient) {
-                // stompClient.publish({
-                //     destination: "/app/user.disconnectUser",
-                //     body: JSON.stringify({ id: userId }),
-                // });
                 stompClient.deactivate();
                 setStompClient(null);
             }
@@ -337,26 +333,6 @@ const Chat = () => {
             reader.onerror = reject;
         });
     };
-
-    // const onLogout = useCallback(() => {
-    //     setStompClient((prevClient) => {
-    //         if (prevClient) {
-    //             prevClient.publish({
-    //                 destination: "/app/user.disconnectUser",
-    //                 body: JSON.stringify({ id: userId }),
-    //             });
-    //             // Do not deactivate stompClient here, leave it active
-    //         }
-    //         return prevClient; // Return the unchanged stompClient
-    //     });
-    //
-    //     setCurrentUser(null);
-    //     setUserId(null);
-    //     setUserSaleStaff(null);
-    //     setSelectedUserId(null);
-    //     setConnectedUsers([]);
-    //     setMessages([]);
-    // }, [userId]);
 
     return (
         <div className=" container w-100 h-100">
