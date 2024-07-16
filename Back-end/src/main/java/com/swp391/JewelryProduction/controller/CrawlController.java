@@ -43,4 +43,30 @@ public class CrawlController {
         return CrawDataService.getAll();
     }
 
+    @PostMapping("/create/gemstone")
+    public ResponseEntity<Response> createGemstone(@RequestBody GemstonePrice gemstone) {
+        return Response.builder()
+                .message("Request sent successfully")
+                .status(HttpStatus.OK)
+                .response("gemstone", crawlDataService.createGemstone(gemstone))
+                .buildEntity();
+    }
+
+    @PutMapping("/update/gemstone")
+    public ResponseEntity<Response> updateGemstone(@RequestBody GemstonePrice gemstone) {
+        return Response.builder()
+                .message("Request sent successfully")
+                .status(HttpStatus.OK)
+                .response("gemstone", crawlDataService.updateGemstone(gemstone))
+                .buildEntity();
+    }
+
+    @DeleteMapping("/delete/gemstone")
+    public ResponseEntity<Response> deleteGemstone(@RequestParam int id) {
+        crawlDataService.deleteGemstone(id);
+        return Response.builder()
+                .message("Request sent successfully")
+                .status(HttpStatus.OK)
+                .buildEntity();
+    }
 }
