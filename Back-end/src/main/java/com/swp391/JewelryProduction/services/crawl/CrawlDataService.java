@@ -1,9 +1,8 @@
 package com.swp391.JewelryProduction.services.crawl;
 
-import com.swp391.JewelryProduction.pojos.Material;
+import com.swp391.JewelryProduction.pojos.Price.MetalPrice;
 import com.swp391.JewelryProduction.repositories.MaterialRepository;
 import com.swp391.JewelryProduction.services.connection.ConnectionPage;
-import com.swp391.JewelryProduction.util.exceptions.ObjectNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,13 +37,13 @@ public class    CrawlDataService implements ICrawlDataService {
     @Override
     public void crawData() {
         log.info("Starting to crawl data ...");
-        List<Material> materials = new ArrayList<>();
+        List<MetalPrice> metalPrices = new ArrayList<>();
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();
 
         try {
             CrawlThread crawlThread = CrawlThread.builder()
-                    .materials(materials)
+                    .metalPrices(metalPrices)
                     .connection(connection)
                     .urlExchange(urlExchange)
                     .urlPage(urlPage)
@@ -59,15 +58,15 @@ public class    CrawlDataService implements ICrawlDataService {
                 log.warn("Executor was abruptly shut down. " + droppedTasks.size() + " tasks will not be executed.");
             }
 
-            for (Material material : materials) {
-                Optional<Material> existingMaterialOpt = materialRepository.findByName(material.getName());
+            for (MetalPrice metalPrice : metalPrices) {
+                Optional<MetalPrice> existingMaterialOpt = materialRepository.findByName(metalPrice.getName());
                 if (existingMaterialOpt.isPresent()) {
-                    Material existingMaterial = existingMaterialOpt.get();
-                    existingMaterial.setPrice(material.getPrice());
-                    existingMaterial.setCrawlTime(material.getCrawlTime());
-                    materialRepository.save(existingMaterial);
+                    MetalPrice existingMetalPrice = existingMaterialOpt.get();
+                    existingMetalPrice.setPrice(metalPrice.getPrice());
+                    existingMetalPrice.setUpdatedTime(metalPrice.getUpdatedTime());
+                    materialRepository.save(existingMetalPrice);
                 } else {
-                    materialRepository.save(material);
+                    materialRepository.save(metalPrice);
                 }
             }            log.info("Finished crawling data!");
 
@@ -85,45 +84,28 @@ public class    CrawlDataService implements ICrawlDataService {
     }
 
     @Override
-    public Flux<ServerSentEvent<List<Material>>> getAll() {
+    public Flux<ServerSentEvent<List<MetalPrice>>> getAll() {
         return Flux.merge(getHeartBeat(), getPrice());
     }
 
-    @Override
-    public void addMaterial(Material material) {
-        materialRepository.save(material);
-    }
-
-    @Override
-    public void deleteMaterial(Long id) {
-        materialRepository.delete(materialRepository.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Material with id " + id + " not found")));
-    }
-
-    @Override
-    public void updateMaterial(Material material) {
-            materialRepository.save(materialRepository.findById(material.getId())
-                    .orElseThrow(() -> new ObjectNotFoundException("Material with id " + material.getId() + " not found")));
-    }
-
-    private Flux<ServerSentEvent<List<Material>>> getHeartBeat() {
+    private Flux<ServerSentEvent<List<MetalPrice>>> getHeartBeat() {
         return Flux.interval(Duration.ofSeconds(3))
-                .map(seq -> ServerSentEvent.<List<Material>>builder()
+                .map(seq -> ServerSentEvent.<List<MetalPrice>>builder()
                         .id("heartbeat")  // Use priceData size as ID
                         .event("heartbeat")
                         .build());
     }
 
-    private Flux<ServerSentEvent<List<Material>>> getPrice() {
-        List<Material> list = materialRepository.findAll();
+    private Flux<ServerSentEvent<List<MetalPrice>>> getPrice() {
+        List<MetalPrice> list = materialRepository.findAll();
         return Flux.interval(Duration.ofSeconds(10))
                 .publishOn(Schedulers.boundedElastic())
-                .map(priceData -> ServerSentEvent.<List<Material>>builder()
+                .map(priceData -> ServerSentEvent.<List<MetalPrice>>builder()
                         .id(String.valueOf(list.size()))  // Use priceData size as ID
                         .event("live")
                         .data(list)
                         .build())
-                .startWith(ServerSentEvent.<List<Material>>builder()
+                .startWith(ServerSentEvent.<List<MetalPrice>>builder()
                         .id(String.valueOf(list.size()))
                         .event("live")
                         .data(list)
