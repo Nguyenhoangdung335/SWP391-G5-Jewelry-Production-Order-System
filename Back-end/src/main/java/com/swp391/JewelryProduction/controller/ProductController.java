@@ -24,6 +24,7 @@ public class ProductController {
             @RequestParam(name = "size", defaultValue = "5") int size
     ) {
         Page<Product> productPage = productService.findAll(page, size);
+        productPage.getContent().forEach(System.out::println);
         return Response.builder()
                 .status(HttpStatus.OK)
                 .message("Get products successfully")
