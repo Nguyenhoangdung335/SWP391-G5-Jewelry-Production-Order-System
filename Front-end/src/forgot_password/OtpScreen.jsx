@@ -45,8 +45,7 @@ export default function OtpScreen() {
             } else if (purpose === "register") {
               navigate("/info");
             }
-          } else if (response.status === 400)
-            throw new Error(response.message);
+          } else if (response.status === 400) throw new Error(response.message);
         })
         .catch((error) => {
           alert(error);
@@ -65,8 +64,7 @@ export default function OtpScreen() {
       .then((response) => {
         if (response.status === 200) {
           alert("Your OTP has been resent!!");
-        } else if (response.status === 400)
-          throw new Error(response.message);
+        } else if (response.status === 400) throw new Error(response.message);
       })
       .catch((error) => {
         alert(error);
@@ -76,7 +74,7 @@ export default function OtpScreen() {
 
   return (
     <Container
-      style={{ paddingTop: "10%", paddingBottom: "10%" }}
+      style={{ height: "90vh" }}
       className="d-flex justify-content-center align-items-center py-32"
     >
       <div

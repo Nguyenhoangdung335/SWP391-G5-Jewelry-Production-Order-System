@@ -55,7 +55,7 @@ export default function ConfirmPassword() {
 
   return (
     <Container
-      style={{ paddingTop: "10%", paddingBottom: "10%" }}
+      style={{ height: "90vh" }}
       className="d-flex justify-content-center align-items-center py-32"
     >
       <div

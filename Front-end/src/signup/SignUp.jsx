@@ -54,7 +54,7 @@ export default function SignUp() {
 
   return (
     <Container
-      style={{ paddingTop: "4%", paddingBottom: "5%" }}
+      style={{ height: "90vh" }}
       className="d-flex justify-content-center align-items-center"
     >
       <div
@@ -125,16 +125,7 @@ export default function SignUp() {
             )}
           </Form.Group>
           <div className="d-flex justify-content-center mb-3">
-            <Button
-              type="submit"
-              className="w-75 border-1"
-              style={{
-                backgroundColor: "rgba(201, 201, 201, 1)",
-                borderColor: "#000",
-                color: "#000",
-                borderRadius: 10,
-              }}
-            >
+            <Button type="submit" className="w-100">
               Sign up
             </Button>
           </div>

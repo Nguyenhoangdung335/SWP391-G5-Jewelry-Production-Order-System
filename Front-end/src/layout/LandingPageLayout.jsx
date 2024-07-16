@@ -14,10 +14,10 @@ export default function LandingPageLayout() {
     setIsHover(false);
   };
   return (
-    <div className="d-flex flex-column ">
+    <>
       <Header />
 
-      <div className="flex-grow-1">
+      <div>
         <Outlet />
       </div>
 
@@ -50,8 +50,9 @@ export default function LandingPageLayout() {
           </div>
         </a>
       </div>
-
-      <Footer />
-    </div>
+      <div>
+        <Footer />
+      </div>
+    </>
   );
 }
