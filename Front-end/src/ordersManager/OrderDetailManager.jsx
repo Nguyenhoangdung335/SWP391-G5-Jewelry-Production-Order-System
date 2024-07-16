@@ -16,8 +16,8 @@ import { jwtDecode } from "jwt-decode";
 import { useAuth } from "../provider/AuthProvider";
 import ResizeImage from "../reusable/ResizeImage";
 import CreateReport from "../orderFlows/CreateReport";
-import AssignedStaff from "./AssignedStaff";
-import QuotationModal from "./QuotationModal";
+import AssignedStaff from "../User_Menu/order_detail_components/AssignedStaff";
+import QuotationModal from "../User_Menu/order_detail_components/QuotationModal";
 import CustomAlert from "../reusable/CustomAlert";
 
 function OrderDetailManager() {
