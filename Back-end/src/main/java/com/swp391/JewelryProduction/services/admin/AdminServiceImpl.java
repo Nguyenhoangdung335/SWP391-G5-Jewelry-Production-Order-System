@@ -2,6 +2,7 @@ package com.swp391.JewelryProduction.services.admin;
 
 import com.swp391.JewelryProduction.enums.Role;
 import com.swp391.JewelryProduction.services.account.AccountService;
+import com.swp391.JewelryProduction.services.crawl.CrawlDataServiceImpl;
 import com.swp391.JewelryProduction.services.order.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.codec.ServerSentEvent;
@@ -22,6 +23,7 @@ import java.util.List;
 public class AdminServiceImpl implements AdminService{
     private final AccountService accountService;
     private final OrderService orderService;
+    private final CrawlDataServiceImpl crawlDataServiceImpl;
 
     @Override
     public HashMap<String, Object> dashboardDataProvider() {
@@ -69,4 +71,5 @@ public class AdminServiceImpl implements AdminService{
                         .event("heartbeat")
                         .build());
     }
+
 }
