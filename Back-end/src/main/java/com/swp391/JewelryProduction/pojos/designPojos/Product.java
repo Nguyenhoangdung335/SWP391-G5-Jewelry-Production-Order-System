@@ -47,7 +47,7 @@ public class Product {
 
     @ToString.Include
     @EqualsAndHashCode.Include
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private ProductSpecification specification;
 
     @ToString.Exclude
