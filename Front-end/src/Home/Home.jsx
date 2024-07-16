@@ -51,17 +51,14 @@ function Home() {
         <Carousel />
       </div>
 
-      <div className="product-rotator pb-4 pt-4 mb-3">
+      <Container className="product-rotator pb-4 pt-4 mb-3">
         <div className="collection-title pt-4 pb-4">
           <h2 className="fw-bold text-center">Our Latest Products</h2>
         </div>
         <ImageRotator />
-      </div>
+      </Container>
 
-      <Container
-        fluid
-        className="introduction-article d-flex justify-content-center pb-4 pt-4 mb-3"
-      >
+      <Container className="introduction-article d-flex justify-content-center pb-4 pt-4 mb-3">
         <div>
           <Row className="introduction-quotes">
             <Col md={6}>
@@ -118,7 +115,7 @@ function Home() {
         </div>
       </Container>
 
-      <Container fluid className="pt-4 pb-4 mb-3">
+      <Container className="pt-4 pb-4 mb-3">
         <div>
           <Row>
             <Col md={6}>
@@ -165,7 +162,7 @@ function Home() {
                     }}
                   >
                     <h2 className="fw-bold text-white">
-                      Use Available Templates
+                      Use Templates
                     </h2>
                   </div>
                 </div>
@@ -203,7 +200,7 @@ function Home() {
                 <MdOutlineCleaningServices size="50px" />
               </div>
               <h5>Clean Your Jewelry</h5>
-              <p>We guarantee to clean your jewelry for a year</p>
+              <p>We guarantee to clean your jewelry for 3 years</p>
             </Col>
           </Row>
         </Container>

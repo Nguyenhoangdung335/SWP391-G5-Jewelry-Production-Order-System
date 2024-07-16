@@ -99,12 +99,15 @@ public class ChatMessageService {
         return messages;
     }
 
-    public void markMessagesAsRead(String recipientId) {
+    public void markMessagesAsRead(String recipientId, String senderId) {
         Firestore db = FirestoreClient.getFirestore();
         CollectionReference unreadMessages = db.collection(UNREAD_MESSAGES_COLLECTION_NAME);
 
         // Retrieve and delete unread messages for the given recipient ID
-        ApiFuture<QuerySnapshot> future = unreadMessages.whereEqualTo("recipientId", recipientId).get();
+        ApiFuture<QuerySnapshot> future = unreadMessages
+                .whereEqualTo("recipientId", recipientId)
+                .whereEqualTo("senderId", senderId)
+                .get();
         try {
             QuerySnapshot documents = future.get();
             WriteBatch batch = db.batch();

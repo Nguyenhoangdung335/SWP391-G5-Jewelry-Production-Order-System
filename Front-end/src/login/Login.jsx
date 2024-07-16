@@ -47,52 +47,46 @@ export default function Login() {
 
   return (
     <Container
-      style={{
-        paddingTop: "5%",
-        paddingBottom: "5%",
-      }}
+      style={{ height: "90vh" }}
       className="d-flex justify-content-center align-items-center"
     >
       <div
-        className="p-4"
+        className="p-4 rounded-4"
         style={{
-          width: "30%",
+          width: "35%",
           backgroundColor: "rgba(217, 217, 217, 0.7)",
-          borderRadius: 20,
         }}
       >
         <h2 className="text-center mb-4">Sign in</h2>
         <Form noValidate validated={validated} onSubmit={handleSubmit}>
-          <Form.Group className="mb-3">
+          <Form.Group className="mb-3" controlId="formGroupEmail">
             <Form.Label>Email:</Form.Label>
             <Form.Control
+              size="md"
               required
               type="email"
-              placeholder="Email"
+              placeholder="Enter Your Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="border-1"
-              style={{ borderColor: "#000", borderRadius: 10 }}
             />
             <Form.Control.Feedback type="invalid">
               Please provide a valid email.
             </Form.Control.Feedback>
           </Form.Group>
-          <Form.Group className="mb-3">
+          <Form.Group className="mb-4" controlId="formGroupPassword">
             <Form.Label>Password:</Form.Label>
             <Form.Control
+              size="md"
               required
               type="password"
-              placeholder="Password"
-              className="border-1"
+              placeholder=" Enter Your Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              style={{ borderColor: "#000", borderRadius: 10 }}
             />
             <Form.Control.Feedback type="invalid">
               Please provide a password.
             </Form.Control.Feedback>
-            <div className="text-end mt-2">
+            <div className="text-end mt-1">
               <Link
                 to="/reset_password"
                 className="text-muted text-decoration-none"
@@ -102,16 +96,7 @@ export default function Login() {
             </div>
           </Form.Group>
           <div className="d-flex justify-content-center mb-3">
-            <Button
-              type="submit"
-              className="w-75 border-1"
-              style={{
-                backgroundColor: "rgba(201, 201, 201, 1)",
-                borderColor: "#000",
-                color: "#000",
-                borderRadius: 10,
-              }}
-            >
+            <Button type="submit" className="w-100">
               Sign in
             </Button>
           </div>
@@ -129,9 +114,12 @@ export default function Login() {
               <FaGithub />
             </Button>
           </div> */}
-        <p className="text-center text-muted">
+        <p className="text-center ">
           Don’t have an account?{" "}
-          <Link to="/signup" className="text-decoration-underline text-muted">
+          <Link
+            to="/signup"
+            className="text-decoration-none fw-bold text-muted"
+          >
             Sign up
           </Link>
         </p>

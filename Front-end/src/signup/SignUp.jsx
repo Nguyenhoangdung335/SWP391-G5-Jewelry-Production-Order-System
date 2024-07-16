@@ -54,21 +54,20 @@ export default function SignUp() {
 
   return (
     <Container
-      style={{ paddingTop: "4%", paddingBottom: "5%" }}
+      style={{ height: "90vh" }}
       className="d-flex justify-content-center align-items-center"
     >
       <div
-        className="position-relative p-4"
+        className="position-relative p-4 rounded-4"
         style={{
-          width: "30%",
+          width: "35%",
           backgroundColor: "rgba(217, 217, 217, 0.7)",
-          borderRadius: 20,
         }}
       >
         <Link
           to="/login"
           className="position-absolute"
-          style={{ top: "7%", left: "7%" }}
+          style={{ top: "7%" }}
         >
           <RiArrowLeftLine size={30} color="black" />
         </Link>
@@ -82,8 +81,8 @@ export default function SignUp() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Email"
-              className="border-1"
-              style={{ borderColor: "#000", borderRadius: 10 }}
+              
+              
             />
             <Form.Control.Feedback type="invalid">
               Please provide a valid email.
@@ -95,8 +94,7 @@ export default function SignUp() {
               required
               type="password"
               placeholder="Password"
-              className="border-1"
-              style={{ borderColor: "#000", borderRadius: 10 }}
+              
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
@@ -110,8 +108,6 @@ export default function SignUp() {
               required
               type="password"
               placeholder="Confirm Password"
-              className="border-1"
-              style={{ borderColor: "#000", borderRadius: 10 }}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
@@ -125,16 +121,7 @@ export default function SignUp() {
             )}
           </Form.Group>
           <div className="d-flex justify-content-center mb-3">
-            <Button
-              type="submit"
-              className="w-75 border-1"
-              style={{
-                backgroundColor: "rgba(201, 201, 201, 1)",
-                borderColor: "#000",
-                color: "#000",
-                borderRadius: 10,
-              }}
-            >
+            <Button type="submit" className="w-100">
               Sign up
             </Button>
           </div>
@@ -148,14 +135,14 @@ export default function SignUp() {
           <Button
             variant="outline-dark"
             className="d-flex align-items-center me-2"
-            style={{ borderRadius: 10, padding: "5px 10px" }}
+            style={{  padding: "5px 10px" }}
           >
             <FaGoogle size={20} />
           </Button>
           <Button
             variant="outline-dark"
             className="d-flex align-items-center ms-2"
-            style={{ borderRadius: 10, padding: "5px 10px" }}
+            style={{  padding: "5px 10px" }}
           >
             <FaGithub size={20} />
           </Button> */}

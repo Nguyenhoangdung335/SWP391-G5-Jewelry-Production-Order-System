@@ -5,6 +5,7 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { Link } from "react-router-dom";
 import { Container } from "react-bootstrap";
+import arrayToDate from "../reusable/ArrayToDate";
 
 const HoverDiv = ({ children }) => {
   const [mouseEnter, setMouseEnter] = useState(false);
@@ -49,18 +50,6 @@ const NotificationPage = () => {
       })
       .finally(() => setLoading(false));
   }, []);
-
-  const arrayToDate = (dateArray) => {
-    const dateObject = new Date(
-      dateArray[0],
-      dateArray[1] - 1,
-      dateArray[2],
-      dateArray[3],
-      dateArray[4],
-      dateArray[5]
-    );
-    return dateObject.toLocaleString(); // Format the date as needed
-  };
 
   if (loading) {
     return <div>Loading...</div>;

@@ -31,8 +31,7 @@ export default function ResetPassword() {
             navigate("/otp");
             localStorage.setItem("purpose", "reset_password");
             localStorage.setItem("email", email);
-          } else if (response.status === 400)
-            throw new Error(response.message);
+          } else if (response.status === 400) throw new Error(response.message);
         })
         .catch((error) => {
           alert(error);
@@ -44,15 +43,14 @@ export default function ResetPassword() {
 
   return (
     <Container
-      style={{ paddingTop: "10%", paddingBottom: "10%" }}
+      style={{ height: "90vh" }}
       className="d-flex justify-content-center align-items-center py-32"
     >
       <div
-        className="p-4"
+        className="p-4 rounded-4"
         style={{
-          width: "30%",
+          width: "35%",
           backgroundColor: "rgba(217, 217, 217, 0.7)",
-          borderRadius: 20,
         }}
       >
         <h2 className="text-center mb-4">Reset Password</h2>
@@ -64,8 +62,6 @@ export default function ResetPassword() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Email"
-              className="border-1"
-              style={{ borderColor: "#000", borderRadius: 10 }}
             />
             <Form.Control.Feedback type="invalid">
               Please enter a valid email address.
@@ -75,26 +71,11 @@ export default function ResetPassword() {
             <Button
               type="button"
               onClick={handleBack}
-              className="d-flex align-items-center border-1"
-              style={{
-                backgroundColor: "rgba(201, 201, 201, 1)",
-                borderColor: "#000",
-                borderRadius: 10,
-                color: "#000",
-              }}
+              className="d-flex align-items-center"
             >
               <RiArrowLeftLine size={20} /> <span className="ms-2">Back</span>
             </Button>
-            <Button
-              type="submit"
-              className="d-flex align-items-center border-1"
-              style={{
-                backgroundColor: "rgba(201, 201, 201, 1)",
-                borderColor: "#000",
-                borderRadius: 10,
-                color: "#000",
-              }}
-            >
+            <Button type="submit" className="d-flex align-items-center">
               <span className="me-2">Next</span> <RiArrowRightLine size={20} />
             </Button>
           </div>

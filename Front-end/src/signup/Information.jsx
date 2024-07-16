@@ -1,8 +1,9 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { Container, Form, Button, Row, Col, Alert } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import ServerUrl from "../reusable/ServerUrl";
+import { RiArrowLeftLine } from "react-icons/ri";
 
 export default function Information() {
   const [validated, setValidated] = useState(false);
@@ -76,18 +77,24 @@ export default function Information() {
 
   return (
     <Container
-      style={{ paddingTop: "10%", paddingBottom: "10%" }}
-      className="d-flex justify-content-center align-items-center py-32"
+      style={{ height: "90vh" }}
+      className="d-flex justify-content-center align-items-center"
     >
       <div
-        className="p-4"
+        className="position-relative p-4 rounded-4"
         style={{
-          width: "30%",
+          width: "35%",
           backgroundColor: "rgba(217, 217, 217, 0.7)",
-          borderRadius: 20,
         }}
       >
-        <h2 className="text-center mb-4">Input information</h2>
+        <Link
+          to="/login"
+          className="position-absolute"
+          style={{ top: "5%" }}
+        >
+          <RiArrowLeftLine size={30} color="black" />
+        </Link>
+        <h2 className="text-center mb-4">Information</h2>
         <Form noValidate validated={validated} onSubmit={handleSubmit}>
           <Row className="mb-3">
             <Col>
@@ -99,8 +106,7 @@ export default function Information() {
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                   name="firstName"
-                  className="border-1"
-                  style={{ borderColor: "#000", borderRadius: 10 }}
+                  placeholder="First Name"
                 />
                 <Form.Control.Feedback type="invalid">
                   Please provide a first name.
@@ -116,8 +122,7 @@ export default function Information() {
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                   name="lastName"
-                  className="border-1"
-                  style={{ borderColor: "#000", borderRadius: 10 }}
+                  placeholder="Last Name"
                 />
                 <Form.Control.Feedback type="invalid">
                   Please provide a last name.
@@ -133,8 +138,6 @@ export default function Information() {
               value={birthDate}
               onChange={(e) => setBirthDate(e.target.value)}
               name="dob"
-              className="border-1"
-              style={{ borderColor: "#000", borderRadius: 10 }}
             />
             <Form.Control.Feedback type="invalid">
               Please provide a date of birth.
@@ -145,9 +148,9 @@ export default function Information() {
               </Alert>
             )}
           </Form.Group>
-          <Form.Group className="d-flex flex-row align-items-center justify-items-center">
-            <Form.Label>Gender:</Form.Label>
-            <div className="d-flex align-items-center">
+          <Form.Group className="d-flex">
+            <Form.Label className="mt-1">Gender:</Form.Label>
+            <div className="d-flex align-items-center ms-3">
               <Form.Check
                 required
                 type="radio"
@@ -178,39 +181,28 @@ export default function Information() {
               pattern="[0-9]{10}"
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
-              className="border-1"
-              style={{ borderColor: "#000", borderRadius: 10 }}
+              placeholder="Phone"
             />
             <Form.Control.Feedback type="invalid">
               Please provide a valid phone number (10 digits).
             </Form.Control.Feedback>
           </Form.Group>
-          <Form.Group className="mb-3">
+          <Form.Group className="mb-4">
             <Form.Label>Address:</Form.Label>
             <Form.Control
               required
               type="text"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              className="border-1"
-              style={{ borderColor: "#000", borderRadius: 10 }}
+              placeholder="Address"
             />
             <Form.Control.Feedback type="invalid">
               Please provide an address.
             </Form.Control.Feedback>
           </Form.Group>
           <div className="d-flex justify-content-center">
-            <Button
-              type="submit"
-              className="w-75 border-1"
-              style={{
-                backgroundColor: "#ccc",
-                borderColor: "#000",
-                color: "#000",
-                borderRadius: 10,
-              }}
-            >
-              Next
+            <Button type="submit" className="w-100">
+              Submit
             </Button>
           </div>
         </Form>

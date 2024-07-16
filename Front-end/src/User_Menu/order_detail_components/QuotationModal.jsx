@@ -1,10 +1,10 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import ServerUrl from "../reusable/ServerUrl";
+import ServerUrl from "../../reusable/ServerUrl";
 import { Button, Form, Modal, Table, FormControl } from "react-bootstrap";
-import CreateReport from "../orderFlows/CreateReport";
+import CreateReport from "../../orderFlows/CreateReport";
 import { jwtDecode } from "jwt-decode";
-import { useAuth } from "../provider/AuthProvider";
+import { useAuth } from "../../provider/AuthProvider";
 
 function QuotationModal(props) {
   const { token } = useAuth();
@@ -189,7 +189,6 @@ function QuotationModal(props) {
   const handleShowPayment = async (ev) => {
     const resultURL = `${window.location.origin}/user_setting_page/order_history_page`;
     try {
-      // Uncomment and configure the axios request as needed
       const response = await axios.post(`${ServerUrl}/api/payment/create/${props.orderId}?quotationId=${props.quotation.id}&resultURL=${resultURL}`);
       if (response.status === 200) {
         window.location.href = response.data.responseList.url;
@@ -197,8 +196,6 @@ function QuotationModal(props) {
     } catch (error) {
       console.error("Error creating payment:", error);
     }
-    // setShowPaymentModal(true);
-    // props.onHide();
   };
 
   return (

@@ -135,20 +135,14 @@ public class Order {
 
     @ToString.Include
     @Transient
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
     private Staff saleStaff;
 
     @ToString.Include
     @Transient
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
     private Staff designStaff;
 
     @ToString.Include
     @Transient
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
     private Staff productionStaff;
 
     //<editor-fold desc="STAFF GETTERS AND SETTERS" defaultstate="collapsed">

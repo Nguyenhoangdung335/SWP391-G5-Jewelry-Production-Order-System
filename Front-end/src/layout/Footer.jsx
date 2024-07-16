@@ -1,16 +1,16 @@
-import React, {useEffect, useState} from "react";
-import {Link, Navigate, useNavigate} from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { IoLogoFacebook } from "react-icons/io5";
 import { FaInstagram } from "react-icons/fa";
 import { FaYoutube } from "react-icons/fa";
 import { Container, Row, Col, Button } from "react-bootstrap";
-import {jwtDecode} from "jwt-decode";
-import {useAuth} from "../provider/AuthProvider";
+import { jwtDecode } from "jwt-decode";
+import { useAuth } from "../provider/AuthProvider";
 import axios from "axios";
 import ServerUrl from "../reusable/ServerUrl";
 
 export default function Footer() {
-  const {token} = useAuth();
+  const { token } = useAuth();
   const [decodedToken, setDecodedToken] = useState(null);
   const [requestSent, setRequestSent] = useState(false);
   const navigate = useNavigate();
@@ -29,37 +29,34 @@ export default function Footer() {
       alert("You dont have permission to use this feature");
     } else {
       axios
-          .get(`${ServerUrl}/api/account/${decodedToken.id}/check-current-order`)
-          .then((response) => {
-            if (response.data) {
-              alert(
-                  "You already have an ongoing order. Please complete it before designing new jewelry."
-              );
-            } else {
-              // setRequestSent(true);
-              navigate("/order_page");
-            }
-          })
-          .catch((error) => {
-            console.error("Error checking current order:", error);
-            alert("Error checking current order. Please try again later.");
-          });
+        .get(`${ServerUrl}/api/account/${decodedToken.id}/check-current-order`)
+        .then((response) => {
+          if (response.data) {
+            alert(
+              "You already have an ongoing order. Please complete it before designing new jewelry."
+            );
+          } else {
+            // setRequestSent(true);
+            navigate("/order_page");
+          }
+        })
+        .catch((error) => {
+          console.error("Error checking current order:", error);
+          alert("Error checking current order. Please try again later.");
+        });
     }
-
   };
 
   const handleClick = () => {
     checkCurrentOrder();
-  }
+  };
 
   return (
-    <div>
+    <>
       <div
         className="pt-4 pb-4"
         style={{
           backgroundColor: "#e5e5e5",
-          // borderTop: "2px solid black",
-          borderRight: "",
         }}
       >
         <Container>
@@ -178,6 +175,6 @@ export default function Footer() {
           </Row>
         </Container>
       </div>
-    </div>
+    </>
   );
 }

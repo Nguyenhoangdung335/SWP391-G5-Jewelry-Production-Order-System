@@ -19,12 +19,11 @@ const Chat = () => {
     const decodedToken = jwtDecode(token);
 
     const [stompClient, setStompClient] = useState(null);
-    const [currentUser, setCurrentUser] = useState(null);
-    const [userId, setUserId] = useState(null);
+    const [currentUser] = useState(decodedToken);
+    const [userId] = useState(decodedToken.id);
     const [selectedUserId, setSelectedUserId] = useState(null);
     const [connectedUsers, setConnectedUsers] = useState([]);
     const [messages, setMessages] = useState([]);
-    const [tokens] = useState(decodedToken);
 
     const selectedUserIdRef = useRef(null);
 
@@ -35,20 +34,6 @@ const Chat = () => {
     const chatAreaRef = useRef(null);
     const roleSelectListRef = useRef(null);
     const roleSelectRef = useRef(null);
-
-    useEffect(() => {
-        if (tokens) {
-            const user = {
-                id: tokens.id,
-                name: tokens.first_name,
-                role: tokens.role,
-            };
-
-            setCurrentUser(user);
-            setUserId(tokens.id);
-
-        }
-    }, [tokens]);
 
     useEffect(() => {
         selectedUserIdRef.current = selectedUserId;
@@ -170,9 +155,9 @@ const Chat = () => {
         });
     }, [findAndDisplayConnectedUsers]);
 
-    const markMessagesAsRead = useCallback(async (recipientId) => {
+    const markMessagesAsRead = useCallback(async (recipientId,senderId) => {
         try {
-            await axiosInstance.post(`/mark-messages-as-read/${recipientId}`);
+            await axiosInstance.post(`/mark-messages-as-read/${recipientId}/${senderId}`);
             console.log(`Messages for ${recipientId} marked as read.`);
         } catch (error) {
             console.error(`Failed to mark messages as read for ${recipientId}:`, error.message);
@@ -218,7 +203,7 @@ const Chat = () => {
 
         setSelectedUserId(clickedUser.getAttribute('id'));
 
-        markMessagesAsRead(clickedUser.getAttribute('id')).then();
+        markMessagesAsRead(userId,clickedUser.getAttribute('id'));
 
         const nbrMsg = clickedUser.querySelector('.nbr-msg');
         nbrMsg.classList.add('hidden');

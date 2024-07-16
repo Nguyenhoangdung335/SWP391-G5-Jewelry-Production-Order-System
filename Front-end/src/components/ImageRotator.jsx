@@ -30,7 +30,7 @@ export default function ImageRotator() {
       responsive={responsive}
       centerMode={false}
       draggable={false}
-      arrows={false}
+      // arrows={false}
       swipeable={false}
       infinite={true}
       pauseOnHover
