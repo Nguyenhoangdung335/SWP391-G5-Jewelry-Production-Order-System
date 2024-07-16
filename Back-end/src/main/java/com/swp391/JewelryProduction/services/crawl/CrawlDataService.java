@@ -63,7 +63,7 @@ public class    CrawlDataService implements ICrawlDataService {
             }
 
             for (MetalPrice metalPrice : metalPrices) {
-                Optional<MetalPrice> existingMaterialOpt = metalPriceRepository.findByName(metalPrice.getName());
+                Optional<MetalPrice> existingMaterialOpt = metalPriceRepository.findByNameAndUnit(metalPrice.getName(), metalPrice.getUnit());
                 if (existingMaterialOpt.isPresent()) {
                     MetalPrice existingMetalPrice = existingMaterialOpt.get();
                     existingMetalPrice.setPrice(metalPrice.getPrice());

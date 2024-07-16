@@ -41,7 +41,7 @@ public class CrawlThread implements Runnable{
             connectionPage = connection.getConnection(this.urlPage);
             Elements materials = connectionPage.select("#gr24_spot_gold_widget-11 > table > tbody > tr");
 
-            materials.stream().forEach(product ->{
+            materials.forEach(product ->{
                 MetalPrice metalPrice = MetalPrice.builder()
                         .name("Gold")
                         .unit(product.selectFirst("th").text())
