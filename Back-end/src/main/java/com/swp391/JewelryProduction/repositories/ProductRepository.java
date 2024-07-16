@@ -21,7 +21,7 @@ public interface ProductRepository extends JpaRepository<Product, String> {
     @Override
     List<Product> findAll();
 
-    @EntityGraph(attributePaths = {"specification"})
+    @EntityGraph(attributePaths = {"specification.metal", "specification.gemstone"})
     @NotNull
     Page<Product> findAll(@NotNull Pageable pageable);
 
