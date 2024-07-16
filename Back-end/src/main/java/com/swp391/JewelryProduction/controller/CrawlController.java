@@ -4,7 +4,6 @@ import com.swp391.JewelryProduction.dto.DataDTO;
 import com.swp391.JewelryProduction.pojos.Price.GemstonePrice;
 import com.swp391.JewelryProduction.pojos.Price.MetalPrice;
 import com.swp391.JewelryProduction.services.crawl.CrawlDataService;
-import com.swp391.JewelryProduction.services.crawl.ICrawlDataService;
 import com.swp391.JewelryProduction.util.Response;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,13 +20,12 @@ import java.util.List;
 @RequestMapping("api/v1/crawls")
 public class CrawlController {
 
-    private final ICrawlDataService CrawDataService;
     private final CrawlDataService crawlDataService;
 
     @PostMapping
     public ResponseEntity<DataDTO> crawlingData() {
         try {
-            CrawDataService.crawData();
+            crawlDataService.crawData();
             return ResponseEntity.ok(
                     DataDTO.builder().isSuccess(true).status(HttpStatus.OK.value()).message("Crawl data is successful !")
                             .build());
@@ -40,7 +38,7 @@ public class CrawlController {
 
     @GetMapping()
     public Flux<ServerSentEvent<List<MetalPrice>>> getPrice() throws IOException {
-        return CrawDataService.getAll();
+        return crawlDataService.getAll();
     }
 
     @PostMapping("/create/gemstone")
@@ -67,6 +65,15 @@ public class CrawlController {
         return Response.builder()
                 .message("Request sent successfully")
                 .status(HttpStatus.OK)
+                .buildEntity();
+    }
+
+    @GetMapping("/gemstone-metal")
+    public ResponseEntity<Response> getMaterials() {
+        return Response.builder()
+                .message("Request sent successfully")
+                .status(HttpStatus.OK)
+                .response("materials", crawlDataService.getMaterials())
                 .buildEntity();
     }
 }
