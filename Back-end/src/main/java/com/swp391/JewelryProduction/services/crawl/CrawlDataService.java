@@ -3,6 +3,7 @@ package com.swp391.JewelryProduction.services.crawl;
 import com.swp391.JewelryProduction.pojos.Material;
 import com.swp391.JewelryProduction.repositories.MaterialRepository;
 import com.swp391.JewelryProduction.services.connection.ConnectionPage;
+import com.swp391.JewelryProduction.util.exceptions.ObjectNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -86,6 +87,23 @@ public class    CrawlDataService implements ICrawlDataService {
     @Override
     public Flux<ServerSentEvent<List<Material>>> getAll() {
         return Flux.merge(getHeartBeat(), getPrice());
+    }
+
+    @Override
+    public void addMaterial(Material material) {
+        materialRepository.save(material);
+    }
+
+    @Override
+    public void deleteMaterial(Long id) {
+        materialRepository.delete(materialRepository.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException("Material with id " + id + " not found")));
+    }
+
+    @Override
+    public void updateMaterial(Material material) {
+            materialRepository.save(materialRepository.findById(material.getId())
+                    .orElseThrow(() -> new ObjectNotFoundException("Material with id " + material.getId() + " not found")));
     }
 
     private Flux<ServerSentEvent<List<Material>>> getHeartBeat() {
