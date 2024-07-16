@@ -47,11 +47,10 @@ export default function ResetPassword() {
       className="d-flex justify-content-center align-items-center py-32"
     >
       <div
-        className="p-4"
+        className="p-4 rounded-4"
         style={{
-          width: "30%",
+          width: "35%",
           backgroundColor: "rgba(217, 217, 217, 0.7)",
-          borderRadius: 20,
         }}
       >
         <h2 className="text-center mb-4">Reset Password</h2>
@@ -63,8 +62,6 @@ export default function ResetPassword() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Email"
-              className="border-1"
-              style={{ borderColor: "#000", borderRadius: 10 }}
             />
             <Form.Control.Feedback type="invalid">
               Please enter a valid email address.

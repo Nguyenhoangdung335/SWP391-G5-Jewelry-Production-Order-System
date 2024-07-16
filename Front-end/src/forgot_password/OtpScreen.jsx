@@ -78,11 +78,10 @@ export default function OtpScreen() {
       className="d-flex justify-content-center align-items-center py-32"
     >
       <div
-        className="p-4"
+        className="p-4 rounded-4"
         style={{
-          width: "30%",
+          width: "35%",
           backgroundColor: "rgba(217, 217, 217, 0.7)",
-          borderRadius: 20,
         }}
       >
         <h2 className="text-center mb-4">Enter OTP</h2>
@@ -95,13 +94,12 @@ export default function OtpScreen() {
               value={otp}
               onChange={(e) => setOTP(e.target.value)}
               placeholder="Enter OTP"
-              className="border-1"
-              style={{ borderColor: "#000", borderRadius: "10px 0px 0px 10px" }}
+              style={{ borderRadius: "10px 0px 0px 10px" }}
             />
             <Button
               onClick={handleResend}
               title="Resend OTP"
-              variant="outline-secondary"
+              variant="secondary"
               style={{ borderRadius: "0 10px 10px 0" }}
             >
               <RiRefreshLine size={20} />
@@ -114,26 +112,11 @@ export default function OtpScreen() {
             <Button
               type="button"
               onClick={handleBack}
-              className="d-flex align-items-center border-1"
-              style={{
-                backgroundColor: "rgba(201, 201, 201, 1)",
-                borderColor: "#000",
-                borderRadius: 10,
-                color: "#000",
-              }}
+              className="d-flex align-items-center"
             >
               <RiArrowLeftLine size={20} /> <span className="ms-2">Back</span>
             </Button>
-            <Button
-              type="submit"
-              className="d-flex align-items-center border-1"
-              style={{
-                backgroundColor: "rgba(201, 201, 201, 1)",
-                borderColor: "#000",
-                borderRadius: 10,
-                color: "#000",
-              }}
-            >
+            <Button type="submit" className="d-flex align-items-center">
               <span className="me-2">Next</span> <RiArrowRightLine size={20} />
             </Button>
           </div>

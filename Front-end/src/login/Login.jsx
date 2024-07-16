@@ -51,7 +51,7 @@ export default function Login() {
       className="d-flex justify-content-center align-items-center"
     >
       <div
-        className="p-4"
+        className="p-4 rounded-4"
         style={{
           width: "35%",
           backgroundColor: "rgba(217, 217, 217, 0.7)",

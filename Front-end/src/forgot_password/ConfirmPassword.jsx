@@ -59,11 +59,10 @@ export default function ConfirmPassword() {
       className="d-flex justify-content-center align-items-center py-32"
     >
       <div
-        className="p-4"
+        className="p-4 rounded-4"
         style={{
-          width: "30%",
+          width: "35%",
           backgroundColor: "rgba(217, 217, 217, 0.7)",
-          borderRadius: 20,
         }}
       >
         <h2 className="text-center mb-4">Enter New Password</h2>
@@ -75,10 +74,7 @@ export default function ConfirmPassword() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Password"
-              className="border-1"
               style={{
-                borderColor: "#000",
-                borderRadius: 10,
                 marginBottom: "20px",
               }}
               isInvalid={!passwordMatch}
@@ -92,8 +88,6 @@ export default function ConfirmPassword() {
               required
               type="password"
               placeholder="Confirm Password"
-              className="border-1"
-              style={{ borderColor: "#000", borderRadius: 10 }}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               isInvalid={!passwordMatch}
@@ -108,26 +102,11 @@ export default function ConfirmPassword() {
             <Button
               type="button"
               onClick={handleBack}
-              className="d-flex align-items-center border-1"
-              style={{
-                backgroundColor: "rgba(201, 201, 201, 1)",
-                borderColor: "#000",
-                borderRadius: 10,
-                color: "#000",
-              }}
+              className="d-flex align-items-center "
             >
               <RiArrowLeftLine size={20} /> <span className="ms-2">Back</span>
             </Button>
-            <Button
-              type="submit"
-              className="d-flex align-items-center border-1"
-              style={{
-                backgroundColor: "rgba(201, 201, 201, 1)",
-                borderColor: "#000",
-                borderRadius: 10,
-                color: "#000",
-              }}
-            >
+            <Button type="submit" className="d-flex align-items-center ">
               <span className="me-2">Next</span> <RiArrowRightLine size={20} />
             </Button>
           </div>
