@@ -37,14 +37,6 @@ public class UserController {
         }
     }
 
-    @MessageMapping("/user.disconnectUser")
-    @SendTo("/topic/public")
-    public User disconnectUser(@Payload User user) {
-        userService.disconnect(user);
-        messagingTemplate.convertAndSend("/topic/public", user);
-        return user;
-    }
-
     @GetMapping("/users/{role}")
     public ResponseEntity<List<User>> getUsersByRole(@PathVariable String role) {
         try {

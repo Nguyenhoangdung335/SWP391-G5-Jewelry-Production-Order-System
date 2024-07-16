@@ -29,17 +29,6 @@ public class UserService {
 
     private static final String USER_COLLECTION_NAME = "users";
 
-    public void disconnect(User user) {
-        Firestore db = FirestoreClient.getFirestore();
-        DocumentReference docRef = db.collection(USER_COLLECTION_NAME).document(user.getId());
-        ApiFuture<WriteResult> future = docRef.update("status", "OFFLINE");
-        try {
-            future.get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException("Error disconnecting user", e);
-        }
-    }
-
     public List<User> findUsersByRole(String role) throws ExecutionException, InterruptedException {
         Firestore db = FirestoreClient.getFirestore();
         List<User> users = new ArrayList<>();
