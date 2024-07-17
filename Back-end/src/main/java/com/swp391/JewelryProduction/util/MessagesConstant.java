@@ -31,18 +31,18 @@ public class MessagesConstant {
             return title = "Your Request Has Been Approved";
         }
 
-        public String description () {
+        public String description (String customerName) {
             return description = String.format(
                     """
                     Dear %s,
-    
+                    
                     I am pleased to inform you that your request for a custom jewelry has been approved. \
                     Our team has reviewed your submission and is pleased to confirm that your request meets the necessary \
                     criteria and requirements. As a result, we will be moving forward with the design phase. Please note \
                     that any further information or documentation required will be sent to you separately. If you have any \
                     questions or concerns, please do not hesitate to reach out to us at %s. Thank you \
                     for your patience and cooperation.
-    
+                    
                     Best regards,
                     %s
                     """,
@@ -56,7 +56,7 @@ public class MessagesConstant {
             return title = "Your Request Has Been Declined";
         }
 
-        public String description () {
+        public String description (String customerName) {
             return description = String.format(
                     """
                     Dear %s,
@@ -91,29 +91,29 @@ public class MessagesConstant {
             return description = String.format(
                     """
                     Dear %s,
-                   \s
-                    I am pleased to inform you that you have been assigned to the order id %s\s
-                    as one of the team members responsible for fulfilling the customer's order.
-                    Your expertise and skills will be valuable assets in delivering a high-quality solution\s
+                    
+                    I am pleased to inform you that you have been assigned to the order id %s \
+                    as one of the team members responsible for fulfilling the customer's order. \
+                    Your expertise and skills will be valuable assets in delivering a high-quality solution \
                     to our client.
-                   \s
+                    
                     As part of the project team, your responsibilities will include:
-                   \s
+                    
                     %s
-                   \s
-                    Your involvement in this project will commence on %s and is expected to be\s
-                    completed by %s. Please review the project scope and timeline carefully and\s
+                    
+                    Your involvement in this project will commence on %s and is expected to be \
+                    completed by %s. Please review the project scope and timeline carefully and \
                     ensure that you understand your role and responsibilities.
-                   \s
-                    If you have any questions or concerns, please do not hesitate to reach out to me or the\s
-                    project lead. I expect your full cooperation and commitment to delivering exceptional results.
-                   \s
-                    Congratulations on this assignment, and I look forward to seeing your contributions to\s
+                    
+                    If you have any questions or concerns, please do not hesitate to reach out to me or the \
+                    project lead. I expect your full cooperation and commitment to delivering exceptional results. \n
+                    
+                    Congratulations on this assignment, and I look forward to seeing your contributions to \
                     the project's success.
-                   \s
+                    
                     Best regards,
                     Manager
-                   \s""",
+                    """,
                     assignedStaff.getUserInfo().getFirstName(), order.getId(),
                     builder.toString(), startDate, endDate
             );
@@ -161,10 +161,10 @@ public class MessagesConstant {
     
                     I am sorry to inform that your order of ID %s have been cancelled. \
                     Our team has reviewed your submission and was determined that your order has violated the following\
-                    company policy: \
-                    \s
+                    company policy:
+                    
                     %s
-                    \s
+                    
                     If you have any questions or concerns, please do not hesitate to reach out to us at %s. Thank you \
                     for your patience and cooperation.
     
@@ -182,7 +182,7 @@ public class MessagesConstant {
         return MessagesConstant.builder()
                 .customerName(customerName)
                 .title(requestApprovedMessage.title())
-                .description(requestApprovedMessage.description())
+                .description(requestApprovedMessage.description(customerName))
                 .build();
     }
 
@@ -192,7 +192,7 @@ public class MessagesConstant {
         return MessagesConstant.builder()
                 .customerName(customerName)
                 .title(requestDeclinedMessage.title())
-                .description(requestDeclinedMessage.description())
+                .description(requestDeclinedMessage.description(customerName))
                 .build();
     }
 

@@ -1,4 +1,4 @@
-package com.swp391.JewelryProduction.enums;
+package com.swp391.JewelryProduction.enums.gemstone;
 
 public enum GemstoneShape {
     ASSCHER,

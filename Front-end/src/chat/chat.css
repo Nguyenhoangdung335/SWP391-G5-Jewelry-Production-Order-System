@@ -133,6 +133,7 @@
     position: absolute;
     height: 3px;
     content: "";
+    bottom: -5%;
     background-color: black;
 }
 

@@ -4,8 +4,11 @@ import com.swp391.JewelryProduction.dto.ProductDTO;
 import com.swp391.JewelryProduction.pojos.Order;
 import com.swp391.JewelryProduction.pojos.designPojos.Product;
 import com.swp391.JewelryProduction.pojos.designPojos.ProductSpecification;
+import com.swp391.JewelryProduction.pojos.gemstone.Gemstone;
+import com.swp391.JewelryProduction.pojos.gemstone.GemstoneType;
 import com.swp391.JewelryProduction.repositories.ProductRepository;
 import com.swp391.JewelryProduction.repositories.ProductSpecificationRepository;
+import com.swp391.JewelryProduction.repositories.gemstoneRepositories.GemstoneTypeRepository;
 import com.swp391.JewelryProduction.services.order.OrderService;
 import com.swp391.JewelryProduction.util.exceptions.ObjectNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +25,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final ProductSpecificationRepository productSpecificationRepository;
     private final OrderService orderService;
+        private final GemstoneTypeRepository gemstoneTypeRepository;
 
     //<editor-fold desc="PRODUCT SERVICES" defaultstate="collapsed">
     @Override
@@ -73,6 +77,15 @@ public class ProductServiceImpl implements ProductService {
     public ProductSpecification saveSpecification(ProductSpecification specs) {
         for(ProductSpecification proSpecs : productSpecificationRepository.findAll()) {
             if(proSpecs.equals(specs)) return proSpecs;
+        }
+        Gemstone gemstone = specs.getGemstone();
+        GemstoneType gemstoneType = gemstone.getType();
+
+        // Ensure the GemstoneType is managed
+        if (gemstoneType != null) {
+            gemstoneType = gemstoneTypeRepository.findById(gemstoneType.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid GemstoneType ID"));
+            gemstone.setType(gemstoneType);
         }
         return productSpecificationRepository.save(specs);
     }

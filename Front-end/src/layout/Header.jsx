@@ -87,7 +87,7 @@ export default function Header() {
         </Link>
       ),
     },
-    {
+    token === "CUSTOMER" && {
       key: "2",
       label: (
         <Link
@@ -109,8 +109,16 @@ export default function Header() {
         </Link>
       ),
     },
-    {
+    token !== "CUSTOMER" && {
       key: "4",
+      label: (
+        <Link to="/userManager" style={{ textDecoration: "none" }}>
+          User Manager
+        </Link>
+      ),
+    },
+    {
+      key: "5",
       label: (
         <Link
           to="/login"
@@ -122,25 +130,6 @@ export default function Header() {
       ),
     },
   ];
-
-  if (
-    [
-      "SALE_STAFF",
-      "DESIGN_STAFF",
-      "PRODUCTION_STAFF",
-      "MANAGER",
-      "ADMIN",
-    ].includes(role)
-  ) {
-    items.push({
-      key: "5",
-      label: (
-        <Link to="/userManager" style={{ textDecoration: "none" }}>
-          User Manager
-        </Link>
-      ),
-    });
-  }
 
   const handleClick = () => {
     checkCurrentOrder();

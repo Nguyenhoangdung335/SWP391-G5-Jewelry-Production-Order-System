@@ -7,6 +7,7 @@ import reactor.core.publisher.Flux;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 public interface CrawlDataService {
 
@@ -16,5 +17,7 @@ public interface CrawlDataService {
     GemstonePrice createGemstone(GemstonePrice gemstone);
     GemstonePrice updateGemstone(GemstonePrice gemstone);
     void deleteGemstone(Integer id);
-    List<Object> getMaterials();
+    Map<String, Object> getMaterials();
+
+    List<MetalPrice> getAllMetalPrices();
 }
