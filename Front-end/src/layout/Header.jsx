@@ -65,7 +65,6 @@ export default function Header() {
               "You already have an ongoing order. Please complete it before designing new jewelry."
             );
           } else {
-            // setRequestSent(true);
             navigate("/order_page");
           }
         })
@@ -148,43 +147,55 @@ export default function Header() {
   };
 
   const notificationMenu = (
-    <Menu>
-      {notifications
-        .sort(
-          (a, b) =>
-            new Date(b.report.createdDate) - new Date(a.report.createdDate)
-        )
-        .slice(0, rowsToShow)
-        .map((notification) => (
-          <Menu.Item
-            key={notification.id}
-            onClick={() => handleNotificationClick(notification.id)}
-          >
-            <div>
-              <strong>{notification.report.title}</strong>
-              <p
-                style={{
-                  display: "-webkit-box",
-                  WebkitBoxOrient: "vertical",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  WebkitLineClamp: 2,
-                  maxWidth: "250px",
-                }}
-              >
-                {notification.report.description}
-              </p>
-            </div>
-          </Menu.Item>
-        ))}
-      {notifications.length > rowsToShow && (
-        <Menu.Item key="load-more">
-          <Button onClick={handleLoadMore} style={{ width: "100%" }}>
-            Load More
-          </Button>
+      <Menu>
+        <Menu.Item key="header">
+          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+            <h6 style={{margin: 0, pointerEvents: 'none'}}>Notifications</h6>
+            <Link to="/user_setting_page/notification_page">View All</Link>
+          </div>
         </Menu.Item>
-      )}
-    </Menu>
+        {notifications.length === 0 ? (
+            <Menu.Item key="no-notifications" disabled>
+              No unread notifications
+            </Menu.Item>
+        ) : (
+            notifications
+                .sort(
+                    (a, b) =>
+                    new Date(b.report.createdDate) - new Date(a.report.createdDate)
+                )
+                .slice(0, rowsToShow)
+                .map((notification) => (
+                    <Menu.Item
+                        key={notification.id}
+                        onClick={() => handleNotificationClick(notification.id)}
+                    >
+                      <div>
+                        <strong>{notification.report.title}</strong>
+                        <p
+                            style={{
+                              display: "-webkit-box",
+                              WebkitBoxOrient: "vertical",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              WebkitLineClamp: 2,
+                              maxWidth: "250px",
+                            }}
+                        >
+                          {notification.report.description}
+                        </p>
+                      </div>
+                    </Menu.Item>
+                ))
+        )}
+        {notifications.length > rowsToShow && (
+            <Menu.Item key="load-more">
+              <Button onClick={handleLoadMore} style={{ width: "100%" }}>
+                Load More
+              </Button>
+            </Menu.Item>
+        )}
+      </Menu>
   );
 
   return (
@@ -252,39 +263,27 @@ export default function Header() {
                     </Link>
                   </NavLink>
                   <NavLink>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        position: "relative",
-                      }}
-                    >
-                      <Dropdown
-                        overlay={notificationMenu}
-                        placement="bottomRight"
-                        trigger={["click"]}
-                      >
-                        <div
-                          style={{ position: "relative", cursor: "pointer" }}
-                        >
+                    <div style={{ display: "flex", alignItems: "center", position: "relative" }}>
+                      <Dropdown overlay={notificationMenu} placement="bottomRight" trigger={["click"]}>
+                        <div style={{ position: "relative", cursor: "pointer" }}>
                           <IoNotificationsOutline size={30} color="black" />
                           {unreadCount > 0 && (
-                            <span
-                              style={{
-                                position: "absolute",
-                                top: 0,
-                                right: 0,
-                                backgroundColor: "red",
-                                color: "white",
-                                borderRadius: "50%",
-                                padding: "0.25em 0.5em",
-                                fontSize: "0.75em",
-                                lineHeight: "1",
-                                transform: "translate(50%, -50%)",
-                              }}
-                            >
-                              {unreadCount}
-                            </span>
+                              <span
+                                  style={{
+                                    position: "absolute",
+                                    top: 0,
+                                    right: 0,
+                                    backgroundColor: "red",
+                                    color: "white",
+                                    borderRadius: "50%",
+                                    padding: "0.25em 0.5em",
+                                    fontSize: "0.75em",
+                                    lineHeight: "1",
+                                    transform: "translate(50%, -50%)",
+                                  }}
+                              >
+                  {unreadCount}
+                </span>
                           )}
                         </div>
                       </Dropdown>
