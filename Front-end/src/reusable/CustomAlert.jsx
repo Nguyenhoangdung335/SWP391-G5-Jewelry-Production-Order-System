@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
-import Alert from 'react-bootstrap/Alert';
-import Button from 'react-bootstrap/Button';
-import { ZAxis } from 'recharts';
+import { useState, useEffect } from "react";
+import Alert from "react-bootstrap/Alert";
+import Button from "react-bootstrap/Button";
+import { ZAxis } from "recharts";
 
-function CustomAlert({ text, isShow, onClose }) {
+function CustomAlert({ title, text, isShow, onClose, alertVariant }) {
   const [show, setShow] = useState(isShow);
 
   useEffect(() => {
@@ -18,17 +18,29 @@ function CustomAlert({ text, isShow, onClose }) {
   };
 
   return (
-    <Alert show={show} variant="light" transition style={{
-        position: "fixed", top: "20px",right: "20px", width: "300px", height: "150px", zIndex: "1050", boxShadow: "0 0 10px rgba(0, 0, 0, 0.5)", padding:"9px"
-    }}>
-      <Alert.Heading>My Alert</Alert.Heading>
-      <p>
-        {text}
-      </p>
+    <Alert
+      show={show}
+      variant={alertVariant}
+      transition
+      className="shadow-sm"
+      style={{
+        position: "fixed",
+        top: "20px",
+        right: "20px",
+        width: "40%",
+        zIndex: "1050",
+        padding: "9px",
+      }}
+    >
+      <Alert.Heading>{title}</Alert.Heading>
+      <p>{text}</p>
       <hr />
       <div className="d-flex justify-content-end">
-        <Button onClick={handleClose} variant="outline-success">
-          Close
+        <Button
+          onClick={() => setShow(false)}
+          variant={`outline-${alertVariant}`}
+        >
+          Close me
         </Button>
       </div>
     </Alert>
