@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react"; 
+import React, { useState, useEffect } from "react";
 import { Table, Button, Modal, Form } from "react-bootstrap";
 import { FiPlus } from "react-icons/fi";
 import { FaBox } from "react-icons/fa";
 import { useAuth } from "../provider/AuthProvider";
 import axios from "axios";
 import ServerUrl from "../reusable/ServerUrl";
-import { FaEdit } from 'react-icons/fa';
-import { FaTrash } from 'react-icons/fa';
+import { FaEdit } from "react-icons/fa";
+import { FaTrash } from "react-icons/fa";
 
 export default function ProductManager() {
     const { account } = useAuth();
@@ -57,16 +57,17 @@ export default function ProductManager() {
                 console.log(res);
                 setIsDeleteModalVisible(false);
                 setDeleteProduct(null);
-    
+
                 // Remove the deleted product from data
-                const updatedData = data.filter((product) => product.id !== productId);
+                const updatedData = data.filter(
+                    (product) => product.id !== productId
+                );
                 setData(updatedData);
             })
             .catch((err) => {
                 console.error("Error deleting product:", err);
             });
     };
-    
 
     const handleAddCancel = () => {
         setIsCreateModalVisible(false);
@@ -110,15 +111,17 @@ export default function ProductManager() {
             headers: { "Content-Type": "application/json" },
             data: newProduct,
         })
-        .then((res) => {
-            // Thêm sản phẩm mới vào trạng thái data nếu thành công
-            setData([...data, res.data]);
-            setIsCreateModalVisible(false);
-        })
-        .catch((err) => {
-            console.error("Error creating product:", err);
-            alert("There was an error creating the product. Please try again.");
-        });
+            .then((res) => {
+                // Thêm sản phẩm mới vào trạng thái data nếu thành công
+                setData([...data, res.data]);
+                setIsCreateModalVisible(false);
+            })
+            .catch((err) => {
+                console.error("Error creating product:", err);
+                alert(
+                    "There was an error creating the product. Please try again."
+                );
+            });
     };
 
     const handleCancelDelete = () => {
@@ -237,18 +240,18 @@ export default function ProductManager() {
                                 <div className="d-flex align-items-center">
                                     <Button
                                         variant="link"
-                                        onClick={() =>
-                                            handleDeleteClick(product)
-                                        }
+                                        onClick={() => handleEdit(product)}
                                     >
-                                       <FaTrash />
+                                        <FaEdit />
                                     </Button>
                                     <span>|</span>
                                     <Button
                                         variant="link"
-                                        onClick={() => handleEdit(product)}
+                                        onClick={() =>
+                                            handleDeleteClick(product)
+                                        }
                                     >
-                                        <FaEdit />
+                                        <FaTrash />
                                     </Button>
                                 </div>
                             </td>
@@ -323,13 +326,17 @@ export default function ProductManager() {
                                     defaultValue={selectedProduct.description}
                                 />
                             </Form.Group>
-                            <Button variant="primary" type="submit" style={{marginTop: 20}}>
+                            <Button
+                                variant="primary"
+                                type="submit"
+                                style={{ marginTop: 20 }}
+                            >
                                 Save changes
                             </Button>
                             <Button
                                 variant="secondary"
                                 onClick={handleCancel}
-                                style={{ marginLeft: 15,marginTop: 20 }}
+                                style={{ marginLeft: 15, marginTop: 20 }}
                             >
                                 Back
                             </Button>
@@ -377,29 +384,31 @@ export default function ProductManager() {
                             <Form.Label>Description</Form.Label>
                             <Form.Control type="text" />
                         </Form.Group>
-                        <Button
-                            style={{
-                                backgroundColor: "#000000",
-                                color: "white",
-                            }}
-                            type="submit"
-                        >
-                            Save changes
-                        </Button>
-                        <Button
-                            variant="secondary"
-                            onClick={handleAddCancel}
-                            style={{ marginLeft: 8 }}
-                        >
-                            Back
-                        </Button>
-                        <Button
-                            variant="secondary"
-                            onClick={handleAddCancel}
-                            style={{ marginLeft: 8 }}
-                        >
-                            Create Your Dream Jewelry
-                        </Button>
+                        <div className="mt-4">
+                            <Button
+                                style={{
+                                    backgroundColor: "#000000",
+                                    color: "white",
+                                }}
+                                type="submit"
+                            >
+                                Save changes
+                            </Button>
+                            <Button
+                                variant="secondary"
+                                onClick={handleAddCancel}
+                                style={{ marginLeft: 8 }}
+                            >
+                                Back
+                            </Button>
+                            <Button
+                                variant="secondary"
+                                onClick={handleAddCancel}
+                                style={{ marginLeft: 8 }}
+                            >
+                                Create Your Dream Jewelry
+                            </Button>
+                        </div>
                     </Form>
                 </Modal.Body>
             </Modal>

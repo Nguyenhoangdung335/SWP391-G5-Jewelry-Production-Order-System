@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, Modal, Form, Row, Col, FormControl } from "react-bootstrap";
+import {
+    Table,
+    Button,
+    Modal,
+    Form,
+    Row,
+    Col,
+    FormControl,
+} from "react-bootstrap";
 import { FiPlus } from "react-icons/fi";
 import axios from "axios";
 import { Icon } from "@iconify/react";
@@ -547,20 +555,22 @@ export default function EmployeeManager() {
                                     name="address"
                                 />
                             </Form.Group>
-                            <Button
-                                variant="primary"
-                                type="submit"
-                                style={{ marginTop: 20 }}
-                            >
-                                Save changes
-                            </Button>
-                            <Button
-                                variant="secondary"
-                                onClick={handleCancel}
-                                style={{ marginLeft: 8, marginTop: 20 }}
-                            >
-                                Back
-                            </Button>
+                            <div className="d-flex justify-content-between align-items-center ">
+                                <Button
+                                    variant="primary"
+                                    type="submit"
+                                    style={{ marginTop: 20 }}
+                                >
+                                    Save changes
+                                </Button>
+                                <Button
+                                    variant="secondary"
+                                    onClick={handleCancel}
+                                    style={{ marginLeft: 8, marginTop: 20 }}
+                                >
+                                    Back
+                                </Button>
+                            </div>
                         </Form>
                     )}
                 </Modal.Body>
