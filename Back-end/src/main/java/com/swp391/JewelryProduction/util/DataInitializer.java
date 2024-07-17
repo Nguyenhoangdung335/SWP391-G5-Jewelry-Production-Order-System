@@ -78,7 +78,7 @@ public class DataInitializer implements CommandLineRunner {
         initializeFakeStaffAccount(Role.DESIGN_STAFF);
         initializeFakeStaffAccount(Role.PRODUCTION_STAFF);
         initializeAccount();
-        initializeFakeMetalPrice();
+//        initializeFakeMetalPrice();
         initializeShapeMultipliers();
         initializeCutMultipliers();
         initializeClarityMultipliers();
@@ -244,65 +244,65 @@ public class DataInitializer implements CommandLineRunner {
     private void initializeFakeMetalPrice () {
         MetalPrice metal1 = MetalPrice.builder()
                 .name("Gold")
-                .unit("Gram 10K")
-                .price(822.5912000000001)
+                .unit("Ounce")
+                .price(61452.847799999996)
                 .updatedTime(LocalDateTime.now())
                 .build();
 
         MetalPrice metal2 = MetalPrice.builder()
-                .name("Silver")
-                .unit("Gram 12K")
-                .price(987.0586000000001)
+                .name("Gold")
+                .unit("Tola")
+                .price(23044.7862)
                 .updatedTime(LocalDateTime.now())
                 .build();
         MetalPrice metal3 = MetalPrice.builder()
-                .name("Platinum")
-                .unit("Gram 14K")
-                .price(1152.0344)
+                .name("Gold")
+                .unit("Kilogram")
+                .price(1975973.859)
                 .updatedTime(LocalDateTime.now())
                 .build();
         MetalPrice metal4 = MetalPrice.builder()
-                .name("Rose Gold")
-                .unit("Gram 18K")
-                .price(1480.2066)
+                .name("Gold")
+                .unit("Gram 24K")
+                .price(1976.0867999999998)
                 .updatedTime(LocalDateTime.now())
                 .build();
         MetalPrice metal5 = MetalPrice.builder()
-                .name("Titanium")
-                .unit("Gram 21K")
-                .price(1727.2890000000002)
+                .name("Gold")
+                .unit("Gram 22K")
+                .price(1811.1168)
                 .updatedTime(LocalDateTime.now())
                 .build();
         MetalPrice metal6 = MetalPrice.builder()
-                .name("Copper")
-                .unit("Gram 22K")
-                .price(1809.6498000000001)
+                .name("Gold")
+                .unit("Gram 21K")
+                .price(1728.6317999999999)
                 .updatedTime(LocalDateTime.now())
                 .build();
         MetalPrice metal7 = MetalPrice.builder()
-                .name("White Gold")
-                .unit("Gram 24K")
-                .price(1974.3714000000002)
+                .name("Gold")
+                .unit("Gram 18K")
+                .price(1481.4306)
                 .updatedTime(LocalDateTime.now())
                 .build();
         MetalPrice metal8 = MetalPrice.builder()
-                .name("Stainless Steel")
-                .unit("Kilogram")
-                .price(1974307.5958000002)
+                .name("Gold")
+                .unit("Gram 14K")
+                .price(1153.0134)
                 .updatedTime(LocalDateTime.now())
                 .build();
 
         MetalPrice metal9 = MetalPrice.builder()
-                .name("Brass")
-                .unit("Tola")
-                .price(23025.436)
+                .name("Gold")
+                .unit("Gram 12K")
+                .price(988.0433999999999)
                 .updatedTime(LocalDateTime.now())
                 .build();
 
         MetalPrice metal10 = MetalPrice.builder()
-                .name("Sterling Silver")
-                .unit("Ounce")
-                .price(61400.993200000004)
+                .name("Gold")
+                .unit("Gram 10K")
+                .price(823.3272)
                 .updatedTime(LocalDateTime.now())
                 .build();
         metalPrices = metalPriceRepository.saveAll(List.of(metal1,metal2,metal3,metal4,metal5,metal6,metal7,metal8,metal9,metal10));
@@ -473,6 +473,9 @@ public class DataInitializer implements CommandLineRunner {
 //
 //        gemstonePriceRepository.saveAll(List.of(gemstone1,gemstone2,gemstone3,gemstone4,gemstone5,gemstone6,gemstone7,gemstone8,gemstone9,gemstone10));
         int index = 0;
+        if (metalPrices.isEmpty()) {
+            metalPrices = metalPriceRepository.findAll();
+        }
 
         ProductSpecification spec1 = ProductSpecification.builder()
                 .type("Necklace")
