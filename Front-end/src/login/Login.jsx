@@ -37,7 +37,7 @@ export default function Login() {
             setShowAlert(["Login Successfully", "", true, false, "success"]);
             setTimeout(() => {
               navigate("/userManager");
-            }, 2000);
+            }, 1000);
           } else if (response.status === 400) {
             throw new Error(response.message);
           }
@@ -52,7 +52,7 @@ export default function Login() {
           ]);
           setTimeout(() => {
             setShowAlert(["", "", false, false, ""]);
-          },3000);
+          }, 3000);
           console.error("There was an error!", error);
         });
     }

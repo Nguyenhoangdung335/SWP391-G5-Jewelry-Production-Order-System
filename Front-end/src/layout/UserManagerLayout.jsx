@@ -18,18 +18,16 @@ export default function UserManagerLayout() {
     <div style={{ height: "100vh", padding: 0, margin: 0 }} className="row">
       <div
         style={{
-          backgroundColor: "rgb(75, 75, 75)",
+          backgroundColor: "rgb(62, 62, 62)",
           padding: 0,
           paddingTop: "2%",
         }}
-        className="col-2 h-full d-flex flex-column  aligin-items-center "
+        className="col-2 h-full d-flex flex-column"
       >
         <NavBar />
       </div>
-
       <div
         style={{
-          // padding: 0,
           maxHeight: "100vh",
           overflowY: "auto",
           height: "100vh",

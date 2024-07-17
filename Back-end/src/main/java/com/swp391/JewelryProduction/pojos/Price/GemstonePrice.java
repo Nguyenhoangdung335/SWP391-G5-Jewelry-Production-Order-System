@@ -2,7 +2,7 @@ package com.swp391.JewelryProduction.pojos.Price;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.swp391.JewelryProduction.enums.GemstoneShape;
+import com.swp391.JewelryProduction.enums.gemstone.GemstoneShape;
 import com.swp391.JewelryProduction.pojos.designPojos.ProductSpecification;
 import jakarta.persistence.*;
 import lombok.*;
