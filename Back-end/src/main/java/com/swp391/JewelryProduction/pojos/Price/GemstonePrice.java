@@ -1,9 +1,8 @@
 package com.swp391.JewelryProduction.pojos.Price;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.swp391.JewelryProduction.enums.GemstoneShape;
-import com.swp391.JewelryProduction.pojos.designPojos.ProductSpecification;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.swp391.JewelryProduction.enums.gemstone.GemstoneShape;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -18,6 +17,7 @@ import java.util.List;
 @Builder
 @Entity
 @Table(name = "Diamond_Price")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class GemstonePrice {
      @Id
      @GeneratedValue
