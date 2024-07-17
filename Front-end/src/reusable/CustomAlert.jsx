@@ -27,22 +27,14 @@ function CustomAlert({ title, text, isShow, onClose, alertVariant }) {
         position: "fixed",
         top: "20px",
         right: "20px",
-        width: "40%",
+        width: "30%",
         zIndex: "1050",
-        padding: "9px",
+        paddingTop: "25px",
+        paddingLeft:"25px"
       }}
     >
       <Alert.Heading>{title}</Alert.Heading>
       <p>{text}</p>
-      <hr />
-      <div className="d-flex justify-content-end">
-        <Button
-          onClick={() => setShow(false)}
-          variant={`outline-${alertVariant}`}
-        >
-          Close me
-        </Button>
-      </div>
     </Alert>
   );
 }

@@ -2,6 +2,7 @@ package com.swp391.JewelryProduction.pojos.Price;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.swp391.JewelryProduction.pojos.designPojos.ProductSpecification;
 import jakarta.persistence.*;
 import lombok.*;
@@ -16,6 +17,7 @@ import java.util.List;
 @Builder
 @Entity
 @Table(name = "Metal_Price")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class MetalPrice {
 
     @Id

@@ -1,6 +1,7 @@
 package com.swp391.JewelryProduction.pojos.gemstone;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.swp391.JewelryProduction.enums.gemstone.GemstoneClarity;
 import com.swp391.JewelryProduction.enums.gemstone.GemstoneColor;
 import com.swp391.JewelryProduction.enums.gemstone.GemstoneCut;
@@ -15,6 +16,7 @@ import lombok.*;
 @Builder
 @Entity
 @Table(name = "Gemstone")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Gemstone {
     @ToString.Include
     @EqualsAndHashCode.Include
