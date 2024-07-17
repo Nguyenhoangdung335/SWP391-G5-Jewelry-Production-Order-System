@@ -73,7 +73,7 @@ public class CrawlController {
         return Response.builder()
                 .message("Request sent successfully")
                 .status(HttpStatus.OK)
-                .response("materials", crawlDataService.getMaterials())
+                .responseList(crawlDataService.getMaterials())
                 .buildEntity();
     }
 }
