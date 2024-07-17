@@ -196,7 +196,6 @@ export default function Header() {
         collapseOnSelect
         expand="md"
         className="shadow-sm"
-        style={{ height: "10vh" }}
       >
         <Container>
           <Navbar.Brand>
