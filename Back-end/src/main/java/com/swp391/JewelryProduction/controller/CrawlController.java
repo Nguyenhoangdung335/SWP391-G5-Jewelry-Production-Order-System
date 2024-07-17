@@ -1,9 +1,10 @@
 package com.swp391.JewelryProduction.controller;
 
 import com.swp391.JewelryProduction.dto.DataDTO;
-import com.swp391.JewelryProduction.pojos.Price.GemstonePrice;
 import com.swp391.JewelryProduction.pojos.Price.MetalPrice;
+import com.swp391.JewelryProduction.pojos.gemstone.Gemstone;
 import com.swp391.JewelryProduction.services.crawl.CrawlDataService;
+import com.swp391.JewelryProduction.services.gemstone.GemstoneService;
 import com.swp391.JewelryProduction.util.Response;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ import java.util.List;
 public class CrawlController {
 
     private final CrawlDataService crawlDataService;
+    private final GemstoneService gemstoneService;
 
     @PostMapping
     public ResponseEntity<DataDTO> crawlingData() {
@@ -41,39 +43,48 @@ public class CrawlController {
         return crawlDataService.getAll();
     }
 
-    @PostMapping("/create/gemstone")
-    public ResponseEntity<Response> createGemstone(@RequestBody GemstonePrice gemstone) {
+    @GetMapping("/gemstones")
+    public ResponseEntity<Response> getGemstones() {
         return Response.builder()
-                .message("Request sent successfully")
                 .status(HttpStatus.OK)
-                .response("gemstone", crawlDataService.createGemstone(gemstone))
+                .message("Request sent successfully.")
+                .response("gemstones", gemstoneService.getGemstones())
+                .buildEntity();
+    }
+
+    @GetMapping("/gemstone")
+    public ResponseEntity<Response> getGemstone(@RequestParam("id") long id) {
+        return Response.builder()
+                .status(HttpStatus.OK)
+                .message("Request sent successfully.")
+                .response("gemstone", gemstoneService.getGemstone(id))
+                .buildEntity();
+    }
+
+    @PostMapping("/create/gemstone")
+    public ResponseEntity<Response> createGemstone(@RequestBody Gemstone gemstone) {
+        return Response.builder()
+                .status(HttpStatus.OK)
+                .message("Request sent successfully.")
+                .response("gemstone", gemstoneService.createGemstone(gemstone))
                 .buildEntity();
     }
 
     @PutMapping("/update/gemstone")
-    public ResponseEntity<Response> updateGemstone(@RequestBody GemstonePrice gemstone) {
+    public ResponseEntity<Response> updateGemstone(@RequestBody Gemstone gemstone) {
         return Response.builder()
-                .message("Request sent successfully")
                 .status(HttpStatus.OK)
-                .response("gemstone", crawlDataService.updateGemstone(gemstone))
+                .message("Request sent successfully.")
+                .response("gemstone", gemstoneService.updateGemstone(gemstone))
                 .buildEntity();
     }
 
-    @DeleteMapping("/delete/gemstone")
-    public ResponseEntity<Response> deleteGemstone(@RequestParam int id) {
-        crawlDataService.deleteGemstone(id);
+    @DeleteMapping
+    public ResponseEntity<Response> deleteGemstone(@RequestParam long id) {
         return Response.builder()
-                .message("Request sent successfully")
                 .status(HttpStatus.OK)
-                .buildEntity();
-    }
-
-    @GetMapping("/gemstone-metal")
-    public ResponseEntity<Response> getMaterials() {
-        return Response.builder()
-                .message("Request sent successfully")
-                .status(HttpStatus.OK)
-                .responseList(crawlDataService.getMaterials())
+                .message("Request sent successfully.")
+                .response("result", gemstoneService.deleteGemstone(id) ? "Gemstone with ID " + id + " is existed in database" : "Gemstone with ID " + id + " is not existed in database")
                 .buildEntity();
     }
 }
