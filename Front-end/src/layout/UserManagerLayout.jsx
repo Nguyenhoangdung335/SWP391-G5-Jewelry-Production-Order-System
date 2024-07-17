@@ -40,10 +40,7 @@ export default function UserManagerLayout() {
         <Outlet />
       </div>
       {showChat && (
-        <div
-          onClick={toggleChat}
-          className="chat-overlay position-fixed d-flex align-content-center justify-content-center h-100 w-100 bg-black bg-opacity-50"
-        >
+        <div className="chat-overlay position-fixed d-flex align-content-center justify-content-center h-100 w-100 bg-black bg-opacity-50">
           {/* Your Chat component */}
           <Chat />
         </div>

@@ -17,8 +17,7 @@ const styles = {
   pin: {
     margin: "15px 10px",
     padding: 0,
-    borderRadius: "10px",
-    backgroundColor: "red",
+    backgroundColor: "white",
     cursor: "pointer", // Added cursor to indicate clickable
   },
   small: {

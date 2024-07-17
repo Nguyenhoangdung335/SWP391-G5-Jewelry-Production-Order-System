@@ -161,9 +161,7 @@ function Home() {
                       left: "50%",
                     }}
                   >
-                    <h2 className="fw-bold text-white">
-                      Use Templates
-                    </h2>
+                    <h2 className="fw-bold text-white">Use Templates</h2>
                   </div>
                 </div>
               </Link>
