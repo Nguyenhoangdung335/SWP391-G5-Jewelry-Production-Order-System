@@ -63,13 +63,6 @@ const Chat = () => {
                 client.subscribe(`/user/${userId}/queue/messages`, onMessageReceived);
                 client.subscribe(`/topic/public`, onMessageReceived);
 
-                const connectedUserFullnameElement = document.querySelector('#connected-user-fullname');
-                if (connectedUserFullnameElement) {
-                    connectedUserFullnameElement.textContent = currentUser.role + ": " + currentUser.name;
-                } else {
-                    console.warn("Element with ID 'connected-user-fullname' not found in the DOM.");
-                }
-
                 findAndDisplayConnectedUsers();
                 fetchUnreadMessages();
             },
@@ -339,15 +332,12 @@ const Chat = () => {
                                 currentUser={currentUser}
                             />
                         </div>
-                        <div>
-                            <p id="connected-user-fullname"></p>
-                        </div>
                     </div>
                     <div className="chat-area">
                         <ChatArea messages={messages}
                             ref={chatAreaRef}
                             userId={userId}
-                                  handleImageUpload={handleImageUpload}
+                            handleImageUpload={handleImageUpload}
                         />
                         <MessageForm
                             ref={messageFormRef}
