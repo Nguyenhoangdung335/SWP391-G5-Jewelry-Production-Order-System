@@ -5,6 +5,8 @@ import { FaBox } from "react-icons/fa";
 import { useAuth } from "../provider/AuthProvider";
 import axios from "axios";
 import ServerUrl from "../reusable/ServerUrl";
+import { FaEdit } from 'react-icons/fa';
+import { FaTrash } from 'react-icons/fa';
 
 export default function ProductManager() {
     const { account } = useAuth();
@@ -239,14 +241,14 @@ export default function ProductManager() {
                                             handleDeleteClick(product)
                                         }
                                     >
-                                        Delete
+                                       <FaTrash />
                                     </Button>
                                     <span>|</span>
                                     <Button
                                         variant="link"
                                         onClick={() => handleEdit(product)}
                                     >
-                                        Edit
+                                        <FaEdit />
                                     </Button>
                                 </div>
                             </td>
@@ -293,7 +295,7 @@ export default function ProductManager() {
                 </div>
             </div>
             <Modal show={isModalVisible} onHide={handleCancel}>
-                <Modal.Header closeButton>
+                <Modal.Header>
                     <Modal.Title>Edit Product</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
@@ -336,7 +338,7 @@ export default function ProductManager() {
                 </Modal.Body>
             </Modal>
             <Modal show={isDeleteModalVisible} onHide={handleCancelDelete}>
-                <Modal.Header closeButton>
+                <Modal.Header>
                     <Modal.Title>Confirm Delete</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
@@ -352,7 +354,7 @@ export default function ProductManager() {
                 </Modal.Footer>
             </Modal>
             <Modal show={isCreateModalVisible} onHide={handleAddCancel}>
-                <Modal.Header closeButton>
+                <Modal.Header>
                     <Modal.Title>Create Product</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>

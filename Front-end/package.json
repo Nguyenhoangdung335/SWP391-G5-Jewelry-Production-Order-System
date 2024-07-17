@@ -12,6 +12,7 @@
     "antd": "^5.18.0",
     "axios": "^1.7.2",
     "bootstrap": "^5.3.3",
+    "bootstrap-icons": "^1.11.3",
     "chart.js": "^4.4.3",
     "cors": "^2.8.5",
     "html2pdf.js": "^0.10.2",

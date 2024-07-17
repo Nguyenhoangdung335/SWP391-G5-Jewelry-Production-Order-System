@@ -7,6 +7,8 @@ import { useEffect } from "react";
 import LineChartComponent from "../chart/LineChart";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
+import { FaTrash } from 'react-icons/fa';
+import { FaEdit } from 'react-icons/fa';
 import { useAuth } from "../provider/AuthProvider";
 import ServerUrl from "../reusable/ServerUrl";
 
@@ -122,7 +124,7 @@ export default function DashboardManager() {
           </Button>
           <span style={{ margin: "0 8px" }}>|</span>
           <Button variant="link" style={{ padding: 0, margin: 0 }}>
-            Delete
+          <FaTrash />
           </Button>
         </div>
       ),
@@ -509,11 +511,11 @@ export default function DashboardManager() {
               </td>
               <td>
                 <Button variant="link" style={{ padding: 0, margin: 0 }}>
-                  Edit
+                <FaEdit />
                 </Button>
                 <span style={{ margin: "0 8px" }}>|</span>
                 <Button variant="link" style={{ padding: 0, margin: 0 }}>
-                  Delete
+                <FaTrash />    
                 </Button>
               </td>
             </tr>

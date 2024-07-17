@@ -25,7 +25,7 @@ function WarrantyCertificateModal({ data, show, handleClose }) {
 
   return (
     <Modal show={show} onHide={handleClose} centered size="lg">
-      <Modal.Header closeButton>
+      <Modal.Header>
         <Modal.Title>Warranty Certificate</Modal.Title>
       </Modal.Header>
       <Modal.Body>

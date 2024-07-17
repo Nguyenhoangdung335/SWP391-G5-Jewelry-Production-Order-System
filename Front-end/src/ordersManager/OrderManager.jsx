@@ -31,7 +31,7 @@ export default function OrderManager() {
     const fetchOrders = (pageNumber) => {
       axios({
         method: "GET",
-        url: `${ServerUrl}/api/admin/get/order/${pageNumber - 1}`,
+        url: `${ServerUrl}/api/order/list${pageNumber - 1}`,
         headers: { "Content-Type": "application/json" },
         params: {
           role: userRole,
@@ -118,13 +118,15 @@ export default function OrderManager() {
 
       <div className="rounded-lg bg-neutral-500 text-white pl-3 flex items-center">
           <div>Role Filter</div>
-          <select className="bg-neutral-500 inline-block text-orange-500 w-44" onChange={handleFilterChange}>
+          <div  className="w-25"> 
+          <select className="bg-neutral-500 form-select inline-block text-orange-500 w-44" onChange={handleFilterChange}>
             {OrderStatus.map((status) => (
               <option key={status.name} value={status.value} className="bg-white text-black">
                 {status.name}
               </option>
             ))}
           </select>
+          </div>
           <div className="relative right-6 pb-2">
             <Icon icon="fa:sort-down" />
           </div>
@@ -193,7 +195,7 @@ export default function OrderManager() {
       </div>
 
       <Modal show={isModalVisible} onHide={handleClose}>
-        <Modal.Header closeButton>
+        <Modal.Header>
           <Modal.Title>Order Details</Modal.Title>
         </Modal.Header>
         <Modal.Body>

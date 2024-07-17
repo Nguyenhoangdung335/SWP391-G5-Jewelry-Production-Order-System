@@ -4,6 +4,8 @@ import { FiPlus } from "react-icons/fi";
 import axios from "axios";
 import { roles } from "../data/Roles";
 import ServerUrl from "../reusable/ServerUrl";
+import { FaTrash } from 'react-icons/fa';
+import { FaEdit } from 'react-icons/fa';
 
 export default function ClientManager() {
   const [filterRole, setFilterRole] = useState("CUSTOMER");
@@ -289,10 +291,10 @@ export default function ClientManager() {
               </td>
               <td>
                 <Button variant="link" onClick={() => handleEdit(item)}>
-                  Edit
+                <FaEdit />
                 </Button>
                 <Button variant="link" onClick={() => handleDeleteClick(item.id)}>
-                  Delete
+                <FaTrash />
                 </Button>
               </td>
             </tr>
@@ -335,7 +337,7 @@ export default function ClientManager() {
       </div>
 
       <Modal show={isModalVisible} onHide={handleCancel} centered>
-        <Modal.Header closeButton>
+        <Modal.Header >
           <Modal.Title>Edit Client</Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -438,7 +440,7 @@ export default function ClientManager() {
       </Modal>
 
       <Modal show={isAddModalVisible} onHide={() => setIsAddModalVisible(false)} centered>
-        <Modal.Header closeButton>
+        <Modal.Header>
           <Modal.Title>Add Client</Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -506,7 +508,7 @@ export default function ClientManager() {
       </Modal>
 
       <Modal show={deleteModalVisible} onHide={handleCancelDelete} centered>
-        <Modal.Header closeButton>
+        <Modal.Header >
           <Modal.Title>Confirm Delete</Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -520,7 +522,7 @@ export default function ClientManager() {
               onClick={handleConfirmDelete}
               className="ms-2"
             >
-              Delete
+              <FaTrash />
             </Button>
           </div>
         </Modal.Body>

@@ -175,7 +175,7 @@ function Collections() {
             )}
             {showCreateRequestModal && (
                 <Modal show={showCreateRequestModal} onHide={handleCloseCreateRequestModal} size="lg">
-                    <Modal.Header closeButton>
+                    <Modal.Header>
                         <Modal.Title>Create Request</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>

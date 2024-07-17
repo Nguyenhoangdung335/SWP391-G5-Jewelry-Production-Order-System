@@ -12,6 +12,9 @@ import { FiPlus } from "react-icons/fi";
 import axios from "axios";
 import { Icon } from "@iconify/react";
 import ServerUrl from "../reusable/ServerUrl";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { FaTrash } from "react-icons/fa";
+import { FaEdit } from "react-icons/fa";
 
 export default function EmployeeManager() {
     const [filterRole, setFilterRole] = useState("ALL");
@@ -66,7 +69,9 @@ export default function EmployeeManager() {
 
     const formatDate = (dateArray) => {
         const [year, month, day] = dateArray;
-        return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+        return `${year}-${String(month).padStart(2, "0")}-${String(
+            day
+        ).padStart(2, "0")}`;
     };
 
     const handleSave = async (event) => {
@@ -283,19 +288,45 @@ export default function EmployeeManager() {
                     marginBottom: "2%",
                 }}
             >
-                <div className="rounded-lg bg-neutral-500 text-white pl-3 flex items-center">
+                <div className="rounded-lg bg-neutral-500 text-white pl-3 flex items-center ">
                     <div>Role Filter</div>
                     <select
-                        className="bg-neutral-500 inline-block text-orange-500 w-44"
+                        className="bg-neutral-500 form-select inline-block text-orange-500 w-44"
                         onChange={handleFilterChange}
                     >
-                        <option value="ALL" className="bg-white text-black">ALL</option>
-                        <option value="CUSTOMER" className="bg-white text-black">Customer</option>
-                        <option value="ADMIN" className="bg-white text-black">Admin</option>
-                        <option value="SALE_STAFF" className="bg-white text-black">Sale Staff</option>
-                        <option value="DESIGN_STAFF" className="bg-white text-black">Design Staff</option>
-                        <option value="PRODUCTION_STAFF" className="bg-white text-black">Production Staff</option>
-                        <option value="MANAGER" className="bg-white text-black">Manager</option>
+                        <option value="ALL" className="bg-white text-black">
+                            ALL
+                        </option>
+                        <option
+                            value="CUSTOMER"
+                            className="bg-white text-black"
+                        >
+                            Customer
+                        </option>
+                        <option value="ADMIN" className="bg-white text-black">
+                            Admin
+                        </option>
+                        <option
+                            value="SALE_STAFF"
+                            className="bg-white text-black"
+                        >
+                            Sale Staff
+                        </option>
+                        <option
+                            value="DESIGN_STAFF"
+                            className="bg-white text-black"
+                        >
+                            Design Staff
+                        </option>
+                        <option
+                            value="PRODUCTION_STAFF"
+                            className="bg-white text-black"
+                        >
+                            Production Staff
+                        </option>
+                        <option value="MANAGER" className="bg-white text-black">
+                            Manager
+                        </option>
                     </select>
                     <div className="relative right-6 pb-2">
                         <Icon icon="fa:sort-down" />
@@ -357,13 +388,13 @@ export default function EmployeeManager() {
                                     variant="link"
                                     onClick={() => handleEdit(item)}
                                 >
-                                    Edit
+                                    <FaEdit />
                                 </Button>
                                 <Button
                                     variant="link"
                                     onClick={() => handleDeleteClick(item.id)}
                                 >
-                                    Delete
+                                    <FaTrash />
                                 </Button>
                             </td>
                         </tr>
@@ -411,7 +442,7 @@ export default function EmployeeManager() {
             </div>
 
             <Modal show={isModalVisible} onHide={handleCancel}>
-                <Modal.Header closeButton>
+                <Modal.Header>
                     <Modal.Title>Edit Employee</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
@@ -443,9 +474,15 @@ export default function EmployeeManager() {
                                 >
                                     <option value="CUSTOMER">Customer</option>
                                     <option value="ADMIN">Admin</option>
-                                    <option value="SALE_STAFF">Sale Staff</option>
-                                    <option value="DESIGN_STAFF">Design Staff</option>
-                                    <option value="PRODUCTION_STAFF">Production Staff</option>
+                                    <option value="SALE_STAFF">
+                                        Sale Staff
+                                    </option>
+                                    <option value="DESIGN_STAFF">
+                                        Design Staff
+                                    </option>
+                                    <option value="PRODUCTION_STAFF">
+                                        Production Staff
+                                    </option>
                                     <option value="MANAGER">Manager</option>
                                 </FormControl>
                             </Form.Group>
@@ -504,7 +541,9 @@ export default function EmployeeManager() {
                                 >
                                     <option value="MALE">Male</option>
                                     <option value="FEMALE">Female</option>
-                                    <option value="NON_BINARY">Non-binary</option>
+                                    <option value="NON_BINARY">
+                                        Non-binary
+                                    </option>
                                     <option value="OTHER">Other</option>
                                 </FormControl>
                             </Form.Group>
@@ -536,7 +575,7 @@ export default function EmployeeManager() {
             </Modal>
 
             <Modal show={deleteModalVisible} onHide={handleCancelDelete}>
-                <Modal.Header closeButton>
+                <Modal.Header>
                     <Modal.Title>Confirm Delete</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
@@ -547,7 +586,7 @@ export default function EmployeeManager() {
                         Cancel
                     </Button>
                     <Button variant="danger" onClick={handleConfirmDelete}>
-                        Delete
+                        <FaTrash />
                     </Button>
                 </Modal.Footer>
             </Modal>
@@ -567,8 +606,12 @@ export default function EmployeeManager() {
                                 <option value="CUSTOMER">Customer</option>
                                 <option value="ADMIN">Admin</option>
                                 <option value="SALE_STAFF">Sale Staff</option>
-                                <option value="DESIGN_STAFF">Design Staff</option>
-                                <option value="PRODUCTION_STAFF">Production Staff</option>
+                                <option value="DESIGN_STAFF">
+                                    Design Staff
+                                </option>
+                                <option value="PRODUCTION_STAFF">
+                                    Production Staff
+                                </option>
                                 <option value="MANAGER">Manager</option>
                             </FormControl>
                         </Form.Group>
@@ -631,7 +674,11 @@ export default function EmployeeManager() {
                                 required
                             />
                         </Form.Group>
-                        <Button className="mt-2" variant="primary" type="submit">
+                        <Button
+                            className="mt-2"
+                            variant="primary"
+                            type="submit"
+                        >
                             Add Employee
                         </Button>
                         <Button

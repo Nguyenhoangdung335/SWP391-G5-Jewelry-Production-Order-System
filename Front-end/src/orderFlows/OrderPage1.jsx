@@ -466,7 +466,7 @@ function OrderPage1() {
           }
         }}
       >
-        <Modal.Header closeButton>
+        <Modal.Header>
           <Modal.Title>Create Request</Modal.Title>
         </Modal.Header>
         <Modal.Body>
