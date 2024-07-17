@@ -87,7 +87,7 @@ export default function Header() {
         </Link>
       ),
     },
-    token === "CUSTOMER" && {
+    role === "CUSTOMER" && {
       key: "2",
       label: (
         <Link
@@ -109,7 +109,7 @@ export default function Header() {
         </Link>
       ),
     },
-    token !== "CUSTOMER" && {
+    role !== "CUSTOMER" && {
       key: "4",
       label: (
         <Link to="/userManager" style={{ textDecoration: "none" }}>
@@ -195,8 +195,7 @@ export default function Header() {
         sticky="top"
         collapseOnSelect
         expand="md"
-        className="bg-body-tertiary shadow-sm"
-        style={{ height: "10vh" }}
+        className="shadow-sm"
       >
         <Container>
           <Navbar.Brand>
