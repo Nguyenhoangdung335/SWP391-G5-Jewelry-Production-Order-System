@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.swp391.JewelryProduction.pojos.Price.GemstonePrice;
 import com.swp391.JewelryProduction.pojos.Price.MetalPrice;
+import com.swp391.JewelryProduction.pojos.gemstone.Gemstone;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -55,9 +56,9 @@ public class ProductSpecification {
 
     @ToString.Include
     @EqualsAndHashCode.Include
-    @ManyToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "gemstone_id")
-    private GemstonePrice gemstone;
+    private Gemstone gemstone;
 
     @JsonIgnore
     @ToString.Exclude

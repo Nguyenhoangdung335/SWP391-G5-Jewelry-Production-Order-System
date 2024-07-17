@@ -16,9 +16,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -115,11 +113,16 @@ public class CrawlDataServiceImpl implements CrawlDataService {
     }
 
     @Override
-    public List<Object> getMaterials() {
-        List<Object> materials = new ArrayList<>();
-        materials.addAll(metalPriceRepository.findAll());
-        materials.addAll(gemstonePriceRepository.findAll());
+    public Map<String, Object> getMaterials() {
+        Map<String, Object> materials = new HashMap<>();
+        materials.put("metal", metalPriceRepository.findAll());
+        materials.put("gemstone", gemstonePriceRepository.findAll());
         return materials;
+    }
+
+    @Override
+    public List<MetalPrice> getAllMetalPrices () {
+        return metalPriceRepository.findAll();
     }
 
     private Flux<ServerSentEvent<List<MetalPrice>>> getHeartBeat() {

@@ -2,15 +2,23 @@ package com.swp391.JewelryProduction.util;
 
 import com.github.javafaker.Faker;
 import com.swp391.JewelryProduction.enums.*;
+import com.swp391.JewelryProduction.enums.gemstone.GemstoneClarity;
+import com.swp391.JewelryProduction.enums.gemstone.GemstoneColor;
+import com.swp391.JewelryProduction.enums.gemstone.GemstoneCut;
+import com.swp391.JewelryProduction.enums.gemstone.GemstoneShape;
 import com.swp391.JewelryProduction.pojos.*;
-import com.swp391.JewelryProduction.pojos.Price.GemstonePrice;
+import com.swp391.JewelryProduction.pojos.gemstone.*;
 import com.swp391.JewelryProduction.pojos.Price.MetalPrice;
 import com.swp391.JewelryProduction.pojos.designPojos.Product;
 import com.swp391.JewelryProduction.pojos.designPojos.ProductSpecification;
+import com.swp391.JewelryProduction.pojos.gemstone.Gemstone;
+import com.swp391.JewelryProduction.pojos.gemstone.GemstoneType;
 import com.swp391.JewelryProduction.repositories.*;
+import com.swp391.JewelryProduction.repositories.gemstoneRepositories.*;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.internal.bytebuddy.dynamic.scaffold.MethodGraph;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -39,11 +47,23 @@ public class DataInitializer implements CommandLineRunner {
     private ReportRepository reportRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private ShapeMultiplierRepository shapeMultiplierRepository;
+    @Autowired
+    private CutMultiplierRepository cutMultiplierRepository;
+    @Autowired
+    private ClarityMultiplierRepository clarityMultiplierRepository;
+    @Autowired
+    private ColorMultiplierRepository colorMultiplierRepository;
+    @Autowired
+    private GemstoneRepository gemstoneRepository;
 
 
     private final Faker faker = new Faker();
     private final Random rand = new Random();
     private final HashMap<Integer, SpecificationDetail> detail = new HashMap<>();
+    private List<MetalPrice> metalPrices = new LinkedList<>();
+    private List<Gemstone> gemstones = new LinkedList<>();
     @Autowired
     private MetalPriceRepository metalPriceRepository;
     @Autowired
@@ -58,6 +78,13 @@ public class DataInitializer implements CommandLineRunner {
         initializeFakeStaffAccount(Role.DESIGN_STAFF);
         initializeFakeStaffAccount(Role.PRODUCTION_STAFF);
         initializeAccount();
+        initializeFakeMetalPrice();
+        initializeShapeMultipliers();
+        initializeCutMultipliers();
+        initializeClarityMultipliers();
+        initializeColorMultipliers();
+        initializeFakeGemstone(50);
+
         initializeFakeProductSpecification();
         initializeFakeOrder();
     }
@@ -214,7 +241,7 @@ public class DataInitializer implements CommandLineRunner {
         }
     }
 
-    private void initializeFakeProductSpecification () {
+    private void initializeFakeMetalPrice () {
         MetalPrice metal1 = MetalPrice.builder()
                 .name("Gold")
                 .unit("Gram 10K")
@@ -278,106 +305,184 @@ public class DataInitializer implements CommandLineRunner {
                 .price(61400.993200000004)
                 .updatedTime(LocalDateTime.now())
                 .build();
-        metalPriceRepository.saveAll(List.of(metal1,metal2,metal3,metal4,metal5,metal6,metal7,metal8,metal9,metal10));
+        metalPrices = metalPriceRepository.saveAll(List.of(metal1,metal2,metal3,metal4,metal5,metal6,metal7,metal8,metal9,metal10));
+    }
 
+    private void initializeShapeMultipliers() {
+        shapeMultiplierRepository.save(ShapeMultiplier.builder().shape(GemstoneShape.ASSCHER).multiplier(1.1).build());
+        shapeMultiplierRepository.save(ShapeMultiplier.builder().shape(GemstoneShape.BAGUETTE).multiplier(0.9).build());
+        shapeMultiplierRepository.save(ShapeMultiplier.builder().shape(GemstoneShape.BRIOLETTE).multiplier(1.2).build());
+        shapeMultiplierRepository.save(ShapeMultiplier.builder().shape(GemstoneShape.CALF).multiplier(1.0).build());
+        shapeMultiplierRepository.save(ShapeMultiplier.builder().shape(GemstoneShape.CUSHION).multiplier(1.05).build());
+        shapeMultiplierRepository.save(ShapeMultiplier.builder().shape(GemstoneShape.EMERALD).multiplier(1.15).build());
+        shapeMultiplierRepository.save(ShapeMultiplier.builder().shape(GemstoneShape.HALF_MOON).multiplier(1.1).build());
+        shapeMultiplierRepository.save(ShapeMultiplier.builder().shape(GemstoneShape.HEART).multiplier(1.2).build());
+        shapeMultiplierRepository.save(ShapeMultiplier.builder().shape(GemstoneShape.MARQUISE).multiplier(1.1).build());
+        shapeMultiplierRepository.save(ShapeMultiplier.builder().shape(GemstoneShape.OCTAGONAL).multiplier(1.0).build());
+        shapeMultiplierRepository.save(ShapeMultiplier.builder().shape(GemstoneShape.OVAL).multiplier(1.05).build());
+        shapeMultiplierRepository.save(ShapeMultiplier.builder().shape(GemstoneShape.PEAR).multiplier(1.1).build());
+        shapeMultiplierRepository.save(ShapeMultiplier.builder().shape(GemstoneShape.PRINCESS).multiplier(1.1).build());
+        shapeMultiplierRepository.save(ShapeMultiplier.builder().shape(GemstoneShape.RADIANT).multiplier(1.2).build());
+        shapeMultiplierRepository.save(ShapeMultiplier.builder().shape(GemstoneShape.ROUND).multiplier(1.3).build());
+        shapeMultiplierRepository.save(ShapeMultiplier.builder().shape(GemstoneShape.SQUARE_CUSHION).multiplier(1.05).build());
+        shapeMultiplierRepository.save(ShapeMultiplier.builder().shape(GemstoneShape.SQUARE_RADIANT).multiplier(1.1).build());
+        shapeMultiplierRepository.save(ShapeMultiplier.builder().shape(GemstoneShape.TRILLION).multiplier(1.0).build());
+    }
+
+    private void initializeCutMultipliers() {
+        cutMultiplierRepository.save(CutMultiplier.builder().cutQuality(GemstoneCut.FAIR).multiplier(0.8).build());
+        cutMultiplierRepository.save(CutMultiplier.builder().cutQuality(GemstoneCut.GOOD).multiplier(1.0).build());
+        cutMultiplierRepository.save(CutMultiplier.builder().cutQuality(GemstoneCut.VERY_GOOD).multiplier(1.2).build());
+        cutMultiplierRepository.save(CutMultiplier.builder().cutQuality(GemstoneCut.EXCEPTIONAL).multiplier(1.5).build());
+    }
+
+    private void initializeClarityMultipliers() {
+        clarityMultiplierRepository.save(ClarityMultiplier.builder().clarity(GemstoneClarity.SI2).multiplier(0.8).build());
+        clarityMultiplierRepository.save(ClarityMultiplier.builder().clarity(GemstoneClarity.SI1).multiplier(0.9).build());
+        clarityMultiplierRepository.save(ClarityMultiplier.builder().clarity(GemstoneClarity.VS2).multiplier(1.0).build());
+        clarityMultiplierRepository.save(ClarityMultiplier.builder().clarity(GemstoneClarity.VS1).multiplier(1.1).build());
+        clarityMultiplierRepository.save(ClarityMultiplier.builder().clarity(GemstoneClarity.VVS2).multiplier(1.2).build());
+        clarityMultiplierRepository.save(ClarityMultiplier.builder().clarity(GemstoneClarity.VVS1).multiplier(1.3).build());
+        clarityMultiplierRepository.save(ClarityMultiplier.builder().clarity(GemstoneClarity.IF).multiplier(1.4).build());
+        clarityMultiplierRepository.save(ClarityMultiplier.builder().clarity(GemstoneClarity.FL).multiplier(1.5).build());
+    }
+
+    private void initializeColorMultipliers() {
+        colorMultiplierRepository.save(ColorMultiplier.builder().color(GemstoneColor.K).multiplier(0.8).build());
+        colorMultiplierRepository.save(ColorMultiplier.builder().color(GemstoneColor.J).multiplier(0.85).build());
+        colorMultiplierRepository.save(ColorMultiplier.builder().color(GemstoneColor.I).multiplier(0.9).build());
+        colorMultiplierRepository.save(ColorMultiplier.builder().color(GemstoneColor.H).multiplier(0.95).build());
+        colorMultiplierRepository.save(ColorMultiplier.builder().color(GemstoneColor.G).multiplier(1.0).build());
+        colorMultiplierRepository.save(ColorMultiplier.builder().color(GemstoneColor.F).multiplier(1.05).build());
+        colorMultiplierRepository.save(ColorMultiplier.builder().color(GemstoneColor.E).multiplier(1.1).build());
+        colorMultiplierRepository.save(ColorMultiplier.builder().color(GemstoneColor.D).multiplier(1.2).build());
+    }
+
+    private void initializeFakeGemstone (int limit) {
         String[] GEMSTONE_NAMES = {
                 "Diamond", "Ruby", "Emerald", "Sapphire", "Amethyst",
                 "Topaz", "Opal", "Aquamarine", "Garnet", "Peridot"
         };
         GemstoneShape[] shapes = GemstoneShape.values();
+        GemstoneCut[] cuts = GemstoneCut.values();
+        GemstoneClarity[] clarities = GemstoneClarity.values();
+        GemstoneColor[] colors = GemstoneColor.values();
 
-        GemstonePrice gemstone1 = GemstonePrice.builder()
-                .gemstone(GEMSTONE_NAMES[rand.nextInt(GEMSTONE_NAMES.length)])
-                .caratWeight(Math.round(rand.nextDouble() * 10.0) / 10.0)
-                .shape(shapes[rand.nextInt(shapes.length)])
-                .price(Double.parseDouble(faker.commerce().price(100.0, 1000.0)))
-                .updatedTime(LocalDateTime.now())
-                .build();
+        for (int i = 0; i < limit; i++) {
+            Gemstone stone = Gemstone.builder()
+                    .type(GemstoneType.builder()
+                            .name(GEMSTONE_NAMES[rand.nextInt(GEMSTONE_NAMES.length)])
+                            .basePricePerCarat(rand.nextDouble(500.0, 5000.0))
+                            .build())
+                    .shape(shapes[rand.nextInt(shapes.length)])
+                    .cut(cuts[rand.nextInt(cuts.length)])
+                    .clarity(clarities[rand.nextInt(clarities.length)])
+                    .color(colors[rand.nextInt(colors.length)])
+                    .caratWeight(generateRandomWeight())
+                    .build();
+            gemstones.add(stone);
+        }
+        gemstones = gemstoneRepository.saveAll(gemstones);
+    }
 
-        GemstonePrice gemstone2 = GemstonePrice.builder()
-                .gemstone(GEMSTONE_NAMES[rand.nextInt(GEMSTONE_NAMES.length)])
-                .caratWeight(Math.round(rand.nextDouble() * 10.0) / 10.0)
-                .shape(shapes[rand.nextInt(shapes.length)])
-                .price(Double.parseDouble(faker.commerce().price(100.0, 1000.0)))
-                .updatedTime(LocalDateTime.now())
-                .build();
+    private double generateRandomWeight () {
+        int randomInt = rand.nextInt(100) + 1;
+        return (double)randomInt / 20.0;
+    }
 
-        GemstonePrice gemstone3 = GemstonePrice.builder()
-                .gemstone(GEMSTONE_NAMES[rand.nextInt(GEMSTONE_NAMES.length)])
-                .caratWeight(Math.round(rand.nextDouble() * 10.0) / 10.0)
-                .shape(shapes[rand.nextInt(shapes.length)])
-                .price(Double.parseDouble(faker.commerce().price(100.0, 1000.0)))
-                .updatedTime(LocalDateTime.now())
-                .build();
-
-        GemstonePrice gemstone4 = GemstonePrice.builder()
-                .gemstone(GEMSTONE_NAMES[rand.nextInt(GEMSTONE_NAMES.length)])
-                .caratWeight(Math.round(rand.nextDouble() * 10.0) / 10.0)
-                .shape(shapes[rand.nextInt(shapes.length)])
-                .price(Double.parseDouble(faker.commerce().price(100.0, 1000.0)))
-                .updatedTime(LocalDateTime.now())
-                .build();
-
-        GemstonePrice gemstone5 = GemstonePrice.builder()
-                .gemstone(GEMSTONE_NAMES[rand.nextInt(GEMSTONE_NAMES.length)])
-                .caratWeight(Math.round(rand.nextDouble() * 10.0) / 10.0)
-                .shape(shapes[rand.nextInt(shapes.length)])
-                .price(Double.parseDouble(faker.commerce().price(100.0, 1000.0)))
-                .updatedTime(LocalDateTime.now())
-                .build();
-
-        GemstonePrice gemstone6 = GemstonePrice.builder()
-                .gemstone(GEMSTONE_NAMES[rand.nextInt(GEMSTONE_NAMES.length)])
-                .caratWeight(Math.round(rand.nextDouble() * 10.0) / 10.0)
-                .shape(shapes[rand.nextInt(shapes.length)])
-                .price(Double.parseDouble(faker.commerce().price(100.0, 1000.0)))
-                .updatedTime(LocalDateTime.now())
-                .build();
-
-        GemstonePrice gemstone7 = GemstonePrice.builder()
-                .gemstone(GEMSTONE_NAMES[rand.nextInt(GEMSTONE_NAMES.length)])
-                .caratWeight(Math.round(rand.nextDouble() * 10.0) / 10.0)
-                .shape(shapes[rand.nextInt(shapes.length)])
-                .price(Double.parseDouble(faker.commerce().price(100.0, 1000.0)))
-                .updatedTime(LocalDateTime.now())
-                .build();
-
-        GemstonePrice gemstone8 = GemstonePrice.builder()
-                .gemstone(GEMSTONE_NAMES[rand.nextInt(GEMSTONE_NAMES.length)])
-                .caratWeight(Math.round(rand.nextDouble() * 10.0) / 10.0)
-                .shape(shapes[rand.nextInt(shapes.length)])
-                .price(Double.parseDouble(faker.commerce().price(100.0, 1000.0)))
-                .updatedTime(LocalDateTime.now())
-                .build();
-
-        GemstonePrice gemstone9 = GemstonePrice.builder()
-                .gemstone(GEMSTONE_NAMES[rand.nextInt(GEMSTONE_NAMES.length)])
-                .caratWeight(Math.round(rand.nextDouble() * 10.0) / 10.0)
-                .shape(shapes[rand.nextInt(shapes.length)])
-                .price(Double.parseDouble(faker.commerce().price(100.0, 1000.0)))
-                .updatedTime(LocalDateTime.now())
-                .build();
-
-        GemstonePrice gemstone10 = GemstonePrice.builder()
-                .gemstone(GEMSTONE_NAMES[rand.nextInt(GEMSTONE_NAMES.length)])
-                .caratWeight(Math.round(rand.nextDouble() * 10.0) / 10.0)
-                .shape(shapes[rand.nextInt(shapes.length)])
-                .price(Double.parseDouble(faker.commerce().price(100.0, 1000.0)))
-                .updatedTime(LocalDateTime.now())
-                .build();
-
-        gemstonePriceRepository.saveAll(List.of(gemstone1,gemstone2,gemstone3,gemstone4,gemstone5,gemstone6,gemstone7,gemstone8,gemstone9,gemstone10));
-
+    private void initializeFakeProductSpecification () {
+//        GemstonePrice gemstone1 = GemstonePrice.builder()
+//                .gemstone(GEMSTONE_NAMES[rand.nextInt(GEMSTONE_NAMES.length)])
+//                .caratWeight(Math.round(rand.nextDouble() * 10.0) / 10.0)
+//                .shape(shapes[rand.nextInt(shapes.length)])
+//                .price(Double.parseDouble(faker.commerce().price(100.0, 1000.0)))
+//                .updatedTime(LocalDateTime.now())
+//                .build();
+//
+//        GemstonePrice gemstone2 = GemstonePrice.builder()
+//                .gemstone(GEMSTONE_NAMES[rand.nextInt(GEMSTONE_NAMES.length)])
+//                .caratWeight(Math.round(rand.nextDouble() * 10.0) / 10.0)
+//                .shape(shapes[rand.nextInt(shapes.length)])
+//                .price(Double.parseDouble(faker.commerce().price(100.0, 1000.0)))
+//                .updatedTime(LocalDateTime.now())
+//                .build();
+//
+//        GemstonePrice gemstone3 = GemstonePrice.builder()
+//                .gemstone(GEMSTONE_NAMES[rand.nextInt(GEMSTONE_NAMES.length)])
+//                .caratWeight(Math.round(rand.nextDouble() * 10.0) / 10.0)
+//                .shape(shapes[rand.nextInt(shapes.length)])
+//                .price(Double.parseDouble(faker.commerce().price(100.0, 1000.0)))
+//                .updatedTime(LocalDateTime.now())
+//                .build();
+//
+//        GemstonePrice gemstone4 = GemstonePrice.builder()
+//                .gemstone(GEMSTONE_NAMES[rand.nextInt(GEMSTONE_NAMES.length)])
+//                .caratWeight(Math.round(rand.nextDouble() * 10.0) / 10.0)
+//                .shape(shapes[rand.nextInt(shapes.length)])
+//                .price(Double.parseDouble(faker.commerce().price(100.0, 1000.0)))
+//                .updatedTime(LocalDateTime.now())
+//                .build();
+//
+//        GemstonePrice gemstone5 = GemstonePrice.builder()
+//                .gemstone(GEMSTONE_NAMES[rand.nextInt(GEMSTONE_NAMES.length)])
+//                .caratWeight(Math.round(rand.nextDouble() * 10.0) / 10.0)
+//                .shape(shapes[rand.nextInt(shapes.length)])
+//                .price(Double.parseDouble(faker.commerce().price(100.0, 1000.0)))
+//                .updatedTime(LocalDateTime.now())
+//                .build();
+//
+//        GemstonePrice gemstone6 = GemstonePrice.builder()
+//                .gemstone(GEMSTONE_NAMES[rand.nextInt(GEMSTONE_NAMES.length)])
+//                .caratWeight(Math.round(rand.nextDouble() * 10.0) / 10.0)
+//                .shape(shapes[rand.nextInt(shapes.length)])
+//                .price(Double.parseDouble(faker.commerce().price(100.0, 1000.0)))
+//                .updatedTime(LocalDateTime.now())
+//                .build();
+//
+//        GemstonePrice gemstone7 = GemstonePrice.builder()
+//                .gemstone(GEMSTONE_NAMES[rand.nextInt(GEMSTONE_NAMES.length)])
+//                .caratWeight(Math.round(rand.nextDouble() * 10.0) / 10.0)
+//                .shape(shapes[rand.nextInt(shapes.length)])
+//                .price(Double.parseDouble(faker.commerce().price(100.0, 1000.0)))
+//                .updatedTime(LocalDateTime.now())
+//                .build();
+//
+//        GemstonePrice gemstone8 = GemstonePrice.builder()
+//                .gemstone(GEMSTONE_NAMES[rand.nextInt(GEMSTONE_NAMES.length)])
+//                .caratWeight(Math.round(rand.nextDouble() * 10.0) / 10.0)
+//                .shape(shapes[rand.nextInt(shapes.length)])
+//                .price(Double.parseDouble(faker.commerce().price(100.0, 1000.0)))
+//                .updatedTime(LocalDateTime.now())
+//                .build();
+//
+//        GemstonePrice gemstone9 = GemstonePrice.builder()
+//                .gemstone(GEMSTONE_NAMES[rand.nextInt(GEMSTONE_NAMES.length)])
+//                .caratWeight(Math.round(rand.nextDouble() * 10.0) / 10.0)
+//                .shape(shapes[rand.nextInt(shapes.length)])
+//                .price(Double.parseDouble(faker.commerce().price(100.0, 1000.0)))
+//                .updatedTime(LocalDateTime.now())
+//                .build();
+//
+//        GemstonePrice gemstone10 = GemstonePrice.builder()
+//                .gemstone(GEMSTONE_NAMES[rand.nextInt(GEMSTONE_NAMES.length)])
+//                .caratWeight(Math.round(rand.nextDouble() * 10.0) / 10.0)
+//                .shape(shapes[rand.nextInt(shapes.length)])
+//                .price(Double.parseDouble(faker.commerce().price(100.0, 1000.0)))
+//                .updatedTime(LocalDateTime.now())
+//                .build();
+//
+//        gemstonePriceRepository.saveAll(List.of(gemstone1,gemstone2,gemstone3,gemstone4,gemstone5,gemstone6,gemstone7,gemstone8,gemstone9,gemstone10));
+        int index = 0;
 
         ProductSpecification spec1 = ProductSpecification.builder()
                 .type("Necklace")
                 .style("Vintage")
                 .occasion("Wedding")
                 .length("18 inches")
-                .metal(metal1)
+                .metal(metalPrices.get(rand.nextInt(metalPrices.size())))
                 .texture("Smooth")
                 .chainType("Box")
-                .gemstone(gemstone1)
+                .gemstone(gemstones.get(index++))
                 .products(List.of())
                 .build();
 
@@ -386,10 +491,10 @@ public class DataInitializer implements CommandLineRunner {
                 .style("Modern")
                 .occasion("Anniversary")
                 .length("7 inches")
-                .metal(metal2)
+                .metal(metalPrices.get(rand.nextInt(metalPrices.size())))
                 .texture("Textured")
                 .chainType("Cuban")
-                .gemstone(gemstone2)
+                .gemstone(gemstones.get(index++))
                 .products(List.of())
                 .build();
 
@@ -398,10 +503,10 @@ public class DataInitializer implements CommandLineRunner {
                 .style("Classic")
                 .occasion("Engagement")
                 .length("N/A")
-                .metal(metal3)
+                .metal(metalPrices.get(rand.nextInt(metalPrices.size())))
                 .texture("Polished")
                 .chainType("N/A")
-                .gemstone(gemstone3)
+                .gemstone(gemstones.get(index++))
                 .products(List.of())
                 .build();
 
@@ -410,10 +515,10 @@ public class DataInitializer implements CommandLineRunner {
                 .style("Bohemian")
                 .occasion("Casual")
                 .length("N/A")
-                .metal(metal4)
+                .metal(metalPrices.get(rand.nextInt(metalPrices.size())))
                 .texture("Hammered")
                 .chainType("N/A")
-                .gemstone(gemstone4)
+                .gemstone(gemstones.get(index++))
                 .products(List.of())
                 .build();
 
@@ -422,10 +527,10 @@ public class DataInitializer implements CommandLineRunner {
                 .style("Minimalist")
                 .occasion("Birthday")
                 .length("20 inches")
-                .metal(metal5)
+                .metal(metalPrices.get(rand.nextInt(metalPrices.size())))
                 .texture("Matte")
                 .chainType("Rope")
-                .gemstone(gemstone5)
+                .gemstone(gemstones.get(index++))
                 .products(List.of())
                 .build();
 
@@ -434,10 +539,10 @@ public class DataInitializer implements CommandLineRunner {
                 .style("Trendy")
                 .occasion("Summer")
                 .length("9 inches")
-                .metal(metal6)
+                .metal(metalPrices.get(rand.nextInt(metalPrices.size())))
                 .texture("Braided")
                 .chainType("Link")
-                .gemstone(gemstone6)
+                .gemstone(gemstones.get(index++))
                 .products(List.of())
                 .build();
 
@@ -446,10 +551,10 @@ public class DataInitializer implements CommandLineRunner {
                 .style("Art Deco")
                 .occasion("Formal")
                 .length("N/A")
-                .metal(metal7)
+                .metal(metalPrices.get(rand.nextInt(metalPrices.size())))
                 .texture("Filigree")
                 .chainType("N/A")
-                .gemstone(gemstone7)
+                .gemstone(gemstones.get(index++))
                 .products(List.of())
                 .build();
 
@@ -458,10 +563,10 @@ public class DataInitializer implements CommandLineRunner {
                 .style("Contemporary")
                 .occasion("Business")
                 .length("N/A")
-                .metal(metal8)
+                .metal(metalPrices.get(rand.nextInt(metalPrices.size())))
                 .texture("Brushed")
                 .chainType("N/A")
-                .gemstone(gemstone8)
+                .gemstone(gemstones.get(index++))
                 .products(List.of())
                 .build();
 
@@ -470,10 +575,10 @@ public class DataInitializer implements CommandLineRunner {
                 .style("Vintage")
                 .occasion("Formal")
                 .length("N/A")
-                .metal(metal9)
+                .metal(metalPrices.get(rand.nextInt(metalPrices.size())))
                 .texture("Engraved")
                 .chainType("N/A")
-                .gemstone(gemstone9)
+                .gemstone(gemstones.get(index++))
                 .products(List.of())
                 .build();
 
@@ -482,10 +587,10 @@ public class DataInitializer implements CommandLineRunner {
                 .style("Whimsical")
                 .occasion("Everyday")
                 .length("N/A")
-                .metal(metal10)
+                .metal(metalPrices.get(rand.nextInt(metalPrices.size())))
                 .texture("Polished")
                 .chainType("N/A")
-                .gemstone(gemstone10)
+                .gemstone(gemstones.get(index++))
                 .products(List.of())
                 .build();
 
@@ -494,10 +599,10 @@ public class DataInitializer implements CommandLineRunner {
                 .style("Statement")
                 .occasion("Party")
                 .length("24 inches")
-                .metal(metal1)
+                .metal(metalPrices.get(rand.nextInt(metalPrices.size())))
                 .texture("Etched")
                 .chainType("Snake")
-                .gemstone(gemstone1)
+                .gemstone(gemstones.get(index++))
                 .products(List.of())
                 .build();
 
@@ -506,10 +611,10 @@ public class DataInitializer implements CommandLineRunner {
                 .style("Beaded")
                 .occasion("Casual")
                 .length("8 inches")
-                .metal(metal2)
+                .metal(metalPrices.get(rand.nextInt(metalPrices.size())))
                 .texture("Beaded")
                 .chainType("N/A")
-                .gemstone(gemstone2)
+                .gemstone(gemstones.get(index++))
                 .products(List.of())
                 .build();
 
@@ -518,10 +623,10 @@ public class DataInitializer implements CommandLineRunner {
                 .style("Halo")
                 .occasion("Wedding")
                 .length("N/A")
-                .metal(metal3)
+                .metal(metalPrices.get(rand.nextInt(metalPrices.size())))
                 .texture("High Polish")
                 .chainType("N/A")
-                .gemstone(gemstone3)
+                .gemstone(gemstones.get(index++))
                 .products(List.of())
                 .build();
 
@@ -530,10 +635,10 @@ public class DataInitializer implements CommandLineRunner {
                 .style("Drop")
                 .occasion("Cocktail")
                 .length("N/A")
-                .metal(metal4)
+                .metal(metalPrices.get(rand.nextInt(metalPrices.size())))
                 .texture("Smooth")
                 .chainType("N/A")
-                .gemstone(gemstone4)
+                .gemstone(gemstones.get(index++))
                 .products(List.of())
                 .build();
 
@@ -542,10 +647,10 @@ public class DataInitializer implements CommandLineRunner {
                 .style("Geometric")
                 .occasion("Fashion")
                 .length("22 inches")
-                .metal(metal5)
+                .metal(metalPrices.get(rand.nextInt(metalPrices.size())))
                 .texture("Hammered")
                 .chainType("Figaro")
-                .gemstone(gemstone5)
+                .gemstone(gemstones.get(index++))
                 .products(List.of())
                 .build();
 

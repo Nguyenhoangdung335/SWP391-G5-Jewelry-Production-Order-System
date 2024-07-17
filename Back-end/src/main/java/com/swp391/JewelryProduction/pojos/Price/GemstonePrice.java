@@ -38,9 +38,9 @@ public class GemstonePrice {
      @JsonFormat(pattern = "HH:mm dd-MM-yyyy")
      private LocalDateTime updatedTime;
 
-     @ToString.Exclude
-     @EqualsAndHashCode.Exclude
-     @JsonIgnore
-     @OneToMany(mappedBy = "gemstone", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-     private List<ProductSpecification> specifications;
+//     @ToString.Exclude
+//     @EqualsAndHashCode.Exclude
+//     @JsonIgnore
+//     @OneToMany(mappedBy = "gemstone", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+//     private List<ProductSpecification> specifications;
 }
