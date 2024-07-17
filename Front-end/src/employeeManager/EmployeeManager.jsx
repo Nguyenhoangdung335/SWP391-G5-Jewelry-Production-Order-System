@@ -1,13 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-    Table,
-    Button,
-    Modal,
-    Form,
-    Row,
-    Col,
-    FormControl,
-} from "react-bootstrap";
+import { Table, Button, Modal, Form, Row, Col, FormControl } from "react-bootstrap";
 import { FiPlus } from "react-icons/fi";
 import axios from "axios";
 import { Icon } from "@iconify/react";
@@ -674,20 +666,22 @@ export default function EmployeeManager() {
                                 required
                             />
                         </Form.Group>
-                        <Button
-                            className="mt-2"
-                            variant="primary"
-                            type="submit"
-                        >
-                            Add Employee
-                        </Button>
-                        <Button
-                            variant="secondary"
-                            onClick={() => setIsAddModalVisible(false)}
-                            style={{ marginLeft: 20 }}
-                        >
-                            Back
-                        </Button>
+                        <div className="d-flex justify-content-between">
+                            <Button
+                                variant="primary"
+                                type="submit"
+                                className="mt-2"
+                            >
+                                Add Employee
+                            </Button>
+                            <Button
+                                variant="secondary"
+                                onClick={() => setIsAddModalVisible(false)}
+                                className="mt-2"
+                            >
+                                Back
+                            </Button>
+                        </div>
                     </Form>
                 </Modal.Body>
             </Modal>
