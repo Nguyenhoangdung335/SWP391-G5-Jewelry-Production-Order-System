@@ -3,7 +3,11 @@ import { Link, NavLink } from "react-router-dom";
 import { MdSpaceDashboard } from "react-icons/md";
 import { FaUsers } from "react-icons/fa";
 import { IoMdCart } from "react-icons/io";
-import { IoChatboxEllipses, IoLogOutOutline } from "react-icons/io5";
+import {
+  IoChatboxEllipses,
+  IoLogOutOutline,
+  IoSettingsOutline,
+} from "react-icons/io5";
 import { LuUser2 } from "react-icons/lu";
 import { FiBox } from "react-icons/fi";
 import { useAuth } from "../provider/AuthProvider";
@@ -31,6 +35,13 @@ const rbacConfig = {
     "ADMIN",
   ],
   "/userManager/notifications": [
+    "SALE_STAFF",
+    "DESIGN_STAFF",
+    "PRODUCTION_STAFF",
+    "MANAGER",
+    "ADMIN",
+  ],
+  "/user_setting_page": [
     "SALE_STAFF",
     "DESIGN_STAFF",
     "PRODUCTION_STAFF",
@@ -69,6 +80,11 @@ const navLinks = [
     to: "/userManager/products_manager",
     icon: <FiBox size={30} color="white" />,
     label: "Products",
+  },
+  {
+    to: "/user_setting_page",
+    icon: <IoSettingsOutline size={30} color="white" />,
+    label: "Settings",
   },
 ];
 
