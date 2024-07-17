@@ -241,7 +241,9 @@ function OrderDetailManager() {
                 </div>
               </div>
             </Row>
-            {data && <AssignedStaff data={data} onSubmit={handleStaffSubmit} />}
+            {data && <Row className="pb-2">
+              <AssignedStaff data={data} onSubmit={handleStaffSubmit} />
+            </Row>}
             <Row className="pb-2">
               <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
                 <div className="p-2">

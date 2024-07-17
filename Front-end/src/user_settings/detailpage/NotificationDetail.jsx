@@ -67,52 +67,61 @@ const NotificationDetail = () => {
   };
 
   return (
-    <Container className="p-4 m-4">
+    <Container className="p-4">
       <Row>
-        <div className="p-4">
+        <div style={{ paddingTop: "5%" }}>
           <div
             className="mb-3"
-            style={{ borderBottom: "1px solid rgba(166, 166, 166, 0.5)", lineHeight:"10px" }}
+            style={{
+              borderBottom: "1px solid rgba(166, 166, 166, 0.5)",
+              lineHeight: "10px",
+            }}
           >
             <h2>{notification.title}</h2>
             <p>{notification.createdDate}</p>
           </div>
           <div>
-            <p>{notification.description}</p>
+            <p
+              style={{
+                paddingInline: "5%",
+                maxWidth: "100%",
+                fontSize: "1.5rem",
+                wordBreak: "break-all",
+                whiteSpace: "pre-wrap",
+              }}
+            >
+              {notification.description}
+            </p>
           </div>
         </div>
       </Row>
-      <Row>
-        <Col md={4}></Col>
-        <Col md={4}>
-          {notification.option && (
-            <Row className="mt-2">
-              <div style={{borderTop: "1px solid rgba(166, 166, 166, 0.5)"}}>
-                <div className="p-2">
-                  <div className="mb-2">
-                    <h4 className="text-center">Actions</h4>
-                  </div>
-                  <div className="d-flex justify-content-around">
-                    <Button
-                      variant="danger"
-                      onClick={() => handleConfirm(false)}
-                      className=" m-2"
-                    >
-                      Decline
-                    </Button>
-                    <Button
-                      className=" m-2"
-                      onClick={() => handleConfirm(true)}
-                    >
-                      Confirm
-                    </Button>
-                  </div>
+      <Row
+        className="d-flex align-items-center"
+        style={{ marginInline: "25%" }}
+      >
+        {notification.option && (
+          <Row className="mt-2">
+            <div style={{ borderTop: "1px solid rgba(166, 166, 166, 0.5)" }}>
+              <div className="p-2">
+                <div className="mb-2">
+                  <h4 className="text-center">Actions</h4>
+                </div>
+                <div className="d-flex justify-content-around">
+                  <Button
+                    variant="danger"
+                    onClick={() => handleConfirm(false)}
+                    className=" m-2"
+                  >
+                    Decline
+                  </Button>
+                  <Button className=" m-2" onClick={() => handleConfirm(true)}>
+                    Confirm
+                  </Button>
                 </div>
               </div>
-            </Row>
-          )}
-        </Col>
-        <Col md={4}></Col>
+            </div>
+          </Row>
+        )}
       </Row>
     </Container>
   );
