@@ -81,9 +81,9 @@ function LivePrice() {
               return (
                 <tr key={dataItem.id}>
                   <td>{dataItem.id}</td>
-                  <td>Gold / {dataItem.name}</td>
+                  <td>{dataItem.name} {dataItem.unit}</td>
                   <td>{dataItem.price}</td>
-                  <td>{dataItem.crawlTime}</td>
+                  <td>{dataItem.updatedTime}</td>
                 </tr>
               );
             })}
