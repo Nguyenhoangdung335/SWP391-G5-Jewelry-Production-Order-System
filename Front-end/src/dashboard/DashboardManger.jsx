@@ -63,6 +63,30 @@ export default function DashboardManager() {
   useEffect(() => {
     const eventSource = new EventSource(`${ServerUrl}/api/admin/dashboard`);
 
+    // Close SSE when the page unloads (e.g., user navigates away or closes the tab)
+    window.addEventListener("beforeunload", function () {
+      if (eventSource) {
+        console.log("SSE close");
+        eventSource.close();
+      }
+    });
+
+    // Also handle single page application navigation
+    window.addEventListener("popstate", function () {
+      if (eventSource) {
+        console.log("SSE close");
+        eventSource.close();
+      }
+    });
+
+    // You might also handle other events like page visibility changes
+    document.addEventListener("visibilitychange", function () {
+      if (document.visibilityState === "hidden" && eventSource) {
+        console.log("SSE close");
+        eventSource.close();
+      }
+    });
+
     eventSource.onmessage = (event) => {
       const parsedData = JSON.parse(event.data);
       setDashboard(parsedData);
