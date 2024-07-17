@@ -6,10 +6,12 @@ import com.swp391.JewelryProduction.enums.gemstone.GemstoneCut;
 import com.swp391.JewelryProduction.enums.gemstone.GemstoneShape;
 import com.swp391.JewelryProduction.pojos.gemstone.*;
 import com.swp391.JewelryProduction.repositories.gemstoneRepositories.*;
+import com.swp391.JewelryProduction.util.exceptions.ObjectNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -43,6 +45,33 @@ public class GemstoneServiceImpl implements GemstoneService{
         double colorMultiplier = getColorMultiplier(gemstone.getColor());
 
         return basePrice * gemstone.getCaratWeight() * weightMultiplier * shapeMultiplier * cutMultiplier * clarityMultiplier * colorMultiplier;
+    }
+
+    @Override
+    public List<Gemstone> getGemstones() {
+        return gemstoneRepository.findAll().stream().toList();
+    }
+
+    @Override
+    public Gemstone getGemstone(long id) {
+        return gemstoneRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException(("Gemstone with id " + id + " not found")));
+    }
+
+    @Override
+    public Gemstone createGemstone(Gemstone gemstone) {
+        return gemstoneRepository.save(gemstone);
+    }
+
+    @Override
+    public Gemstone updateGemstone(Gemstone gemstone) {
+        gemstoneRepository.findById(gemstone.getId()).orElseThrow(() -> new ObjectNotFoundException("Gemstone with id " + gemstone.getId() + " not found"));
+        return gemstoneRepository.save(gemstone);
+    }
+
+    @Override
+    public boolean deleteGemstone(long id) {
+        gemstoneRepository.delete(gemstoneRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException("Gemstone with id " + id + " not found")));
+        return gemstoneRepository.existsById(id);
     }
 
     //<editor-fold desc="PRIVATE METHODS" defaultstate="collapsed">
