@@ -7,8 +7,8 @@ import { useEffect } from "react";
 import LineChartComponent from "../chart/LineChart";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
-import { FaTrash } from 'react-icons/fa';
-import { FaEdit } from 'react-icons/fa';
+import { FaTrash } from "react-icons/fa";
+import { FaEdit } from "react-icons/fa";
 import { useAuth } from "../provider/AuthProvider";
 import ServerUrl from "../reusable/ServerUrl";
 
@@ -16,7 +16,7 @@ export default function DashboardManager() {
   const [currentPageClients, setCurrentPageClients] = useState(1);
   const [currentPageOrders, setCurrentPageOrders] = useState(1);
   const [order, setOrder] = useState([]);
-  const [ dashboard, setDashboard ] = useState();
+  const [dashboard, setDashboard] = useState();
   // const [info, setInfo] = useState([]);
   const itemsPerPage = 5;
   const { token } = useAuth();
@@ -28,12 +28,12 @@ export default function DashboardManager() {
       const accountId = decodedToken?.id;
       try {
         const response = await axios.get(`${ServerUrl}/api/admin/get/order/0`, {
-        headers: { "Content-Type": "application/json" },
-        params: {
-          role: userRole,
-          status: "ALL",
-          accountId: accountId,
-        },
+          headers: { "Content-Type": "application/json" },
+          params: {
+            role: userRole,
+            status: "ALL",
+            accountId: accountId,
+          },
         });
         if (response.status === 200) {
           setOrder(response.data.responseList.orders);
@@ -92,17 +92,17 @@ export default function DashboardManager() {
       setDashboard(parsedData);
     };
 
-    eventSource.addEventListener('live', (event) => {
+    eventSource.addEventListener("live", (event) => {
       const parsedData = JSON.parse(event.data);
       setDashboard(parsedData);
     });
 
-    eventSource.addEventListener('heartbeat', () => {
-      console.log("Baduum!")
+    eventSource.addEventListener("heartbeat", () => {
+      console.log("Baduum!");
     });
 
     eventSource.onerror = (error) => {
-      console.error('Error in SSE connection:', error);
+      console.error("Error in SSE connection:", error);
     };
   }, []);
 
@@ -136,21 +136,6 @@ export default function DashboardManager() {
         <Badge bg={status === "active" ? "success" : "danger"}>
           {status.charAt(0).toUpperCase() + status.slice(1)}
         </Badge>
-      ),
-    },
-    {
-      title: <span style={{ fontSize: 18, fontWeight: 400 }}>Action</span>,
-      key: "action",
-      render: (_, record) => (
-        <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-          <Button variant="link" style={{ padding: 0, margin: 0 }}>
-            Edit
-          </Button>
-          <span style={{ margin: "0 8px" }}>|</span>
-          <Button variant="link" style={{ padding: 0, margin: 0 }}>
-          <FaTrash />
-          </Button>
-        </div>
       ),
     },
   ];
@@ -250,7 +235,6 @@ export default function DashboardManager() {
     },
   ];
 
-
   const paginatedDataClient = dataClient.slice(
     (currentPageClients - 1) * itemsPerPage,
     currentPageClients * itemsPerPage
@@ -263,10 +247,12 @@ export default function DashboardManager() {
 
   return (
     <Container fluid style={{ padding: "3%" }}>
-      <p style={{ margin: 0, fontSize: 24 }} className="fw-bolder">
-        Welcome, {decodedToken.first_name}!
-      </p>
-      <p style={{ fontSize: 16 }}>Dashboard</p>
+      <div className="mb-2">
+        <p style={{ margin: 0, fontSize: 24, fontWeight: "bold" }}>
+          Welcome, Admin!
+        </p>
+        <p style={{ fontSize: 18 }}>Dashboard</p>
+      </div>
       <Row style={{ marginBottom: "1%" }}>
         <Col md={3}>
           <div
@@ -299,9 +285,7 @@ export default function DashboardManager() {
                 alignItems: "flex-end",
               }}
             >
-              <p style={{ margin: 0, fontSize: 17, fontWeight: 400 }}>
-                Client
-              </p>
+              <p style={{ margin: 0, fontSize: 17, fontWeight: 400 }}>Client</p>
               <p style={{ margin: 0, fontSize: 20, fontWeight: 500 }}>
                 {dashboard ? dashboard.numCustomers : "Loading..."}
               </p>
@@ -379,9 +363,7 @@ export default function DashboardManager() {
                 alignItems: "flex-end",
               }}
             >
-              <p style={{ margin: 0, fontSize: 17, fontWeight: 400 }}>
-                Orders
-              </p>
+              <p style={{ margin: 0, fontSize: 17, fontWeight: 400 }}>Orders</p>
               <p style={{ margin: 0, fontSize: 20, fontWeight: 500 }}>
                 {dashboard ? dashboard.numOrders : "Loading..."}
               </p>
@@ -463,7 +445,7 @@ export default function DashboardManager() {
               Revenue per month
             </h1>
             <div style={{ flex: 1 }}>
-              <LineChartComponent data={dashboard}/>
+              <LineChartComponent data={dashboard} />
             </div>
           </div>
         </Col>
@@ -499,8 +481,15 @@ export default function DashboardManager() {
                     {/* <td>{row.budget}</td> */}
                     <td>{row.quotation.totalPrice}</td>
                     <td>
-                      <Badge bg={row.status === "ORDER_COMPLETED" ? "success" : "danger"}>
-                        {row.status.charAt(0).toUpperCase() + row.status.slice(1)}
+                      <Badge
+                        bg={
+                          row.status === "ORDER_COMPLETED"
+                            ? "success"
+                            : "danger"
+                        }
+                      >
+                        {row.status.charAt(0).toUpperCase() +
+                          row.status.slice(1)}
                       </Badge>
                     </td>
                   </tr>
@@ -532,15 +521,6 @@ export default function DashboardManager() {
                 <Badge bg={row.status === "active" ? "success" : "danger"}>
                   {row.status.charAt(0).toUpperCase() + row.status.slice(1)}
                 </Badge>
-              </td>
-              <td>
-                <Button variant="link" style={{ padding: 0, margin: 0 }}>
-                <FaEdit />
-                </Button>
-                <span style={{ margin: "0 8px" }}>|</span>
-                <Button variant="link" style={{ padding: 0, margin: 0 }}>
-                <FaTrash />    
-                </Button>
               </td>
             </tr>
           ))}

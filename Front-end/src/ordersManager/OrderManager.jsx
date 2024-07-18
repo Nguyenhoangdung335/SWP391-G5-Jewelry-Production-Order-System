@@ -111,26 +111,35 @@ export default function OrderManager() {
 
   return (
     <div style={{ padding: "3%" }}>
-      <p style={{ margin: 0, fontSize: 24 }} className="fw-bolder">
-        Welcome, K!
-      </p>
-      <p style={{ fontSize: 16 }}>Order</p>
+      <div className="mb-2">
+        <p style={{ margin: 0, fontSize: 24, fontWeight: "bold" }}>
+          Welcome, Admin!
+        </p>
+        <p style={{ fontSize: 18 }}>Orders Management</p>
+      </div>
 
-      <div className="rounded-lg bg-neutral-500 text-white pl-3 flex items-center">
-          <div>Role Filter</div>
-          <div  className="w-25"> 
-          <select className="bg-neutral-500 form-select inline-block text-orange-500 w-44" onChange={handleFilterChange}>
+      <div className="rounded-lg bg-neutral-500 mb-4 flex items-center">
+        {/* <div>Role Filter: </div> */}
+        <div className="w-25">
+          <select
+            className="bg-neutral-500 form-select inline-block text-orange-500 w-44"
+            onChange={handleFilterChange}
+          >
             {OrderStatus.map((status) => (
-              <option key={status.name} value={status.value} className="bg-white text-black">
+              <option
+                key={status.name}
+                value={status.value}
+                className="bg-white text-black"
+              >
                 {status.name}
               </option>
             ))}
           </select>
-          </div>
-          <div className="relative right-6 pb-2">
-            <Icon icon="fa:sort-down" />
-          </div>
         </div>
+        {/* <div className="relative right-6 pb-2">
+          <Icon icon="fa:sort-down" />
+        </div> */}
+      </div>
 
       <Table striped bordered hover>
         <thead>
@@ -151,7 +160,9 @@ export default function OrderManager() {
               <td>
                 <span
                   className={`badge ${
-                    order.status === "completed" ? "bg-success" : "bg-danger"
+                    order.status === "ORDER_COMPLETED"
+                      ? "bg-success"
+                      : "bg-danger"
                   }`}
                 >
                   {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
@@ -169,7 +180,10 @@ export default function OrderManager() {
 
       <div style={styles.paginationContainer}>
         <div
-          style={{ ...styles.paginationButton, ...(currentPage === 1 ? styles.paginationButtonDisabled : {}) }}
+          style={{
+            ...styles.paginationButton,
+            ...(currentPage === 1 ? styles.paginationButtonDisabled : {}),
+          }}
           onClick={() => handlePageChange(currentPage - 1)}
         >
           &lt;
@@ -179,7 +193,9 @@ export default function OrderManager() {
             key={page + 1}
             style={{
               ...styles.paginationButton,
-              ...(page + 1 === currentPage ? styles.paginationButtonActive : {})
+              ...(page + 1 === currentPage
+                ? styles.paginationButtonActive
+                : {}),
             }}
             onClick={() => handlePageChange(page + 1)}
           >
@@ -187,7 +203,12 @@ export default function OrderManager() {
           </div>
         ))}
         <div
-          style={{ ...styles.paginationButton, ...(currentPage === totalPages ? styles.paginationButtonDisabled : {}) }}
+          style={{
+            ...styles.paginationButton,
+            ...(currentPage === totalPages
+              ? styles.paginationButtonDisabled
+              : {}),
+          }}
           onClick={() => handlePageChange(currentPage + 1)}
         >
           &gt;
@@ -201,13 +222,27 @@ export default function OrderManager() {
         <Modal.Body>
           {selectedOrder && (
             <div>
-              <p><strong>ID:</strong> {selectedOrder.id}</p>
-              <p><strong>Name:</strong> {selectedOrder.name}</p>
-              <p><strong>Budget:</strong> {selectedOrder.budget}</p>
-              <p><strong>Created Date:</strong> {selectedOrder.createdDate}</p>
-              <p><strong>Completed Date:</strong> {selectedOrder.completedDate}</p>
-              <p><strong>Status:</strong> {selectedOrder.status}</p>
-              <p><strong>Details:</strong> Details of the order go here...</p>
+              <p>
+                <strong>ID:</strong> {selectedOrder.id}
+              </p>
+              <p>
+                <strong>Name:</strong> {selectedOrder.name}
+              </p>
+              <p>
+                <strong>Budget:</strong> {selectedOrder.budget}
+              </p>
+              <p>
+                <strong>Created Date:</strong> {selectedOrder.createdDate}
+              </p>
+              <p>
+                <strong>Completed Date:</strong> {selectedOrder.completedDate}
+              </p>
+              <p>
+                <strong>Status:</strong> {selectedOrder.status}
+              </p>
+              <p>
+                <strong>Details:</strong> Details of the order go here...
+              </p>
             </div>
           )}
         </Modal.Body>

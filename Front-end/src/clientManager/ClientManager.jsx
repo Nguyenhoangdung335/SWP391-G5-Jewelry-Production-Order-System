@@ -257,12 +257,14 @@ export default function ClientManager() {
           margin-left: auto;
         }
       `}</style>
-      <div className="pb-2">
+
+      <div className="mb-2">
         <p style={{ margin: 0, fontSize: 24, fontWeight: "bold" }}>
           Welcome, Admin!
         </p>
-        <p style={{ fontSize: 18 }}>Client Manager</p>
+        <p style={{ fontSize: 18 }}>Client Management</p>
       </div>
+
       <div
         style={{
           display: "flex",
@@ -273,7 +275,6 @@ export default function ClientManager() {
         }}
       >
         <div className="w-100 d-flex justify-content-end">
-          {" "}
           <Button variant="primary" onClick={handleAddClick}>
             <FiPlus size={20} />
             <span className="ms-1">Add Client</span>
@@ -312,11 +313,16 @@ export default function ClientManager() {
                   {item.status}
                 </span>
               </td>
-              <td>
-                <Button variant="link" onClick={() => handleEdit(item)}>
+              <td className="d-flex justify-content-center gap-2">
+                <Button
+                  className="border-0"
+                  variant="link"
+                  onClick={() => handleEdit(item)}
+                >
                   <FaEdit size={20} />
                 </Button>
                 <Button
+                  className="border-0"
                   variant="link"
                   onClick={() => handleDeleteClick(item.id)}
                 >
@@ -456,15 +462,15 @@ export default function ClientManager() {
               </Form.Group>
 
               <div className="d-flex justify-content-between">
-                <Button variant="primary" type="submit" className="mt-3">
-                  Save Changes
-                </Button>
                 <Button
                   variant="secondary"
                   onClick={handleCancel}
                   className="mt-3"
                 >
                   Back
+                </Button>
+                <Button variant="primary" type="submit" className="mt-3">
+                  Save Changes
                 </Button>
               </div>
             </Form>
@@ -535,15 +541,15 @@ export default function ClientManager() {
               <Form.Control type="text" required />
             </Form.Group>
             <div className="d-flex justify-content-between">
-              <Button variant="primary" type="submit" className="mt-2">
-                Add Client
-              </Button>
               <Button
                 variant="secondary"
                 onClick={() => setIsAddModalVisible(false)}
                 className="mt-2"
               >
                 Back
+              </Button>
+              <Button variant="primary" type="submit" className="mt-2">
+                Add Client
               </Button>
             </div>
           </Form>
