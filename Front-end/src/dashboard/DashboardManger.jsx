@@ -499,7 +499,7 @@ export default function DashboardManager() {
                     {/* <td>{row.budget}</td> */}
                     <td>{row.quotation.totalPrice}</td>
                     <td>
-                      <Badge bg={row.status === "paid" ? "success" : "danger"}>
+                      <Badge bg={row.status === "ORDER_COMPLETED" ? "success" : "danger"}>
                         {row.status.charAt(0).toUpperCase() + row.status.slice(1)}
                       </Badge>
                     </td>
