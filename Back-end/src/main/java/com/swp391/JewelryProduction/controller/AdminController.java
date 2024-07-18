@@ -6,9 +6,11 @@ import com.swp391.JewelryProduction.enums.OrderStatus;
 import com.swp391.JewelryProduction.enums.Role;
 import com.swp391.JewelryProduction.pojos.Account;
 import com.swp391.JewelryProduction.pojos.Order;
+import com.swp391.JewelryProduction.pojos.gemstone.*;
 import com.swp391.JewelryProduction.services.account.AccountService;
 import com.swp391.JewelryProduction.services.account.StaffService;
 import com.swp391.JewelryProduction.services.admin.AdminService;
+import com.swp391.JewelryProduction.services.gemstone.GemstoneService;
 import com.swp391.JewelryProduction.services.order.OrderService;
 import com.swp391.JewelryProduction.util.Response;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +34,7 @@ public class AdminController {
     private final StaffService staffService;
     private final OrderService orderService;
     private final AdminService adminService;
+    private final GemstoneService gemstoneService;
 
     @GetMapping("/account-list")
     public ResponseEntity<Response> getAccounts() {
@@ -174,6 +177,68 @@ public class AdminController {
     @GetMapping("/dashboard")
     public Flux<ServerSentEvent<HashMap<String, Object>>> subscribeDashboard () {
         return adminService.subscribeDashboard();
+    }
+    //</editor-fold>
+
+    //<editor-fold desc="GEMSTONES" defaultstate="collapsed>
+    @GetMapping("/gemstones")
+    public ResponseEntity<Response> getGemstones() {
+        return Response.builder()
+                .status(HttpStatus.OK)
+                .message("Request sent successfully.")
+                .response("gemstones", gemstoneService.getGemstones())
+                .response("gemstoneCutMultipliers", gemstoneService.getCutMultipliers())
+                .response("gemstoneShapeMultipliers", gemstoneService.getShapeMultipliers())
+                .response("gemstoneColorMultipliers", gemstoneService.getColorMultipliers())
+                .response("gemstoneClarityMultipliers", gemstoneService.getClarityMultipliers())
+                .buildEntity();
+    }
+
+    @PostMapping("/gemstone")
+    public ResponseEntity<Response> createGemstone(@RequestBody Gemstone gemstone) {
+        return Response.builder()
+                .status(HttpStatus.OK)
+                .message("Request sent successfully.")
+                .response("gemstone", gemstoneService.createGemstone(gemstone))
+                .buildEntity();
+    }
+
+    @PutMapping("/gemstone/{type}")
+    public ResponseEntity<Response> updateGemstone(@RequestBody Gemstone gemstone, @PathVariable("type") String multiplierType,
+                                                   @RequestParam Long id,
+                                                   @RequestParam double multiplier ) {
+        Object shapeMultiplier = null;
+        switch(multiplierType) {
+            case "cut-multiplier":
+                shapeMultiplier = gemstoneService.updateCutMultiplier(id,multiplier);
+                break;
+            case "shape-multiplier":
+                shapeMultiplier = gemstoneService.updateShapeMultiplier(id,multiplier);
+                break;
+            case "color-multiplier":
+                shapeMultiplier = gemstoneService.updateColorMultiplier(id,multiplier);
+                break;
+            case "clarity-multiplier":
+                shapeMultiplier = gemstoneService.updateClarityMultiplier(id, multiplier);
+                break;
+            default:
+                break;
+        }
+        return Response.builder()
+                .status(HttpStatus.OK)
+                .message("Request sent successfully.")
+                .response("gemstone", gemstoneService.updateGemstone(gemstone))
+                .response("multiplier", shapeMultiplier)
+                .buildEntity();
+    }
+
+    @DeleteMapping("/gemstone/{id}")
+    public ResponseEntity<Response> deleteGemstone(@PathVariable("id") long id) {
+        return Response.builder()
+                .status(HttpStatus.OK)
+                .message("Request sent successfully.")
+                .response("result", gemstoneService.deleteGemstone(id) ? "Gemstone with ID " + id + " is existed in database" : "Gemstone with ID " + id + " is not existed in database")
+                .buildEntity();
     }
     //</editor-fold>
 }
