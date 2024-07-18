@@ -1,5 +1,6 @@
 package com.swp391.JewelryProduction.security.jwt;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.swp391.JewelryProduction.security.services.JWTService;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -8,8 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,6 +20,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -36,7 +39,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
-        final String userEmail;
+        final String userEmail ;
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
@@ -47,10 +50,12 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             userEmail = jwtService.extractUsername(jwt);
         } catch (ExpiredJwtException e) {
             log.warn("Token expired", e);
-            throw new ServletException("Token has expired", e);
+            setErrorResponse(response, e);
+            return;
         } catch (Exception e) {
             log.error("Error extracting username from token", e);
-            throw new ServletException("Invalid token", e);
+            setErrorResponse(response, e);
+            return;
         }
 
         //If User's Email exist and the user have not been authenticated, then fetch user using userEmail
@@ -73,5 +78,15 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private void setErrorResponse(HttpServletResponse response, Exception ex) {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json");
+        try {
+            response.getWriter().write("{ \"error\": \"" + ex.getMessage() + "\" }");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
