@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Table, Button, Badge, Container, Row, Col } from "react-bootstrap";
 import { HiOutlineUserGroup } from "react-icons/hi";
 import { IoMdCart } from "react-icons/io";
 import { LiaUser } from "react-icons/lia";
-import { useEffect } from "react";
 import LineChartComponent from "../chart/LineChart";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
@@ -21,11 +20,12 @@ export default function DashboardManager() {
   const itemsPerPage = 5;
   const { token } = useAuth();
   const decodedToken = jwtDecode(token);
+  const userRole = decodedToken?.role;
+  const accountId = decodedToken?.id;
+  const eventSourceRef = useRef(null);
 
   useEffect(() => {
     async function fetchOrder() {
-      const userRole = decodedToken?.role;
-      const accountId = decodedToken?.id;
       try {
         const response = await axios.get(`${ServerUrl}/api/admin/get/order/0`, {
           headers: { "Content-Type": "application/json" },
@@ -61,50 +61,66 @@ export default function DashboardManager() {
   }, []);
 
   useEffect(() => {
-    const eventSource = new EventSource(`${ServerUrl}/api/admin/dashboard`);
+    // Check if an EventSource connection already exists
+    if (!eventSourceRef.current && userRole === 'ADMIN') {
+      eventSourceRef.current = new EventSource(`${ServerUrl}/api/admin/dashboard`);
 
-    // Close SSE when the page unloads (e.g., user navigates away or closes the tab)
-    window.addEventListener("beforeunload", function () {
-      if (eventSource) {
-        console.log("SSE close");
-        eventSource.close();
-      }
-    });
+      const handleBeforeUnload = () => {
+        if (eventSourceRef) {
+          console.log("SSE close");
+          eventSourceRef.current.close();
+        }
+      };
+  
+      const handlePopState = () => {
+        if (eventSourceRef.current) {
+          console.log("SSE close");
+          eventSourceRef.current.close();
+        }
+      };
+  
+      const handleVisibilityChange = () => {
+        if (document.visibilityState === "hidden" && eventSourceRef.current) {
+          console.log("SSE close");
+          eventSourceRef.current.close();
+        }
+      };
+  
+      window.addEventListener("beforeunload", handleBeforeUnload);
+      window.addEventListener("popstate", handlePopState);
+      document.addEventListener("visibilitychange", handleVisibilityChange);
 
-    // Also handle single page application navigation
-    window.addEventListener("popstate", function () {
-      if (eventSource) {
-        console.log("SSE close");
-        eventSource.close();
-      }
-    });
+      eventSourceRef.current.onmessage = (event) => {
+        const parsedData = JSON.parse(event.data);
+        setDashboard(parsedData);
+      };
 
-    // You might also handle other events like page visibility changes
-    document.addEventListener("visibilitychange", function () {
-      if (document.visibilityState === "hidden" && eventSource) {
-        console.log("SSE close");
-        eventSource.close();
-      }
-    });
+      eventSourceRef.current.addEventListener('live', (event) => {
+        const parsedData = JSON.parse(event.data);
+        setDashboard(parsedData);
+      });
 
-    eventSource.onmessage = (event) => {
-      const parsedData = JSON.parse(event.data);
-      setDashboard(parsedData);
-    };
+      eventSourceRef.current.addEventListener('heartbeat', () => {
+        console.log('Baduum!');
+      });
 
-    eventSource.addEventListener("live", (event) => {
-      const parsedData = JSON.parse(event.data);
-      setDashboard(parsedData);
-    });
+      eventSourceRef.current.onerror = (error) => {
+        console.error('Error in SSE connection:', error);
+      };
 
-    eventSource.addEventListener("heartbeat", () => {
-      console.log("Baduum!");
-    });
-
-    eventSource.onerror = (error) => {
-      console.error("Error in SSE connection:", error);
-    };
-  }, []);
+      // Cleanup function
+      return () => {
+        if (eventSourceRef.current) {
+          console.log("Close dashboard connection");
+          eventSourceRef.current.close();
+          eventSourceRef.current = null;
+          window.removeEventListener("beforeunload", handleBeforeUnload);
+          window.removeEventListener("popstate", handlePopState);
+          document.removeEventListener("visibilitychange", handleVisibilityChange);
+        }
+      };
+    }
+  }, [userRole]);
 
   const columnsClient = [
     {
