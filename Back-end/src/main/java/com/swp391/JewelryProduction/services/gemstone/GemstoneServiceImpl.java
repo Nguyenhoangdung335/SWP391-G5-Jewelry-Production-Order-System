@@ -53,6 +53,26 @@ public class GemstoneServiceImpl implements GemstoneService{
     }
 
     @Override
+    public List<ShapeMultiplier> getShapeMultipliers() {
+        return shapeMultiplierRepository.findAll().stream().toList();
+    }
+
+    @Override
+    public List<CutMultiplier> getCutMultipliers() {
+        return cutMultiplierRepository.findAll().stream().toList();
+    }
+
+    @Override
+    public List<ColorMultiplier> getColorMultipliers() {
+        return colorMultiplierRepository.findAll().stream().toList();
+    }
+
+    @Override
+    public List<ClarityMultiplier> getClarityMultipliers() {
+        return clarityMultiplierRepository.findAll().stream().toList();
+    }
+
+    @Override
     public Gemstone getGemstone(long id) {
         return gemstoneRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException(("Gemstone with id " + id + " not found")));
     }
@@ -72,6 +92,38 @@ public class GemstoneServiceImpl implements GemstoneService{
     public boolean deleteGemstone(long id) {
         gemstoneRepository.delete(gemstoneRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException("Gemstone with id " + id + " not found")));
         return gemstoneRepository.existsById(id);
+    }
+
+    @Override
+    public CutMultiplier updateCutMultiplier(long id, double multiplier) {
+        CutMultiplier cutMultiplier = cutMultiplierRepository
+                .findById(id).orElseThrow(() -> new ObjectNotFoundException("CutMultiplier with id " + id + " not found"));
+        cutMultiplier.setMultiplier(multiplier);
+        return cutMultiplierRepository.save(cutMultiplier);
+    }
+
+    @Override
+    public ColorMultiplier updateColorMultiplier(long id, double multiplier) {
+        ColorMultiplier colorMultiplier = colorMultiplierRepository
+                .findById(id).orElseThrow(() -> new ObjectNotFoundException("ColorMultiplier with id " + id + " not found"));
+        colorMultiplier.setMultiplier(multiplier);
+        return colorMultiplierRepository.save(colorMultiplier);
+    }
+
+    @Override
+    public ClarityMultiplier updateClarityMultiplier(long id, double multiplier) {
+        ClarityMultiplier clarityMultiplier = clarityMultiplierRepository
+                .findById(id).orElseThrow(() -> new ObjectNotFoundException("ClarityMultiplier with id " + id + " not found"));
+        clarityMultiplier.setMultiplier(multiplier);
+        return clarityMultiplierRepository.save(clarityMultiplier);
+    }
+
+    @Override
+    public ShapeMultiplier updateShapeMultiplier(long id, double multiplier) {
+        ShapeMultiplier shapeMultiplier = shapeMultiplierRepository
+                .findById(id).orElseThrow(() -> new ObjectNotFoundException("ShapeMultiplier with id " + id + " not found"));
+        shapeMultiplier.setMultiplier(multiplier);
+        return shapeMultiplierRepository.save(shapeMultiplier);
     }
 
     //<editor-fold desc="PRIVATE METHODS" defaultstate="collapsed">
