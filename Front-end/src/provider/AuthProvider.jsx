@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import axios from "axios";
-// import decode from "jwt-decode";
+import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext();
 
@@ -10,6 +10,7 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [token, setToken_] = useState(localStorage.getItem("token"));
+  const navigate = useNavigate();
 
   const setToken = (newToken) => {
     setToken_(newToken);
@@ -24,7 +25,39 @@ export const AuthProvider = ({ children }) => {
       delete axios.defaults.headers.common["Authorization"];
       localStorage.removeItem("token");
     }
-  }, [token]);
+
+    axios.defaults.validateStatus = (status) => {
+      console.log(status);
+      if (status === 401) {
+        setToken(null);
+        navigate("/login");
+        return false;
+      }
+      return status >= 200;
+    }
+
+    const interceptor = axios.interceptors.response.use(
+      (response) => {
+        console.log(response);
+        return response;
+      },
+      (error) => {
+        console.log(error);
+        console.log(error.response.data);
+        console.log(error.response.status);
+        console.log(error.response.headers);
+        if (error.response && error.response.status === 401) {
+          setToken(null);
+          navigate("/login");
+        }
+        return Promise.reject(error);
+      }
+    );
+
+    return () => {
+      axios.interceptors.response.eject(interceptor);
+    };
+  }, [token, navigate]);
 
   const contextValue = useMemo(
     () => ({
@@ -33,6 +66,7 @@ export const AuthProvider = ({ children }) => {
     }),
     [token]
   );
+
   return (
     <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );

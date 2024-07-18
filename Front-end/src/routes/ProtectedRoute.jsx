@@ -8,7 +8,12 @@ const ProtectedRoute = ({ children, roles, ...rest }) => {
   let decodedToken;
 
   if (token) {
-    decodedToken = jwtDecode(token);
+    try {
+      decodedToken = jwtDecode(token);
+    } catch (e) {
+      console.error("Failed to decode token", e);
+      return <Navigate to="/login" />;
+    }
   }
 
   //Navigate to login page if user have not logged in or token has expired

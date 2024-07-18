@@ -1,13 +1,11 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import ServerUrl from "../../reusable/ServerUrl";
-import { Button, Form, Row } from "react-bootstrap";
-import { jwtDecode } from "jwt-decode";
+import { Button, Form } from "react-bootstrap";
 import { useAuth } from "../../provider/AuthProvider";
 
-function AssignedStaff({ data, onSubmit }) {
+function AssignedStaff({ decodedToken, data, onSubmit }) {
   const { token } = useAuth();
-  const decodedToken = jwtDecode(token);
 
   const [staff, setStaff] = useState({
     saleStaffs: [],
@@ -27,21 +25,23 @@ function AssignedStaff({ data, onSubmit }) {
   );
 
   useEffect(() => {
-    if (decodedToken.role === "MANAGER") {
-      const fetchStaff = async () => {
-        try {
-          const response = await axios.get(
-            `${ServerUrl}/api/admin/get/staff?role=${decodedToken.role}`
-          );
-          setStaff(response.data.responseList);
-        } catch (error) {
-          console.error("Error fetching staff data:", error);
-        }
-      };
+    if (decodedToken) {
+      if (["MANAGER", "ADMIN"].includes(decodedToken.role)) {
+        const fetchStaff = async () => {
+          try {
+            const response = await axios.get(
+              `${ServerUrl}/api/admin/get/staff?role=${decodedToken.role}`
+            );
+            setStaff(response.data.responseList);
+          } catch (error) {
+            console.error("Error fetching staff data:", error);
+          }
+        };
 
-      fetchStaff();
+        fetchStaff();
+      }
     }
-  }, []);
+  }, [decodedToken]);
 
   const handleSubmit = () => {
     const updatedStaff = {
@@ -69,7 +69,7 @@ function AssignedStaff({ data, onSubmit }) {
               value={selectedSaleStaff}
               onChange={(e) => setSelectedSaleStaff(e.target.value)}
               disabled={staff?.saleStaffs === null}
-              role={decodedToken.role}
+              role={decodedToken?.role}
               staffOptions={staff.saleStaffs}
               controlId="formSaleStaff"
             />
@@ -78,7 +78,7 @@ function AssignedStaff({ data, onSubmit }) {
               value={selectedDesignStaff}
               onChange={(e) => setSelectedDesignStaff(e.target.value)}
               disabled={staff?.designStaffs === null}
-              role={decodedToken.role}
+              role={decodedToken?.role}
               staffOptions={staff.designStaffs}
               controlId="formDesignStaff"
             />
@@ -87,11 +87,11 @@ function AssignedStaff({ data, onSubmit }) {
               value={selectedProductionStaff}
               onChange={(e) => setSelectedProductionStaff(e.target.value)}
               disabled={staff?.productionStaffs === null}
-              role={decodedToken.role}
+              role={decodedToken?.role}
               staffOptions={staff.productionStaffs}
               controlId="formProductionStaff"
             />
-          {["MANAGER", "ADMIN"].includes(decodedToken.role) &&
+          {decodedToken && ["MANAGER", "ADMIN"].includes(decodedToken?.role) &&
           <Button className="mt-3" onClick={handleSubmit}>
             Submit
           </Button>

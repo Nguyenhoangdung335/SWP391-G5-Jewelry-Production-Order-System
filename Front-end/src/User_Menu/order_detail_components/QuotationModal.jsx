@@ -13,8 +13,10 @@ function QuotationModal(props) {
   const defaultItems = [
     { itemID: 0, name: "Support cost", quantity: 1, unitPrice: 100, totalPrice: 100 },
     { itemID: 1, name: "Design cost", quantity: 1, unitPrice: 100, totalPrice: 100 },
-    { itemID: 2, name: "Production cost", quantity: 1, unitPrice: 100, totalPrice: 100 },
+    { itemID: 2, name: "Production cost", quantity: 1, unitPrice: 200, totalPrice: 200 },
   ];
+
+  const paymentMethods = ["CREDIT_CARD", "PAYPAL", "BANK", "CARRIER", "ALTERNATE_PAYMENT", "PAY_UPON_INVOICE"];
 
   const initialQuotation = props.quotation
     ? props.quotation
@@ -189,7 +191,7 @@ function QuotationModal(props) {
   const handleShowPayment = async (ev) => {
     const resultURL = `${window.location.origin}/user_setting_page/order_history_page`;
     try {
-      const response = await axios.post(`${ServerUrl}/api/payment/create/${props.orderId}?quotationId=${props.quotation.id}&resultURL=${resultURL}`);
+      const response = await axios.post(`${ServerUrl}/api/payment/create/${props.orderId}?quotationId=${props.quotation.id}&resultURL=${resultURL}&method=${paymentMethods[1]}`);
       if (response.status === 200) {
         window.location.href = response.data.responseList.url;
       }

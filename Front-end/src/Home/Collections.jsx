@@ -2,14 +2,13 @@ import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import Pin from "../components/Pin";
 import CreateRequest from "../orderFlows/CreateRequest";
-import { Container, Modal, Button, Table } from "react-bootstrap";
+import { Container, Modal, Button } from "react-bootstrap";
 import "./Collections.css";
 import snowfall from "../assets/snowfall.jpg";
-import serverUrl from "../reusable/ServerUrl";
 import ServerUrl from "../reusable/ServerUrl";
 import { jwtDecode } from "jwt-decode";
 import { useAuth } from "../provider/AuthProvider";
-import {Navigate} from "react-router-dom";
+import ProductSpecificationTable from "../User_Menu/order_detail_components/ProductSpecification";
 
 const size = ["small", "medium", "large"];
 const pageSize = 5;
@@ -17,13 +16,6 @@ const pageSize = 5;
 const getImageSize = () => {
     const getIndex = Math.floor(Math.random() * size.length);
     return size[getIndex];
-};
-
-const formatString = (string) => {
-    if (string !== null && string !== "") {
-        return string.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase());
-    }
-    return null;
 };
 
 function Collections() {
@@ -36,6 +28,7 @@ function Collections() {
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [page, setPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
+    const [currentProductRoughPrice, setCurrentProductRoughPrice] = useState(0);
     const loader = useRef(null);
 
     useEffect(() => {
@@ -61,6 +54,14 @@ function Collections() {
           fetchProducts();
     }, [page]);
 
+    useEffect(() => {
+        if (selectedProduct) {
+            axios.get(`${ServerUrl}/api/products/customize/calculate-price/${selectedProduct.specification.id}`)
+            .then((res) => setCurrentProductRoughPrice(res.data) )
+            .catch((error) => console.log(error));
+        }
+	}, [selectedProduct]);
+
     const handlePinClick = (product) => {
         setSelectedProduct(product);
         setShowProductModal(true);
@@ -73,6 +74,13 @@ function Collections() {
     const handleCloseCreateRequestModal = () => {
         setShowCreateRequestModal(false);
     };
+
+    const formatPrice = (price) => {
+        return price.toLocaleString("en-US", {
+          style: "currency",
+          currency: "USD",
+        });
+      };
 
     const checkCurrentOrder = () => {
         if (decodedToken === null) {
@@ -149,22 +157,12 @@ function Collections() {
                                     alt={selectedProduct.name}
                                     style={{ width: "100%" }}
                                 />
+                                <h5 style={{marginBlock: "5%", textAlign: "center"}}>{selectedProduct.description}</h5>
+                                <h5 style={{marginTop: "5%", textAlign: "center"}}>Approximate price:</h5>
+                                <p style={{textAlign: "center", fontSize: "1.1rem"}}>{formatPrice(currentProductRoughPrice || 0)}</p>
                             </div>
                             <div style={styles.detailsContainer}>
-                                <h4>{selectedProduct.description}</h4>
-                                <Table striped bordered hover>
-                                    <tbody>
-                                    {Object.entries(selectedProduct.specification).map(
-                                        ([key, value]) =>
-                                            key !== "id" && (
-                                                <tr key={key}>
-                                                    <td style={{ width: '50%' }}>{formatString(key)}</td>
-                                                    <td>{formatString(value)}</td>
-                                                </tr>
-                                            )
-                                    )}
-                                    </tbody>
-                                </Table>
+                                <ProductSpecificationTable selectedProduct ={selectedProduct} />
                             </div>
                         </div>
                     </Modal.Body>
@@ -203,11 +201,11 @@ const styles = {
     },
     modalContent: {
         display: "flex",
+        gap: "15px",
         flexDirection: "row",
     },
     imageContainer: {
         flex: 1,
-        paddingRight: "20px",
     },
     detailsContainer: {
         flex: 1,

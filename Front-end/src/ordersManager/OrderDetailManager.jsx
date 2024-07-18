@@ -19,6 +19,7 @@ import CreateReport from "../orderFlows/CreateReport";
 import AssignedStaff from "../User_Menu/order_detail_components/AssignedStaff";
 import QuotationModal from "../User_Menu/order_detail_components/QuotationModal";
 import CustomAlert from "../reusable/CustomAlert";
+import ProductSpecificationTable from "../User_Menu/order_detail_components/ProductSpecification";
 
 function OrderDetailManager() {
   const state = useLocation();
@@ -31,7 +32,6 @@ function OrderDetailManager() {
   const { token } = useAuth();
   const decodedToken = jwtDecode(token);
   const [imageLink, setImageLink] = useState(null);
-  const [alertText, setAlertText] = useState("");
   const [showAlert, setShowAlert] = useState(false);
 
   const fetchData = async () => {
@@ -43,7 +43,6 @@ function OrderDetailManager() {
         const orderDetail = response.data.responseList.orderDetail;
         setData(orderDetail);
         setImageLink(orderDetail.design?.designLink || snowfall);
-        setAlertText("Confirmed Payment successfully");
       }
     } catch (error) {
       console.error("Error fetching data", error);
@@ -123,11 +122,9 @@ function OrderDetailManager() {
         `${ServerUrl}/api/order/${data.id}/detail/assign-staff`,
         updatedStaff
       );
-      alert("Staff assignments updated successfully");
-      // Optionally, update the local state if necessary
+      alert("Successfully assigned staff");
     } catch (error) {
       console.error("Error updating staff assignments:", error);
-      alert("Error updating staff assignments");
     }
   };
 
@@ -242,7 +239,7 @@ function OrderDetailManager() {
               </div>
             </Row>
             {data && <Row className="pb-2">
-              <AssignedStaff data={data} onSubmit={handleStaffSubmit} />
+              <AssignedStaff decodedToken={decodedToken} data={data} onSubmit={handleStaffSubmit} />
             </Row>}
             <Row className="pb-2">
               <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
@@ -255,63 +252,11 @@ function OrderDetailManager() {
                   >
                     <h4>Specification</h4>
                   </div>
-                  <Table>
-                    <tbody>
-                      <tr>
-                        <th>Type</th>
-                        <td>{data.product?.specification?.type || "NaN"}</td>
-                      </tr>
-                      <tr>
-                        <th>Style</th>
-                        <td>{data.product?.specification?.style || "NaN"}</td>
-                      </tr>
-                      <tr></tr>
-                      <tr>
-                        <th>Occasion</th>
-                        <td>
-                          {data.product?.specification?.occasion || "NaN"}
-                        </td>
-                      </tr>
-                      <tr>
-                        <th>Metal</th>
-                        <td>{data.product?.specification?.metal || "NaN"}</td>
-                      </tr>
-                      <tr>
-                        <th>Texture</th>
-                        <td>{data.product?.specification?.texture || "NaN"}</td>
-                      </tr>
-                      <tr>
-                        <th>Length</th>
-                        <td>{data.product?.specification?.length || "NaN"}</td>
-                      </tr>
-                      <tr>
-                        <th>Chain Type</th>
-                        <td>
-                          {data.product?.specification?.chainType || "NaN"}
-                        </td>
-                      </tr>
-                      <tr>
-                        <th>Gem Stone</th>
-                        <td>
-                          {data.product?.specification?.gemStone || "NaN"}
-                        </td>
-                      </tr>
-                      <tr>
-                        <th>Gem Stone Weight</th>
-                        <td>
-                          {data.product?.specification?.gemStoneWeight || "NaN"}
-                        </td>
-                      </tr>
-                      <tr>
-                        <th>Shape</th>
-                        <td>{data.product?.specification?.shape || "NaN"}</td>
-                      </tr>
-                    </tbody>
-                  </Table>
+                  <ProductSpecificationTable selectedProduct={data?.product} />
                 </div>
               </div>
             </Row>
-            {["SALE_STAFF", "ADMIN"].includes(decodedToken.role) && (
+            {["SALE_STAFF", "MANAGER", "ADMIN"].includes(decodedToken.role) && (
             <Row className="pb-2">
               <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
                 <div className="p-2">
@@ -332,7 +277,7 @@ function OrderDetailManager() {
               </div>
             </Row>
             )}
-            {["SALE_STAFF", "ADMIN", "CUSTOMER", "MANAGER"].includes(decodedToken.role) && (
+            {/* {["SALE_STAFF", "ADMIN", "CUSTOMER", "MANAGER"].includes(decodedToken.role) && (
               <Row className="pb-2">
                 <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
                   <div className="p-2">
@@ -368,7 +313,7 @@ function OrderDetailManager() {
                   </div>
                 </div>
               </Row>
-            )}
+            )} */}
             {["DESIGN_STAFF", "ADMIN"].includes(decodedToken.role) && (
               <Row className="pb-2">
                 <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
@@ -432,6 +377,7 @@ function OrderDetailManager() {
       </Container>
 
       <QuotationModal
+        data={data}
         quotation={data.quotation}
         orderId={data.id}
         show={showQuotation}
@@ -457,13 +403,13 @@ function OrderDetailManager() {
       )}
 
 
-      {showAlert && (
+      {/* {showAlert && (
         <CustomAlert
           text={alertText}
           isShow={showAlert}
           onClose={() => setShowAlert(false)}
         />
-      )}
+      )} */}
     </>
   );
 }

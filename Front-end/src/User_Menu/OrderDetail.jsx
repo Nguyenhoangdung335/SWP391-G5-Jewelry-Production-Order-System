@@ -15,6 +15,8 @@ import snowfall from "../assets/snowfall.jpg"
 import QuotationModal from "./order_detail_components/QuotationModal";
 import WarrantyCertificateModal from "../warranty/WarrantyCertificateModal";
 import AssignedStaff from "./order_detail_components/AssignedStaff";
+import ProductSpecificationTable from "./order_detail_components/ProductSpecification";
+import { useAuth } from "../provider/AuthProvider";
 
 function OrderDetail() {
   const quotationQualified = ["AWAIT_TRANSACTION", "IN_DESIGNING", "DES_AWAIT_MANA_APPROVAL", "DES_AWAIT_CUST_APPROVAL", "IN_PRODUCTION", "PRO_AWAIT_APPROVAL", "ORDER_COMPLETED"];
@@ -186,49 +188,7 @@ function OrderDetail() {
                   >
                     <h4>Specification</h4>
                   </div>
-                  <Table>
-                    <tr>
-                      <th>Type</th>
-                      <td>{data.product.specification.type}</td>
-                    </tr>
-                    <tr>
-                      <th>Style</th>
-                      <td>{data.product.specification.style}</td>{" "}
-                    </tr>{" "}
-                    <tr></tr>
-                    <tr>
-                      <th>Occasion</th>
-                      <td>{data.product.specification.occasion}</td>
-                    </tr>
-                    <tr>
-                      <th>Metal</th>
-                      <td>{data.product.specification.metal}</td>
-                    </tr>
-                    <tr>
-                      <th>Texture</th>
-                      <td>{data.product.specification.texture}</td>
-                    </tr>
-                    <tr>
-                      <th>Length</th>
-                      <td>{data.product.specification.length}</td>
-                    </tr>
-                    <tr>
-                      <th>Chain Type</th>
-                      <td>{data.product.specification.chainType}</td>
-                    </tr>
-                    <tr>
-                      <th>Gem Stone</th>
-                      <td>{data.product.specification.gemStone}</td>
-                    </tr>
-                    <tr>
-                      <th>Gem Stone Weight</th>
-                      <td>{data.product.specification.gemStoneWeight}</td>
-                    </tr>
-                    <tr>
-                      <th>Shape</th>
-                      <td>{data.product.specification.shape}</td>
-                    </tr>
-                  </Table>
+                    <ProductSpecificationTable selectedProduct={data.product} />
                 </div>
               </div>
             </Row>
