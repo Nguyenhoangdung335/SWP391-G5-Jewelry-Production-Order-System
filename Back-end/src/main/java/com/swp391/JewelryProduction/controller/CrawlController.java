@@ -43,48 +43,5 @@ public class CrawlController {
         return crawlDataService.getAll();
     }
 
-    @GetMapping("/gemstones")
-    public ResponseEntity<Response> getGemstones() {
-        return Response.builder()
-                .status(HttpStatus.OK)
-                .message("Request sent successfully.")
-                .response("gemstones", gemstoneService.getGemstones())
-                .buildEntity();
-    }
 
-    @GetMapping("/gemstone")
-    public ResponseEntity<Response> getGemstone(@RequestParam("id") long id) {
-        return Response.builder()
-                .status(HttpStatus.OK)
-                .message("Request sent successfully.")
-                .response("gemstone", gemstoneService.getGemstone(id))
-                .buildEntity();
-    }
-
-    @PostMapping("/create/gemstone")
-    public ResponseEntity<Response> createGemstone(@RequestBody Gemstone gemstone) {
-        return Response.builder()
-                .status(HttpStatus.OK)
-                .message("Request sent successfully.")
-                .response("gemstone", gemstoneService.createGemstone(gemstone))
-                .buildEntity();
-    }
-
-    @PutMapping("/update/gemstone")
-    public ResponseEntity<Response> updateGemstone(@RequestBody Gemstone gemstone) {
-        return Response.builder()
-                .status(HttpStatus.OK)
-                .message("Request sent successfully.")
-                .response("gemstone", gemstoneService.updateGemstone(gemstone))
-                .buildEntity();
-    }
-
-    @DeleteMapping
-    public ResponseEntity<Response> deleteGemstone(@RequestParam long id) {
-        return Response.builder()
-                .status(HttpStatus.OK)
-                .message("Request sent successfully.")
-                .response("result", gemstoneService.deleteGemstone(id) ? "Gemstone with ID " + id + " is existed in database" : "Gemstone with ID " + id + " is not existed in database")
-                .buildEntity();
-    }
 }
