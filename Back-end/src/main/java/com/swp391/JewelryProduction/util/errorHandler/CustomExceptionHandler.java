@@ -4,7 +4,11 @@ import com.swp391.JewelryProduction.util.Response;
 import com.swp391.JewelryProduction.util.exceptions.MissingContextVariableException;
 import com.swp391.JewelryProduction.util.exceptions.ObjectExistsException;
 import com.swp391.JewelryProduction.util.exceptions.ObjectNotFoundException;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +28,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Slf4j
@@ -162,6 +167,38 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
                 .message("MissingContextVariableException is throw")
                 .response("Error", errorMsg)
                 .buildEntity();
+    }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<Map<String, Object>> handleExpiredJwtException(
+            ExpiredJwtException ex,
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", HttpStatus.UNAUTHORIZED.value());
+        body.put("error", "Unauthorized");
+        body.put("message", "JWT token has expired, please authorize again.");
+        body.put("path", request.getRequestURI());
+
+        return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(JwtException.class)
+    public ResponseEntity<Map<String, Object>> handleJwtException(
+            JwtException ex,
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", HttpStatus.UNAUTHORIZED.value());
+        body.put("error", "Unauthorized");
+        body.put("message", "JWT token has expired, please authorize again.");
+        body.put("path", request.getRequestURI());
+
+        return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
     }
 
 //    @Override
