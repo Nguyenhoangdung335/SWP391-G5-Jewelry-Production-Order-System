@@ -1,232 +1,227 @@
 import React, { useState, useEffect } from "react";
 import {
-    Table,
-    Button,
-    Modal,
-    Form,
-    Row,
-    Col,
-    FormControl,
+  Table,
+  Button,
+  Modal,
+  Form,
+  Row,
+  Col,
+  FormControl,
 } from "react-bootstrap";
 import { FiPlus } from "react-icons/fi";
 import axios from "axios";
 import { Icon } from "@iconify/react";
 import ServerUrl from "../reusable/ServerUrl";
-import "bootstrap/dist/css/bootstrap.min.css";
-import { FaTrash } from "react-icons/fa";
-import { FaEdit } from "react-icons/fa";
 
 export default function EmployeeManager() {
-    const [filterRole, setFilterRole] = useState("ALL");
-    const [isModalVisible, setIsModalVisible] = useState(false);
-    const [isAddModalVisible, setIsAddModalVisible] = useState(false);
-    const [selectedUser, setSelectedUser] = useState(null);
-    const [deleteUser, setDeleteUser] = useState(null);
-    const [deleteModalVisible, setDeleteModalVisible] = useState(false);
-    const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 5;
-    const [data, setData] = useState([]);
-    const [totalPages, setTotalPages] = useState(1);
+  const [filterRole, setFilterRole] = useState("ALL");
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isAddModalVisible, setIsAddModalVisible] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [deleteUser, setDeleteUser] = useState(null);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+  const [data, setData] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const res = await axios.get(
-                    `${ServerUrl}/api/admin/get/account/${currentPage - 1}`,
-                    {
-                        headers: { "Content-Type": "application/json" },
-                        params: {
-                            role: filterRole,
-                            size: itemsPerPage,
-                        },
-                    }
-                );
-                console.log("API response:", res.data);
-                setData(res.data.responseList.accounts);
-                setTotalPages(res.data.responseList.totalPages);
-            } catch (err) {
-                console.log(err);
-            }
-        };
-        fetchData();
-    }, [filterRole, currentPage, deleteUser]);
-
-    const handleFilterChange = (event) => {
-        const selectedValue = event.target.value;
-        setFilterRole(selectedValue);
-        setCurrentPage(1); // Reset to first page when filter changes
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axios.get(
+          `${ServerUrl}/api/admin/get/account/${currentPage - 1}`,
+          {
+            headers: { "Content-Type": "application/json" },
+            params: {
+              role: filterRole,
+              size: itemsPerPage,
+            },
+          }
+        );
+        console.log("API response:", res.data);
+        setData(res.data.responseList.accounts);
+        setTotalPages(res.data.responseList.totalPages);
+      } catch (err) {
+        console.log(err);
+      }
     };
+    fetchData();
+  }, [filterRole, currentPage, deleteUser]);
 
-    const handleEdit = (record) => {
-        setSelectedUser(record);
-        setIsModalVisible(true);
-    };
+  const handleFilterChange = (event) => {
+    const selectedValue = event.target.value;
+    setFilterRole(selectedValue);
+    setCurrentPage(1); // Reset to first page when filter changes
+  };
 
-    const handleCancel = () => {
-        setIsModalVisible(false);
-        setSelectedUser(null);
-    };
+  const handleEdit = (record) => {
+    setSelectedUser(record);
+    setIsModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    setSelectedUser(null);
+  };
 
     const formatDate = (dateArray) => {
         const [year, month, day] = dateArray;
-        return `${year}-${String(month).padStart(2, "0")}-${String(
-            day
-        ).padStart(2, "0")}`;
+        return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
     };
 
-    const handleSave = async (event) => {
-        event.preventDefault();
-        const form = event.currentTarget;
-        const values = {
-            id: selectedUser.id,
-            role: form.role.value,
-            email: form.gmail.value,
-            phone: form.phone.value,
-            dateCreated: selectedUser.dateCreated,
-            status: selectedUser.status,
-            userInfo: {
-                id: selectedUser.userInfo.id,
-                firstName: form.firstName.value,
-                lastName: form.lastName.value,
-                birthDate: form.birthDate.value,
-                gender: form.gender.value,
-                phoneNumber: form.phone.value,
-                address: form.address.value,
-            },
-        };
+  const handleSave = async (event) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const values = {
+      id: selectedUser.id,
+      role: form.role.value,
+      email: form.gmail.value,
+      phone: form.phone.value,
+      dateCreated: selectedUser.dateCreated,
+      status: selectedUser.status,
+      userInfo: {
+        id: selectedUser.userInfo.id,
+        firstName: form.firstName.value,
+        lastName: form.lastName.value,
+        birthDate: form.birthDate.value,
+        gender: form.gender.value,
+        phoneNumber: form.phone.value,
+        address: form.address.value,
+      },
+    };
 
-        try {
-            const res = await axios.put(
-                `${ServerUrl}/api/admin/update/account`,
-                values,
-                {
-                    headers: { "Content-Type": "application/json" },
-                }
-            );
-            console.log("Update Response:", res.data);
-            const updatedData = data.map((item) =>
-                item.id === values.id ? values : item
-            );
-            setData(updatedData);
-            setIsModalVisible(false);
-            setSelectedUser(null);
-        } catch (err) {
-            console.error("Error updating account:", err);
+    try {
+      const res = await axios.put(
+        `${ServerUrl}/api/admin/update/account`,
+        values,
+        {
+          headers: { "Content-Type": "application/json" },
         }
+      );
+      console.log("Update Response:", res.data);
+      const updatedData = data.map((item) =>
+        item.id === values.id ? values : item
+      );
+      setData(updatedData);
+      setIsModalVisible(false);
+      setSelectedUser(null);
+    } catch (err) {
+      console.error("Error updating account:", err);
+    }
+  };
+
+  const handleAdd = async (event) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const newEmployee = {
+      role: form.role.value,
+      email: form.gmail.value,
+      password: form.password.value,
+      phone: form.phone.value,
+      status: "ACTIVE",
+      userInfo: {
+        firstName: form.firstName.value,
+        lastName: form.lastName.value,
+        birthDate: form.birthDate.value,
+        gender: form.gender.value,
+        phoneNumber: form.phone.value,
+        address: form.address.value,
+      },
     };
 
-    const handleAdd = async (event) => {
-        event.preventDefault();
-        const form = event.currentTarget;
-        const newEmployee = {
-            role: form.role.value,
-            email: form.gmail.value,
-            password: form.password.value,
-            phone: form.phone.value,
-            status: "ACTIVE",
-            userInfo: {
-                firstName: form.firstName.value,
-                lastName: form.lastName.value,
-                birthDate: form.birthDate.value,
-                gender: form.gender.value,
-                phoneNumber: form.phone.value,
-                address: form.address.value,
-            },
-        };
-
-        try {
-            const res = await axios.post(
-                `${ServerUrl}/api/admin/create/account`,
-                newEmployee,
-                {
-                    headers: { "Content-Type": "application/json" },
-                }
-            );
-            console.log("Add Response:", res.data.responseList.account);
-            setData([...data, res.data.responseList.account]); // Update state with new data
-            setIsAddModalVisible(false);
-        } catch (err) {
-            console.error("Error adding account:", err);
+    try {
+      const res = await axios.post(
+        `${ServerUrl}/api/admin/create/account`,
+        newEmployee,
+        {
+          headers: { "Content-Type": "application/json" },
         }
-    };
+      );
+      console.log("Add Response:", res.data.responseList.account);
+      setData([...data, res.data.responseList.account]); // Update state with new data
+      setIsAddModalVisible(false);
+    } catch (err) {
+      console.error("Error adding account:", err);
+    }
+  };
 
-    const handleAddClick = () => {
-        setIsAddModalVisible(true);
-    };
+  const handleAddClick = () => {
+    setIsAddModalVisible(true);
+  };
 
-    const handleDeleteClick = (id) => {
-        setDeleteUser(id);
-        setDeleteModalVisible(true);
-    };
+  const handleDeleteClick = (id) => {
+    setDeleteUser(id);
+    setDeleteModalVisible(true);
+  };
 
-    const handleConfirmDelete = async () => {
-        try {
-            const res = await axios.delete(
-                `${ServerUrl}/api/admin/delete/account?accountId=${deleteUser}`,
-                {
-                    headers: { "Content-Type": "application/json" },
-                }
-            );
-            console.log("Delete Response:", res.data);
-            const updatedData = data.filter((item) => item.id !== deleteUser);
-            setData(updatedData);
-        } catch (err) {
-            console.log("Error deleting account:", err);
+  const handleConfirmDelete = async () => {
+    try {
+      const res = await axios.delete(
+        `${ServerUrl}/api/admin/delete/account?accountId=${deleteUser}`,
+        {
+          headers: { "Content-Type": "application/json" },
         }
-        setDeleteModalVisible(false);
-        setDeleteUser(null);
-    };
+      );
+      console.log("Delete Response:", res.data);
+      const updatedData = data.filter((item) => item.id !== deleteUser);
+      setData(updatedData);
+    } catch (err) {
+      console.log("Error deleting account:", err);
+    }
+    setDeleteModalVisible(false);
+    setDeleteUser(null);
+  };
 
-    const handleCancelDelete = () => {
-        setDeleteModalVisible(false);
-        setDeleteUser(null);
-    };
+  const handleCancelDelete = () => {
+    setDeleteModalVisible(false);
+    setDeleteUser(null);
+  };
 
-    const handlePageChange = (pageNumber) => {
-        setCurrentPage(pageNumber);
-    };
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
 
-    const filteredData =
-        filterRole !== "ALL"
-            ? data.filter(
-                  (item) => item.role.toLowerCase() === filterRole.toLowerCase()
-              )
-            : data;
+  const filteredData =
+    filterRole !== "ALL"
+      ? data.filter(
+          (item) => item.role.toLowerCase() === filterRole.toLowerCase()
+        )
+      : data;
 
-    const paginatedData = filteredData.slice(
-        (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
-    );
+  const paginatedData = filteredData.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
-    const styles = {
-        paginationContainer: {
-            display: "flex",
-            justifyContent: "flex-end",
-            alignItems: "center",
-            marginTop: "20px",
-        },
-        paginationButton: {
-            borderRadius: "50%",
-            width: "40px",
-            height: "40px",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            margin: "0 5px",
-            border: "1px solid #ddd",
-            backgroundColor: "#f8f9fa",
-            cursor: "pointer",
-        },
-        paginationButtonActive: {
-            backgroundColor: "#6c757d",
-            color: "#fff",
-        },
-        paginationButtonDisabled: {
-            backgroundColor: "#e9ecef",
-            color: "#6c757d",
-            cursor: "not-allowed",
-        },
-    };
+  const styles = {
+    paginationContainer: {
+      display: "flex",
+      justifyContent: "flex-end",
+      alignItems: "center",
+      marginTop: "20px",
+    },
+    paginationButton: {
+      borderRadius: "50%",
+      width: "40px",
+      height: "40px",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      margin: "0 5px",
+      border: "1px solid #ddd",
+      backgroundColor: "#f8f9fa",
+      cursor: "pointer",
+    },
+    paginationButtonActive: {
+      backgroundColor: "#6c757d",
+      color: "#fff",
+    },
+    paginationButtonDisabled: {
+      backgroundColor: "#e9ecef",
+      color: "#6c757d",
+      cursor: "not-allowed",
+    },
+  };
 
     return (
         <div style={{ padding: "3%" }}>
@@ -288,69 +283,43 @@ export default function EmployeeManager() {
                     marginBottom: "2%",
                 }}
             >
-                <div className="rounded-lg bg-neutral-500 text-white pl-3 flex items-center ">
+                <div className="rounded-lg bg-neutral-500 text-white pl-3 flex items-center">
                     <div>Role Filter</div>
                     <select
-                        className="bg-neutral-500 form-select inline-block text-orange-500 w-44"
+                        className="bg-neutral-500 inline-block text-orange-500 w-44"
                         onChange={handleFilterChange}
                     >
-                        <option value="ALL" className="bg-white text-black">
-                            ALL
-                        </option>
-                        <option
-                            value="CUSTOMER"
-                            className="bg-white text-black"
-                        >
-                            Customer
-                        </option>
-                        <option value="ADMIN" className="bg-white text-black">
-                            Admin
-                        </option>
-                        <option
-                            value="SALE_STAFF"
-                            className="bg-white text-black"
-                        >
-                            Sale Staff
-                        </option>
-                        <option
-                            value="DESIGN_STAFF"
-                            className="bg-white text-black"
-                        >
-                            Design Staff
-                        </option>
-                        <option
-                            value="PRODUCTION_STAFF"
-                            className="bg-white text-black"
-                        >
-                            Production Staff
-                        </option>
-                        <option value="MANAGER" className="bg-white text-black">
-                            Manager
-                        </option>
+                        <option value="ALL" className="bg-white text-black">ALL</option>
+                        <option value="CUSTOMER" className="bg-white text-black">Customer</option>
+                        <option value="ADMIN" className="bg-white text-black">Admin</option>
+                        <option value="SALE_STAFF" className="bg-white text-black">Sale Staff</option>
+                        <option value="DESIGN_STAFF" className="bg-white text-black">Design Staff</option>
+                        <option value="PRODUCTION_STAFF" className="bg-white text-black">Production Staff</option>
+                        <option value="MANAGER" className="bg-white text-black">Manager</option>
                     </select>
                     <div className="relative right-6 pb-2">
                         <Icon icon="fa:sort-down" />
                     </div>
                 </div>
 
-                <div
-                    style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        alignItems: "center",
-                        gap: 20,
-                    }}
-                >
-                    <Button
-                        variant="secondary"
-                        className="add-employee-button"
-                        onClick={handleAddClick}
-                    >
-                        <FiPlus color="rgba(224, 215, 234, 1)" />
-                        Add Employee
-                    </Button>
-                </div>
-            </div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 20,
+          }}
+        >
+          <Button
+            variant="secondary"
+            className="add-employee-button"
+            onClick={handleAddClick}
+          >
+            <FiPlus color="rgba(224, 215, 234, 1)" />
+            Add Employee
+          </Button>
+        </div>
+      </div>
 
             <Table striped bordered hover>
                 <thead>
@@ -388,13 +357,13 @@ export default function EmployeeManager() {
                                     variant="link"
                                     onClick={() => handleEdit(item)}
                                 >
-                                    <FaEdit />
+                                    Edit
                                 </Button>
                                 <Button
                                     variant="link"
                                     onClick={() => handleDeleteClick(item.id)}
                                 >
-                                    <FaTrash />
+                                    Delete
                                 </Button>
                             </td>
                         </tr>
@@ -402,47 +371,45 @@ export default function EmployeeManager() {
                 </tbody>
             </Table>
 
-            <div style={styles.paginationContainer}>
-                <div
-                    style={{
-                        ...styles.paginationButton,
-                        ...(currentPage === 1
-                            ? styles.paginationButtonDisabled
-                            : {}),
-                    }}
-                    onClick={() => handlePageChange(currentPage - 1)}
-                >
-                    &lt;
-                </div>
-                {[...Array(totalPages).keys()].map((page) => (
-                    <div
-                        key={page + 1}
-                        style={{
-                            ...styles.paginationButton,
-                            ...(page + 1 === currentPage
-                                ? styles.paginationButtonActive
-                                : {}),
-                        }}
-                        onClick={() => handlePageChange(page + 1)}
-                    >
-                        {page + 1}
-                    </div>
-                ))}
-                <div
-                    style={{
-                        ...styles.paginationButton,
-                        ...(currentPage === totalPages
-                            ? styles.paginationButtonDisabled
-                            : {}),
-                    }}
-                    onClick={() => handlePageChange(currentPage + 1)}
-                >
-                    &gt;
-                </div>
-            </div>
+      <div style={styles.paginationContainer}>
+        <div
+          style={{
+            ...styles.paginationButton,
+            ...(currentPage === 1 ? styles.paginationButtonDisabled : {}),
+          }}
+          onClick={() => handlePageChange(currentPage - 1)}
+        >
+          &lt;
+        </div>
+        {[...Array(totalPages).keys()].map((page) => (
+          <div
+            key={page + 1}
+            style={{
+              ...styles.paginationButton,
+              ...(page + 1 === currentPage
+                ? styles.paginationButtonActive
+                : {}),
+            }}
+            onClick={() => handlePageChange(page + 1)}
+          >
+            {page + 1}
+          </div>
+        ))}
+        <div
+          style={{
+            ...styles.paginationButton,
+            ...(currentPage === totalPages
+              ? styles.paginationButtonDisabled
+              : {}),
+          }}
+          onClick={() => handlePageChange(currentPage + 1)}
+        >
+          &gt;
+        </div>
+      </div>
 
             <Modal show={isModalVisible} onHide={handleCancel}>
-                <Modal.Header>
+                <Modal.Header closeButton>
                     <Modal.Title>Edit Employee</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
@@ -474,15 +441,9 @@ export default function EmployeeManager() {
                                 >
                                     <option value="CUSTOMER">Customer</option>
                                     <option value="ADMIN">Admin</option>
-                                    <option value="SALE_STAFF">
-                                        Sale Staff
-                                    </option>
-                                    <option value="DESIGN_STAFF">
-                                        Design Staff
-                                    </option>
-                                    <option value="PRODUCTION_STAFF">
-                                        Production Staff
-                                    </option>
+                                    <option value="SALE_STAFF">Sale Staff</option>
+                                    <option value="DESIGN_STAFF">Design Staff</option>
+                                    <option value="PRODUCTION_STAFF">Production Staff</option>
                                     <option value="MANAGER">Manager</option>
                                 </FormControl>
                             </Form.Group>
@@ -541,9 +502,7 @@ export default function EmployeeManager() {
                                 >
                                     <option value="MALE">Male</option>
                                     <option value="FEMALE">Female</option>
-                                    <option value="NON_BINARY">
-                                        Non-binary
-                                    </option>
+                                    <option value="NON_BINARY">Non-binary</option>
                                     <option value="OTHER">Other</option>
                                 </FormControl>
                             </Form.Group>
@@ -577,7 +536,7 @@ export default function EmployeeManager() {
             </Modal>
 
             <Modal show={deleteModalVisible} onHide={handleCancelDelete}>
-                <Modal.Header>
+                <Modal.Header closeButton>
                     <Modal.Title>Confirm Delete</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
@@ -588,7 +547,7 @@ export default function EmployeeManager() {
                         Cancel
                     </Button>
                     <Button variant="danger" onClick={handleConfirmDelete}>
-                        <FaTrash />
+                        Delete
                     </Button>
                 </Modal.Footer>
             </Modal>
@@ -608,12 +567,8 @@ export default function EmployeeManager() {
                                 <option value="CUSTOMER">Customer</option>
                                 <option value="ADMIN">Admin</option>
                                 <option value="SALE_STAFF">Sale Staff</option>
-                                <option value="DESIGN_STAFF">
-                                    Design Staff
-                                </option>
-                                <option value="PRODUCTION_STAFF">
-                                    Production Staff
-                                </option>
+                                <option value="DESIGN_STAFF">Design Staff</option>
+                                <option value="PRODUCTION_STAFF">Production Staff</option>
                                 <option value="MANAGER">Manager</option>
                             </FormControl>
                         </Form.Group>
@@ -691,8 +646,7 @@ export default function EmployeeManager() {
                             >
                                 Back
                             </Button>
-                        </div>
-                    </Form>
+                        </div>                    </Form>
                 </Modal.Body>
             </Modal>
         </div>
