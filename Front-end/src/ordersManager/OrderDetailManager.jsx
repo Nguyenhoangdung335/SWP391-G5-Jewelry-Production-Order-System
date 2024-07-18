@@ -155,16 +155,26 @@ function OrderDetailManager() {
               paddingBottom: "1%",
             }}
           >
-            <div className="pb-2">
+            <div className="mb-3">
               <img
                 src={imageLink || snowfall}
                 alt="Product"
-                className="w-100 h-100"
+                // className="w-100 h-100"
+                width="100%"
+                height="360px"
+                className="object-fit-cover"
               />
             </div>
             <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
-              <div className="p-3">
-                <h4 className="pb-2">Order Id: {id}</h4>
+              <div className="p-2">
+                <div
+                  className="mb-2"
+                  style={{
+                    borderBottom: "1px solid rgba(166, 166, 166, 0.5)",
+                  }}
+                >
+                  <h4>{id}</h4>
+                </div>
                 <Table bordered hover>
                   <tbody>
                     <tr>
@@ -208,8 +218,11 @@ function OrderDetailManager() {
             </div>
           </Col>
 
-          <Col md={4} style={{ height: "100vh", overflowY: "auto" }}>
-            <Row className="pb-2">
+          <Col
+            md={4}
+            style={{ height: "100vh", overflowY: "auto", paddingTop: "1%" }}
+          >
+            <Row className="mb-3">
               <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
                 <div className="p-2">
                   <div
@@ -222,26 +235,36 @@ function OrderDetailManager() {
                   </div>
                   <div className="d-flex justify-content-between">
                     <h6>Name:</h6>
-                    <p>
+                    <p className="text-lg-end">
                       {data.owner?.userInfo?.firstName || "NaN"}{" "}
                       {data.owner?.userInfo?.lastName || "NaN"}
                     </p>
                   </div>
                   <div className="d-flex justify-content-between">
                     <h6>Phone Number:</h6>
-                    <p>{data.owner?.userInfo?.phoneNumber || "NaN"}</p>
+                    <p className="text-lg-end">
+                      {data.owner?.userInfo?.phoneNumber || "NaN"}
+                    </p>
                   </div>
                   <div className="d-flex justify-content-between">
                     <h6>Address</h6>
-                    <p>{data.owner?.userInfo?.address || "NaN"}</p>
+                    <p className="text-lg-end">
+                      {data.owner?.userInfo?.address || "NaN"}
+                    </p>
                   </div>
                 </div>
               </div>
             </Row>
-            {data && <Row className="pb-2">
-              <AssignedStaff decodedToken={decodedToken} data={data} onSubmit={handleStaffSubmit} />
-            </Row>}
-            <Row className="pb-2">
+            {data && (
+              <Row className="mb-3">
+                <AssignedStaff
+                  decodedToken={decodedToken}
+                  data={data}
+                  onSubmit={handleStaffSubmit}
+                />
+              </Row>
+            )}
+            <Row className="mb-3">
               <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
                 <div className="p-2">
                   <div
@@ -257,25 +280,27 @@ function OrderDetailManager() {
               </div>
             </Row>
             {["SALE_STAFF", "MANAGER", "ADMIN"].includes(decodedToken.role) && (
-            <Row className="pb-2">
-              <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
-                <div className="p-2">
-                  <div
-                    className="mb-2"
-                    style={{
-                      borderBottom: "1px solid rgba(166, 166, 166, 0.5)",
-                    }}
-                  >
-                    <div className="d-flex justify-content-between mb-2">
-                      <h4 style={{ display: "inline-block" }}>Quotation</h4>
-                      <Button onClick={handleShowQuotations}>
+              <Row className="mb-3">
+                <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
+                  <div className="p-2">
+                    <div
+                      className="mb-2"
+                      style={{
+                        borderBottom: "1px solid rgba(166, 166, 166, 0.5)",
+                      }}
+                    >
+                      <div className="d-flex justify-content-between mb-2">
+                        <h4 style={{ display: "inline-block" }}>Quotation</h4>
+                      </div>
+                    </div>
+                    <div className="d-flex justify-content-center pt-2">
+                      <Button className="w-100" onClick={handleShowQuotations}>
                         Show Quotations
                       </Button>
                     </div>
                   </div>
                 </div>
-              </div>
-            </Row>
+              </Row>
             )}
             {/* {["SALE_STAFF", "ADMIN", "CUSTOMER", "MANAGER"].includes(decodedToken.role) && (
               <Row className="pb-2">
@@ -315,7 +340,7 @@ function OrderDetailManager() {
               </Row>
             )} */}
             {["DESIGN_STAFF", "ADMIN"].includes(decodedToken.role) && (
-              <Row className="pb-2">
+              <Row className="mb-3">
                 <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
                   <div className="p-2">
                     <div
@@ -344,7 +369,7 @@ function OrderDetailManager() {
               </Row>
             )}
             {["PRODUCTION_STAFF", "ADMIN"].includes(decodedToken.role) && (
-              <Row className="pb-2">
+              <Row className="mb-3">
                 <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
                   <div className="p-2">
                     <div
@@ -401,7 +426,6 @@ function OrderDetailManager() {
           onHide={() => setShowProductReport(false)}
         />
       )}
-
 
       {/* {showAlert && (
         <CustomAlert

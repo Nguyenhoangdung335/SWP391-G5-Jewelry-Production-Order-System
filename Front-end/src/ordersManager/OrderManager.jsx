@@ -109,6 +109,13 @@ export default function OrderManager() {
     },
   };
 
+  const arrayToDate = (date) => {
+    if (!date) return "NaN";
+    const dateObject1 = new Date(date[0], date[1] - 1, date[2]);
+    const isoString = dateObject1.toISOString();
+    return isoString.substring(0, 10);
+  };
+
   return (
     <div style={{ padding: "3%" }}>
       <div className="mb-2">
@@ -155,8 +162,8 @@ export default function OrderManager() {
               <td>{order.id}</td>
               <td>{order.name}</td>
               <td>{order.budget}</td>
-              <td>{order.createdDate}</td>
-              <td>{order.completedDate}</td>
+              <td>{arrayToDate(order.createdDate)}</td>
+              <td>{arrayToDate(order.completedDate)}</td>
               <td>
                 <span
                   className={`badge ${
