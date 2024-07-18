@@ -1,9 +1,11 @@
 package com.swp391.JewelryProduction.security.services;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -15,18 +17,21 @@ import java.util.function.Function;
 
 @Service
 public class JWTService {
-    private static final String SECRET_KEY = "XVHnwgzyeMRa1dN5m1jGJLHU09rqICnRLF4ne7dzDM8=";
+    @Value("${jwt.secret_key}")
+    private String SECRET_KEY;
+    @Value("${jwt.valid_time_in_second}")
+    private long VALID_TIME;
 
-    public String extractUsername(String jwtToken) {
+    public String extractUsername(String jwtToken) throws JwtException {
         return extractClaim(jwtToken, Claims::getSubject);
     }
 
-    public <T> T extractClaim (String jwtToken, Function<Claims, T> claimsResolver) {
+    public <T> T extractClaim (String jwtToken, Function<Claims, T> claimsResolver) throws JwtException {
         final Claims claims = extractAllClaims(jwtToken);
         return claimsResolver.apply(claims);
     }
 
-    private Claims extractAllClaims (String jwtToken) {
+    private Claims extractAllClaims (String jwtToken) throws JwtException {
         return Jwts
                 .parser()
                 .verifyWith(getSecretKey())
@@ -50,12 +55,13 @@ public class JWTService {
             Map<String, Object> extraClaim,
             UserDetails userDetails
     ) {
+        System.out.println(VALID_TIME + " " + SECRET_KEY);
         return Jwts
                 .builder()
                 .claims(extraClaim)
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + (1000 * 60 * 60 * 24)))
+                .expiration(new Date(System.currentTimeMillis() + (1000 * VALID_TIME)))
                 .signWith(getSecretKey(), Jwts.SIG.HS256)
                 .compact();
     }
