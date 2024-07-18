@@ -276,7 +276,7 @@ export default function ClientManager() {
       >
         <div className="w-100 d-flex justify-content-end">
           <Button variant="primary" onClick={handleAddClick}>
-            <FiPlus size={20} />
+            <FiPlus />
             <span className="ms-1">Add Client</span>
           </Button>
         </div>

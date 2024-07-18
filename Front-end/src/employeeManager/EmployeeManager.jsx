@@ -284,7 +284,7 @@ export default function EmployeeManager() {
       </div>
 
       <div
-      className="mb-4"
+        className="mb-4"
         style={{
           display: "flex",
           flexDirection: "row",
@@ -300,9 +300,9 @@ export default function EmployeeManager() {
             <option value="ALL" className="bg-white text-black">
               ALL
             </option>
-            <option value="CUSTOMER" className="bg-white text-black">
+            {/* <option value="CUSTOMER" className="bg-white text-black">
               Customer
-            </option>
+            </option> */}
             <option value="ADMIN" className="bg-white text-black">
               Admin
             </option>
@@ -456,7 +456,7 @@ export default function EmployeeManager() {
                   defaultValue={selectedUser.role}
                   name="role"
                 >
-                  <option value="CUSTOMER">Customer</option>
+                  {/* <option value="CUSTOMER">Customer</option> */}
                   <option value="ADMIN">Admin</option>
                   <option value="SALE_STAFF">Sale Staff</option>
                   <option value="DESIGN_STAFF">Design Staff</option>
@@ -573,7 +573,7 @@ export default function EmployeeManager() {
             <Form.Group controlId="formRole">
               <Form.Label>Role</Form.Label>
               <FormControl as="select" name="role" required>
-                <option value="CUSTOMER">Customer</option>
+                {/* <option value="CUSTOMER">Customer</option> */}
                 <option value="ADMIN">Admin</option>
                 <option value="SALE_STAFF">Sale Staff</option>
                 <option value="DESIGN_STAFF">Design Staff</option>

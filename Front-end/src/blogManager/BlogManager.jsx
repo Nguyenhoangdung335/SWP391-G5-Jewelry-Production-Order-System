@@ -209,7 +209,7 @@ export default function BlogManager() {
           </Button>
         </Modal.Footer>
       </Modal>
-      <Modal show={deleteModalVisible} onHide={handleCancelDelete}>
+      <Modal show={deleteModalVisible} onHide={handleCancelDelete} centered>
         <Modal.Header>
           <Modal.Title>Confirm Delete</Modal.Title>
         </Modal.Header>
@@ -253,10 +253,17 @@ export default function BlogManager() {
               setCurrentBlog(null);
               setOpen(true);
             }}
-            className="new-blog-button"
           >
-            <FiPlus color="rgba(224, 215, 234, 1)" />
-            <p style={{ margin: 0, fontSize: 20, color: "white" }}>New Blog</p>
+            <Button
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+              <FiPlus />
+              New Blog
+            </Button>
           </div>
         </div>
       </div>
@@ -276,16 +283,15 @@ export default function BlogManager() {
               <td>{blog.title}</td>
               <td>{blog.tag}</td>
               <td>
-                <div className="d-flex align-items-center">
+                <div className="d-flex align-items-center gap-2">
                   <Button variant="link" onClick={() => handleEditClick(blog)}>
-                    <FaEdit />
+                    <FaEdit size={20} />
                   </Button>
-                  <span>|</span>
                   <Button
                     variant="link"
                     onClick={() => handleDeleteClick(blog)}
                   >
-                    <FaTrash />
+                    <FaTrash size={20} />
                   </Button>
                 </div>
               </td>

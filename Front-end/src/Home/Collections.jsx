@@ -14,8 +14,8 @@ const size = ["small", "medium", "large"];
 const pageSize = 5;
 
 const getImageSize = () => {
-    const getIndex = Math.floor(Math.random() * size.length);
-    return size[getIndex];
+  const getIndex = Math.floor(Math.random() * size.length);
+  return size[getIndex];
 };
 
 function Collections() {
@@ -31,12 +31,12 @@ function Collections() {
     const [currentProductRoughPrice, setCurrentProductRoughPrice] = useState(0);
     const loader = useRef(null);
 
-    useEffect(() => {
-        if (token) {
-            const decodedToken = jwtDecode(token);
-            setDecodedToken(decodedToken);
-        }
-    }, [token]);
+  useEffect(() => {
+    if (token) {
+      const decodedToken = jwtDecode(token);
+      setDecodedToken(decodedToken);
+    }
+  }, [token]);
 
     useEffect(() => {
         console.log("Fetching");
@@ -67,13 +67,13 @@ function Collections() {
         setShowProductModal(true);
     };
 
-    const handleCloseProductModal = () => {
-        setShowProductModal(false);
-    };
+  const handleCloseProductModal = () => {
+    setShowProductModal(false);
+  };
 
-    const handleCloseCreateRequestModal = () => {
-        setShowCreateRequestModal(false);
-    };
+  const handleCloseCreateRequestModal = () => {
+    setShowCreateRequestModal(false);
+  };
 
     const formatPrice = (price) => {
         return price.toLocaleString("en-US", {
@@ -107,42 +107,42 @@ function Collections() {
         }
     };
 
-    const handleUseTemplate = () => {
-        checkCurrentOrder()
+  const handleUseTemplate = () => {
+    checkCurrentOrder();
+  };
+
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      const entry = entries[0];
+      if (entry.isIntersecting && page < totalPages) {
+        setPage((prevPage) => prevPage + 1);
+      }
+    });
+
+    if (loader.current) {
+      observer.observe(loader.current);
+    }
+
+    return () => {
+      if (loader.current) {
+        observer.unobserve(loader.current);
+      }
     };
+  }, [page, totalPages]);
 
-    useEffect(() => {
-        const observer = new IntersectionObserver(entries => {
-            const entry = entries[0];
-            if (entry.isIntersecting && page < totalPages) {
-                setPage(prevPage => prevPage + 1);
-            }
-        });
-
-        if (loader.current) {
-            observer.observe(loader.current);
-        }
-
-        return () => {
-            if (loader.current) {
-                observer.unobserve(loader.current);
-            }
-        };
-    }, [page, totalPages]);
-
-    return (
-        <Container style={{ paddingTop: "10px" }}>
-            <div className="view" style={styles.pin_container}>
-                {products.map((product) => (
-                    <Pin
-                        key={product.id}
-                        imageSource={product.imageURL || snowfall}
-                        size={getImageSize()}
-                        onClick={() => handlePinClick(product)}
-                    />
-                ))}
-                <div ref={loader} style={{ height: "50px" }} />
-            </div>
+  return (
+    <Container style={{ paddingTop: "10px" }}>
+      <div className="view" style={styles.pin_container}>
+        {products.map((product) => (
+          <Pin
+            key={product.id}
+            imageSource={product.imageURL || snowfall}
+            size={getImageSize()}
+            onClick={() => handlePinClick(product)}
+          />
+        ))}
+        <div ref={loader} style={{ height: "50px" }} />
+      </div>
 
             {selectedProduct && (
                 <Modal show={showProductModal} onHide={handleCloseProductModal} size="lg">
@@ -184,7 +184,6 @@ function Collections() {
         </Container>
     );
 }
-
 
 const styles = {
     pin_container: {

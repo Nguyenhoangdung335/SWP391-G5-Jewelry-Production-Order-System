@@ -203,17 +203,13 @@ export default function ProductManager() {
             display: "flex",
             flexDirection: "row",
             alignItems: "center",
-            gap: 20,
           }}
         >
-          <div
-            onClick={() => setIsCreateModalVisible(true)}
-            className="new-product-button"
-          >
-            <FiPlus color="rgba(224, 215, 234, 1)" />
-            <p style={{ margin: 0, fontSize: 20, color: "white" }}>
+          <div onClick={() => setIsCreateModalVisible(true)}>
+            <Button>
+              <FiPlus />
               New Product
-            </p>
+            </Button>
           </div>
         </div>
       </div>
@@ -233,16 +229,20 @@ export default function ProductManager() {
               <td>{product.name}</td>
               <td>{product.description}</td>
               <td>
-                <div className="d-flex align-items-center">
-                  <Button variant="link" onClick={() => handleEdit(product)}>
-                    <FaEdit />
-                  </Button>
-                  <span>|</span>
+                <div className="d-flex justify-content-center gap-2">
                   <Button
+                    className="border-0"
+                    variant="link"
+                    onClick={() => handleEdit(product)}
+                  >
+                    <FaEdit size={20} />
+                  </Button>
+                  <Button
+                    className="border-0"
                     variant="link"
                     onClick={() => handleDeleteClick(product)}
                   >
-                    <FaTrash />
+                    <FaTrash size={20} />
                   </Button>
                 </div>
               </td>
@@ -286,7 +286,7 @@ export default function ProductManager() {
           &gt;
         </div>
       </div>
-      <Modal show={isModalVisible} onHide={handleCancel}>
+      <Modal show={isModalVisible} onHide={handleCancel} centered>
         <Modal.Header>
           <Modal.Title>Edit Product</Modal.Title>
         </Modal.Header>
@@ -312,21 +312,23 @@ export default function ProductManager() {
                   defaultValue={selectedProduct.description}
                 />
               </Form.Group>
-              <Button variant="primary" type="submit" style={{ marginTop: 20 }}>
-                Save changes
-              </Button>
-              <Button
-                variant="secondary"
-                onClick={handleCancel}
-                style={{ marginLeft: 15, marginTop: 20 }}
-              >
-                Back
-              </Button>
+              <div className="d-flex justify-content-between">
+                <Button
+                  variant="secondary"
+                  onClick={handleCancel}
+                  className="mt-2"
+                >
+                  Back
+                </Button>
+                <Button variant="primary" type="submit" className="mt-2">
+                  Save changes
+                </Button>
+              </div>
             </Form>
           )}
         </Modal.Body>
       </Modal>
-      <Modal show={isDeleteModalVisible} onHide={handleCancelDelete}>
+      <Modal show={isDeleteModalVisible} onHide={handleCancelDelete} centered>
         <Modal.Header>
           <Modal.Title>Confirm Delete</Modal.Title>
         </Modal.Header>
@@ -342,12 +344,12 @@ export default function ProductManager() {
           </Button>
         </Modal.Footer>
       </Modal>
-      <Modal show={isCreateModalVisible} onHide={handleAddCancel}>
+      <Modal show={isCreateModalVisible} onHide={handleAddCancel} centered>
         <Modal.Header>
           <Modal.Title>Create Product</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div className="text-5xl mb-5">
+          <div className="mb-4">
             <FaBox /> <span className="text-4xl ml-3 font-medium">Product</span>
           </div>
           <Form onSubmit={handleAdd}>
@@ -363,30 +365,19 @@ export default function ProductManager() {
               <Form.Label>Description</Form.Label>
               <Form.Control type="text" />
             </Form.Group>
-            <div className="mt-4">
-              <Button
-                style={{
-                  backgroundColor: "#000000",
-                  color: "white",
-                }}
-                type="submit"
-              >
-                Save changes
-              </Button>
-              <Button
-                variant="secondary"
-                onClick={handleAddCancel}
-                style={{ marginLeft: 8 }}
-              >
+            <div className="mt-4 d-flex justify-content-between">
+              <Button variant="secondary" onClick={handleAddCancel}>
                 Back
               </Button>
-              <Button
+              <Button type="submit">Save changes</Button>
+
+              {/* <Button
                 variant="secondary"
                 onClick={handleAddCancel}
                 style={{ marginLeft: 8 }}
               >
                 Create Your Dream Jewelry
-              </Button>
+              </Button> */}
             </div>
           </Form>
         </Modal.Body>
