@@ -18,4 +18,6 @@ public interface ProductService {
     ProductSpecification saveSpecification(ProductSpecification specs);
     ProductSpecification updateSpecification(Integer specificationId, ProductSpecification specs);
     void deleteSpecificationById(int id);
+
+    Double calculateRoughProductPrice(int productSpecificationId);
 }

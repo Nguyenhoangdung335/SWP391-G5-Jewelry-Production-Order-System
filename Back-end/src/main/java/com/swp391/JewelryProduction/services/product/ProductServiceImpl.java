@@ -1,6 +1,5 @@
 package com.swp391.JewelryProduction.services.product;
 
-import com.swp391.JewelryProduction.dto.ProductDTO;
 import com.swp391.JewelryProduction.pojos.Order;
 import com.swp391.JewelryProduction.pojos.designPojos.Product;
 import com.swp391.JewelryProduction.pojos.designPojos.ProductSpecification;
@@ -9,9 +8,12 @@ import com.swp391.JewelryProduction.pojos.gemstone.GemstoneType;
 import com.swp391.JewelryProduction.repositories.ProductRepository;
 import com.swp391.JewelryProduction.repositories.ProductSpecificationRepository;
 import com.swp391.JewelryProduction.repositories.gemstoneRepositories.GemstoneTypeRepository;
+import com.swp391.JewelryProduction.services.crawl.CrawlDataService;
+import com.swp391.JewelryProduction.services.gemstone.GemstoneService;
 import com.swp391.JewelryProduction.services.order.OrderService;
 import com.swp391.JewelryProduction.util.exceptions.ObjectNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -25,7 +27,17 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final ProductSpecificationRepository productSpecificationRepository;
     private final OrderService orderService;
-        private final GemstoneTypeRepository gemstoneTypeRepository;
+    private final GemstoneTypeRepository gemstoneTypeRepository;
+    private final GemstoneService gemstoneService;
+    private final CrawlDataService crawlDataService;
+
+    @Value("${price.default.sale_staff}")
+    private double DEFAULT_SALE_STAFF_PRICE;
+    @Value("${price.default.design_staff}")
+    private double DEFAULT_DESIGN_STAFF_PRICE;
+    @Value("${price.default.production_staff}")
+    private double DEFAULT_PRODUCTION_STAFF_PRICE;
+
 
     //<editor-fold desc="PRODUCT SERVICES" defaultstate="collapsed">
     @Override
@@ -109,6 +121,20 @@ public class ProductServiceImpl implements ProductService {
         productSpecificationRepository.deleteById(id);
     }
 
+    @Override
+    public Double calculateRoughProductPrice(int productSpecificationId) {
+        return calculatePrice(
+                productSpecificationRepository.findById(productSpecificationId).orElseThrow(
+                        () -> new ObjectNotFoundException("Specification with id "+ productSpecificationId+" not found")
+        ));
+    }
+
+    private Double calculatePrice (ProductSpecification specs) {
+        double price = gemstoneService.calculatePrice(specs.getGemstone());
+        price += DEFAULT_SALE_STAFF_PRICE + DEFAULT_DESIGN_STAFF_PRICE + DEFAULT_PRODUCTION_STAFF_PRICE;
+        price += specs.getMetal().getPrice();
+        return price;
+    }
     //</editor-fold>
 
     private ProductSpecification mapNewSpecification (ProductSpecification oldSpecs, ProductSpecification newSpecs) {
