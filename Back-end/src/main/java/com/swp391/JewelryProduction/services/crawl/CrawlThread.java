@@ -25,6 +25,9 @@ public class CrawlThread implements Runnable{
     private static final Logger log = LoggerFactory.getLogger(CrawlThread.class);
     private List<MetalPrice> metalPrices;
     private ConnectionPage connection;
+    @Builder.Default
+    private boolean isVND = true;
+
     @Value("${exchange.url}")
     private String urlExchange;
     @Value("${page.url}")
@@ -45,7 +48,7 @@ public class CrawlThread implements Runnable{
                 MetalPrice metalPrice = MetalPrice.builder()
                         .name("Gold")
                         .unit(product.selectFirst("th").text())
-                        .price(Double.parseDouble(product.selectFirst("td").text().replace("$", "").replace(",", "")) * rate)
+                        .price(Double.parseDouble(product.selectFirst("td").text().replace("$", "").replace(",", "")) * (isVND? rate: 1))
                         .updatedTime(LocalDateTime.now())
                         .build();
                 synchronized (materials){
