@@ -37,7 +37,7 @@ public class GemstoneServiceImpl implements GemstoneService{
 
     @Override
     public double calculatePrice(Gemstone gemstone) {
-        double basePrice = getBasePricePerCarat(gemstone.getType().getName());
+        double basePrice = getBasePricePerCarat(gemstone.getType().getId());
         double weightMultiplier = getWeightMultiplier(gemstone.getCaratWeight());
         double shapeMultiplier = getShapeMultiplier(gemstone.getShape());
         double cutMultiplier = getCutMultiplier(gemstone.getCut());
@@ -75,8 +75,8 @@ public class GemstoneServiceImpl implements GemstoneService{
     }
 
     //<editor-fold desc="PRIVATE METHODS" defaultstate="collapsed">
-    private double getBasePricePerCarat(String gemstoneType) {
-        GemstoneType type = gemstoneTypeRepository.findByName(gemstoneType).orElse(null);
+    private double getBasePricePerCarat(Long gemstoneId) {
+        GemstoneType type = gemstoneTypeRepository.findById(gemstoneId).orElse(null);
         return type != null ? type.getBasePricePerCarat() : 0;
     }
 
