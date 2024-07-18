@@ -34,29 +34,15 @@ public class UserService {
         List<User> users = new ArrayList<>();
         ApiFuture<QuerySnapshot> future;
 
-        if (role.equals("STAFF")) {
-            // Lấy tất cả người dùng
-            future = db.collection(USER_COLLECTION_NAME).get();
-            List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+        future = db.collection(USER_COLLECTION_NAME)
+                .whereEqualTo("role", role)
+                .get();
+        List<QueryDocumentSnapshot> documents = future.get().getDocuments();
 
-            // Lọc những người dùng có role kết thúc bằng 'STAFF'
-            for (DocumentSnapshot document : documents) {
-                String userRole = document.getString("role");
-                if (userRole != null && userRole.endsWith("STAFF")) {
-                    users.add(document.toObject(User.class));
-                }
-            }
-        } else {
-            // Lấy những người dùng có role chính xác
-            future = db.collection(USER_COLLECTION_NAME)
-                    .whereEqualTo("role", role)
-                    .get();
-            List<QueryDocumentSnapshot> documents = future.get().getDocuments();
-
-            for (DocumentSnapshot document : documents) {
-                users.add(document.toObject(User.class));
-            }
+        for (DocumentSnapshot document : documents) {
+            users.add(document.toObject(User.class));
         }
+
         return users;
     }
 

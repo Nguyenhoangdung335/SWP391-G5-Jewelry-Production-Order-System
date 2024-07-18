@@ -320,9 +320,12 @@ const Chat = () => {
                     <div className="users-list">
                         <div className="users-list-container">
                             <div ref={roleSelectListRef} className="role-select-list hidden">
-                                <select id="role-select" ref={roleSelectRef} onChange={onRoleChange} className="form-select mb-3">
+                                <select id="role-select" ref={roleSelectRef} onChange={onRoleChange}
+                                        className="form-select mb-3">
                                     <option value="CUSTOMER">Customer</option>
-                                    <option value="STAFF">Staff</option>
+                                    <option value="SALE_STAFF">Sale Staff</option>
+                                    <option value="DESIGN_STAFF">Design Staff</option>
+                                    <option value="PRODUCTION_STAFF">Production Staff</option>
                                     <option value="MANAGER">Manager</option>
                                     <option value="ADMIN">Admin</option>
                                 </select>
