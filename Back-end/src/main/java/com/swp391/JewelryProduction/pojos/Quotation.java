@@ -11,6 +11,8 @@ import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
 
+import static com.swp391.JewelryProduction.util.CustomFormatter.roundToDecimal;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -71,5 +73,9 @@ public class Quotation {
             total += item.getTotalPrice();
         }
         return total;
+    }
+    
+    public Double getHalfPrice () {
+        return roundToDecimal(getTotalPrice(), 2);
     }
 }
