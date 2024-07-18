@@ -11,6 +11,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.DecimalFormat;
+
+import static com.swp391.JewelryProduction.util.CustomFormatter.roundToDecimal;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/products")
@@ -116,6 +120,12 @@ public class ProductController {
                 .status(HttpStatus.OK)
                 .message("Delete Specification with id "+specificationId+" successfully")
                 .buildEntity();
+    }
+
+    @GetMapping("/customize/calculate-price/{specificationId}")
+    public ResponseEntity<Double> calculateRoughProductPrice (@PathVariable int specificationId) {
+        Double roughPrice = productService.calculateRoughProductPrice(specificationId);
+        return ResponseEntity.ok(roundToDecimal(roughPrice, 2));
     }
     //</editor-fold>
 }
