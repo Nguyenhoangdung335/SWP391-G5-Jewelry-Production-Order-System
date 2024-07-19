@@ -166,7 +166,7 @@ function Collections() {
                             </div>
                         </div>
                     </Modal.Body>
-                    <Modal.Footer>
+                    <Modal.Footer className="w-100 d-flex justify-content-center">
                         <Button onClick={handleUseTemplate}>Use this template</Button>
                     </Modal.Footer>
                 </Modal>

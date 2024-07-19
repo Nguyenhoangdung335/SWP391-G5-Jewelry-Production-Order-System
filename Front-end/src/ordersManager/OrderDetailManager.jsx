@@ -52,6 +52,7 @@ function OrderDetailManager() {
   };
 
   useEffect(() => {
+    console.log("Hello")
     fetchData();
   }, [id]);
 

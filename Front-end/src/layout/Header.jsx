@@ -81,7 +81,10 @@ export default function Header() {
     {
       key: "1",
       label: (
-        <Link to="/user_setting_page" style={{ textDecoration: "none" }}>
+        <Link
+          to="/user_setting_page/profile_page"
+          style={{ textDecoration: "none" }}
+        >
           Profile
         </Link>
       ),

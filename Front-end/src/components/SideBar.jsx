@@ -24,7 +24,7 @@ function SideBar() {
 
   const navLinks = [
     {
-      to: "/user_setting_page",
+      to: "/user_setting_page/profile_page",
       icon: <LuUser2 size={30} color="white" />,
       label: "Profile",
     },

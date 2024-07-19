@@ -55,11 +55,11 @@ function ControlledCarousel() {
 
   return (
     <Carousel controls indicators={false} prevIcon={false} nextIcon={false}>
-      <Carousel.Item style={{height:"90vh"}}>
+      <Carousel.Item
+        style={{ height: "90vh", width: "100%", objectFit: "cover" }}
+      >
         <video
-          className="object-fit-cover"
           width="100%"
-          height="100%"
           autoPlay
           muted
           loop
