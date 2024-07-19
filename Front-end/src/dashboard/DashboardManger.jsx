@@ -62,50 +62,27 @@ export default function DashboardManager() {
 
   useEffect(() => {
     // Check if an EventSource connection already exists
-    if (!eventSourceRef.current && userRole === 'ADMIN') {
-      eventSourceRef.current = new EventSource(`${ServerUrl}/api/admin/dashboard`);
-
-      const handleBeforeUnload = () => {
-        if (eventSourceRef) {
-          console.log("SSE close");
-          eventSourceRef.current.close();
-        }
-      };
-  
-      const handlePopState = () => {
-        if (eventSourceRef.current) {
-          console.log("SSE close");
-          eventSourceRef.current.close();
-        }
-      };
-  
-      const handleVisibilityChange = () => {
-        if (document.visibilityState === "hidden" && eventSourceRef.current) {
-          console.log("SSE close");
-          eventSourceRef.current.close();
-        }
-      };
-  
-      window.addEventListener("beforeunload", handleBeforeUnload);
-      window.addEventListener("popstate", handlePopState);
-      document.addEventListener("visibilitychange", handleVisibilityChange);
+    if (!eventSourceRef.current && userRole === "ADMIN") {
+      eventSourceRef.current = new EventSource(
+        `${ServerUrl}/api/admin/dashboard`
+      );
 
       eventSourceRef.current.onmessage = (event) => {
         const parsedData = JSON.parse(event.data);
         setDashboard(parsedData);
       };
 
-      eventSourceRef.current.addEventListener('live', (event) => {
+      eventSourceRef.current.addEventListener("live", (event) => {
         const parsedData = JSON.parse(event.data);
         setDashboard(parsedData);
       });
 
-      eventSourceRef.current.addEventListener('heartbeat', () => {
-        console.log('Baduum!');
+      eventSourceRef.current.addEventListener("heartbeat", () => {
+        console.log("Baduum!");
       });
 
       eventSourceRef.current.onerror = (error) => {
-        console.error('Error in SSE connection:', error);
+        console.error("Error in SSE connection:", error);
       };
 
       // Cleanup function
@@ -114,9 +91,6 @@ export default function DashboardManager() {
           console.log("Close dashboard connection");
           eventSourceRef.current.close();
           eventSourceRef.current = null;
-          window.removeEventListener("beforeunload", handleBeforeUnload);
-          window.removeEventListener("popstate", handlePopState);
-          document.removeEventListener("visibilitychange", handleVisibilityChange);
         }
       };
     }
@@ -124,18 +98,18 @@ export default function DashboardManager() {
 
   const columnsClient = [
     {
-      title: <span style={{ fontSize: 18, fontWeight: 400 }}>Id</span>,
+      title: <span>Id</span>,
       dataIndex: "id",
       key: "id",
       render: (text) => <span>{text}</span>,
     },
     {
-      title: <span style={{ fontSize: 18, fontWeight: 400 }}>Name</span>,
+      title: <span>Name</span>,
       dataIndex: "name",
       key: "name",
     },
     {
-      title: <span style={{ fontSize: 18, fontWeight: 400 }}>Gmail</span>,
+      title: <span>Gmail</span>,
       dataIndex: "gmail",
       key: "gmail",
     },
@@ -145,7 +119,7 @@ export default function DashboardManager() {
       dataIndex: "phone",
     },
     {
-      title: <span style={{ fontSize: 18, fontWeight: 400 }}>Status</span>,
+      title: <span>Status</span>,
       key: "status",
       dataIndex: "status",
       render: (status) => (
@@ -224,23 +198,23 @@ export default function DashboardManager() {
 
   const columnsOrder = [
     {
-      title: <span style={{ fontSize: 20, fontWeight: 400 }}>OrderID</span>,
+      title: <span>OrderID</span>,
       dataIndex: "orderId",
       key: "orderId",
       render: (text) => <span>{text}</span>,
     },
     {
-      title: <span style={{ fontSize: 20, fontWeight: 400 }}>Name</span>,
+      title: <span>Name</span>,
       dataIndex: "customerID",
       key: "customerID",
     },
     {
-      title: <span style={{ fontSize: 20, fontWeight: 400 }}>totalPrice</span>,
+      title: <span>totalPrice</span>,
       key: "total",
       dataIndex: "total",
     },
     {
-      title: <span style={{ fontSize: 20, fontWeight: 400 }}>Status</span>,
+      title: <span>Status</span>,
       key: "status",
       dataIndex: "status",
       render: (status) => (
@@ -443,8 +417,8 @@ export default function DashboardManager() {
               borderColor: "rgba(0, 0, 0, 0.15)",
               borderStyle: "solid",
               borderRadius: 5,
-              height: "100%",
               display: "flex",
+              height:"100%",
               flexDirection: "column",
               justifyContent: "center",
               padding: "10px 10px",
@@ -465,6 +439,7 @@ export default function DashboardManager() {
             </div>
           </div>
         </Col>
+
         <Col md={6}>
           <div
             style={{
@@ -473,12 +448,12 @@ export default function DashboardManager() {
               borderStyle: "solid",
               borderRadius: 5,
               display: "flex",
-              flexDirection: "column",
               height: "100%",
+              flexDirection: "column",
               padding: "10px 10px",
             }}
           >
-            <p style={{ margin: 0, fontSize: 20 }} className="fw-bolder">
+            <p style={{ fontSize: 20 }} className="fw-bolder mb-2">
               Orders
             </p>
             <Table striped bordered hover>
@@ -495,7 +470,7 @@ export default function DashboardManager() {
                     <td>{row.id}</td>
                     <td>{row.name}</td>
                     {/* <td>{row.budget}</td> */}
-                    <td>{row.quotation.totalPrice}</td>
+                    <td>{Math.round(row.quotation.totalPrice)}</td>
                     <td>
                       <Badge
                         bg={
@@ -515,33 +490,45 @@ export default function DashboardManager() {
           </div>
         </Col>
       </Row>
-      <p style={{ margin: 0, fontSize: 20 }} className="fw-bolder">
-        Clients
-      </p>
-      <Table striped bordered hover>
-        <thead>
-          <tr>
-            {columnsClient.map((col) => (
-              <th key={col.key}>{col.title}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {paginatedDataClient.map((row) => (
-            <tr key={row.id}>
-              <td>{row.id}</td>
-              <td>{row.name}</td>
-              <td>{row.gmail}</td>
-              <td>{row.phone}</td>
-              <td>
-                <Badge bg={row.status === "active" ? "success" : "danger"}>
-                  {row.status.charAt(0).toUpperCase() + row.status.slice(1)}
-                </Badge>
-              </td>
+      <div
+        style={{
+          borderWidth: 1,
+          borderColor: "rgba(0, 0, 0, 0.15)",
+          borderStyle: "solid",
+          borderRadius: 5,
+          display: "flex",
+          flexDirection: "column",
+          padding: "10px 10px",
+        }}
+      >
+        <p style={{ fontSize: 20 }} className="fw-bolder mb-2">
+          Clients
+        </p>
+        <Table striped bordered hover>
+          <thead>
+            <tr>
+              {columnsClient.map((col) => (
+                <th key={col.key}>{col.title}</th>
+              ))}
             </tr>
-          ))}
-        </tbody>
-      </Table>
+          </thead>
+          <tbody>
+            {paginatedDataClient.map((row) => (
+              <tr key={row.id}>
+                <td>{row.id}</td>
+                <td>{row.name}</td>
+                <td>{row.gmail}</td>
+                <td>{row.phone}</td>
+                <td>
+                  <Badge bg={row.status === "active" ? "success" : "danger"}>
+                    {row.status.charAt(0).toUpperCase() + row.status.slice(1)}
+                  </Badge>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </div>
     </Container>
   );
 }

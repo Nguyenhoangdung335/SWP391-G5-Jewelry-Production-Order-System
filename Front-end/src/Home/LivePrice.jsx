@@ -45,13 +45,6 @@ function LivePrice() {
       console.log("Heartbeat");
     });
 
-    // eventSource.onmessage = (event) => {
-    //   console.log("The connection has been established");
-    //   if (event.data) {
-    //     console.log(event.data)
-    //     setData(JSON.parse(event));
-    //   }
-    // };
     eventSource.onerror = (event) => {
       console.log("There an error in the connection");
     };
@@ -71,7 +64,7 @@ function LivePrice() {
           <tr>
             <th>ID</th>
             <th>Name</th>
-            <th>Price</th>
+            <th>Price (Unit: $)</th>
             <th>Time</th>
           </tr>
         </thead>

@@ -102,7 +102,7 @@ export default function Login() {
               size="md"
               required
               type="password"
-              placeholder=" Enter Your Password"
+              placeholder="Enter Your Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />

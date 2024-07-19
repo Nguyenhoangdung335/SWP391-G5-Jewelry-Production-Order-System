@@ -195,7 +195,7 @@ function OrderDetailManager() {
                     </tr>
                     <tr>
                       <th>Total Price</th>
-                      <td>{data.quotation?.totalPrice || 0}</td>
+                      <td>{Math.round(data.quotation?.totalPrice) || 0}</td>
                     </tr>
                     <tr>
                       <th>Status</th>

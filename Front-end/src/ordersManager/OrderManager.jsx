@@ -60,7 +60,7 @@ export default function OrderManager() {
   const columns = [
     { title: "ID", dataIndex: "id" },
     { title: "Name", dataIndex: "name" },
-    { title: "Budget", dataIndex: "budget" },
+    // { title: "Budget", dataIndex: "budget" },
     { title: "Created Date", dataIndex: "createdDate" },
     { title: "Completed Date", dataIndex: "completedDate" },
     { title: "Status", dataIndex: "status" },
@@ -161,7 +161,7 @@ export default function OrderManager() {
             <tr key={order.id}>
               <td>{order.id}</td>
               <td>{order.name}</td>
-              <td>{order.budget}</td>
+              {/* <td>{order.budget}</td> */}
               <td>{arrayToDate(order.createdDate)}</td>
               <td>{arrayToDate(order.completedDate)}</td>
               <td>
