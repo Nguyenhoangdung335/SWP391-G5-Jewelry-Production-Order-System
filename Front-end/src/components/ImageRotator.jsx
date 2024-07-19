@@ -2,7 +2,10 @@ import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import Snowfall from "../assets/snowfall.jpg";
 import "./ImageRotatorCSS.css";
-import { CarouselCaption, Container } from "react-bootstrap";
+import {
+  MdOutlineKeyboardArrowLeft,
+  MdOutlineKeyboardArrowRight,
+} from "react-icons/md";
 
 const responsive = {
   superLargeDesktop: {
@@ -30,27 +33,26 @@ export default function ImageRotator() {
       responsive={responsive}
       centerMode={false}
       draggable={false}
-      // arrows={false}
       swipeable={false}
       infinite={true}
       pauseOnHover
       autoPlaySpeed={3000}
       autoPlay={true}
-      containerClass=" carousel-container"
+      containerClass="carousel-container"
     >
-      <div className="card">
+      <div className="card m-2">
         <img className="product--image" src={Snowfall} alt="product " />
       </div>
-      <div className="card ">
+      <div className="card m-2 ">
         <img className="product--image" src={Snowfall} alt="product " />
       </div>
-      <div className="card ">
+      <div className="card m-2 ">
         <img className="product--image" src={Snowfall} alt="product " />
       </div>
-      <div className="card">
+      <div className="card m-2">
         <img className="product--image" src={Snowfall} alt="product " />
       </div>
-      <div className="card ">
+      <div className="card m-2 ">
         <img className="product--image" src={Snowfall} alt="product " />
       </div>
     </Carousel>

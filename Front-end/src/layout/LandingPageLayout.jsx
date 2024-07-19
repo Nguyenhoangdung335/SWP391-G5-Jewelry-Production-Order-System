@@ -50,7 +50,7 @@ export default function LandingPageLayout() {
           </div>
         </a>
       </div>
-      <div>
+      <div className="pt-4">
         <Footer />
       </div>
     </>

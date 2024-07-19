@@ -204,12 +204,12 @@ function Home() {
         </Container>
       </div>
 
-      <Container fluid className="pb-4 pt-4 mb-3">
+      <Container className="pb-4 pt-4 mb-3">
         <div className="text-center pt-4 pb-4">
           <h2 className="fw-bold">Newest Blogs</h2>
         </div>
         <Row>
-          <Col md={3}>
+          <Col>
             <Card className="mb-2 mt-2" style={{ cursor: "pointer" }}>
               <Card.Img
                 src={Snowfall}
@@ -233,7 +233,7 @@ function Home() {
               </Card.Body>
             </Card>
           </Col>
-          <Col md={3}>
+          <Col>
             <Card className="mb-2 mt-2" style={{ cursor: "pointer" }}>
               <Card.Img
                 src={Snowfall}
@@ -255,32 +255,11 @@ function Home() {
               </Card.Body>
             </Card>
           </Col>
-          <Col md={3}>
+          <Col>
             <Card className="mb-2 mt-2" style={{ cursor: "pointer" }}>
               <Card.Img
                 src={Snowfall}
                 variant="top"
-                width="100%"
-                height="380px"
-                style={blogImageStyle}
-              />
-              <Card.Body>
-                <div className="pb-3">
-                  <Card.Title>
-                    <h4 className="fw-bold">Clean Your Jewelry</h4>
-                  </Card.Title>
-                  <Card.Subtitle>
-                    <p>Learn how to clean your jewelry at home</p>
-                  </Card.Subtitle>
-                </div>
-                <Button>Read now</Button>
-              </Card.Body>
-            </Card>
-          </Col>
-          <Col md={3}>
-            <Card className="mb-2 mt-2" style={{ cursor: "pointer" }}>
-              <Card.Img
-                src={Snowfall}
                 width="100%"
                 height="380px"
                 style={blogImageStyle}
