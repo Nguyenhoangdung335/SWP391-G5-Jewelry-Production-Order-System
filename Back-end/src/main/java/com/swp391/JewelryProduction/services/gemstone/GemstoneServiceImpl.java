@@ -79,6 +79,12 @@ public class GemstoneServiceImpl implements GemstoneService{
 
     @Override
     public Gemstone createGemstone(Gemstone gemstone) {
+        GemstoneType gemstoneType = gemstoneTypeRepository.findByName(gemstone.getType().getName())
+                .orElse(GemstoneType.builder()
+                        .name(gemstone.getType().getName())
+                        .build());
+        gemstoneType.setBasePricePerCarat(gemstone.getType().getBasePricePerCarat());
+        gemstone.setType(gemstoneType);
         return gemstoneRepository.save(gemstone);
     }
 
