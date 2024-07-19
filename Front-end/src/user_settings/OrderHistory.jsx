@@ -13,7 +13,7 @@ function CardHover({ hover, children }) {
     <Card
       className=" link-opacity-50-hover"
       style={{
-        transition: " transform 200ms ease-out ",
+        transition: " transform 300ms ease-out ",
         transform: hover ? "scale(1.01)" : "scale(1.00)",
         width: "20rem",
       }}
