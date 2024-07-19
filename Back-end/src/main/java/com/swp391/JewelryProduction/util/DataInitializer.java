@@ -68,6 +68,8 @@ public class DataInitializer implements CommandLineRunner {
     private MetalPriceRepository metalPriceRepository;
     @Autowired
     private GemstonePriceRepository gemstonePriceRepository;
+    @Autowired
+    private GemstoneTypeRepository gemstoneTypeRepository;
 
 
     @Transactional
@@ -363,6 +365,15 @@ public class DataInitializer implements CommandLineRunner {
                 "Diamond", "Ruby", "Emerald", "Sapphire", "Amethyst",
                 "Topaz", "Opal", "Aquamarine", "Garnet", "Peridot"
         };
+        GemstoneType[] gemstoneTypes = new GemstoneType[10];
+        for(int i = 0; i < GEMSTONE_NAMES.length; i++) {
+            gemstoneTypes[i] = GemstoneType.builder()
+                    .name(GEMSTONE_NAMES[i])
+                    .basePricePerCarat(rand.nextDouble(500.0, 5000.0))
+                    .build();;
+        }
+        gemstoneTypeRepository.saveAll(List.of(gemstoneTypes));
+
         GemstoneShape[] shapes = GemstoneShape.values();
         GemstoneCut[] cuts = GemstoneCut.values();
         GemstoneClarity[] clarities = GemstoneClarity.values();
@@ -370,10 +381,7 @@ public class DataInitializer implements CommandLineRunner {
 
         for (int i = 0; i < limit; i++) {
             Gemstone stone = Gemstone.builder()
-                    .type(GemstoneType.builder()
-                            .name(GEMSTONE_NAMES[rand.nextInt(GEMSTONE_NAMES.length)])
-                            .basePricePerCarat(rand.nextDouble(500.0, 5000.0))
-                            .build())
+                    .type(gemstoneTypes[rand.nextInt(gemstoneTypes.length)])
                     .shape(shapes[rand.nextInt(shapes.length)])
                     .cut(cuts[rand.nextInt(cuts.length)])
                     .clarity(clarities[rand.nextInt(clarities.length)])
