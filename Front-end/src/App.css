@@ -58,3 +58,8 @@
 .side-bar-ltr:hover::before {
   height: 100%;
 }
+
+.clickable-alert:hover {
+  background-color: rgba(0, 0, 0, 0.1); /* Light overlay color on hover */
+  border-color: rgba(0, 0, 0, 0.2); /* Optional: darker border on hover */
+}
