@@ -801,7 +801,7 @@ public class DataInitializer implements CommandLineRunner {
                     .receiver(saleStaff != null ? staffRepository.save(saleStaff) : null)
                     .delivered(false)
                     .read(false)
-                    .isOption(true)
+                    .option(true)
                     .build();
             notificaition.setReport(reportRepository.save(Report.builder()
                     .type(ReportType.NONE)
