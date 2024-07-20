@@ -7,9 +7,11 @@ import com.paypal.api.payments.Transaction;
 import com.swp391.JewelryProduction.config.stateMachine.StateMachineUtil;
 import com.swp391.JewelryProduction.enums.OrderEvent;
 import com.swp391.JewelryProduction.enums.OrderStatus;
+import com.swp391.JewelryProduction.enums.TransactionStatus;
 import com.swp391.JewelryProduction.pojos.Order;
 import com.swp391.JewelryProduction.pojos.Transactions;
 import com.swp391.JewelryProduction.repositories.TransactionRepository;
+import com.swp391.JewelryProduction.services.PaypalService;
 import com.swp391.JewelryProduction.services.order.OrderService;
 import com.swp391.JewelryProduction.util.exceptions.ObjectNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -65,38 +67,18 @@ public class TransactionServiceImpl implements TransactionService{
 
     @Transactional
     @Override
-    public Transactions updateTransactionsStateByPayment(Payment payment) {
+    public Transactions updateTransactionsStateByPayment(Payment payment, String status) {
         Transactions transactions = transactionRepository
                 .findByPaypalPaymentId(payment.getId())
                 .orElseThrow(
                         () -> new ObjectNotFoundException("Transactions with payment id "+payment.getId()+" does not exist in the system")
                 );
 
-        transactions.setStatus(payment.getState());
+        transactions.setStatus(status);
         transactions.setDateUpdated(LocalDateTime.now());
-        transactions.setPaypalSaleId(retrieveSaleId(payment));
+        transactions.setPaypalSaleId(retrieveSale(payment).getId());
 
         return transactionRepository.save(transactions);
-    }
-
-    private String retrieveSaleId (Payment payment) {
-        if (payment != null) {
-            List<Transaction> transactionList = payment.getTransactions();
-            if (transactionList != null && !transactionList.isEmpty()) {
-                for (Transaction transaction : transactionList) {
-                    List<RelatedResources> relatedResources = transaction.getRelatedResources();
-                    if (relatedResources != null && !relatedResources.isEmpty()) {
-                        for (RelatedResources resource : relatedResources) {
-                            Sale sale = resource.getSale();
-                            if (sale != null) {
-                                return sale.getId();
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return null;
     }
 
     @Override
@@ -128,5 +110,27 @@ public class TransactionServiceImpl implements TransactionService{
                         .build()
                 )
         ).subscribe();
+    }
+
+    private Sale retrieveSale(Payment payment) {
+        if (payment != null) {
+            List<Transaction> transactionList = payment.getTransactions();
+            if (transactionList != null && !transactionList.isEmpty()) {
+                for (Transaction transaction : transactionList) {
+                    List<RelatedResources> relatedResources = transaction.getRelatedResources();
+                    if (relatedResources != null && !relatedResources.isEmpty()) {
+                        for (RelatedResources resource : relatedResources) {
+                            Sale sale = resource.getSale();
+                            if (sale != null) {
+                                return resource.getSale();
+                            } else {
+                                throw new ObjectNotFoundException("Sale object for payment "+payment.getId()+" cannot be found");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return null;
     }
 }
