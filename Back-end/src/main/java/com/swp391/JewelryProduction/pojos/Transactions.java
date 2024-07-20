@@ -1,6 +1,7 @@
 package com.swp391.JewelryProduction.pojos;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.swp391.JewelryProduction.enums.TransactionStatus;
 import jakarta.persistence.*;
 import lombok.*;
 

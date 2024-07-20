@@ -3,6 +3,7 @@ package com.swp391.JewelryProduction.services.product;
 import com.swp391.JewelryProduction.dto.ProductDTO;
 import com.swp391.JewelryProduction.pojos.designPojos.Product;
 import com.swp391.JewelryProduction.pojos.designPojos.ProductSpecification;
+import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -20,4 +21,6 @@ public interface ProductService {
     void deleteSpecificationById(int id);
 
     Double calculateRoughProductPrice(int productSpecificationId);
+
+    List<Product> findAllByOrderByIdDesc (Limit limit);
 }

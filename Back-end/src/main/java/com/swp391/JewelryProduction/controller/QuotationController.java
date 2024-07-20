@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("api/{orderId}/quotation")
+@RequestMapping("api/quotation/{orderId}")
 @RequiredArgsConstructor
 public class    QuotationController {
     private final QuotationService quotationService;
@@ -29,9 +29,7 @@ public class    QuotationController {
     @PostMapping("/submit")
     public ResponseEntity<Response> createQuotation(@PathVariable String orderId, @RequestBody Quotation quotation) {
         Order order = orderService.findOrderById(orderId);
-        order.setQuotation(quotation);
-        orderService.updateOrder(order);
-        quotation = quotationService.saveQuotation(quotation);
+        quotation = quotationService.saveQuotation(quotation, order);
         return Response.builder()
                 .status(HttpStatus.OK)
                 .message("Quotation has been saved successfully")
@@ -48,6 +46,14 @@ public class    QuotationController {
         return Response.builder()
                 .status(HttpStatus.OK)
                 .message("Quotation has been deleted successfully")
+                .buildEntity();
+    }
+
+    @GetMapping("/default-items")
+    public ResponseEntity<Response> getDefaultItem (@PathVariable("orderId") String orderId) {
+        Order order = orderService.findOrderById(orderId);
+        return Response.builder()
+                .response("items", quotationService.getDefaultQuotationItems(order))
                 .buildEntity();
     }
 }

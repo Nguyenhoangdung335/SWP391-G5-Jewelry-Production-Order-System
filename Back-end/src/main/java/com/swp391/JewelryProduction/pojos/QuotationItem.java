@@ -18,29 +18,35 @@ public class QuotationItem {
     @ToString.Include
     @EqualsAndHashCode.Include
     private Integer id;
+
     @ToString.Include
     @EqualsAndHashCode.Include
     private Integer itemID;
+
     @ToString.Include
     @EqualsAndHashCode.Include
     private String name;
+
     @ToString.Include
     @EqualsAndHashCode.Include
     private double quantity;
+
     @ToString.Include
     @EqualsAndHashCode.Include
     @Column(name = "unit_price", columnDefinition = "decimal(15,2)")
     private double unitPrice;
+
     @ToString.Include
     @EqualsAndHashCode.Include
     @Formula("quantity * unit_price")
+    @Column(columnDefinition = "decimal(15,2)")
     private double totalPrice;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @ManyToOne
     @JoinColumn(name = "quotation_id")
-    @JsonBackReference("Quotation-Items")
+    @JsonIgnore
     private Quotation quotation;
 
     public Integer getItemID () {

@@ -49,6 +49,7 @@ public class CrawlDataServiceImpl implements CrawlDataService {
                     .connection(connection)
                     .urlExchange(urlExchange)
                     .urlPage(urlPage)
+                    .isVND(false)
                     .build();
 
             executorService.execute(crawlThread);

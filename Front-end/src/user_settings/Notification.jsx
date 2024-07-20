@@ -4,7 +4,7 @@ import ServerUrl from "../reusable/ServerUrl";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { Link } from "react-router-dom";
-import {Col, Container, Row} from "react-bootstrap";
+import { Col, Container, Row } from "react-bootstrap";
 import arrayToDate from "../reusable/ArrayToDate";
 
 const HoverDiv = ({ children }) => {
@@ -48,37 +48,40 @@ const NotificationPage = () => {
         console.error("Error fetching notifications:", error);
       })
       .finally(() => setLoading(false));
-  }, []);
+
+    return () => {
+      
+    };
+  }, [ServerUrl, decodedToken.id]);
 
   if (loading) {
     return <div>Loading...</div>;
   }
 
   return (
-      <Container>
-          {notifications.length === 0 ? (
-              <Row className="d-flex justify-content-center align-items-center mt-5">
-                  <Col xs="auto" className="text-center">
-                      <h4>No notifications</h4>
-                  </Col>
-              </Row>
-
-          ) : (
-              notifications.map((notification) => (
-                  <Link
-                      key={notification.id}
-                      to={`${notification.id}`}
-                      style={{ textDecoration: "none" }}
-                  >
-                      <HoverDiv>
-                          <h4>{notification.report.title}</h4>
-                          <p>{notification.report.description}</p>
-                          <p>{arrayToDate(notification.report.createdDate)}</p>
-                      </HoverDiv>
-                  </Link>
-              ))
-          )}
-      </Container>
+    <Container>
+      {notifications.length === 0 ? (
+        <Row className="d-flex justify-content-center align-items-center mt-5">
+          <Col xs="auto" className="text-center">
+            <h4>No notifications</h4>
+          </Col>
+        </Row>
+      ) : (
+        notifications.map((notification) => (
+          <Link
+            key={notification.id}
+            to={`${notification.id}`}
+            style={{ textDecoration: "none" }}
+          >
+            <HoverDiv>
+              <h4>{notification.report.title}</h4>
+              <p>{notification.report.description}</p>
+              <p>{arrayToDate(notification.report.createdDate)}</p>
+            </HoverDiv>
+          </Link>
+        ))
+      )}
+    </Container>
   );
 };
 

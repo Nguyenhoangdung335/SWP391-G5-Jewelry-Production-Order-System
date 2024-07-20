@@ -5,24 +5,33 @@ import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import ServerUrl from "../reusable/ServerUrl";
 import arrayToDate from "../reusable/ArrayToDate";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import snowfall from "../assets/snowfall.jpg";
+
+function CardHover({ hover, children }) {
+  return (
+    <Card
+      className=" link-opacity-50-hover"
+      style={{
+        transition: " transform 300ms ease-out ",
+        transform: hover ? "scale(1.01)" : "scale(1.00)",
+        width: "20rem",
+      }}
+    >
+      {children}
+    </Card>
+  );
+}
 
 function OrderHistory() {
   const [data, setData] = useState([]);
   const { token } = useAuth();
-  const location = useLocation
+  const location = useLocation;
   const searchParams = new URLSearchParams(location.search);
+  const [hover, setHover] = useState(false);
 
   useEffect(() => {
     if (token) {
-      const status = searchParams.get('status');
-      if (status === "success") 
-        alert("Successfully make payment");
-      else if (status === "cancel")
-        alert("Payment cancelled")
-
-
       const decodedToken = jwtDecode(token);
       axios(`${ServerUrl}/api/order/account/${decodedToken.id}`, {
         method: "GET",
@@ -30,8 +39,6 @@ function OrderHistory() {
       }).then((res) => setData(res.data.responseList.orders));
     }
   }, [token]);
-
-  console.log(data);
 
   if (!data) {
     // Handle loading state or error
@@ -46,15 +53,30 @@ function OrderHistory() {
           state={i.id}
           className=" link-opacity-50-hover text-decoration-none"
         >
-          <Card className=" link-opacity-50-hover" style={{ width: "20rem" }}>
-            <Card.Img onError={(ev)=> ev.target.src=snowfall} variant="top" src={i.imageURL || snowfall} alt="Order Image" />
-            <Card.Body>
-              <Card.Text>{i.id}</Card.Text>
-              <Card.Text>{i.budget} $</Card.Text>
-              <Card.Text>{arrayToDate(i.createdDate)}</Card.Text>
-              <Badge>{i.status}</Badge>
-            </Card.Body>
-          </Card>
+          <CardHover hover={hover} className=" link-opacity-50-hover">
+            <Card.Img
+              className="rounded-0"
+              onMouseEnter={() => setHover(true)}
+              onMouseLeave={() => setHover(false)}
+              onError={(ev) => (ev.target.src = snowfall)}
+              variant="top"
+              src={i.imageURL || snowfall}
+              alt="Order Image"
+            />
+            {hover && (
+              <Card.Body
+                className="position-sticky"
+                style={{
+                  height: "100%",
+                  transition: " height 100s linear ",
+                }}
+              >
+                <Card.Text>{i.id}</Card.Text>
+                <Card.Text>{arrayToDate(i.createdDate)}</Card.Text>
+                <Badge bg={i.status === "ORDER_COMPLETED"? "success": i.status === "CANCEL"? "danger": "warning"} >{i.status}</Badge>
+              </Card.Body>
+            )}
+          </CardHover>
         </Link>
       </Col>
     );

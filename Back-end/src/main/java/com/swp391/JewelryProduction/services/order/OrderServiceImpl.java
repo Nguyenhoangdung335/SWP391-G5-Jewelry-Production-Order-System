@@ -33,8 +33,7 @@ import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
-import static com.swp391.JewelryProduction.config.stateMachine.StateMachineUtil.getStateMachine;
-import static com.swp391.JewelryProduction.config.stateMachine.StateMachineUtil.instantiateStateMachine;
+import static com.swp391.JewelryProduction.config.stateMachine.StateMachineUtil.*;
 
 @Service
 @RequiredArgsConstructor
@@ -185,13 +184,14 @@ public class OrderServiceImpl implements OrderService {
 
         firestoreService.saveOrUpdateUser(db,order.getOwner());
 
-        StateMachine<OrderStatus, OrderEvent> stateMachine = getStateMachine(orderId, stateMachineService);
-        stateMachine.sendEvent(
-                Mono.just(MessageBuilder.
-                        withPayload(OrderEvent.ASSIGN_STAFF)
-                        .build()
-                )
-        ).subscribe();
+//        StateMachine<OrderStatus, OrderEvent> stateMachine = getStateMachine(orderId, stateMachineService);
+//        stateMachine.sendEvent(
+//                Mono.just(MessageBuilder.
+//                        withPayload(OrderEvent.ASSIGN_STAFF)
+//                        .build()
+//                )
+//        ).subscribe();
+        sendEvent(stateMachineService, orderId, OrderEvent.ASSIGN_STAFF, null);
 
         return order;
     }
@@ -233,6 +233,17 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Order findOrderByProductId(String productId) {
         return orderRepository.findByProductId(productId).orElse(null);
+    }
+
+    @Transactional
+    @Override
+    public Order cancelOrder(String orderId) {
+        Order order = this.findOrderById(orderId);
+        order.setStatus(OrderStatus.CANCEL);
+        order = this.updateOrder(order);
+
+        sendEvent(stateMachineService, order.getId(), OrderEvent.CANCEL, null);
+        return order;
     }
 
     private Order setOrder(OrderDTO orderDTO) {

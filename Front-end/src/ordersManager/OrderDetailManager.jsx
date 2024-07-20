@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import ServerUrl from "../reusable/ServerUrl";
 import {
@@ -32,7 +32,11 @@ function OrderDetailManager() {
   const { token } = useAuth();
   const decodedToken = jwtDecode(token);
   const [imageLink, setImageLink] = useState(null);
-  const [showAlert, setShowAlert] = useState(false);
+  const [showAlert, setShowAlert] = useState(["", "", false, false, ""]);
+  const [confirmNotification, setConfirmNotification] = useState(null);
+  const hadFetched = useRef(false);
+
+  const isQualifiedApproveSpecification = ["ADMIN", "MANAGER"].includes(decodedToken.role) && data?.status === "REQ_AWAIT_APPROVAL";
 
   const fetchData = async () => {
     try {
@@ -52,11 +56,29 @@ function OrderDetailManager() {
   };
 
   useEffect(() => {
-    fetchData();
+    if (!hadFetched.current) {
+      fetchData();
+      hadFetched.current = true;
+    }
   }, [id]);
 
+  useEffect(() => {
+    if (isQualifiedApproveSpecification) {
+      axios
+        .get(`${ServerUrl}/api/notifications/${data.id}/get-confirm`)
+        .then((res) => {
+          if (res.status === 200) {
+            setConfirmNotification(res.data.responseList.notification);
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    }
+  }, [isQualifiedApproveSpecification, data]);
+
   if (!data) {
-    return <div>Loading...</div>;
+    return <div className="d-flex justify-content-center align-items-center">Loading...</div>;
   }
 
   const arrayToDate = (date) => {
@@ -67,6 +89,26 @@ function OrderDetailManager() {
   };
 
   const handleShowQuotations = () => setShowQuotation(true);
+
+  const handleSetAlertInfo = (alertInfo) => {
+    setShowAlert(alertInfo);
+  };
+
+  const handleConfirmSpecification = async (confirmed) => {
+    console.log(confirmed);
+    const confirmedBool = Boolean(confirmed);
+    const url = `${ServerUrl}/api/notifications/${data.id}/${confirmNotification.id}/confirm?confirmed=${confirmedBool}`;
+
+    try {
+      const response = await axios.post(url);
+      if (response.status === 200) {
+        fetchData();
+        setShowAlert(["Confirm successfully", "", true, false, "success"]);
+      }
+    } catch (error) {
+      setShowAlert(["Confirm failed", "", true, false, "danger"]);
+    }
+  };
 
   const handleDesignImageSubmit = async (e) => {
     e.preventDefault();
@@ -110,21 +152,25 @@ function OrderDetailManager() {
         fetchData();
         setImageLink(response.data.responseList.designUrl);
         setShowProductReport(true);
+        setShowAlert(["Upload Design image successfully", "", true, false, "success"]);
       }
     } else {
-      console.error("designImage is not a File");
+      setShowAlert(["Upload design image failed", "", true, false, "danger"]);
     }
   };
 
   const handleStaffSubmit = async (updatedStaff) => {
     try {
-      await axios.post(
+      const response = await axios.post(
         `${ServerUrl}/api/order/${data.id}/detail/assign-staff`,
         updatedStaff
       );
-      alert("Successfully assigned staff");
+      if (response.status === 200) {
+        fetchData();
+        setShowAlert(["Assigned Staff successfully", "", true, false, "success"]);
+      }
     } catch (error) {
-      console.error("Error updating staff assignments:", error);
+      setShowAlert(["Assigned Staff failed", "", true, false, "danger"]);
     }
   };
 
@@ -155,14 +201,11 @@ function OrderDetailManager() {
               paddingBottom: "1%",
             }}
           >
-            <div className="mb-3">
+            <div className="mb-3" style={imageContainerStyle}>
               <img
                 src={imageLink || snowfall}
                 alt="Product"
-                // className="w-100 h-100"
-                width="100%"
-                height="360px"
-                className="object-fit-cover"
+                style={imageStyle}
               />
             </div>
             <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
@@ -276,6 +319,13 @@ function OrderDetailManager() {
                     <h4>Specification</h4>
                   </div>
                   <ProductSpecificationTable selectedProduct={data?.product} />
+                  {isQualifiedApproveSpecification && (
+                    <div className="d-flex justify-content-center pt-2">
+                      <Button className="w-100" onClick={handleConfirmSpecification}>
+                        Approve Specification
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
             </Row>
@@ -407,6 +457,7 @@ function OrderDetailManager() {
         orderId={data.id}
         show={showQuotation}
         onHide={() => setShowQuotation(false)}
+        setShowAlert={handleSetAlertInfo}
       />
 
       {showDesignReport && data.design && (
@@ -427,15 +478,33 @@ function OrderDetailManager() {
         />
       )}
 
-      {/* {showAlert && (
+
+      {showAlert && showAlert[2] && (
         <CustomAlert
-          text={alertText}
-          isShow={showAlert}
-          onClose={() => setShowAlert(false)}
+          title={showAlert[0]}
+          text={showAlert[1]}
+          isShow={showAlert[2]}
+          onClose={showAlert[3]}
+          alertVariant={showAlert[4]}
         />
-      )} */}
+      )}
     </>
   );
 }
+
+
+const imageContainerStyle = {
+  width: '500px',
+  height: '500px',
+  overflow: 'hidden',
+  position: 'relative',
+  margin: '0 auto',
+};
+
+const imageStyle = {
+  width: '100%',
+  height: '100%',
+  objectFit: 'contain',
+};
 
 export default OrderDetailManager;

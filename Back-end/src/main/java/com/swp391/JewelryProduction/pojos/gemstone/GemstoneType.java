@@ -22,4 +22,6 @@ public class GemstoneType {
     private String name;
 
     private double basePricePerCarat;
+
+    private boolean status;
 }

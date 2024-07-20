@@ -10,7 +10,9 @@ public interface GemstoneService {
 
     double calculatePrice(Gemstone gemstone);
 
-    List<Gemstone> getGemstones();
+    Map<String, Double> getAppliedMultiplier(Gemstone gemstone);
+
+    List<GemstoneType> getGemstoneType();
     List<ShapeMultiplier> getShapeMultipliers();
     List<CutMultiplier> getCutMultipliers();
     List<ColorMultiplier> getColorMultipliers();
@@ -19,7 +21,10 @@ public interface GemstoneService {
     Gemstone getGemstone(long id);
     Gemstone createGemstone(Gemstone gemstone);
     Gemstone updateGemstone(Gemstone gemstone);
-    boolean deleteGemstone(long id);
+    void deleteGemstone(long id);
+
+    GemstoneType editGemstoneType(GemstoneType gemstoneType);
+
 
     CutMultiplier updateCutMultiplier(long id, double multiplier);
     ColorMultiplier updateColorMultiplier(long id, double multiplier);

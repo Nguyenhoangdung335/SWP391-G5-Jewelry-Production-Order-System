@@ -40,11 +40,6 @@ const HoverDiv = ({ children }) => {
 };
 
 function Home() {
-  const blogImageStyle = {
-    objectFit: "cover",
-    padding: "10px",
-  };
-
   return (
     <>
       <div className="carousel-banner mb-3">
@@ -212,11 +207,11 @@ function Home() {
           <Col>
             <Card className="mb-2 mt-2" style={{ cursor: "pointer" }}>
               <Card.Img
+                width="100%"
+                height="300px"
+                className="object-fit-cover"
                 src={Snowfall}
                 variant="top"
-                width="100%"
-                height="380px"
-                style={blogImageStyle}
               />
               <Card.Body>
                 <div className="pb-3">
@@ -236,11 +231,11 @@ function Home() {
           <Col>
             <Card className="mb-2 mt-2" style={{ cursor: "pointer" }}>
               <Card.Img
+                width="100%"
+                height="300px"
+                className="object-fit-cover"
                 src={Snowfall}
                 variant="top"
-                width="100%"
-                height="380px"
-                style={blogImageStyle}
               />
               <Card.Body>
                 <div className="pb-3">
@@ -258,11 +253,11 @@ function Home() {
           <Col>
             <Card className="mb-2 mt-2" style={{ cursor: "pointer" }}>
               <Card.Img
+                width="100%"
+                height="300px"
+                className="object-fit-cover"
                 src={Snowfall}
                 variant="top"
-                width="100%"
-                height="380px"
-                style={blogImageStyle}
               />
               <Card.Body>
                 <div className="pb-3">

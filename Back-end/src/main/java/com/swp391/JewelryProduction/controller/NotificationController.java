@@ -72,7 +72,14 @@ public class NotificationController {
         reportService.handleUserResponse(notificationId, orderId, confirm);
         return Response.builder()
                 .status(HttpStatus.OK)
-                .message("Request send successfully")
+                .message("Confirm successfully")
+                .buildEntity();
+    }
+
+    @GetMapping("/{orderId}/get-confirm")
+    public ResponseEntity<Response> getFirstOptionNotificationInOrder (@PathVariable("orderId") String orderId) {
+        return Response.builder()
+                .response("notification", notificationService.getFirstOptionNotificationInOrder(orderId))
                 .buildEntity();
     }
 }

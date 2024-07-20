@@ -1,13 +1,11 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import ServerUrl from "../reusable/ServerUrl";
 import {
   Badge,
   Button,
   Col,
-  Container,
-  Modal,
   Row,
   Table,
 } from "react-bootstrap";
@@ -17,9 +15,12 @@ import WarrantyCertificateModal from "../warranty/WarrantyCertificateModal";
 import AssignedStaff from "./order_detail_components/AssignedStaff";
 import ProductSpecificationTable from "./order_detail_components/ProductSpecification";
 import { useAuth } from "../provider/AuthProvider";
+import CustomAlert from "../reusable/CustomAlert";
+import ConfirmationModal from "../reusable/ConfirmationModal";
 
 function OrderDetail() {
   const quotationQualified = [
+    "QUO_AWAIT_CUST_APPROVAL",
     "AWAIT_TRANSACTION",
     "IN_DESIGNING",
     "DES_AWAIT_MANA_APPROVAL",
@@ -28,12 +29,17 @@ function OrderDetail() {
     "PRO_AWAIT_APPROVAL",
     "ORDER_COMPLETED",
   ];
-  const state = useLocation();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
   const [data, setData] = useState();
   const [showQuotation, setShowQuotation] = useState(false);
-  const id = state.state;
   const [showWarranty, setShowWarranty] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [imageLink, setImageLink] = useState(null);
+  const [showAlert, setShowAlert] = useState(["", "", false, false, ""]);
+
+  const id = location.state || searchParams.get('id');
+  const status = searchParams.get('status');
 
   const arrayToDate = (date) => {
     if (date === null || date === 0) {
@@ -45,19 +51,26 @@ function OrderDetail() {
     return formattedDate;
   };
 
+  const fetchData = async () => {
+    const response = await axios(`${ServerUrl}/api/order/${id}/detail`, {
+      headers: { "Content-Type": "application/json" },
+    });
+    if (response.status === 200) {
+      const orderDetail = response.data.responseList.orderDetail;
+      setData(orderDetail);
+      setImageLink(orderDetail.design?.designLink || snowfall);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      const response = await axios(`${ServerUrl}/api/order/${id}/detail`, {
-        headers: { "Content-Type": "application/json" },
-      });
-      if (response.status === 200) {
-        const orderDetail = response.data.responseList.orderDetail;
-        setData(orderDetail);
-        setImageLink(orderDetail.design?.designLink || snowfall);
-      }
-    };
+    if (status === "success") {
+      setShowAlert(["Successfully make payment", "", true, false, "success"])
+    } else if (status === "cancel") {
+      setShowAlert(["Payment cancelled", "", true, false, "info"])
+    }
+
     fetchData();
-  }, [state]);
+  }, [id]);
 
   if (!data) {
     // Handle loading state or error
@@ -66,33 +79,38 @@ function OrderDetail() {
 
   console.log(data);
 
-  const handleClose = () => setShowQuotation(false);
   const handleShowQuotations = () => {
     setShowQuotation(true);
   };
 
-  // const handleShowPayment = () => {
-  //   setShowPayment(true);
-  // };
+  const handleShowConfirmation = () => {
+    setShowConfirm(true);
+  };
+
+  const handleConfirmCancel = () => {
+    setShowConfirm(false);
+    handleCancelOrder();
+  };
 
   const handleCancelOrder = async () => {
     try {
       const response = await axios.post(`${ServerUrl}/api/order/cancel/${id}`);
       if (response.status === 200) {
-        alert("Order cancelled successfully.");
-        // Optionally, you can redirect or update the UI to reflect the cancellation
+        const body = response.data.responseList;
+        setData(body.orderDetail);
+        setShowAlert([response.data.message, "", true, false, ""])
       } else {
-        alert("Failed to cancel the order.");
+        setShowAlert([response.data.message, "", true, false, ""])
       }
     } catch (error) {
       console.error("Error cancelling order:", error);
-      alert("An error occurred while cancelling the order.");
+      setShowAlert(["An error occurred while cancelling the order.", "", true, false, ""])
     }
   };
 
   return (
     <>
-      <Row>
+      <Row className="w-100">
         <Col
           md={8}
           style={{
@@ -102,12 +120,12 @@ function OrderDetail() {
             paddingBottom: "1%",
           }}
         >
-          <div className="pb-2">
-            <img src={imageLink} alt="Product" className="w-100 h-100" />
+          <div className="pb-2" style={imageContainerStyle}>
+            <img src={imageLink} alt="Product" className="w-100 h-100" style={imageStyle}/>
           </div>
           <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
             <div className="p-3">
-              <h4 className="pb-2">Order Id: {id}</h4>
+              <h4 className="pb-2">Order Id: {data.id}</h4>
               <Table bordered hover>
                 <tr>
                   <th>Id</th>
@@ -137,9 +155,7 @@ function OrderDetail() {
                   <td>
                     <Badge
                       className="text-white"
-                      bg={
-                        data.status === "ORDER_COMPLETED" ? "success" : "danger"
-                      }
+                      bg={data.status === "ORDER_COMPLETED"? "success": data.status === "CANCEL"? "danger": "warning"}
                     >
                       {data.status}
                     </Badge>
@@ -244,27 +260,62 @@ function OrderDetail() {
               </div>
             </div>
           </Row>
-          <Row className="mt-2">
-            <Button variant="danger" onClick={handleCancelOrder}>
-              Cancel Order
-            </Button>
-          </Row>
+          {!["ORDER_COMPLETED", "CANCEL"].includes(data.status) && (
+            <Row className="mt-2">
+              <Button variant="danger" onClick={handleShowConfirmation}>
+                Cancel Order
+              </Button>
+            </Row>
+          )}
         </Col>
       </Row>
       {data.quotation && (
         <QuotationModal
+          data={data}
           quotation={data.quotation}
           orderId={data.id}
           show={showQuotation}
           onHide={() => setShowQuotation(false)}
+          onQuotationChange={fetchData}
         />
       )}
       <WarrantyCertificateModal
         show={showWarranty}
         handleClose={() => setShowWarranty(false)}
       />
+
+      {showAlert && showAlert[2] && (
+        <CustomAlert
+          title={showAlert[0]}
+          text={showAlert[1]}
+          isShow={showAlert[2]}
+          onClose={showAlert[3]}
+          alertVariant={showAlert[4]}
+        />
+      )}
+      <ConfirmationModal
+        show={showConfirm}
+        onConfirm={handleConfirmCancel}
+        onCancel={() => setShowConfirm(false)}
+        title="Confirm cancelation"
+        body="Are you sure you want to cancel this order? This action cannot be undone."
+      />
     </>
   );
 }
+
+const imageContainerStyle = {
+  width: '500px',
+  height: '500px',
+  overflow: 'hidden',
+  position: 'relative',
+  margin: '0 auto',
+};
+
+const imageStyle = {
+  width: '100%',
+  height: '100%',
+  objectFit: 'contain',
+};
 
 export default OrderDetail;

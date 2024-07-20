@@ -4,6 +4,7 @@ import com.swp391.JewelryProduction.dto.AccountDTO;
 import com.swp391.JewelryProduction.dto.OrderDTO;
 import com.swp391.JewelryProduction.enums.OrderStatus;
 import com.swp391.JewelryProduction.enums.Role;
+import com.swp391.JewelryProduction.enums.gemstone.GemstoneShape;
 import com.swp391.JewelryProduction.pojos.Account;
 import com.swp391.JewelryProduction.pojos.Order;
 import com.swp391.JewelryProduction.pojos.gemstone.*;
@@ -186,7 +187,7 @@ public class AdminController {
         return Response.builder()
                 .status(HttpStatus.OK)
                 .message("Request sent successfully.")
-                .response("gemstones", gemstoneService.getGemstones())
+                .response("gemstoneType", gemstoneService.getGemstoneType())
                 .response("gemstoneCutMultipliers", gemstoneService.getCutMultipliers())
                 .response("gemstoneShapeMultipliers", gemstoneService.getShapeMultipliers())
                 .response("gemstoneColorMultipliers", gemstoneService.getColorMultipliers())
@@ -194,32 +195,24 @@ public class AdminController {
                 .buildEntity();
     }
 
-    @PostMapping("/gemstone")
-    public ResponseEntity<Response> createGemstone(@RequestBody Gemstone gemstone) {
-        return Response.builder()
-                .status(HttpStatus.OK)
-                .message("Request sent successfully.")
-                .response("gemstone", gemstoneService.createGemstone(gemstone))
-                .buildEntity();
-    }
-
-    @PutMapping("/gemstone/{type}")
-    public ResponseEntity<Response> updateGemstone(@RequestBody Gemstone gemstone, @PathVariable("type") String multiplierType,
-                                                   @RequestParam Long id,
-                                                   @RequestParam double multiplier ) {
-        Object shapeMultiplier = null;
+    @PostMapping("/gemstone-type/{multiplierType}")
+    public ResponseEntity<Response> createGemstoneType(@RequestBody GemstoneType gemstoneType,
+                                                       @PathVariable("multiplierType") String multiplierType,
+                                                       @RequestParam Long id,
+                                                       @RequestParam double multiplier) {
+        Object objectMultiplier = null;
         switch(multiplierType) {
             case "cut-multiplier":
-                shapeMultiplier = gemstoneService.updateCutMultiplier(id,multiplier);
+                objectMultiplier = gemstoneService.updateCutMultiplier(id,multiplier);
                 break;
             case "shape-multiplier":
-                shapeMultiplier = gemstoneService.updateShapeMultiplier(id,multiplier);
+                objectMultiplier = gemstoneService.updateShapeMultiplier(id,multiplier);
                 break;
             case "color-multiplier":
-                shapeMultiplier = gemstoneService.updateColorMultiplier(id,multiplier);
+                objectMultiplier = gemstoneService.updateColorMultiplier(id,multiplier);
                 break;
             case "clarity-multiplier":
-                shapeMultiplier = gemstoneService.updateClarityMultiplier(id, multiplier);
+                objectMultiplier = gemstoneService.updateClarityMultiplier(id, multiplier);
                 break;
             default:
                 break;
@@ -227,17 +220,46 @@ public class AdminController {
         return Response.builder()
                 .status(HttpStatus.OK)
                 .message("Request sent successfully.")
-                .response("gemstone", gemstoneService.updateGemstone(gemstone))
-                .response("multiplier", shapeMultiplier)
+                .response("gemstone", gemstoneService.editGemstoneType(gemstoneType))
+                .response("multiplier", objectMultiplier)
                 .buildEntity();
     }
 
-    @DeleteMapping("/gemstone/{id}")
+//    @PutMapping("/gemstone/{type}")
+//    public ResponseEntity<Response> updateGemstone(@RequestBody Gemstone gemstone, @PathVariable("type") String multiplierType,
+//                                                   @RequestParam Long id,
+//                                                   @RequestParam double multiplier ) {
+//        Object shapeMultiplier = null;
+//        switch(multiplierType) {
+//            case "cut-multiplier":
+//                shapeMultiplier = gemstoneService.updateCutMultiplier(id,multiplier);
+//                break;
+//            case "shape-multiplier":
+//                shapeMultiplier = gemstoneService.updateShapeMultiplier(id,multiplier);
+//                break;
+//            case "color-multiplier":
+//                shapeMultiplier = gemstoneService.updateColorMultiplier(id,multiplier);
+//                break;
+//            case "clarity-multiplier":
+//                shapeMultiplier = gemstoneService.updateClarityMultiplier(id, multiplier);
+//                break;
+//            default:
+//                break;
+//        }
+//        return Response.builder()
+//                .status(HttpStatus.OK)
+//                .message("Request sent successfully.")
+//                .response("gemstone", gemstoneService.updateGemstone(gemstone))
+//                .response("multiplier", shapeMultiplier)
+//                .buildEntity();
+//    }
+
+    @DeleteMapping("/gemstone-type/{id}")
     public ResponseEntity<Response> deleteGemstone(@PathVariable("id") long id) {
+        gemstoneService.deleteGemstone(id);
         return Response.builder()
                 .status(HttpStatus.OK)
                 .message("Request sent successfully.")
-                .response("result", gemstoneService.deleteGemstone(id) ? "Gemstone with ID " + id + " is existed in database" : "Gemstone with ID " + id + " is not existed in database")
                 .buildEntity();
     }
     //</editor-fold>

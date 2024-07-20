@@ -55,7 +55,7 @@ function LivePrice() {
   }, []);
 
   return (
-    <Container className="pt-5 pb-4 w-75">
+    <Container className="pt-5 pb-4 w-75" style={{height:"90vh"}}>
       <div className="text-center pb-3">
         <h2>Real Time Gold Price</h2>
       </div>

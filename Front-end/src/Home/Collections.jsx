@@ -19,17 +19,18 @@ const getImageSize = () => {
 };
 
 function Collections() {
-    const { token } = useAuth();
-    const [decodedToken, setDecodedToken] = useState(null);
+  const { token } = useAuth();
+  const [decodedToken, setDecodedToken] = useState(null);
 
-    const [products, setProducts] = useState([]);
-    const [showProductModal, setShowProductModal] = useState(false);
-    const [showCreateRequestModal, setShowCreateRequestModal] = useState(false);
-    const [selectedProduct, setSelectedProduct] = useState(null);
-    const [page, setPage] = useState(0);
-    const [totalPages, setTotalPages] = useState(0);
-    const [currentProductRoughPrice, setCurrentProductRoughPrice] = useState(0);
-    const loader = useRef(null);
+  const [products, setProducts] = useState([]);
+  const [showProductModal, setShowProductModal] = useState(false);
+  const [showCreateRequestModal, setShowCreateRequestModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [currentProductRoughPrice, setCurrentProductRoughPrice] = useState(0);
+  const loader = useRef(null);
+  const isFetching = useRef(false);
 
   useEffect(() => {
     if (token) {
@@ -38,34 +39,40 @@ function Collections() {
     }
   }, [token]);
 
-    useEffect(() => {
-        console.log("Fetching");
-        const fetchProducts = async () => {
-            try {
-              const response = await axios.get(`${ServerUrl}/api/products?page=${page}&size=${pageSize}`);
-              const newProducts = response.data.responseList.products;
-              setProducts(prevProducts => [...prevProducts, ...newProducts]);
-              setTotalPages(response.data.responseList.totalPages)
-            } catch (error) {
-              console.error('Error fetching products:', error);
-            }
-          };
-      
-          fetchProducts();
-    }, [page]);
-
-    useEffect(() => {
-        if (selectedProduct) {
-            axios.get(`${ServerUrl}/api/products/customize/calculate-price/${selectedProduct.specification.id}`)
-            .then((res) => setCurrentProductRoughPrice(res.data) )
-            .catch((error) => console.log(error));
-        }
-	}, [selectedProduct]);
-
-    const handlePinClick = (product) => {
-        setSelectedProduct(product);
-        setShowProductModal(true);
+  useEffect(() => {
+    console.log("Fetching");
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get(
+          `${ServerUrl}/api/products?page=${page}&size=${pageSize}`
+        );
+        setPage(page + 1);
+        const newProducts = response.data.responseList.products;
+        setProducts((prevProducts) => [...prevProducts, ...newProducts]);
+        setTotalPages(response.data.responseList.totalPages);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
     };
+
+    fetchProducts();
+  }, []);
+
+  useEffect(() => {
+    if (selectedProduct) {
+      axios
+        .get(
+          `${ServerUrl}/api/products/customize/calculate-price/${selectedProduct.specification.id}`
+        )
+        .then((res) => setCurrentProductRoughPrice(res.data))
+        .catch((error) => console.log(error));
+    }
+  }, [selectedProduct]);
+
+  const handlePinClick = (product) => {
+    setSelectedProduct(product);
+    setShowProductModal(true);
+  };
 
   const handleCloseProductModal = () => {
     setShowProductModal(false);
@@ -75,37 +82,37 @@ function Collections() {
     setShowCreateRequestModal(false);
   };
 
-    const formatPrice = (price) => {
-        return price.toLocaleString("en-US", {
-          style: "currency",
-          currency: "USD",
-        });
-      };
+  const formatPrice = (price) => {
+    return price.toLocaleString("en-US", {
+      style: "currency",
+      currency: "USD",
+    });
+  };
 
-    const checkCurrentOrder = () => {
-        if (decodedToken === null) {
-            alert("You must login to use this feature");
-        } else if (decodedToken.role !== "CUSTOMER") {
-            alert("You dont have permission to use this feature");
-        } else {
-            axios
-                .get(`${ServerUrl}/api/account/${decodedToken.id}/check-current-order`)
-                .then((response) => {
-                    if (response.data) {
-                        alert(
-                            "You already have an ongoing order. Please complete it before designing new jewelry."
-                        );
-                    } else {
-                        setShowProductModal(false);
-                        setShowCreateRequestModal(true);
-                    }
-                })
-                .catch((error) => {
-                    console.error("Error checking current order:", error);
-                    alert("Error checking current order. Please try again later.");
-                });
-        }
-    };
+  const checkCurrentOrder = () => {
+    if (decodedToken === null) {
+      alert("You must login to use this feature");
+    } else if (decodedToken.role !== "CUSTOMER") {
+      alert("You dont have permission to use this feature");
+    } else {
+      axios
+        .get(`${ServerUrl}/api/account/${decodedToken.id}/check-current-order`)
+        .then((response) => {
+          if (response.data) {
+            alert(
+              "You already have an ongoing order. Please complete it before designing new jewelry."
+            );
+          } else {
+            setShowProductModal(false);
+            setShowCreateRequestModal(true);
+          }
+        })
+        .catch((error) => {
+          console.error("Error checking current order:", error);
+          alert("Error checking current order. Please try again later.");
+        });
+    }
+  };
 
   const handleUseTemplate = () => {
     checkCurrentOrder();
@@ -144,71 +151,85 @@ function Collections() {
         <div ref={loader} style={{ height: "50px" }} />
       </div>
 
-            {selectedProduct && (
-                <Modal show={showProductModal} onHide={handleCloseProductModal} size="lg">
-                    <Modal.Header className="w-100" closeButton>
-                        <Modal.Title>{selectedProduct.name}</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <div style={styles.modalContent}>
-                            <div style={styles.imageContainer}>
-                                <img
-                                    src={selectedProduct.imageURL || snowfall}
-                                    alt={selectedProduct.name}
-                                    style={{ width: "100%" }}
-                                />
-                                <h5 style={{marginBlock: "5%", textAlign: "center"}}>{selectedProduct.description}</h5>
-                                <h5 style={{marginTop: "5%", textAlign: "center"}}>Approximate price:</h5>
-                                <p style={{textAlign: "center", fontSize: "1.1rem"}}>{formatPrice(currentProductRoughPrice || 0)}</p>
-                            </div>
-                            <div style={styles.detailsContainer}>
-                                <ProductSpecificationTable selectedProduct ={selectedProduct} />
-                            </div>
-                        </div>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button onClick={handleUseTemplate}>Use this template</Button>
-                    </Modal.Footer>
-                </Modal>
-            )}
-            {showCreateRequestModal && (
-                <Modal show={showCreateRequestModal} onHide={handleCloseCreateRequestModal} size="lg">
-                    <Modal.Header>
-                        <Modal.Title>Create Request</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <CreateRequest productSpecId={selectedProduct.specification.id} />
-                    </Modal.Body>
-                </Modal>
-            )}
-        </Container>
-    );
+      {selectedProduct && (
+        <Modal
+          show={showProductModal}
+          onHide={handleCloseProductModal}
+          size="lg"
+        >
+          <Modal.Header className="w-100" closeButton>
+            <Modal.Title>{selectedProduct.name}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <div style={styles.modalContent}>
+              <div style={styles.imageContainer}>
+                <img
+                  src={selectedProduct.imageURL || snowfall}
+                  alt={selectedProduct.name}
+                  style={{ width: "100%" }}
+                />
+                <h5 style={{ marginBlock: "5%", textAlign: "center" }}>
+                  {selectedProduct.description}
+                </h5>
+                <h5 style={{ marginTop: "5%", textAlign: "center" }}>
+                  Approximate price:
+                </h5>
+                <p style={{ textAlign: "center", fontSize: "1.1rem" }}>
+                  {formatPrice(currentProductRoughPrice || 0)}
+                </p>
+              </div>
+              <div style={styles.detailsContainer}>
+                <ProductSpecificationTable selectedProduct={selectedProduct} />
+              </div>
+            </div>
+          </Modal.Body>
+          <Modal.Footer className="w-100 d-flex justify-content-center">
+            <Button onClick={handleUseTemplate}>Use this template</Button>
+          </Modal.Footer>
+        </Modal>
+      )}
+      {showCreateRequestModal && (
+        <Modal
+          show={showCreateRequestModal}
+          onHide={handleCloseCreateRequestModal}
+          size="lg"
+        >
+          <Modal.Header>
+            <Modal.Title>Create Request</Modal.Title>
+          </Modal.Header>
+          <Modal.Body style={{ width: "100%", height: "70%" }}>
+            <CreateRequest productSpecId={selectedProduct.specification.id} onClose={handleCloseCreateRequestModal} />
+          </Modal.Body>
+        </Modal>
+      )}
+    </Container>
+  );
 }
 
 const styles = {
-    pin_container: {
-        margin: 0,
-        padding: 0,
-        width: "80vw",
-        position: "relative",
-        left: "50%",
-        transform: "translateX(-50%)",
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fill, 300px)",
-        gridAutoRows: "10px",
-        justifyContent: "center",
-    },
-    modalContent: {
-        display: "flex",
-        gap: "15px",
-        flexDirection: "row",
-    },
-    imageContainer: {
-        flex: 1,
-    },
-    detailsContainer: {
-        flex: 1,
-    },
+  pin_container: {
+    margin: 0,
+    padding: 0,
+    width: "80vw",
+    position: "relative",
+    left: "50%",
+    transform: "translateX(-50%)",
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fill, 300px)",
+    gridAutoRows: "10px",
+    justifyContent: "center",
+  },
+  modalContent: {
+    display: "flex",
+    gap: "15px",
+    flexDirection: "row",
+  },
+  imageContainer: {
+    flex: 1,
+  },
+  detailsContainer: {
+    flex: 1,
+  },
 };
 
 export default Collections;

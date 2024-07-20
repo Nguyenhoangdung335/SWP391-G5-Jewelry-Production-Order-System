@@ -4,11 +4,14 @@ import com.swp391.JewelryProduction.enums.gemstone.GemstoneClarity;
 import com.swp391.JewelryProduction.enums.gemstone.GemstoneColor;
 import com.swp391.JewelryProduction.enums.gemstone.GemstoneCut;
 import com.swp391.JewelryProduction.enums.gemstone.GemstoneShape;
+import com.swp391.JewelryProduction.pojos.designPojos.ProductSpecification;
 import com.swp391.JewelryProduction.pojos.gemstone.*;
+import com.swp391.JewelryProduction.repositories.ProductSpecificationRepository;
 import com.swp391.JewelryProduction.repositories.gemstoneRepositories.*;
 import com.swp391.JewelryProduction.util.exceptions.ObjectNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -24,10 +27,12 @@ public class GemstoneServiceImpl implements GemstoneService{
     private final ColorMultiplierRepository colorMultiplierRepository;
     private final GemstoneRepository gemstoneRepository;
 
+    private final ProductSpecificationRepository productSpecificationRepository;
+
     @Override
     public Map<String, Object> getGemstoneFactor () {
         Map<String, Object> response = new HashMap<>();
-        response.put("gemstoneType", gemstoneTypeRepository.findAll());
+        response.put("type", gemstoneTypeRepository.findAllByStatusTrue());
         response.put("shape", shapeMultiplierRepository.findAll());
         response.put("cut", cutMultiplierRepository.findAll());
         response.put("clarity", clarityMultiplierRepository.findAll());
@@ -48,8 +53,20 @@ public class GemstoneServiceImpl implements GemstoneService{
     }
 
     @Override
-    public List<Gemstone> getGemstones() {
-        return gemstoneRepository.findAll().stream().toList();
+    public Map<String, Double> getAppliedMultiplier(Gemstone gemstone) {
+        Map<String, Double> appliedMultiplier = new HashMap<>();
+
+        appliedMultiplier.put(String.format("Shape (%s)", gemstone.getShape()), getShapeMultiplier(gemstone.getShape()));
+        appliedMultiplier.put(String.format("Cut (%s)", gemstone.getCut()), getCutMultiplier(gemstone.getCut()));
+        appliedMultiplier.put(String.format("Clarity (%s)", gemstone.getClarity()), getClarityMultiplier(gemstone.getClarity()));
+        appliedMultiplier.put(String.format("Color (%s)", gemstone.getColor()), getColorMultiplier(gemstone.getColor()));
+
+        return appliedMultiplier;
+    }
+
+    @Override
+    public List<GemstoneType> getGemstoneType() {
+        return gemstoneTypeRepository.findAllByStatusTrue();
     }
 
     @Override
@@ -90,14 +107,34 @@ public class GemstoneServiceImpl implements GemstoneService{
 
     @Override
     public Gemstone updateGemstone(Gemstone gemstone) {
-        gemstoneRepository.findById(gemstone.getId()).orElseThrow(() -> new ObjectNotFoundException("Gemstone with id " + gemstone.getId() + " not found"));
+        gemstoneRepository.findById(gemstone.getId())
+                .orElseThrow(() -> new ObjectNotFoundException("Gemstone with id " + gemstone.getId() + " not found"));
+        GemstoneType gemstoneType = gemstoneTypeRepository.findByName(gemstone.getType().getName())
+                .orElse(GemstoneType.builder()
+                        .name(gemstone.getType().getName())
+                        .build());
+        gemstoneType.setBasePricePerCarat(gemstone.getType().getBasePricePerCarat());
+        gemstone.setType(gemstoneType);
         return gemstoneRepository.save(gemstone);
     }
 
+    @Transactional
     @Override
-    public boolean deleteGemstone(long id) {
-        gemstoneRepository.delete(gemstoneRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException("Gemstone with id " + id + " not found")));
-        return gemstoneRepository.existsById(id);
+    public void deleteGemstone(long id) {
+        GemstoneType gemstoneType = gemstoneTypeRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException(("Gemstone with id " + id + " not found")));
+        gemstoneType.setStatus(false);
+        gemstoneTypeRepository.save(gemstoneType);
+    }
+
+    @Override
+    public GemstoneType editGemstoneType(GemstoneType gemstoneType) {
+        GemstoneType type = gemstoneTypeRepository.findByName(gemstoneType.getName())
+                .orElse(GemstoneType.builder()
+                        .name(gemstoneType.getName())
+                        .status(true)
+                        .build());
+        type.setBasePricePerCarat(gemstoneType.getBasePricePerCarat());
+        return gemstoneTypeRepository.save(type);
     }
 
     @Override

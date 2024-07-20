@@ -10,6 +10,8 @@ import com.swp391.JewelryProduction.pojos.designPojos.ProductSpecification;
 import jakarta.persistence.*;
 import lombok.*;
 
+import static com.swp391.JewelryProduction.util.CustomFormatter.roundToDecimal;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -26,7 +28,12 @@ public class Gemstone {
 
     @ToString.Include
     @EqualsAndHashCode.Include
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE,
+            CascadeType.REFRESH,
+            CascadeType.DETACH
+    })
     @JoinColumn(name = "gemstone_id")
     private GemstoneType type;
 
@@ -60,4 +67,9 @@ public class Gemstone {
     @JsonIgnore
     @OneToOne(mappedBy = "gemstone")
     private ProductSpecification specification;
+
+    @JsonIgnore
+    public double getGemstonePriceByCaratWeight () {
+        return roundToDecimal(type.getBasePricePerCarat() * caratWeight, 2);
+    }
 }

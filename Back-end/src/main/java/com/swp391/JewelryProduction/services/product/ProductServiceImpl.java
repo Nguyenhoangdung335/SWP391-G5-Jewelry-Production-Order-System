@@ -14,6 +14,7 @@ import com.swp391.JewelryProduction.services.order.OrderService;
 import com.swp391.JewelryProduction.util.exceptions.ObjectNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -127,6 +128,11 @@ public class ProductServiceImpl implements ProductService {
                 productSpecificationRepository.findById(productSpecificationId).orElseThrow(
                         () -> new ObjectNotFoundException("Specification with id "+ productSpecificationId+" not found")
         ));
+    }
+
+    @Override
+    public List<Product> findAllByOrderByIdDesc(Limit limit) {
+        return productRepository.findAllByOrderByIdDesc(limit);
     }
 
     private Double calculatePrice (ProductSpecification specs) {

@@ -1,51 +1,113 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import ServerUrl from "../../reusable/ServerUrl";
-import { Button, Form, Modal, Table, FormControl } from "react-bootstrap";
+import {
+  Button,
+  Form,
+  Modal,
+  Table,
+  FormControl,
+  Row,
+  Col,
+} from "react-bootstrap";
 import CreateReport from "../../orderFlows/CreateReport";
 import { jwtDecode } from "jwt-decode";
 import { useAuth } from "../../provider/AuthProvider";
+import "./css/QuotationModal.css";
 
-function QuotationModal(props) {
+function QuotationModal({ data, quotation, orderId, show, onHide, setShowAlert }) {
   const { token } = useAuth();
   const decodedToken = jwtDecode(token);
+  const currentDate = new Date();
+  const paymentMethods = ["CREDIT_CARD", "PAYPAL", "BANK", "CARRIER", "ALTERNATE_PAYMENT", "PAY_UPON_INVOICE", ];
 
-  const defaultItems = [
-    { itemID: 0, name: "Support cost", quantity: 1, unitPrice: 100, totalPrice: 100 },
-    { itemID: 1, name: "Design cost", quantity: 1, unitPrice: 100, totalPrice: 100 },
-    { itemID: 2, name: "Production cost", quantity: 1, unitPrice: 200, totalPrice: 200 },
-  ];
 
-  const paymentMethods = ["CREDIT_CARD", "PAYPAL", "BANK", "CARRIER", "ALTERNATE_PAYMENT", "PAY_UPON_INVOICE"];
+  const isQualifyApproving =
+    ["ADMIN", "CUSTOMER", "MANAGER"].includes(decodedToken.role) &&
+    data.status.includes("AWAIT") &&
+    data.status.includes("APPROVAL");
+  const isQualifyCreateQuotation =
+    ["ADMIN", "SALE_STAFF"].includes(decodedToken.role) &&
+    data.status === "IN_EXCHANGING";
 
-  const initialQuotation = props.quotation
-    ? props.quotation
+  const formatDate = (date) => {
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  const formatPrice = (price) => {
+    return price.toLocaleString("en-US", {
+      style: "currency",
+      currency: "USD",
+    });
+  };
+
+  const initialQuotation = quotation
+    ? quotation
     : {
         title: "",
-        createdDate: new Date().toISOString().split("T")[0],
-        expiredDate: "",
+        createdDate: currentDate.toISOString().split("T")[0],
+        expiredDate: new Date(currentDate.setMonth(currentDate.getMonth() + 3)).toISOString().split("T")[0],
         quotationItems: [],
       };
 
   const [quotationItems, setQuotationItems] = useState(
     initialQuotation.quotationItems
   );
-  const [currId, setCurrentId] = useState(quotationItems.length);
+  const [currId, setCurrentId] = useState(quotationItems?.length || 0);
   const [title, setTitle] = useState(initialQuotation.title);
-  const [createdDate, setCreatedDate] = useState(initialQuotation.createdDate);
-  const [expiredDate, setExpiredDate] = useState(initialQuotation.expiredDate);
+  const [createdDate, setCreatedDate] = useState(formatDate(initialQuotation.createdDate));
+  const [expiredDate, setExpiredDate] = useState(formatDate(initialQuotation.expiredDate));
   const [showCreateReport, setShowCreateReport] = useState(false);
   const [quotationId, setQuotationId] = useState(null);
+  const [confirmNotification, setConfirmNotification] = useState(null);
+  // const [showAlert, setShowAlert] = useState(["", "", false, false, ""]);
+
+  const handleFetchInitialQuotation = async () => {
+    try {
+      const response = await axios.get(`${ServerUrl}/api/quotation/${orderId}/default-items`);
+      if (response.status === 200) {
+        setQuotationItems(response.data.responseList.items);
+        setCurrentId(response.data.responseList.items.length || 0);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
-    // Update the quotationItems state if props.quotation changes
-    let updatedQuotationItems = (props.quotation && props.quotation.quotationItems.length > 0) ? props.quotation.quotationItems : defaultItems;
-    setQuotationItems(updatedQuotationItems);
-    setCurrentId(updatedQuotationItems.length);
-    setTitle(props.quotation?.title);
-    setCreatedDate(props.quotation?.createdDate);
-    setExpiredDate(props.quotation?.expiredDate);
-  }, [props.quotation]);
+    if (isQualifyCreateQuotation) {
+      let updatedQuotationItems;
+      if (quotation && quotation.quotationItems?.length > 0) {
+        updatedQuotationItems = quotation.quotationItems;
+        setQuotationItems(updatedQuotationItems);
+        setCurrentId(updatedQuotationItems?.length || 0);
+      } else {
+        handleFetchInitialQuotation();
+      }
+      setTitle(quotation?.title);
+      setCreatedDate(quotation?.createdDate || createdDate);
+      setExpiredDate(quotation?.expiredDate || expiredDate);
+    }
+  }, [quotation, isQualifyCreateQuotation]);
+
+  useEffect(() => {
+    if (isQualifyApproving) {
+      axios
+        .get(`${ServerUrl}/api/notifications/${orderId}/get-confirm`)
+        .then((res) => {
+          if (res.status === 200) {
+            setConfirmNotification(res.data.responseList.notification);
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    }
+  }, [isQualifyApproving, orderId]);
 
   const handleAddItem = () => {
     const newItem = {
@@ -83,19 +145,20 @@ function QuotationModal(props) {
     setQuotationItems(updatedItems);
   };
 
-  const formatDate = (date) => {
-    const d = new Date(date);
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, "0");
-    const day = String(d.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  };
+  const handleApproveQuotation = async (confirmed) => {
+    console.log(confirmed);
+    const confirmedBool = Boolean(confirmed);
+    const url = `${ServerUrl}/api/notifications/${orderId}/${confirmNotification.id}/confirm?confirmed=${confirmedBool}`;
 
-  const formatPrice = (price) => {
-    return price.toLocaleString("en-US", {
-      style: "currency",
-      currency: "USD",
-    });
+    try {
+      const response = await axios.post(url);
+      if (response.status === 200) {
+        onHide();
+        setShowAlert(["Quotation confirm successfully", "", true, false, "success"]);
+      }
+    } catch (error) {
+      setShowAlert(["Failed to confirm quotation", "", true, false, "danger"]);
+    }
   };
 
   const getQuotationItems = quotationItems.map((item) => {
@@ -109,7 +172,7 @@ function QuotationModal(props) {
             onChange={(e) =>
               handleInputChange(item.itemID, "name", e.target.value)
             }
-            readOnly={!["ADMIN", "SALE_STAFF"].includes(decodedToken.role)}
+            readOnly={!isQualifyCreateQuotation}
           />
         </td>
         <td>
@@ -123,7 +186,7 @@ function QuotationModal(props) {
                 parseFloat(e.target.value)
               )
             }
-            readOnly={!["ADMIN", "SALE_STAFF"].includes(decodedToken.role)}
+            readOnly={!isQualifyCreateQuotation}
           />
         </td>
         <td>
@@ -137,20 +200,17 @@ function QuotationModal(props) {
                 parseFloat(e.target.value)
               )
             }
-            readOnly={!["ADMIN", "SALE_STAFF"].includes(decodedToken.role)}
+            readOnly={!isQualifyCreateQuotation}
           />
         </td>
         <td>{formatPrice(item.totalPrice || 0)}</td>
-        <td>
-          {["ADMIN", "SALE_STAFF"].includes(decodedToken.role) && (
-              <Button
-                  variant="danger"
-                  onClick={() => handleRemoveItem(item.itemID)}
-              >
-                Remove
-              </Button>
-          )}
-        </td>
+        {isQualifyCreateQuotation && (
+          <td>
+            <Button variant="danger" onClick={() => handleRemoveItem(item.itemID)} >
+              Remove
+            </Button>
+          </td>
+        )}
       </tr>
     );
   });
@@ -170,7 +230,7 @@ function QuotationModal(props) {
     };
     try {
       const response = await axios.post(
-        `${ServerUrl}/api/${props.orderId}/quotation/submit`,
+        `${ServerUrl}/api/quotation/${orderId}/submit`,
         quotationData,
         {
           headers: {
@@ -181,96 +241,124 @@ function QuotationModal(props) {
       if (response.status === 200) {
         setQuotationId(response.data.responseList.quotation.id);
         setShowCreateReport(true);
-        props.onHide();
+        onHide();
+        setShowAlert(["Quotation Submit successfully", "", true, false, "success"]);
       }
     } catch (error) {
-      console.error("Error submitting quotation:", error);
+      setShowAlert(["Failed to submit quotation", "", true, false, "danger"]);
     }
   };
 
-  const handleShowPayment = async (ev) => {
-    const resultURL = `${window.location.origin}/user_setting_page/order_history_page`;
+  const handleMakePayment = async (ev) => {
+    const resultURL = `${window.location.href}?id=${orderId}`;
     try {
-      const response = await axios.post(`${ServerUrl}/api/payment/create/${props.orderId}?quotationId=${props.quotation.id}&resultURL=${resultURL}&method=${paymentMethods[1]}`);
+      const response = await axios.post(
+        `${ServerUrl}/api/payment/create/${orderId}?quotationId=${quotation.id}&resultURL=${resultURL}&method=${paymentMethods[1]}`
+      );
       if (response.status === 200) {
         window.location.href = response.data.responseList.url;
       }
     } catch (error) {
-      console.error("Error creating payment:", error);
+      setShowAlert(["Failed to redirect user to payment page", "", true, false, "danger"]);
     }
   };
 
   return (
     <>
       <Modal
-        {...props}
-        size="lg"
+        data={data}
+        quotation={quotation}
+        orderId={orderId}
+        show={show}
+        onHide={onHide}
+        backdrop="static"
+        size="xl"
         aria-labelledby="contained-modal-title-vcenter"
         centered
+        style={{height: "100%"}}
       >
         <Modal.Header className="w-100" closeButton>
           <Modal.Title id="contained-modal-title-vcenter">
             Quotations
           </Modal.Title>
         </Modal.Header>
-        <Modal.Body>
-          <Form.Group>
-            <Form.Label>Title</Form.Label>
-            <FormControl
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              readOnly={!["ADMIN", "SALE_STAFF"].includes(decodedToken.role)}
-            />
-          </Form.Group>
-          <Form.Group>
-            <Form.Label>Created Date</Form.Label>
-            <FormControl
-              type="date"
-              value={createdDate}
-              onChange={(e) => setCreatedDate(e.target.value)}
-              readOnly={!["ADMIN", "SALE_STAFF"].includes(decodedToken.role)}
-            />
-          </Form.Group>
-          <Form.Group>
-            <Form.Label>Expired Date</Form.Label>
-            <FormControl
-              type="date"
-              value={expiredDate}
-              onChange={(e) => setExpiredDate(e.target.value)}
-              readOnly={!["ADMIN", "SALE_STAFF"].includes(decodedToken.role)}
-            />
-          </Form.Group>
-          <Table bordered hover striped>
-            <thead>
-              <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Quantity</th>
-                <th>Unit Price</th>
-                <th>Total Price</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {getQuotationItems}
-              <tr>
-                <td colSpan={4}>Final Price</td>
-                <td>{formatPrice(finalPrice)}</td>
-              </tr>
-            </tbody>
-          </Table>
-          {["ADMIN", "SALE_STAFF"].includes(decodedToken.role) && (
+        <Modal.Body style={{width: "100%"}}>
+          {/* {isQualifyApproving && (
+            <Col md={4}>
+            </Col>
+          )} */}
+          <Col md={12}>
+            <Form.Group as={Row} className="mb-3">
+              <Form.Label column sm="2">Title:</Form.Label>
+              <Col sm="10">
+                <Form.Control
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  readOnly={!isQualifyCreateQuotation}
+                />
+              </Col>
+            </Form.Group>
+            <Form.Group as={Row} className="mb-3">
+              <Form.Label column sm="2">Created Date:</Form.Label>
+              <Col sm="4">
+                <Form.Control
+                  type="date"
+                  value={createdDate}
+                  onChange={(e) => setCreatedDate(e.target.value)}
+                  readOnly={!isQualifyCreateQuotation}
+                />
+              </Col>
+              <Form.Label column sm="2">Expired Date:</Form.Label>
+              <Col sm="4">
+                <Form.Control
+                  type="date"
+                  value={expiredDate}
+                  onChange={(e) => setExpiredDate(e.target.value)}
+                  readOnly={!isQualifyCreateQuotation}
+                />
+              </Col>
+            </Form.Group>
+            <div >
+            <Table bordered hover striped className="table-fixed">
+              <thead>
+                <tr>
+                  <th>Id</th>
+                  <th>Name</th>
+                  <th>Quantity</th>
+                  <th>Unit Price</th>
+                  <th>Total Price</th>
+                  {isQualifyCreateQuotation &&
+                    <th>Action</th>
+                  }
+                </tr>
+              </thead>
+              <tbody>
+                {getQuotationItems}
+                <tr style={{ position: "sticky", bottom: "0"}}>
+                  <td colSpan={4}>Final Price</td>
+                  <td>{formatPrice(finalPrice)}</td>
+                </tr>
+              </tbody>
+            </Table>
+            </div>
+            {isQualifyCreateQuotation && (
               <Button onClick={handleAddItem}>Add Item</Button>
-          )}
+            )}
+          </Col>
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={props.onHide}>Close</Button>
-          {["ADMIN", "SALE_STAFF"].includes(decodedToken.role) && (
+          <Button onClick={onHide}>Close</Button>
+          {["ADMIN", "SALE_STAFF"].includes(decodedToken.role) &&
+            data.status === "IN_EXCHANGING" && (
               <Button onClick={handleSubmit}>Submit quotation</Button>
-          )}
-          {decodedToken.role === "CUSTOMER" && (
-            <Button onClick={handleShowPayment}>Make Payment</Button>
+            )}
+          {["CUSTOMER"].includes(decodedToken.role) &&
+            data.status === "AWAIT_TRANSACTION" && (
+              <Button onClick={handleMakePayment}>Make Payment</Button>
+            )}
+          {isQualifyApproving && (
+            <Button onClick={handleApproveQuotation}>Approve Quotation</Button>
           )}
         </Modal.Footer>
       </Modal>
@@ -278,11 +366,21 @@ function QuotationModal(props) {
       {showCreateReport && (
         <CreateReport
           reportContentId={quotationId}
-          orderId={props.orderId}
+          orderId={orderId}
           reportType="QUOTATION"
           onHide={() => setShowCreateReport(false)}
         />
       )}
+
+      {/* {showAlert && (
+        <CustomAlert
+          title={showAlert[0]}
+          text={showAlert[1]}
+          isShow={showAlert[2]}
+          onClose={showAlert[3]}
+          alertVariant={showAlert[4]}
+        />
+      )} */}
     </>
   );
 }

@@ -33,4 +33,6 @@ public interface OrderService {
 
     OrderResponse mappedToResponse (Order order);
     Order findOrderByProductId(String productId);
+
+    Order cancelOrder (String orderId);
 }

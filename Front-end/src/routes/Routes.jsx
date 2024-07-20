@@ -193,7 +193,7 @@ function RouteMap() {
       </Route>
       <Route path="/user_setting_page" element={<SettingPageLayout />}>
         <Route
-          index
+          path="/user_setting_page/profile_page"
           element={
             <ProtectedRoute>
               <UserInfo />
