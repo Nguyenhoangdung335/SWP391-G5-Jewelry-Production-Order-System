@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface NotificationService {
-//    Flux<ServerSentEvent<Notification>> subscribe(String accountID);
     Notification createNotification(Notification notification) throws MessagingException;
     Notification createNotification(Notification notification, boolean isOption) throws MessagingException;
     Notification createNotification(Notification notification, boolean isOption, boolean sendEmail) throws MessagingException;
@@ -22,6 +21,8 @@ public interface NotificationService {
     void clearAllNotifications();
     void clearAllNotificationsByReceiver(Account receiver);
 
+
+    Notification getFirstOptionNotificationInOrder(String orderId);
 
     Flux<ServerSentEvent<List<NotificationResponse>>> subscribeNotificationStream(Account receiver);
 

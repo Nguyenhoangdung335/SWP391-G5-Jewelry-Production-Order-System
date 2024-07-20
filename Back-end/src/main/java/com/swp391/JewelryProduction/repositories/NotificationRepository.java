@@ -31,5 +31,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Inte
     @Override
     Optional<Notification> findById(@NotNull Integer integer);
 
+    Optional<Notification> findFirstByOrderIdAndOptionIsTrue(String orderId);
+
     void deleteAllByReceiver (Account receiver);
 }

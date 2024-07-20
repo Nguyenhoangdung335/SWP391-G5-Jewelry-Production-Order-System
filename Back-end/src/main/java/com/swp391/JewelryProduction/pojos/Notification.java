@@ -7,8 +7,6 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.UUID;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -56,5 +54,5 @@ public class Notification {
     @ToString.Include
     @EqualsAndHashCode.Include
     @Column(name = "is_option")
-    private boolean isOption;
+    private boolean option;
 }

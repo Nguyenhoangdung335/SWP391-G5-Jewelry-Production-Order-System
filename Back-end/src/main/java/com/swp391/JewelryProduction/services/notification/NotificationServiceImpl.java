@@ -21,7 +21,6 @@ import reactor.core.scheduler.Schedulers;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -100,6 +99,11 @@ public class NotificationServiceImpl implements NotificationService {
         if (sendEmail)
             emailService.sendMailFromNotification(notification);
         return notification;
+    }
+
+    @Override
+    public Notification getFirstOptionNotificationInOrder(String orderId) {
+        return notificationRepository.findFirstByOrderIdAndOptionIsTrue(orderId).orElse(null);
     }
 
     //</editor-fold>
