@@ -33,8 +33,8 @@ export default function Blogs() {
       <div className="row">
         <div className="col-9">
           <BlogMain
-            title="How to Clean Your Jewelry at Home"
-            time="9 May 2024"
+            title="The Art of Custom Jewelry Process: A Step-by-Step Guide"
+            time="31 May 2024 Uncategorized"
             subTime="Custom Jewelry.Fashion.jewelry tips"
             content="Learn how to clean your jewelry at home"
             image={becomeTeacherImage}
