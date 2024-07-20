@@ -18,7 +18,6 @@ import com.swp391.JewelryProduction.repositories.gemstoneRepositories.*;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.internal.bytebuddy.dynamic.scaffold.MethodGraph;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -796,20 +795,20 @@ public class DataInitializer implements CommandLineRunner {
 
             orderRepository.save(order);
 
-            Notification notificaition = Notification.builder()
+            Notification notification = Notification.builder()
                     .order(order)
                     .receiver(saleStaff != null ? staffRepository.save(saleStaff) : null)
                     .delivered(false)
                     .read(false)
                     .option(true)
                     .build();
-            notificaition.setReport(reportRepository.save(Report.builder()
+            notification.setReport(reportRepository.save(Report.builder()
                     .type(ReportType.NONE)
                     .title(faker.name().title())
                     .description(faker.weather().description())
                     .createdDate(LocalDateTime.now())
                     .build()));
-            notificationRepository.save(notificaition);
+            notificationRepository.save(notification);
         }
     }
 
