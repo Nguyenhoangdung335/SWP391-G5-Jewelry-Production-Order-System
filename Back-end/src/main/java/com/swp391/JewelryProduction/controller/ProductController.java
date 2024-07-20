@@ -6,6 +6,7 @@ import com.swp391.JewelryProduction.pojos.designPojos.ProductSpecification;
 import com.swp391.JewelryProduction.services.product.ProductService;
 import com.swp391.JewelryProduction.util.Response;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -60,6 +61,15 @@ public class ProductController {
         productService.saveProduct(product);
         return Response.builder()
                 .status(HttpStatus.OK)
+                .message("Request send successfully.")
+                .buildEntity();
+    }
+
+    @GetMapping("/latest_product")
+    public ResponseEntity<Response> getLatestProduct() {
+        return Response.builder()
+                .status(HttpStatus.OK)
+                .response("products", productService.findAllByOrderByIdDesc(Limit.of(4)))
                 .message("Request send successfully.")
                 .buildEntity();
     }

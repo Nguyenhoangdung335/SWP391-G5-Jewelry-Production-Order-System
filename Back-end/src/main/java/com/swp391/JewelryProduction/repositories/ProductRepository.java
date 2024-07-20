@@ -2,6 +2,7 @@ package com.swp391.JewelryProduction.repositories;
 
 import com.swp391.JewelryProduction.pojos.designPojos.Product;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -14,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product, String> {
-    List<Product> findAllBySpecificationId (Integer specificationId);
+    List<Product> findAllBySpecificationId(Integer specificationId);
 
     @Query("SELECT p FROM Product p JOIN FETCH p.specification")
     @NotNull
@@ -30,4 +31,6 @@ public interface ProductRepository extends JpaRepository<Product, String> {
     @EntityGraph(attributePaths = {"specification"})
     @Override
     Optional<Product> findById(@NotNull @Param("id") String id);
+
+    List<Product> findAllByOrderByIdDesc(Limit limit);
 }
