@@ -370,7 +370,8 @@ public class DataInitializer implements CommandLineRunner {
             gemstoneTypes[i] = GemstoneType.builder()
                     .name(GEMSTONE_NAMES[i])
                     .basePricePerCarat(rand.nextDouble(500.0, 5000.0))
-                    .build();;
+                    .status(true)
+                    .build();
         }
         gemstoneTypeRepository.saveAll(List.of(gemstoneTypes));
 
