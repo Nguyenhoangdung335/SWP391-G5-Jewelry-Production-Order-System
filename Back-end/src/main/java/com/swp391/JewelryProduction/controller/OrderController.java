@@ -164,11 +164,10 @@ public class OrderController {
 
     @PostMapping("/cancel/{orderId}")
     public ResponseEntity<Response> cancelOrder(@PathVariable("orderId") String orderId) {
-        Order order = orderService.findOrderById(orderId);
-        //PROVIDE SERVICE FOR CANCELING ORDER !!!
         return Response.builder()
                 .status(HttpStatus.OK)
-                .message("Request sent successfully")
+                .message("Successfully cancel order "+orderId)
+                .response("orderDetail", orderService.cancelOrder(orderId))
                 .buildEntity();
     }
 
