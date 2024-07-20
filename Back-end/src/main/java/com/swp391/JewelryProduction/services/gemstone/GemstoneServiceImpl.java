@@ -4,11 +4,14 @@ import com.swp391.JewelryProduction.enums.gemstone.GemstoneClarity;
 import com.swp391.JewelryProduction.enums.gemstone.GemstoneColor;
 import com.swp391.JewelryProduction.enums.gemstone.GemstoneCut;
 import com.swp391.JewelryProduction.enums.gemstone.GemstoneShape;
+import com.swp391.JewelryProduction.pojos.designPojos.ProductSpecification;
 import com.swp391.JewelryProduction.pojos.gemstone.*;
+import com.swp391.JewelryProduction.repositories.ProductSpecificationRepository;
 import com.swp391.JewelryProduction.repositories.gemstoneRepositories.*;
 import com.swp391.JewelryProduction.util.exceptions.ObjectNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +26,8 @@ public class GemstoneServiceImpl implements GemstoneService{
     private final ClarityMultiplierRepository clarityMultiplierRepository;
     private final ColorMultiplierRepository colorMultiplierRepository;
     private final GemstoneRepository gemstoneRepository;
+
+    private final ProductSpecificationRepository productSpecificationRepository;
 
     @Override
     public Map<String, Object> getGemstoneFactor () {
@@ -45,6 +50,18 @@ public class GemstoneServiceImpl implements GemstoneService{
         double colorMultiplier = getColorMultiplier(gemstone.getColor());
 
         return basePrice * gemstone.getCaratWeight() * weightMultiplier * shapeMultiplier * cutMultiplier * clarityMultiplier * colorMultiplier;
+    }
+
+    @Override
+    public Map<String, Double> getAppliedMultiplier(Gemstone gemstone) {
+        Map<String, Double> appliedMultiplier = new HashMap<>();
+
+        appliedMultiplier.put(String.format("Shape (%s)", gemstone.getShape()), getShapeMultiplier(gemstone.getShape()));
+        appliedMultiplier.put(String.format("Cut (%s)", gemstone.getCut()), getCutMultiplier(gemstone.getCut()));
+        appliedMultiplier.put(String.format("Clarity (%s)", gemstone.getClarity()), getClarityMultiplier(gemstone.getClarity()));
+        appliedMultiplier.put(String.format("Color (%s)", gemstone.getColor()), getColorMultiplier(gemstone.getColor()));
+
+        return appliedMultiplier;
     }
 
     @Override
@@ -94,9 +111,17 @@ public class GemstoneServiceImpl implements GemstoneService{
         return gemstoneRepository.save(gemstone);
     }
 
+    @Transactional
     @Override
     public boolean deleteGemstone(long id) {
-        gemstoneRepository.delete(gemstoneRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException("Gemstone with id " + id + " not found")));
+        Gemstone gemstone = gemstoneRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException("Gemstone with id " + id + " not found"));
+        ProductSpecification specification = gemstone.getSpecification();
+        specification.setGemstone(null);
+        gemstone.setType(null);
+        gemstone.setSpecification(null);
+        gemstone = gemstoneRepository.save(gemstone);
+        productSpecificationRepository.save(specification);
+        gemstoneRepository.deleteById(id);
         return gemstoneRepository.existsById(id);
     }
 

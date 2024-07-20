@@ -10,6 +10,8 @@ public interface GemstoneService {
 
     double calculatePrice(Gemstone gemstone);
 
+    Map<String, Double> getAppliedMultiplier(Gemstone gemstone);
+
     List<Gemstone> getGemstones();
     List<ShapeMultiplier> getShapeMultipliers();
     List<CutMultiplier> getCutMultipliers();
