@@ -5,7 +5,7 @@ import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import ServerUrl from "../reusable/ServerUrl";
 import arrayToDate from "../reusable/ArrayToDate";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import snowfall from "../assets/snowfall.jpg";
 
 function CardHover({ hover, children }) {
@@ -29,12 +29,9 @@ function OrderHistory() {
   const location = useLocation;
   const searchParams = new URLSearchParams(location.search);
   const [hover, setHover] = useState(false);
+
   useEffect(() => {
     if (token) {
-      const status = searchParams.get("status");
-      if (status === "success") alert("Successfully make payment");
-      else if (status === "cancel") alert("Payment cancelled");
-
       const decodedToken = jwtDecode(token);
       axios(`${ServerUrl}/api/order/account/${decodedToken.id}`, {
         method: "GET",
@@ -42,8 +39,6 @@ function OrderHistory() {
       }).then((res) => setData(res.data.responseList.orders));
     }
   }, [token]);
-
-  console.log(data);
 
   if (!data) {
     // Handle loading state or error
@@ -78,7 +73,7 @@ function OrderHistory() {
               >
                 <Card.Text>{i.id}</Card.Text>
                 <Card.Text>{arrayToDate(i.createdDate)}</Card.Text>
-                <Badge>{i.status}</Badge>
+                <Badge bg={i.status === "ORDER_COMPLETED"? "success": i.status === "CANCEL"? "danger": "warning"} >{i.status}</Badge>
               </Card.Body>
             )}
           </CardHover>
