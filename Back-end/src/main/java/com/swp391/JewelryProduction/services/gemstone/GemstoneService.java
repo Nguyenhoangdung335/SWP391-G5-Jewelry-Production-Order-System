@@ -12,15 +12,11 @@ public interface GemstoneService {
 
     Map<String, Double> getAppliedMultiplier(Gemstone gemstone);
 
-    List<GemstoneType> getGemstoneType();
+    List<GemstoneType> getGemstoneTypes();
     List<ShapeMultiplier> getShapeMultipliers();
     List<CutMultiplier> getCutMultipliers();
     List<ColorMultiplier> getColorMultipliers();
     List<ClarityMultiplier> getClarityMultipliers();
-
-    Gemstone getGemstone(long id);
-    Gemstone createGemstone(Gemstone gemstone);
-    Gemstone updateGemstone(Gemstone gemstone);
     void deleteGemstone(long id);
 
     GemstoneType editGemstoneType(GemstoneType gemstoneType);

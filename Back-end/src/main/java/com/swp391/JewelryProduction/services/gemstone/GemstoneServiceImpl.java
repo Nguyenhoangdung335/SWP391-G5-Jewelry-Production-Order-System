@@ -65,7 +65,7 @@ public class GemstoneServiceImpl implements GemstoneService{
     }
 
     @Override
-    public List<GemstoneType> getGemstoneType() {
+    public List<GemstoneType> getGemstoneTypes() {
         return gemstoneTypeRepository.findAllByStatusTrue();
     }
 
@@ -87,35 +87,6 @@ public class GemstoneServiceImpl implements GemstoneService{
     @Override
     public List<ClarityMultiplier> getClarityMultipliers() {
         return clarityMultiplierRepository.findAll().stream().toList();
-    }
-
-    @Override
-    public Gemstone getGemstone(long id) {
-        return gemstoneRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException(("Gemstone with id " + id + " not found")));
-    }
-
-    @Override
-    public Gemstone createGemstone(Gemstone gemstone) {
-        GemstoneType gemstoneType = gemstoneTypeRepository.findByName(gemstone.getType().getName())
-                .orElse(GemstoneType.builder()
-                        .name(gemstone.getType().getName())
-                        .build());
-        gemstoneType.setBasePricePerCarat(gemstone.getType().getBasePricePerCarat());
-        gemstone.setType(gemstoneType);
-        return gemstoneRepository.save(gemstone);
-    }
-
-    @Override
-    public Gemstone updateGemstone(Gemstone gemstone) {
-        gemstoneRepository.findById(gemstone.getId())
-                .orElseThrow(() -> new ObjectNotFoundException("Gemstone with id " + gemstone.getId() + " not found"));
-        GemstoneType gemstoneType = gemstoneTypeRepository.findByName(gemstone.getType().getName())
-                .orElse(GemstoneType.builder()
-                        .name(gemstone.getType().getName())
-                        .build());
-        gemstoneType.setBasePricePerCarat(gemstone.getType().getBasePricePerCarat());
-        gemstone.setType(gemstoneType);
-        return gemstoneRepository.save(gemstone);
     }
 
     @Transactional

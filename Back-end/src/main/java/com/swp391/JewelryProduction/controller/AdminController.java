@@ -187,7 +187,7 @@ public class AdminController {
         return Response.builder()
                 .status(HttpStatus.OK)
                 .message("Request sent successfully.")
-                .response("gemstoneType", gemstoneService.getGemstoneType())
+                .response("gemstoneTypes", gemstoneService.getGemstoneTypes())
                 .response("gemstoneCutMultipliers", gemstoneService.getCutMultipliers())
                 .response("gemstoneShapeMultipliers", gemstoneService.getShapeMultipliers())
                 .response("gemstoneColorMultipliers", gemstoneService.getColorMultipliers())
