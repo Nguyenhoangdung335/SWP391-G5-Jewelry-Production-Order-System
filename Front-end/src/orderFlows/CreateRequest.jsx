@@ -1,20 +1,41 @@
 import React, { useState } from "react";
 import axios from "axios";
-import {Navigate} from "react-router-dom";
 import serverUrl from "../reusable/ServerUrl";
 import { useAuth } from "../provider/AuthProvider";
 import { jwtDecode } from "jwt-decode";
 import { Form, Button } from "react-bootstrap";
 
-function CreateRequest({productSpecId}) {
+function CreateRequest({productSpecId, onClose}) {
     const { token } = useAuth();
     const decodedToken = jwtDecode(token);
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
-    const [requestSent, setRequestSent] = useState(false);
+    const [errors, setErrors] = useState({});
+    const [validated, setValidated] = useState(false);
+    // const [requestSent, setRequestSent] = useState(false);
+
+    // const handleValidate = () => {
+    //     const newErrors = {};
+    //     if (!title.trim()) {
+    //         newErrors.title = "Title is required.";
+    //     }
+
+    //     if (!description.trim()) {
+    //         newErrors.description = "Description is required.";
+    //     }
+    //     setErrors(newErrors);
+
+    //     if (Object.keys(newErrors).length === 0) {
+    //         setValidated(true);
+    //         return true;
+    //     }
+    //     return false;
+    // }
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        if (!validated) return;
 
         const request = {
             title,
@@ -29,7 +50,7 @@ function CreateRequest({productSpecId}) {
             .then((response) => {
                 console.log(response.data);
                 alert("Request sent successfully!");
-                setRequestSent(true);
+                onClose();
             })
             .catch((error) => {
                 console.error("There was an error sending the request!", error);
@@ -37,22 +58,52 @@ function CreateRequest({productSpecId}) {
             });
     };
 
-    if (requestSent) {
-        return <Navigate to="/" />;
+    const validateTitle = (title) => {
+        if (!title.trim()) {
+            return false;
+        }
+        return true;
     }
 
+    const validateDescription = (description) => {
+        if (!description.trim()) {
+            return false;
+        }
+        return true;
+    }
+
+    const handleTitleChange = (e) => {
+        const newTitle = e.target.value;
+        setTitle(newTitle);
+        const isValidated = validateTitle(newTitle);
+        setValidated(isValidated);
+        setErrors((prevErrors) => ({ ...prevErrors, title: (isValidated)? undefined: "Title is required." }));
+    };
+
+      const handleDescriptionChange = (e) => {
+        const newDescription = e.target.value;
+        setDescription(newDescription);
+        const isValidated = validateDescription(newDescription);
+        setValidated(isValidated);
+        setErrors((prevErrors) => ({ ...prevErrors, description: (isValidated)? undefined : "Description is required." }));
+      };
+
     return (
-        <Form onSubmit={handleSubmit}>
+        <Form noValidate validated={validated} onSubmit={handleSubmit} style={{ width: "100%" }}>
             <Form.Group className="mb-3" controlId="formTitle">
                 <Form.Label>Title</Form.Label>
                 <Form.Control
                     type="text"
                     placeholder="Enter title"
                     value={title}
-                    onChange={(e) => setTitle(e.target.value)}
+                    onChange={handleTitleChange}
                     required={true}
+                    isInvalid={!!errors.title}
                     style={{ width: "100%" }}
                 />
+                <Form.Control.Feedback type="invalid">
+                    {errors.title}
+                </Form.Control.Feedback>
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="formDescription">
@@ -62,10 +113,14 @@ function CreateRequest({productSpecId}) {
                     rows={3}
                     placeholder="Enter description"
                     value={description}
-                    onChange={(e) => setDescription(e.target.value)}
+                    onChange={handleDescriptionChange}
                     required={true}
-                    style={{ width: "100%" }}
+                    isInvalid={!!errors.description}
+                    style={{ width: "100%", height: "45%" }}
                 />
+                <Form.Control.Feedback type="invalid">
+                    {errors.description}
+                </Form.Control.Feedback>
             </Form.Group>
 
             <Button variant="primary" type="submit">

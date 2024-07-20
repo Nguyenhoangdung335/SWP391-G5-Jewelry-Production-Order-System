@@ -66,7 +66,7 @@ function CreateReport({ reportContentId, orderId, reportType, onHide }) {
           Create Quotation Report
         </Modal.Title>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body style={{width: "100%"}}>
         <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-3" controlId="formTitle">
             <Form.Label>Title</Form.Label>
@@ -93,7 +93,7 @@ function CreateReport({ reportContentId, orderId, reportType, onHide }) {
             />
           </Form.Group>
 
-          <Button variant="primary" type="submit">
+          <Button variant="primary" type="submit" >
             Confirm
           </Button>
         </Form>
