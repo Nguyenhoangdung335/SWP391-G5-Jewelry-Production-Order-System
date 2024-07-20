@@ -5,11 +5,17 @@ import com.swp391.JewelryProduction.enums.OrderStatus;
 import com.swp391.JewelryProduction.pojos.Order;
 import com.swp391.JewelryProduction.services.order.OrderService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.service.StateMachineService;
 import org.springframework.statemachine.state.State;
 import org.springframework.statemachine.state.StateMachineState;
+import org.springframework.statemachine.support.DefaultStateMachineContext;
 import org.springframework.util.ObjectUtils;
+import reactor.core.publisher.Mono;
+
+import java.util.Map;
+import java.util.Map.Entry;
 
 @Slf4j
 public class StateMachineUtil {
@@ -65,4 +71,26 @@ public class StateMachineUtil {
         log.info("State machine started successfully. Current state: " + stateMachine.getState().getId());
         return stateMachine;
     }
+
+    public static void sendEvent (StateMachineService<OrderStatus, OrderEvent> stateMachineService, String machineId, OrderEvent event, Map<String, Object> additionalStateVariables) {
+        StateMachine<OrderStatus, OrderEvent> stateMachine = getStateMachine(machineId, stateMachineService);
+        if (additionalStateVariables != null && !additionalStateVariables.isEmpty())
+            stateMachine.getExtendedState().getVariables().putAll(additionalStateVariables);
+        stateMachine.sendEvent(
+                Mono.just(MessageBuilder.
+                        withPayload(event)
+                        .build()
+                )
+        ).subscribe();
+    }
+
+//    public static StateMachine<OrderStatus, OrderEvent> resetState (
+//            Order orderWithNewState,
+//            StateMachineService<OrderStatus, OrderEvent> stateMachineService
+//    ) {
+//        String orderId = orderWithNewState.getId();
+//        StateMachine<OrderStatus, OrderEvent> stateMachine = stateMachineService.acquireStateMachine(orderId, false);
+//        stateMachine.stopReactively().block();
+//        stateMachine.getStateMachineAccessor().doWithAllRegions(access -> access.resetStateMachineReactively(new DefaultStateMachineContext<>(orderWithNewState.getStatus(), null, null, stateMachine.getExtendedState(), null, stateMachine.getId())));
+//    }
 }
