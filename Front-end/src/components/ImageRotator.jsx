@@ -1,11 +1,10 @@
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-import Snowfall from "../assets/snowfall.jpg";
 import "./ImageRotatorCSS.css";
-import {
-  MdOutlineKeyboardArrowLeft,
-  MdOutlineKeyboardArrowRight,
-} from "react-icons/md";
+import {CustomLeftArrow, CustomRightArrow} from "../reusable/CustomArrows";
+import ServerUrl from "../reusable/ServerUrl";
+import axios from "axios";
+import {useEffect, useState} from "react";
 
 const responsive = {
   superLargeDesktop: {
@@ -27,34 +26,42 @@ const responsive = {
   },
 };
 
-export default function ImageRotator() {
+const ImageRotator = () => {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    axios.get(`${ServerUrl}/api/products/latest_product`)
+        .then(response => {
+          if (response.data.status === "OK" && response.data.statusCode === 200) {
+            setProducts(response.data.responseList.products);
+          }
+        })
+        .catch(error => {
+          console.error("Error fetching products:", error);
+        });
+  }, []);
+
   return (
-    <Carousel
-      responsive={responsive}
-      centerMode={false}
-      draggable={false}
-      swipeable={false}
-      infinite={true}
-      pauseOnHover
-      autoPlaySpeed={3000}
-      autoPlay={true}
-      containerClass="carousel-container"
-    >
-      <div className="card m-2">
-        <img className="product--image" src={Snowfall} alt="product " />
-      </div>
-      <div className="card m-2 ">
-        <img className="product--image" src={Snowfall} alt="product " />
-      </div>
-      <div className="card m-2 ">
-        <img className="product--image" src={Snowfall} alt="product " />
-      </div>
-      <div className="card m-2">
-        <img className="product--image" src={Snowfall} alt="product " />
-      </div>
-      <div className="card m-2 ">
-        <img className="product--image" src={Snowfall} alt="product " />
-      </div>
-    </Carousel>
+      <Carousel
+          responsive={responsive}
+          centerMode={false}
+          draggable={false}
+          swipeable={false}
+          infinite={true}
+          pauseOnHover
+          autoPlaySpeed={3000}
+          autoPlay={true}
+          containerClass="carousel-container"
+          customLeftArrow={<CustomLeftArrow />}
+          customRightArrow={<CustomRightArrow />}
+      >
+        {products.map(product => (
+            <div key={product.id} className="card m-2">
+              <img className="product--image" src={product.imageURL} alt={product.name} />
+            </div>
+        ))}
+      </Carousel>
   );
 }
+
+export default ImageRotator;

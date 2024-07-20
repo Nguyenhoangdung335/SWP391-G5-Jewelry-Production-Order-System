@@ -11,3 +11,33 @@
   text-align: center;
   font-family: arial;
 }
+
+.custom-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  z-index: 2;
+}
+
+.custom-arrow.left {
+  left: 10px; /* Adjust as needed */
+}
+
+.custom-arrow.right {
+  right: 10px; /* Adjust as needed */
+}
+
+.square-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px; /* Adjust the size as needed */
+  height: 50px;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  color: white; /* Icon color */
+}
+
+.square-wrap:hover {
+  background-color: rgba(0, 0, 0, 0.7); /* Darken on hover */
+}
