@@ -57,7 +57,6 @@ public class Quotation {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "quotation", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JsonManagedReference("Quotation-Items")
     @Builder.Default
     private List<QuotationItem> quotationItems = new LinkedList<>();
 
