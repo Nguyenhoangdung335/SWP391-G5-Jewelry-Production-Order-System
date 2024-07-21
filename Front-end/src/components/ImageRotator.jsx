@@ -44,7 +44,6 @@ const ImageRotator = () => {
   return (
       <Carousel
           responsive={responsive}
-          centerMode={false}
           draggable={false}
           swipeable={false}
           infinite={true}

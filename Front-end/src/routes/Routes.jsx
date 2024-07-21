@@ -29,6 +29,7 @@ import NotificationPage from "../user_settings/Notification";
 import OrderDetail from "../User_Menu/OrderDetail";
 import OrderDetailManager from "../ordersManager/OrderDetailManager";
 import NotificationDetail from "../user_settings/detailpage/NotificationDetail";
+import GemstoneManager from "../GemstoneManager/GemstoneManager";
 
 function RouteMap() {
   return (
@@ -187,6 +188,14 @@ function RouteMap() {
           element={
             <ProtectedRoute>
               <NotificationDetail />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/userManager/gemstone_manager"
+          element={
+            <ProtectedRoute>
+              <GemstoneManager />
             </ProtectedRoute>
           }
         />
