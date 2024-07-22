@@ -186,7 +186,15 @@ function RouteMap() {
         <Route
           path="/userManager/notifications/:notificationId"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute
+              roles={[
+                "ADMIN",
+                "MANAGER",
+                "PRODUCTION_STAFF",
+                "DESIGN_STAFF",
+                "SALE_STAFF",
+              ]}
+            >
               <NotificationDetail />
             </ProtectedRoute>
           }
@@ -194,7 +202,11 @@ function RouteMap() {
         <Route
           path="/userManager/gemstone_manager"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute
+              roles={[
+                "ADMIN",
+              ]}
+            >
               <GemstoneManager />
             </ProtectedRoute>
           }
@@ -204,7 +216,16 @@ function RouteMap() {
         <Route
           path="/user_setting_page/profile_page"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute
+              roles={[
+                "CUSTOMER",
+                "ADMIN",
+                "MANAGER",
+                "PRODUCTION_STAFF",
+                "DESIGN_STAFF",
+                "SALE_STAFF",
+              ]}
+            >
               <UserInfo />
             </ProtectedRoute>
           }
@@ -212,7 +233,11 @@ function RouteMap() {
         <Route
           path="/user_setting_page/order_history_page"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute
+              roles={[
+                "CUSTOMER",
+              ]}
+            >
               <OrderHistory />
             </ProtectedRoute>
           }
@@ -220,7 +245,11 @@ function RouteMap() {
         <Route
           path="/user_setting_page/order_detail_page"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute
+              roles={[
+                "CUSTOMER",
+              ]}
+            >
               <OrderDetail />
             </ProtectedRoute>
           }
@@ -228,7 +257,16 @@ function RouteMap() {
         <Route
           path="/user_setting_page/notification_page"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute
+              roles={[
+                "CUSTOMER",
+                "ADMIN",
+                "MANAGER",
+                "PRODUCTION_STAFF",
+                "DESIGN_STAFF",
+                "SALE_STAFF",
+              ]}
+            >
               <NotificationPage />
             </ProtectedRoute>
           }
@@ -236,16 +274,17 @@ function RouteMap() {
         <Route
           path="/user_setting_page/notification_page/:notificationId"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute
+              roles={[
+                "CUSTOMER",
+                "ADMIN",
+                "MANAGER",
+                "PRODUCTION_STAFF",
+                "DESIGN_STAFF",
+                "SALE_STAFF",
+              ]}
+            >
               <NotificationDetail />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/user_setting_page/order_detail_page"
-          element={
-            <ProtectedRoute>
-              <OrderDetail />
             </ProtectedRoute>
           }
         />
