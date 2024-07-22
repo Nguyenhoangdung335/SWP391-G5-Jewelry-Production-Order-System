@@ -1,34 +1,20 @@
 import { useEffect, useState } from "react";
-import { Badge, Card, Col, Container, Row, Table } from "react-bootstrap";
+import { Badge, Card, Col, Container, Row } from "react-bootstrap";
 import { useAuth } from "../provider/AuthProvider";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import ServerUrl from "../reusable/ServerUrl";
 import arrayToDate from "../reusable/ArrayToDate";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import snowfall from "../assets/snowfall.jpg";
-
-function CardHover({ hover, children }) {
-  return (
-    <Card
-      className=" link-opacity-50-hover"
-      style={{
-        transition: " transform 300ms ease-out ",
-        transform: hover ? "scale(1.01)" : "scale(1.00)",
-        width: "20rem",
-      }}
-    >
-      {children}
-    </Card>
-  );
-}
 
 function OrderHistory() {
   const [data, setData] = useState([]);
   const { token } = useAuth();
-  const location = useLocation;
+  const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const [hover, setHover] = useState(false);
+  const [hoverId, setHoverId] = useState();
 
   useEffect(() => {
     if (token) {
@@ -53,30 +39,51 @@ function OrderHistory() {
           state={i.id}
           className=" link-opacity-50-hover text-decoration-none"
         >
-          <CardHover hover={hover} className=" link-opacity-50-hover">
+          <Card
+            onMouseEnter={() => {
+              setHoverId(i.id);
+              setHover(true);
+            }}
+            onMouseLeave={() => {
+              setHoverId(i.id);
+              setHover(false);
+            }}
+            className=" link-opacity-50-hover"
+            style={{
+              transition: " transform 300ms ease-out ",
+              transform: hoverId === i.id ? "scale(1.02)" : "scale(1.00)",
+              width: "20rem",
+            }}
+          >
             <Card.Img
               className="rounded-0"
-              onMouseEnter={() => setHover(true)}
-              onMouseLeave={() => setHover(false)}
               onError={(ev) => (ev.target.src = snowfall)}
               variant="top"
               src={i.imageURL || snowfall}
               alt="Order Image"
             />
-            {hover && (
-              <Card.Body
-                className="position-sticky"
-                style={{
-                  height: "100%",
-                  transition: " height 100s linear ",
-                }}
+            <Card.Body
+              className="position-sticky"
+              style={{
+                height: "100%",
+                transition: " height 100s linear ",
+              }}
+            >
+              <Card.Text>{i.id}</Card.Text>
+              <Card.Text>{arrayToDate(i.createdDate)}</Card.Text>
+              <Badge
+                bg={
+                  i.status === "ORDER_COMPLETED"
+                    ? "success"
+                    : i.status === "CANCEL"
+                    ? "danger"
+                    : "warning"
+                }
               >
-                <Card.Text>{i.id}</Card.Text>
-                <Card.Text>{arrayToDate(i.createdDate)}</Card.Text>
-                <Badge bg={i.status === "ORDER_COMPLETED"? "success": i.status === "CANCEL"? "danger": "warning"} >{i.status}</Badge>
-              </Card.Body>
-            )}
-          </CardHover>
+                {i.status}
+              </Badge>
+            </Card.Body>
+          </Card>
         </Link>
       </Col>
     );

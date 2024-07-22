@@ -5,6 +5,7 @@ import { FaUsers } from "react-icons/fa";
 import { IoMdCart } from "react-icons/io";
 import {
   IoChatboxEllipses,
+  IoDiamondOutline,
   IoLogOutOutline,
   IoSettingsOutline,
 } from "react-icons/io5";
@@ -41,6 +42,13 @@ const rbacConfig = {
     "MANAGER",
     "ADMIN",
   ],
+  "/userManager/gemstone_manager": [
+    "SALE_STAFF",
+    "DESIGN_STAFF",
+    "PRODUCTION_STAFF",
+    "MANAGER",
+    "ADMIN",
+  ],
   "/user_setting_page": [
     "SALE_STAFF",
     "DESIGN_STAFF",
@@ -66,11 +74,11 @@ const navLinks = [
     icon: <IoMdCart size={30} color="white" />,
     label: "Orders",
   },
-  {
-    to: "/userManager/blogs_manager",
-    icon: <IoChatboxEllipses size={30} color="white" />,
-    label: "Blogs",
-  },
+  // {
+  //   to: "/userManager/blogs_manager",
+  //   icon: <IoChatboxEllipses size={30} color="white" />,
+  //   label: "Blogs",
+  // },
   {
     to: "/userManager/employees_manager",
     icon: <LuUser2 size={30} color="white" />,
@@ -80,6 +88,11 @@ const navLinks = [
     to: "/userManager/products_manager",
     icon: <FiBox size={30} color="white" />,
     label: "Products",
+  },
+  {
+    to: "/userManager/gemstone_manager",
+    icon: <IoDiamondOutline size={30} color="white" />,
+    label: "Gemstone",
   },
   {
     to: "/user_setting_page",

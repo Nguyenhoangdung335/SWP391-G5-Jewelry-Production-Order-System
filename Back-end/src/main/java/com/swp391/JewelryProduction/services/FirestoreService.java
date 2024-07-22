@@ -4,6 +4,7 @@ import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
 import com.swp391.JewelryProduction.dto.Blog;
+import com.swp391.JewelryProduction.enums.Role;
 import com.swp391.JewelryProduction.pojos.Account;
 import com.swp391.JewelryProduction.pojos.Order;
 import com.swp391.JewelryProduction.services.account.AccountService;
@@ -76,7 +77,7 @@ public class FirestoreService {
 
         Hibernate.initialize(owner.getPastOrder());
         Order currentOrder = owner.getCurrentOrder();
-        if (currentOrder != null)
+        if (owner.getRole().equals(Role.CUSTOMER) && currentOrder != null)
             userData.put("saleStaff", currentOrder.getSaleStaff().getId());
 
         ApiFuture<WriteResult> result = docRef.set(userData, SetOptions.merge());

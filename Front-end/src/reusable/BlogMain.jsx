@@ -18,7 +18,7 @@ export default function BlogMain({ title, time, subTime, content, image }) {
         <img
           src={image}
           alt="Blog"
-          style={{ width: "100%", height: "360px" }}
+          style={{ width: "70%", height: "360px", objectFit:"cover" }}
         />
       )}
       <Link

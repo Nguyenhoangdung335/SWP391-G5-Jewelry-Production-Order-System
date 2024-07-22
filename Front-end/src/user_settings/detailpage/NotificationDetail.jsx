@@ -1,17 +1,24 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
-import { Badge, Button, Col, Container, Row } from "react-bootstrap";
+import { Button,  Container, Row } from "react-bootstrap";
 import ServerUrl from "../../reusable/ServerUrl";
 import { jwtDecode } from "jwt-decode";
 import { useAuth } from "../../provider/AuthProvider";
 import arrayToDate from "../../reusable/ArrayToDate";
+import CustomAlert from "../../reusable/CustomAlert";
 
 const NotificationDetail = () => {
   const [notification, setNotification] = useState(null);
   const { token } = useAuth();
   const { notificationId } = useParams();
   const navigation = useNavigate();
+  const [alertConfig, setAlertConfig] = useState({
+    title: '',
+    text: '',
+    isShow: false,
+    alertVariant: 'primary',
+  });
 
   useEffect(() => {
     const fetchNotification = async () => {
@@ -31,6 +38,12 @@ const NotificationDetail = () => {
         }
       } catch (error) {
         console.error("Error fetching notification:", error);
+        setAlertConfig({
+          title: 'Error',
+          text: 'Error fetching notification data.',
+          isShow: true,
+          alertVariant: 'danger',
+        });
       }
     };
 
@@ -54,20 +67,40 @@ const NotificationDetail = () => {
           ...prevNotification,
           option: false,
         }));
-        alert("Confirmation successful");
+        setAlertConfig({
+          title: 'Success',
+          text: 'Confirmation successful.',
+          isShow: true,
+          alertVariant: 'success',
+        });
         const decodedToken = jwtDecode(token);
         if (decodedToken.role === "MANAGER")
-          navigation("/userManager/orders_manager/order_detail", {
-            state: notification.orderId,
-          });
+          setTimeout(() => {
+            navigation("/userManager/orders_manager/order_detail", {
+              state: notification.orderId,
+            });
+          }, 2000)
       }
     } catch (error) {
       console.error("Error confirming notification:", error);
+      setAlertConfig({
+        title: 'Error',
+        text: 'Error confirming notification.',
+        isShow: true,
+        alertVariant: 'danger',
+      });
     }
   };
 
   return (
     <Container className="p-4">
+      <CustomAlert
+          title={alertConfig.title}
+          text={alertConfig.text}
+          isShow={alertConfig.isShow}
+          onClose={() => setAlertConfig(prev => ({ ...prev, isShow: false }))}
+          alertVariant={alertConfig.alertVariant}
+      />
       <Row>
         <div style={{ paddingTop: "5%" }}>
           <div

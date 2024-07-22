@@ -21,7 +21,7 @@ const HoverDiv = ({ children }) => {
       style={{
         border: "1px solid #c4c4c4",
         borderRadius: "20px",
-        transform: mouseEnter ? "scale(1.01)" : "scale(0.98)",
+        transform: mouseEnter ? "scale(0.99)" : "scale(0.98)",
         transition: "transform 200ms ease-out",
       }}
     >

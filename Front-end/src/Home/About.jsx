@@ -121,23 +121,22 @@ export default function About() {
           <img style={{ ...styles.imgFull, height: "75vh" }} src={imgTesla} alt="Tesla image" />
         </div>
         <div style={styles.paddingX6} className="col-6 d-flex flex-column justify-content-center">
-          <p style={styles.headerText}>Nikola Tesla</p>
-          <p style={styles.subHeaderText}>
-            Founder of 宝石店 & Lead Designer
-          </p>
+          <p style={styles.headerText}>About Us</p>
           <p style={styles.borderedText}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+          CaraJewel System proudly stands as one of the pioneering platforms providing optimal and comprehensive solutions for the jewelry industry. We constantly strive to deliver high-quality products and services that meet the diverse needs of our customers.
           </p>
         </div>
       </div>
       <div style={styles.section} className="row mt-5">
         <div style={styles.paddingX6} className="col-6 d-flex flex-column justify-content-center">
-          <p style={styles.headerText}>Robert Oppenheimer</p>
+          <p style={styles.headerText}>Our Team</p>
           <p style={styles.subHeaderText}>
-            Co-Founder of 宝石店 & Sale Manager
+          Our Group 5 consists of passionate and talented members, always ready to contribute to the continuous growth of CaraJewel System:
           </p>
           <p style={styles.borderedText}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+          - Nguyen Hoang Dung: Dung is a software development expert with exceptional programming skills. He consistently brings innovative and effective technological solutions.<br/>
+          - Vu Tien Đat: Đat is a software engineer with extensive knowledge in database management systems. He plays a crucial role in optimizing the system and ensuring the platform's stability.<br/>
+          - Nguyễn Viet Thai: With strong logical thinking and data analysis capabilities, Viet Thai significantly contributes to developing analytical and reporting solutions for the system.
           </p>
         </div>
         <div className="col-6">
@@ -149,19 +148,16 @@ export default function About() {
           <img style={{ ...styles.imgFull, height: "75vh" }} src={hoden} alt="Black hole image" />
         </div>
         <div style={styles.paddingX6} className="col-6 d-flex flex-column justify-content-center">
-          <p style={styles.headerText}>Black Hole</p>
-          <p style={styles.subHeaderText}>
-            Nothing & Operations Lead
-          </p>
           <p style={styles.borderedText}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+          - Tran Mai Quang Khai: With excellent leadership skills and sharp project management abilities, Quang Khai ensures the progress and quality of our developed products.<br/>
+          - Bui Khanh Duy: Khanh Duy is an expert in user interfaces with unique UX/UI design skills, creating user-friendly and easy-to-use interfaces for users.
           </p>
         </div>
       </div>
       <div style={styles.missionContainer}>
         <p style={styles.missionHeader}>Our Mission</p>
         <p style={styles.missionText}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        We believe that our success stems not only from the products we create but also from the trust and satisfaction of our customers with our services. Thank you for visiting and learning about us!
         </p>
         <img style={styles.missionImg} src={ourMission} alt="Our Mission" />
       </div>

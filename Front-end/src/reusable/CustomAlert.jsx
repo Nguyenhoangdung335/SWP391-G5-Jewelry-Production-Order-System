@@ -34,7 +34,7 @@ function CustomAlert({ title, text, isShow, onClose, alertVariant, autoCloseTime
       style={alertStyle}
       onClick={handleClose}
     >
-      <Alert.Heading>{title}</Alert.Heading>
+      <Alert.Heading>{title || "Don't care about me :D"}</Alert.Heading>
       <p>{text}</p>
     </Alert>
   );
