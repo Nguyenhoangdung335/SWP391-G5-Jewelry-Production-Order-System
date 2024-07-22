@@ -13,6 +13,7 @@ import { LuUser2 } from "react-icons/lu";
 import { FiBox } from "react-icons/fi";
 import { useAuth } from "../provider/AuthProvider";
 import { jwtDecode } from "jwt-decode";
+import logo_white from "./../assets/logo_white.svg"
 
 // Define RBAC configuration
 const rbacConfig = {
@@ -124,7 +125,7 @@ export default function NavBar() {
     <>
       <div className="text-center text-decoration-none">
         <Link to="/" className="text-decoration-none text-white">
-          <h1 className="fw-bold">宝石店</h1>
+          <div className="logo-container"><img src={logo_white} alt="logo_white" className="logo logo_white" /></div>
         </Link>
       </div>
       <div className="d-flex flex-column gap-3 mt-4">

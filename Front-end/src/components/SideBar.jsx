@@ -9,6 +9,7 @@ import {jwtDecode} from "jwt-decode";
 import {Badge} from "react-bootstrap";
 import ServerUrl from "../reusable/ServerUrl";
 import axios from "axios";
+import logo_white from "./../assets/logo_white.svg"
 
 function SideBar() {
     const {token, setToken} = useAuth();
@@ -19,8 +20,6 @@ function SideBar() {
     if (token) {
         decodedToken = jwtDecode(token);
     }
-
-    console.log(decodedToken);
 
     useEffect(() => {
         const fetchUnreadNotifications = async () => {
@@ -46,7 +45,7 @@ function SideBar() {
         localStorage.removeItem("token");
         setToken(null);
     };
-
+    
     const navLinks = [
         {
             to: "/user_setting_page/profile_page",
@@ -88,58 +87,58 @@ function SideBar() {
         navLinks.push(orderHistory);
     }
 
-    return (
-        <>
-            <div className="text-center text-decoration-none">
-                <Link to="/" className="text-decoration-none text-white">
-                    <h1 className="fw-bold">宝石店</h1>
-                </Link>
-            </div>
-            <div className="d-flex flex-column gap-3 mt-4">
-                {navLinks.map((navLink) => (
-                    <div className=" side-bar-item side-bar-ltr">
-                        <NavLink
-                            key={navLink.to}
-                            style={({isActive}) => ({
-                                backgroundColor: isActive
-                                    ? "rgb(125, 125, 125)"
-                                    : "transparent",
-                                display: "flex",
-                                flexDirection: "row",
-                                gap: 10,
-                                alignItems: "center",
-                                textDecoration: "none",
-                                padding: "15px 30px 9px",
-                                color: "white",
-                            })}
-                            to={navLink.to}
-                        >
-                            {navLink.icon}
-                            <h5>{navLink.label}</h5>
-                        </NavLink>
-                    </div>
-                ))}
-                <div className=" side-bar-item side-bar-ltr">
-                    <NavLink
-                        style={({isActive}) => ({
-                            backgroundColor: isActive ? "rgb(125, 125, 125)" : "transparent",
-                            display: "flex",
-                            flexDirection: "row",
-                            gap: 10,
-                            alignItems: "center",
-                            textDecoration: "none",
-                            padding: "15px 30px 9px",
-                        })}
-                        to="/login"
-                        onClick={() => handleLogout()}
-                    >
-                        <IoLogOutOutline size={30} color="white"/>
-                        <h5 style={{color: "white", margin: 0, fontSize: 20}}>Log out</h5>
-                    </NavLink>
-                </div>
-            </div>
-        </>
-    );
+  return (
+    <>
+      <div className="text-center text-decoration-none">
+        <Link to="/" className="text-decoration-none text-white">
+          <h1 className="fw-bold">宝石店</h1>
+        </Link>
+      </div>
+      <div className="d-flex flex-column gap-3 mt-4">
+        {navLinks.map((navLink) => (
+          <div className=" side-bar-item side-bar-ltr">
+            <NavLink
+              key={navLink.to}
+              style={({ isActive }) => ({
+                backgroundColor: isActive
+                  ? "rgb(125, 125, 125)"
+                  : "transparent",
+                display: "flex",
+                flexDirection: "row",
+                gap: 10,
+                alignItems: "center",
+                textDecoration: "none",
+                padding: "15px 30px 9px",
+                color: "white",
+              })}
+              to={navLink.to}
+            >
+              {navLink.icon}
+              <h5>{navLink.label}</h5>
+            </NavLink>
+          </div>
+        ))}
+        <div className=" side-bar-item side-bar-ltr">
+          <NavLink
+            style={({ isActive }) => ({
+              backgroundColor: isActive ? "rgb(125, 125, 125)" : "transparent",
+              display: "flex",
+              flexDirection: "row",
+              gap: 10,
+              alignItems: "center",
+              textDecoration: "none",
+              padding: "15px 30px 9px",
+            })}
+            to="/login"
+            onClick={() => handleLogout()}
+          >
+            <IoLogOutOutline size={30} color="white" />
+            <h5 style={{ color: "white", margin: 0, fontSize: 20 }}>Log out</h5>
+          </NavLink>
+        </div>
+      </div>
+    </>
+  );
 }
 
 export default SideBar;
