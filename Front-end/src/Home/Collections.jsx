@@ -4,16 +4,16 @@ import Pin from "../components/Pin";
 import CreateRequest from "../orderFlows/CreateRequest";
 import {Container, Modal, Button} from "react-bootstrap";
 import "./Collections.css";
-import snowfall from "../assets/snowfall.jpg";
+import noImage from "../assets/no_image.jpg";
 import ServerUrl from "../reusable/ServerUrl";
 import {jwtDecode} from "jwt-decode";
 import {useAuth} from "../provider/AuthProvider";
 import ProductSpecificationTable from "../User_Menu/order_detail_components/ProductSpecification";
 import CustomAlert from "../reusable/CustomAlert";
-import {useNavigate} from "react-router-dom";
+import { useAlert } from "../provider/AlertProvider";
 
 const size = ["small", "medium", "large"];
-const pageSize = 5;
+const pageSize = 10;
 
 const getImageSize = () => {
     const getIndex = Math.floor(Math.random() * size.length);
@@ -23,22 +23,16 @@ const getImageSize = () => {
 function Collections() {
     const {token} = useAuth();
     const [decodedToken, setDecodedToken] = useState(null);
-
+    const { showAlert } = useAlert();
     const [products, setProducts] = useState([]);
     const [showProductModal, setShowProductModal] = useState(false);
     const [showCreateRequestModal, setShowCreateRequestModal] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [page, setPage] = useState(0);
-    const [totalPages, setTotalPages] = useState(0);
+    const [totalPages, setTotalPages] = useState(1);
     const [currentProductRoughPrice, setCurrentProductRoughPrice] = useState(0);
     const loader = useRef(null);
-    const [alertConfig, setAlertConfig] = useState({
-        title: "",
-        text: "",
-        isShow: false,
-        alertVariant: "primary",
-    });
-    const navigate = useNavigate();
+    const isFetching = useRef(false);
 
     useEffect(() => {
         if (token) {
@@ -48,23 +42,34 @@ function Collections() {
     }, [token]);
 
     useEffect(() => {
-        console.log("Fetching");
-        const fetchProducts = async () => {
-            try {
-                const response = await axios.get(
-                    `${ServerUrl}/api/products?page=${page}&size=${pageSize}`
-                );
-                setPage(page + 1);
-                const newProducts = response.data.responseList.products;
-                setProducts((prevProducts) => [...prevProducts, ...newProducts]);
-                setTotalPages(response.data.responseList.totalPages);
-            } catch (error) {
-                console.error("Error fetching products:", error);
-            }
-        };
+        if (!isFetching.current && page <= totalPages) {
+            isFetching.current = true;
+            const fetchProducts = async () => {
+                try {
+                    const response = await axios.get(
+                        `${ServerUrl}/api/products?page=${page}&size=${pageSize}`
+                    );
+                    if (response.status === 200) {
+                        setPage(page + 1);
+                        const newProducts = response.data.responseList.products;
 
-        fetchProducts();
-    }, []);
+                        // Avoid adding duplicate products
+                        setProducts((prevProducts) => {
+                            const existingIds = new Set(prevProducts.map(p => p.id));
+                            const filteredNewProducts = newProducts.filter(p => !existingIds.has(p.id));
+                            return [...prevProducts, ...filteredNewProducts];
+                        });
+
+                        setTotalPages(response.data.responseList.totalPages);
+                        isFetching.current = false;
+                    }
+                } catch (error) {
+                    console.error("Error fetching products:", error);
+                }
+            };
+            fetchProducts();
+        }
+    }, [page]);
 
     useEffect(() => {
         if (selectedProduct) {
@@ -99,33 +104,15 @@ function Collections() {
 
     const checkCurrentOrder = () => {
         if (decodedToken === null) {
-            setAlertConfig({
-                title: "Access Denied",
-                text: "You must login to use this feature",
-                isShow: true,
-                alertVariant: "danger",
-            });
-            setTimeout(() => {
-                navigate("/login");
-            }, 500)
+            showAlert("Access Denied", "You must login to use this feature", "danger");
         } else if (decodedToken.role !== "CUSTOMER") {
-            setAlertConfig({
-                title: "Access Denied",
-                text: "You don't have permission to use this feature",
-                isShow: true,
-                alertVariant: "danger",
-            });
+            showAlert("Access Denied", "You don't have permission to use this feature", "danger");
         } else {
             axios
                 .get(`${ServerUrl}/api/account/${decodedToken.id}/check-current-order`)
                 .then((response) => {
                     if (response.data) {
-                        setAlertConfig({
-                            title: "Ongoing Order",
-                            text: "You already have an ongoing order. Please complete it before designing new jewelry.",
-                            isShow: true,
-                            alertVariant: "warning",
-                        });
+                        showAlert("Ongoing Order", "You already have an ongoing order. Please complete it before designing new jewelry.", "warning");
                     } else {
                         setShowProductModal(false);
                         setShowCreateRequestModal(true);
@@ -133,12 +120,7 @@ function Collections() {
                 })
                 .catch((error) => {
                     console.error("Error checking current order:", error);
-                    setAlertConfig({
-                        title: "Error",
-                        text: "Error checking current order. Please try again later.",
-                        isShow: true,
-                        alertVariant: "danger",
-                    });
+                    showAlert("Error", "Error checking current order. Please try again later.", "danger");
                 });
         }
     };
@@ -167,17 +149,17 @@ function Collections() {
     }, [page, totalPages]);
 
     return (
-        <Container style={{paddingTop: "10px"}}>
+        <Container style={{ paddingTop: "10px" }}>
             <div className="view" style={styles.pin_container}>
                 {products.map((product) => (
                     <Pin
                         key={product.id}
-                        imageSource={product.imageURL || snowfall}
+                        imageSource={product.imageURL || noImage}
                         size={getImageSize()}
                         onClick={() => handlePinClick(product)}
                     />
                 ))}
-                <div ref={loader} style={{height: "50px"}}/>
+                <div ref={loader} style={{ height: "50px" }} />
             </div>
 
             {selectedProduct && (
@@ -193,22 +175,22 @@ function Collections() {
                         <div style={styles.modalContent}>
                             <div style={styles.imageContainer}>
                                 <img
-                                    src={selectedProduct.imageURL || snowfall}
+                                    src={selectedProduct.imageURL || noImage}
                                     alt={selectedProduct.name}
-                                    style={{width: "100%"}}
+                                    style={{ width: "100%" }}
                                 />
-                                <h5 style={{marginBlock: "5%", textAlign: "center"}}>
+                                <h5 style={{ marginBlock: "5%", textAlign: "center" }}>
                                     {selectedProduct.description}
                                 </h5>
-                                <h5 style={{marginTop: "5%", textAlign: "center"}}>
+                                <h5 style={{ marginTop: "5%", textAlign: "center" }}>
                                     Approximate price:
                                 </h5>
-                                <p style={{textAlign: "center", fontSize: "1.1rem"}}>
+                                <p style={{ textAlign: "center", fontSize: "1.1rem" }}>
                                     {formatPrice(currentProductRoughPrice || 0)}
                                 </p>
                             </div>
                             <div style={styles.detailsContainer}>
-                                <ProductSpecificationTable selectedProduct={selectedProduct}/>
+                                <ProductSpecificationTable selectedProduct={selectedProduct} />
                             </div>
                         </div>
                     </Modal.Body>
@@ -226,19 +208,11 @@ function Collections() {
                     <Modal.Header>
                         <Modal.Title>Create Request</Modal.Title>
                     </Modal.Header>
-                    <Modal.Body style={{width: "100%", height: "70%"}}>
-                        <CreateRequest productSpecId={selectedProduct.specification.id}
-                                       onClose={handleCloseCreateRequestModal}/>
+                    <Modal.Body style={{ width: "100%", height: "70%" }}>
+                        <CreateRequest productSpecId={selectedProduct.specification.id} onClose={handleCloseCreateRequestModal} />
                     </Modal.Body>
                 </Modal>
             )}
-            <CustomAlert
-                title={alertConfig.title}
-                text={alertConfig.text}
-                isShow={alertConfig.isShow}
-                onClose={() => setAlertConfig({...alertConfig, isShow: false})}
-                alertVariant={alertConfig.alertVariant}
-            />
         </Container>
     );
 }
