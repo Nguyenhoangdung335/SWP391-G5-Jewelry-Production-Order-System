@@ -373,6 +373,7 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
             .withExternal()
                 .source(OrderStatus.REMAIN_TRANSACTION_SUCCESSFUL).target(OrderStatus.ORDER_COMPLETED)
                 .event(OrderEvent.REMAIN_TRANSACTION_APPROVE)
+                .action(actionAndGuardConfiguration.notifyOrderCompleteAction())
 
                 /*-----------------------------------------------------------------------------------------------------*/
                 /*--------------------------------TRANSPORT SUPERSTATE LOCAL TRANSITION--------------------------------*/

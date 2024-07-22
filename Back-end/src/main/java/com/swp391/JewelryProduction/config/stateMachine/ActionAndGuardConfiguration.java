@@ -36,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -546,7 +547,16 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
     @Bean
     public Action<OrderStatus, OrderEvent> notifyOrderCompleteAction () {
         return context -> {
+            log.info("\tnotifyOrderCompleteAction is called\t");
 
+            OrderService orderService = applicationContext.getBean(OrderService.class);
+
+            try {
+                Order order = getOrder(context, orderService);
+                order.setCompletedDate(LocalDateTime.now());
+                order = orderService.updateOrder(order);
+            } catch (Exception ex) {
+            }
         };
     }
 
