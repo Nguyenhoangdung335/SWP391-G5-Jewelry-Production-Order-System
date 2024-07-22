@@ -136,12 +136,12 @@ export default function NavBar() {
       icon: <LuUser2 size={30} color="white" />,
       label: "Employees",
     },
-    {
-      id: 6,
-      to: "/userManager/products_manager",
-      icon: <FiBox size={30} color="white" />,
-      label: "Products",
-    },
+    // {
+    //   id: 6,
+    //   to: "/userManager/products_manager",
+    //   icon: <FiBox size={30} color="white" />,
+    //   label: "Products",
+    // },
     {
       id: 7,
       to: "/userManager/gemstone_manager",
