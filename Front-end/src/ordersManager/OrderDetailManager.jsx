@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import ServerUrl from "../reusable/ServerUrl";
 import {
@@ -18,7 +18,6 @@ import ResizeImage from "../reusable/ResizeImage";
 import CreateReport from "../orderFlows/CreateReport";
 import AssignedStaff from "../User_Menu/order_detail_components/AssignedStaff";
 import QuotationModal from "../User_Menu/order_detail_components/QuotationModal";
-import CustomAlert from "../reusable/CustomAlert";
 import ProductSpecificationTable from "../User_Menu/order_detail_components/ProductSpecification";
 import { useAlert } from "../provider/AlertProvider";
 
@@ -349,43 +348,6 @@ function OrderDetailManager() {
                 </div>
               </Row>
             )}
-            {/* {["SALE_STAFF", "ADMIN", "CUSTOMER", "MANAGER"].includes(decodedToken.role) && (
-              <Row className="pb-2">
-                <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
-                  <div className="p-2">
-                    <div
-                      className="mb-2"
-                      style={{
-                        borderBottom: "1px solid rgba(166, 166, 166, 0.5)",
-                      }}
-                    >
-                      <div
-                        className="mb-2"
-                        style={{
-                          borderBottom: "1px solid rgba(166, 166, 166, 0.5)",
-                        }}
-                      >
-                        <h4>Confirm Transactions</h4>
-                      </div>
-                      <div className="d-flex justify-content-between">
-                        <Button
-                          onClick={() => handleConfirmTransaction(true)}
-                          className="mt-2 mb-2"
-                        >
-                          Confirm
-                        </Button>
-                        <Button
-                          onClick={() => handleConfirmTransaction(false)}
-                          className="mt-2 mb-2"
-                        >
-                          Declined
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Row>
-            )} */}
             {["DESIGN_STAFF", "ADMIN"].includes(decodedToken.role) && (
               <Row className="mb-3">
                 <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
@@ -480,12 +442,12 @@ function OrderDetailManager() {
         orderId={data.id}
         show={showQuotation}
         onHide={() => setShowQuotation(false)}
-        setShowAlert={handleSetAlertInfo}
         fetchData={() => setStartRender(true)}
       />
 
       {showDesignReport && data.design && (
         <CreateReport
+          header="Submit Design Report"
           reportContentId={data?.design?.id}
           orderId={data.id}
           reportType="DESIGN"
@@ -495,21 +457,11 @@ function OrderDetailManager() {
 
       {showProductReport && data.design && (
         <CreateReport
+          header="Submit Finished Product Report"
           reportContentId={data?.design?.id}
           orderId={data.id}
           reportType="FINISHED_PRODUCT"
           onHide={() => setShowProductReport(false)}
-        />
-      )}
-
-
-      {showAlert && showAlert[2] && (
-        <CustomAlert
-          title={showAlert[0]}
-          text={showAlert[1]}
-          isShow={showAlert[2]}
-          onClose={showAlert[3]}
-          alertVariant={showAlert[4]}
         />
       )}
     </>
