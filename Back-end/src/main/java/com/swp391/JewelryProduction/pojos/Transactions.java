@@ -1,6 +1,7 @@
 package com.swp391.JewelryProduction.pojos;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.swp391.JewelryProduction.enums.TransactionStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Transactions {
     @ToString.Include
     @EqualsAndHashCode.Include
@@ -50,7 +52,7 @@ public class Transactions {
 
     @ToString.Include
     @EqualsAndHashCode.Include
-    private String status;
+    private TransactionStatus status;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

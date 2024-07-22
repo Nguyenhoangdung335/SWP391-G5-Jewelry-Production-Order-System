@@ -3,13 +3,11 @@ package com.swp391.JewelryProduction.controller;
 import com.swp391.JewelryProduction.dto.RequestDTOs.StaffGroup;
 import com.swp391.JewelryProduction.enums.OrderEvent;
 import com.swp391.JewelryProduction.enums.OrderStatus;
-import com.swp391.JewelryProduction.enums.Role;
 import com.swp391.JewelryProduction.pojos.Design;
 import com.swp391.JewelryProduction.pojos.Order;
 import com.swp391.JewelryProduction.pojos.Quotation;
 import com.swp391.JewelryProduction.pojos.designPojos.Product;
 import com.swp391.JewelryProduction.repositories.QuotationRepository;
-import com.swp391.JewelryProduction.services.account.StaffService;
 import com.swp391.JewelryProduction.services.order.OrderService;
 import com.swp391.JewelryProduction.services.product.ProductService;
 import com.swp391.JewelryProduction.util.Response;
@@ -29,7 +27,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 
 import static com.swp391.JewelryProduction.config.stateMachine.StateMachineUtil.Keywords.*;
-import static com.swp391.JewelryProduction.config.stateMachine.StateMachineUtil.getCurrentState;
 import static com.swp391.JewelryProduction.config.stateMachine.StateMachineUtil.getStateMachine;
 
 @RestController
@@ -100,7 +97,7 @@ public class OrderController {
         stateMachine.getExtendedState().getVariables().put(TRANSACTION_CHOICE, confirmed);
         stateMachine.sendEvent(
                 Mono.just(MessageBuilder.
-                        withPayload(OrderEvent.TRANSACTION_MAKE)
+                        withPayload(OrderEvent.BET_TRANSACTION_MAKE)
                         .build()
                 )
         ).subscribe();

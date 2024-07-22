@@ -5,6 +5,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.paypal.api.payments.*;
 import com.paypal.base.rest.PayPalRESTException;
+import com.swp391.JewelryProduction.enums.OrderEvent;
 import com.swp391.JewelryProduction.enums.OrderStatus;
 import com.swp391.JewelryProduction.enums.PaymentMethods;
 import com.swp391.JewelryProduction.enums.TransactionStatus;
@@ -83,12 +84,12 @@ public class PaypalController {
         String baseURL = String.format("%s://%s:%d", request.getScheme(), request.getServerName(), request.getServerPort());
         String cancelURL = baseURL + "/api/payment/cancel?orderId="+orderId;
         String successURL = baseURL + "/api/payment/success?orderId="+orderId;
-        urlCache.put("resultURL" + "-" + orderId, resultURL);
+        urlCache.put(String.format("resultURL-%s", orderId), resultURL);
         try {
             Quotation quotation = quotationService.findById(quotationId);
             Order order = orderService.findOrderById(orderId);
 
-            Payment payment = paypalService.createBet(
+            Payment payment = paypalService.makePayment(
                     quotation.getTotalPrice(),
                     "USD",
                     method.name(),
@@ -98,6 +99,7 @@ public class PaypalController {
                     successURL,
                     order
             );
+            transactionService.createTransaction(payment, order);
 
             for (Links links: payment.getLinks()) {
                 if (links.getRel().equals("approval_url")) {
@@ -122,15 +124,14 @@ public class PaypalController {
             @RequestParam("paymentId") String paymentId,
             @RequestParam("PayerID") String payerId
     ) {
-        String resultURL = urlCache.getIfPresent("resultURL" + "-" + orderId);
-        if (resultURL == null)
-            throw new RuntimeException("Server Error, the transaction result page url cannot be found");
-        resultURL = appendQueryParam(resultURL, "status", "success");
+        String resultURL = buildResultURL(orderId, "success");
 
         try {
             Payment payment = paypalService.executePayment(paymentId, payerId);
-            Transactions transactions = transactionService.findTransactionByPaypalPaymentId(paymentId);
-            transactionService.updateTransactionsStateByPayment(payment, payment.getState());
+
+            Order order = orderService.findOrderById(orderId);
+
+            Transactions transactions = transactionService.updateTransactionsStateByPayment(payment, order);
             transactionService.handleTransactionChoice(transactions, orderId, true);
         } catch (PayPalRESTException e) {
             log.error("Error occurred:: ", e);
@@ -142,15 +143,19 @@ public class PaypalController {
 
     @GetMapping("/cancel")
     public ResponseEntity<Void> paymentCancel(@RequestParam("orderId") String orderId) {
-        String resultURL = urlCache.getIfPresent("resultURL" + "-" + orderId);
-        if (resultURL == null)
-            throw new RuntimeException("Server Error, the transaction result page url cannot be found");
-        resultURL = appendQueryParam(resultURL, "status", "cancel");
+        String resultURL = buildResultURL(orderId, "cancel");
 
         Order order = orderService.findOrderById(orderId);
         transactionService.handleTransactionChoice(order.getTransactions(), orderId, false);
         return ResponseEntity.status(HttpStatus.FOUND)
                 .location(URI.create(resultURL))
                 .build();
+    }
+
+    private String buildResultURL (String orderId, String status) {
+        String resultURL = urlCache.getIfPresent("resultURL" + "-" + orderId);
+        if (resultURL == null)
+            throw new RuntimeException("Server Error, the transaction result page url cannot be found");
+        return appendQueryParam(resultURL, "status", status);
     }
 }

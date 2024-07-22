@@ -3,6 +3,7 @@ package com.swp391.JewelryProduction.services;
 import com.paypal.api.payments.*;
 import com.paypal.base.rest.APIContext;
 import com.paypal.base.rest.PayPalRESTException;
+import com.swp391.JewelryProduction.pojos.*;
 import com.swp391.JewelryProduction.pojos.Order;
 import com.swp391.JewelryProduction.pojos.Transactions;
 import com.swp391.JewelryProduction.services.transaction.TransactionService;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
@@ -28,8 +30,11 @@ public class PaypalService {
             String intent,
             String description,
             String cancelURL,
-            String successURL
+            String successURL,
+            Order order
     ) throws PayPalRESTException {
+        Quotation quotation = order.getQuotation();
+        UserInfo ownerInfo = order.getOwner().getUserInfo();
 
         Amount amount = new Amount();
         amount.setCurrency(currency);
@@ -65,35 +70,35 @@ public class PaypalService {
         return payment;
     }
 
-    public Payment createBet (
-              Double total,
-              String currency,
-              String method,
-              String intent,
-              String description,
-              String cancelURL,
-              String successURL,
-              Order order
-    ) throws PayPalRESTException {
-        Payment payment = makePayment(total, currency, method, intent, description, cancelURL, successURL);
-        transactionService.createTransaction(payment, order);
-        return payment;
-    }
-
-    public Payment createRemainingPayment (
-            Double total,
-            String currency,
-            String method,
-            String intent,
-            String description,
-            String cancelURL,
-            String successURL,
-            Order order
-    ) throws PayPalRESTException {
-        Payment payment = makePayment(total, currency, method, intent, description, cancelURL, successURL);
-        transactionService.createTransaction(payment, order);
-        return payment;
-    }
+//    public Payment createBet (
+//              Double total,
+//              String currency,
+//              String method,
+//              String intent,
+//              String description,
+//              String cancelURL,
+//              String successURL,
+//              Order order
+//    ) throws PayPalRESTException {
+//        Payment payment = makePayment(total, currency, method, intent, description, cancelURL, successURL);
+//        transactionService.createTransaction(payment, order);
+//        return payment;
+//    }
+//
+//    public Payment createRemainingPayment (
+//            Double total,
+//            String currency,
+//            String method,
+//            String intent,
+//            String description,
+//            String cancelURL,
+//            String successURL,
+//            Order order
+//    ) throws PayPalRESTException {
+//        Payment payment = makePayment(total, currency, method, intent, description, cancelURL, successURL);
+//        transactionService.(payment, order);
+//        return payment;
+//    }
 
     public Payment executePayment (
             String paymentID,
@@ -104,9 +109,7 @@ public class PaypalService {
 
         PaymentExecution execution = new PaymentExecution();
         execution.setPayerId(payerID);
-        payment = payment.execute(apiContext, execution);
-
-        return payment;
+        return payment.execute(apiContext, execution);
     }
 
     public Currency refundSale (

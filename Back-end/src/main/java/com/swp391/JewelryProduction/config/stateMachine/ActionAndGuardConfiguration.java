@@ -2,6 +2,7 @@ package com.swp391.JewelryProduction.config.stateMachine;
 
 import com.paypal.api.payments.Payer;
 import com.paypal.base.rest.PayPalRESTException;
+import com.swp391.JewelryProduction.Application;
 import com.swp391.JewelryProduction.enums.OrderEvent;
 import com.swp391.JewelryProduction.enums.OrderStatus;
 import com.swp391.JewelryProduction.enums.Role;
@@ -364,8 +365,8 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
                         message = MessageBuilder.withPayload(OrderEvent.QUO_MANA_APPROVE).build();
                 case OrderStatus.QUO_CUST_APPROVED ->
                         message = MessageBuilder.withPayload(OrderEvent.QUO_CUST_APPROVE).build();
-                case OrderStatus.TRANSACTION_SUCCESSFUL ->
-                        message = MessageBuilder.withPayload(OrderEvent.TRANSACTION_APPROVE).build();
+                case OrderStatus.BET_TRANSACTION_SUCCESSFUL ->
+                        message = MessageBuilder.withPayload(OrderEvent.BET_TRANSACTION_APPROVE).build();
                 case OrderStatus.DES_MANA_APPROVED ->
                         message = MessageBuilder.withPayload(OrderEvent.DES_MANA_APPROVE).build();
                 case OrderStatus.DES_CUST_APPROVED ->
@@ -374,6 +375,8 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
                         message = MessageBuilder.withPayload(OrderEvent.PRO_APPROVE).build();
                 case OrderStatus.DELIVERED_CONFIRMED ->
                         message = MessageBuilder.withPayload(OrderEvent.DELIVERED_APPROVE).build();
+                case OrderStatus.REMAIN_TRANSACTION_SUCCESSFUL ->
+                        message = MessageBuilder.withPayload(OrderEvent.REMAIN_TRANSACTION_APPROVE).build();
                 default ->
                         throw new RuntimeException("Unexpected state machine state " + context.getStateMachine().getState().getId());
             }
@@ -396,8 +399,8 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
                         message = MessageBuilder.withPayload(OrderEvent.QUO_MANA_DECLINE).build();
                 case OrderStatus.QUO_CUST_DECLINED ->
                         message = MessageBuilder.withPayload(OrderEvent.QUO_CUST_DECLINE).build();
-                case OrderStatus.TRANSACTION_UNSUCCESSFUL ->
-                        message = MessageBuilder.withPayload(OrderEvent.TRANSACTION_DECLINE).build();
+                case OrderStatus.BET_TRANSACTION_UNSUCCESSFUL ->
+                        message = MessageBuilder.withPayload(OrderEvent.BET_TRANSACTION_DECLINE).build();
                 case OrderStatus.DES_MANA_DECLINED ->
                         message = MessageBuilder.withPayload(OrderEvent.DES_MANA_DECLINE).build();
                 case OrderStatus.DES_CUST_DECLINED ->
@@ -406,6 +409,8 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
                         message = MessageBuilder.withPayload(OrderEvent.PRO_DECLINE).build();
                 case OrderStatus.DELIVERED_DENIED ->
                         message = MessageBuilder.withPayload(OrderEvent.DELIVERED_DENY).build();
+                case OrderStatus.REMAIN_TRANSACTION_UNSUCCESSFUL ->
+                        message = MessageBuilder.withPayload(OrderEvent.REMAIN_TRANSACTION_DECLINE).build();
                 default ->
                         throw new RuntimeException("Unexpected state machine state " + context.getStateMachine().getState().getId());
             }
@@ -419,13 +424,11 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
             log.info("\tnotifyTransactionReceiptAction is called\t");
 
             OrderService orderService = applicationContext.getBean(OrderService.class);
-            PaypalService paypalService = applicationContext.getBean(PaypalService.class);
             EmailService emailService = applicationContext.getBean(EmailService.class);
 
             try {
                 Order order = getOrder(context, orderService);
                 Account owner = order.getOwner();
-                Transactions transactions = order.getTransactions();
                 Quotation quotation = order.getQuotation();
                 String actionURL = baseClientURL + "";
 
@@ -444,6 +447,38 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
                 variables.put("currentYear", 2024);
 
                 emailService.sendInvoiceEmail(owner.getEmail(), "Receipt for order " + order.getId(), variables);
+            } catch (MessagingException ignored) {
+            }
+        };
+    }
+
+    @Bean
+    public Action<OrderStatus, OrderEvent> notifyRemainingTransactionAction () {
+        return context -> {
+            log.info("\tnotifyRemainingTransactionAction is called\t");
+
+            OrderService orderService = applicationContext.getBean(OrderService.class);
+            ReportService reportService = applicationContext.getBean(ReportService.class);
+            NotificationService notificationService = applicationContext.getBean(NotificationService.class);
+
+            try {
+                Order order = getOrder(context, orderService);
+                Account owner = order.getOwner();
+                Transactions transactions = order.getTransactions();
+                Quotation quotation = order.getQuotation();
+
+                MessagesConstant message = messagesConstant.createRemainingTransactionMessge(owner.getUserInfo().getFirstName() + " " + owner.getUserInfo().getLastName(), order);
+                Report report = reportService.createNormalReport(order, message.getTitle(), message.getDescription());
+                Notification notification = Notification.builder()
+                        .order(order)
+                        .report(report)
+                        .receiver(owner)
+                        .build();
+                report.getNotifications().add(notification);
+                order.getNotifications().add(notification);
+                order.getRelatedReports().add(report);
+
+                notificationService.createNotification(notification, false, true);
             } catch (MessagingException ignored) {
             }
         };
