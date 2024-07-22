@@ -6,38 +6,38 @@ import CreateRequest from "./CreateRequest";
 
 function OrderPage1() {
   const styleList = [
-    {value:"Historic", name: "Historic",},
-    {value:"Georgian", name:"Georgian",},
-    {value:"Victorian", name:"Victorian"},
-    {value:"Edwardian", name:"Edwardian"},
-    {value:"Art nouveau", name: "Art Nouveau"},
-    {value:"Art deco", name: "Art Deco"},
-    {value:"Retro", name: "Retro"},
-    {value:"Modernist", name: "Modernist"},
-    {value:"Minimalistic", name: "Minimalistic"},
-    {value:"Contemporary", name: "Contemporary"},
-    {value:"Cultural", name:"Cultural"},
+    { value: "Historic", name: "Historic" },
+    { value: "Georgian", name: "Georgian" },
+    { value: "Victorian", name: "Victorian" },
+    { value: "Edwardian", name: "Edwardian" },
+    { value: "Art nouveau", name: "Art Nouveau" },
+    { value: "Art deco", name: "Art Deco" },
+    { value: "Retro", name: "Retro" },
+    { value: "Modernist", name: "Modernist" },
+    { value: "Minimalistic", name: "Minimalistic" },
+    { value: "Contemporary", name: "Contemporary" },
+    { value: "Cultural", name: "Cultural" },
   ];
 
   const occasionList = [
-    {value: "Engagement", name: "Engagement"},
-    {value: "Wedding", name: "Wedding"},
-    {value: "Anniversaries", name: "Anniversaries"},
-    {value: "Birthdays", name: "Birthdays"},
-    {value: "Formal Events", name: "Formal Events"},
-    {value: "Working days", name: "Working days"},
-    {value: "Dinner date", name: "Dinner date"},
-    {value: "Holiday", name: "Holiday"},
-    {value: "Informal gathering", name: "Informal gathering"},
-    {value: "Everyday uses", name: "Everyday uses"},
+    { value: "Engagement", name: "Engagement" },
+    { value: "Wedding", name: "Wedding" },
+    { value: "Anniversaries", name: "Anniversaries" },
+    { value: "Birthdays", name: "Birthdays" },
+    { value: "Formal Events", name: "Formal Events" },
+    { value: "Working days", name: "Working days" },
+    { value: "Dinner date", name: "Dinner date" },
+    { value: "Holiday", name: "Holiday" },
+    { value: "Informal gathering", name: "Informal gathering" },
+    { value: "Everyday uses", name: "Everyday uses" },
   ];
 
   const jewelryTypeList = [
-    {value: "Rings", name: "Rings"},
-    {value: "Necklace", name: "Necklace"},
-    {value: "Earrings", name: "Earrings"},
-    {value: "Bracelet", name: "Bracelet"},
-    {value: "Anklet", name: "Anklet"},
+    { value: "Rings", name: "Rings" },
+    { value: "Necklace", name: "Necklace" },
+    { value: "Earrings", name: "Earrings" },
+    { value: "Bracelet", name: "Bracelet" },
+    { value: "Anklet", name: "Anklet" },
   ];
 
   const [formState, setFormState] = useState({
@@ -256,7 +256,8 @@ function OrderPage1() {
       selectedGemstoneCut &&
       selectedGemstoneClarity &&
       selectedGemstoneColor &&
-      selectedGemstoneWeight
+      selectedGemstoneWeight &&
+      selectedGemstoneWeight !== "0"
     );
   };
 
@@ -292,9 +293,11 @@ function OrderPage1() {
             <option value="" disabled>
               Choose one
             </option>
-            {styleList.map((style, index) => {
-              <option key={index} value={style.value}>{style.name}</option>
-            })}
+            {styleList.map((style, index) => (
+              <option key={index} value={style.value}>
+                {style.name}
+              </option>
+            ))}
           </Form.Select>
         </Form.Group>
 
@@ -310,9 +313,11 @@ function OrderPage1() {
             <option value="" disabled>
               Choose one
             </option>
-            {occasionList.map((occasion, index) => {
-              <option key={index} value={occasion.value}>{occasion.name}</option>
-            })}
+            {occasionList.map((occasion, index) => (
+              <option key={index} value={occasion.value}>
+                {occasion.name}
+              </option>
+            ))}
           </Form.Select>
         </Form.Group>
 
@@ -328,9 +333,11 @@ function OrderPage1() {
             <option value="" disabled>
               Choose one
             </option>
-            {jewelryTypeList.map((type, index) => {
-              <option key={index} value={type.value}>{type.name}</option>
-            })}
+            {jewelryTypeList.map((type, index) => (
+              <option key={index} value={type.value}>
+                {type.name}
+              </option>
+            ))}
           </Form.Select>
         </Form.Group>
 
