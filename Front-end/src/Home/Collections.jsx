@@ -131,15 +131,28 @@ function Collections() {
 
     const checkCurrentOrder = () => {
         if (decodedToken === null) {
-            showAlert("Access Denied", "You must login to use this feature", "danger");
+            showAlert(
+                "Access Denied",
+                "You must login to use this feature",
+                true,
+                false,
+                "danger");
         } else if (decodedToken.role !== "CUSTOMER") {
-            showAlert("Access Denied", "You don't have permission to use this feature", "danger");
+            showAlert("Access Denied",
+                "You don't have permission to use this feature",
+                true,
+                false,
+                "danger");
         } else {
             axios
                 .get(`${ServerUrl}/api/account/${decodedToken.id}/check-current-order`)
                 .then((response) => {
                     if (response.data) {
-                        showAlert("Ongoing Order", "You already have an ongoing order. Please complete it before designing new jewelry.", "warning");
+                        showAlert("Ongoing Order",
+                            "You already have an ongoing order. Please complete it before designing new jewelry.",
+                            true,
+                            false,
+                            "warning");
                     } else {
                         setShowProductModal(false);
                         setShowCreateRequestModal(true);
@@ -147,7 +160,11 @@ function Collections() {
                 })
                 .catch((error) => {
                     console.error("Error checking current order:", error);
-                    showAlert("Error", "Error checking current order. Please try again later.", "danger");
+                    showAlert("Error",
+                        "Error checking current order. Please try again later.",
+                        true,
+                        false,
+                        "danger");
                 });
         }
     };

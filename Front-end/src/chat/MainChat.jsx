@@ -61,7 +61,7 @@ const Chat = () => {
                 console.log('userId:', userId);
 
                 client.subscribe(`/user/${userId}/queue/messages`, onMessageReceived);
-                client.subscribe(`/topic/public`, onMessageReceived);
+                // client.subscribe(`/topic/public`, onMessageReceived);
 
                 findAndDisplayConnectedUsers();
                 fetchUnreadMessages();
@@ -226,7 +226,28 @@ const Chat = () => {
         const message = JSON.parse(payload.body);
         if (message.senderId === selectedUserIdRef.current && message.recipientId === userId) {
             console.log("Received: ", message);
-            setMessages(prevMessages => [...prevMessages, message]);
+            setMessages(prevMessages => {
+                const newMessages = [...prevMessages, message];
+
+                // Check for duplicate messages and remove if necessary
+                if (newMessages.length > 1) {
+                    const lastIndex = newMessages.length - 1;
+                    const secondLastIndex = lastIndex - 1;
+
+                    const lastMessage = newMessages[lastIndex];
+                    const secondLastMessage = newMessages[secondLastIndex];
+
+                    if (lastMessage.content === secondLastMessage.content &&
+                        lastMessage.senderId === secondLastMessage.senderId &&
+                        lastMessage.recipientId === secondLastMessage.recipientId &&
+                        lastMessage.timestamp === secondLastMessage.timestamp) {
+                        // Remove the duplicate message
+                        newMessages.splice(secondLastIndex, 1);
+                    }
+                }
+
+                return newMessages;
+            });
             chatAreaRef.current?.classList.remove('hidden');
         } else {
             const notifiedUser = document.getElementById(message.senderId);
@@ -236,7 +257,7 @@ const Chat = () => {
                 nbrMsg.textContent = (parseInt(nbrMsg.textContent) || 0) + 1;
             }
         }
-    }, [selectedUserId, userId]);
+    }, [userId]);
 
     const handleImageUpload = async (event) => {
         const imageFile = event.target.files[0];

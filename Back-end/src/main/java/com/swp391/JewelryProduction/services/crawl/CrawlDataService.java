@@ -12,12 +12,8 @@ import java.util.Map;
 public interface CrawlDataService {
 
     void crawData() throws IOException, InterruptedException;
+
     Flux<ServerSentEvent<List<MetalPrice>>> getAll();
-    List<GemstonePrice> getGemstones();
-    GemstonePrice createGemstone(GemstonePrice gemstone);
-    GemstonePrice updateGemstone(GemstonePrice gemstone);
-    void deleteGemstone(Integer id);
-    Map<String, Object> getMaterials();
 
     List<MetalPrice> getAllMetalPrices();
 }

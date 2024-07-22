@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Container, Form, Button } from "react-bootstrap";
-import { FaGoogle, FaGithub } from "react-icons/fa";
 import { useAuth } from "../provider/AuthProvider";
 import axios from "axios";
 import ServerUrl from "../reusable/ServerUrl";
@@ -35,12 +34,22 @@ export default function Login() {
             navigate("/userManager");
           } else if (response.status === 400) {
             throw new Error(response.message);
+          } else {
+            showAlert(
+                "Login Failed",
+                "Your Password or Email is incorrect please check again !!",
+                true,
+                false,
+                "danger",
+            );
           }
         })
         .catch((error) => {
           showAlert(
             "Login Failed",
-            "Your Password or Email is incorrect please check again !!",
+            "There was an error!",
+              true,
+              false,
             "danger",
           );
           console.error("There was an error!", error);

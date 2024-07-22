@@ -22,7 +22,6 @@ import java.util.List;
 public class CrawlController {
 
     private final CrawlDataService crawlDataService;
-    private final GemstoneService gemstoneService;
 
     @PostMapping
     public ResponseEntity<DataDTO> crawlingData() {

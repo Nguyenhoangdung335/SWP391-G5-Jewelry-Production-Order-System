@@ -28,7 +28,6 @@ public class CrawlDataServiceImpl implements CrawlDataService {
 
     private final MetalPriceRepository metalPriceRepository;
     private final ConnectionPage connection;
-    private final GemstonePriceRepository gemstonePriceRepository;
 
     @Value("${exchange.url}")
     private String urlExchange;
@@ -71,7 +70,8 @@ public class CrawlDataServiceImpl implements CrawlDataService {
                 } else {
                     metalPriceRepository.save(metalPrice);
                 }
-            }            log.info("Finished crawling data!");
+            }
+            log.info("Finished crawling data!");
 
         } catch (InterruptedException e) {
             log.error("Crawling was interrupted", e);
@@ -92,44 +92,14 @@ public class CrawlDataServiceImpl implements CrawlDataService {
     }
 
     @Override
-    public List<GemstonePrice> getGemstones() {
-        return gemstonePriceRepository.findAll().stream().toList();
-    }
-
-    @Override
-    public GemstonePrice createGemstone(GemstonePrice gemstone) {
-        return gemstonePriceRepository.save(gemstone);
-    }
-
-    @Override
-    public GemstonePrice updateGemstone(GemstonePrice gemstone) {
-        return gemstonePriceRepository.save(gemstonePriceRepository.findById(gemstone.getId())
-                .orElseThrow(() -> new ObjectNotFoundException("Gemstone with ID " + gemstone.getId() + " not found!")));
-    }
-
-    @Override
-    public void deleteGemstone(Integer id) {
-        gemstonePriceRepository.delete(gemstonePriceRepository.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Gemstone with ID " + id + " not found!")));
-    }
-
-    @Override
-    public Map<String, Object> getMaterials() {
-        Map<String, Object> materials = new HashMap<>();
-        materials.put("metal", metalPriceRepository.findAll());
-        materials.put("gemstone", gemstonePriceRepository.findAll());
-        return materials;
-    }
-
-    @Override
-    public List<MetalPrice> getAllMetalPrices () {
+    public List<MetalPrice> getAllMetalPrices() {
         return metalPriceRepository.findAll();
     }
 
     private Flux<ServerSentEvent<List<MetalPrice>>> getHeartBeat() {
         return Flux.interval(Duration.ofSeconds(3))
                 .map(seq -> ServerSentEvent.<List<MetalPrice>>builder()
-                        .id("heartbeat")  // Use priceData size as ID
+                        .id("heartbeat")
                         .event("heartbeat")
                         .build());
     }
