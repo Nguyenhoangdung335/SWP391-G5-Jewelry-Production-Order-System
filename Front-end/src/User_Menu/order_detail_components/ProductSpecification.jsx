@@ -116,11 +116,11 @@ const renderSpecification = ( specification, editMode, handleChange, parentKey =
   return renderNested(specification, parentKey);
 };
 
-const ProductSpecificationTable = ({ orderStatus, selectedProduct, role }) => {
-  const isQualifiedEdit = ["IN_EXCHANGING", "ORDER_COMPLETED"].includes(orderStatus) && ["ADMIN", "SALE_STAFF", "CUSTOMER"].includes(role);
+const ProductSpecificationTable = ({ orderStatus, selectedProduct, role, isEditing = false }) => {
+  const isQualifiedEdit = (["IN_EXCHANGING", "ORDER_COMPLETED"].includes(orderStatus) && ["ADMIN", "SALE_STAFF", "CUSTOMER"].includes(role)) || isEditing;
 
   const {showAlert} = useAlert();
-  const [editMode, setEditMode] = useState(false);
+  const [editMode, setEditMode] = useState(isEditing);
   const [formValues, setFormValues] = useState(selectedProduct.specification);
 
   const handleChange = (key, value) => {
