@@ -7,7 +7,7 @@ import { jwtDecode } from "jwt-decode";
 import { Form, Button, Modal } from "react-bootstrap";
 import { useAlert } from "../provider/AlertProvider";
 
-function CreateReport({ reportContentId, orderId, reportType, onHide }) {
+function CreateReport({ header = "Request Form", reportContentId, orderId, reportType, onHide }) {
   const {showAlert} = useAlert();
   const { token } = useAuth();
   const decodedToken = jwtDecode(token);
@@ -65,7 +65,7 @@ function CreateReport({ reportContentId, orderId, reportType, onHide }) {
     >
       <Modal.Header className="w-100" closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
-          Create Quotation Report
+          {header}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body style={{width: "100%"}}>
