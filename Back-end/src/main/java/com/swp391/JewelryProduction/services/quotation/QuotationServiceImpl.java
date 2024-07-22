@@ -84,12 +84,7 @@ public class QuotationServiceImpl implements QuotationService {
         items.add(QuotationItemResponse.builder().itemID(index++).name("Design cost").quantity(1).unitPrice(100.0).totalPrice(100.0).build());
         items.add(QuotationItemResponse.builder().itemID(index++).name("Production cost").quantity(1).unitPrice(200.0).totalPrice(200.0).build());
         items.add(QuotationItemResponse.builder().itemID(index++).name("Metal ("+metal.getName()+")").quantity(1).unitPrice(metal.getPrice()).totalPrice(metal.getPrice()).build());
-        items.add(QuotationItemResponse.builder().itemID(index++).name("Gemstone ("+gemstone.getType().getName()+")").quantity(gemstone.getCaratWeight()).unitPrice(gemstone.getType().getBasePricePerCarat()).totalPrice(rawGemstonePrice).build());
-        for (Entry<String, Double> entry: appliedMultiplier.entrySet()) {
-            double quantity = roundToDecimal(entry.getValue() - 1, 2);
-            double itemTotalPrice = roundToDecimal(quantity * rawGemstonePrice, 2);
-            items.add(QuotationItemResponse.builder().itemID(index++).name(entry.getKey()).quantity(quantity).unitPrice(rawGemstonePrice).totalPrice(itemTotalPrice).build());
-        }
+        items.add(QuotationItemResponse.builder().itemID(index++).name("Gemstone ("+gemstone.getType().getName()+")").quantity(gemstone.getCaratWeight()).unitPrice(gemstone.getType().getBasePricePerCarat()).totalPrice(gemstoneService.calculatePrice(gemstone)).build());
 
         return items;
     }
