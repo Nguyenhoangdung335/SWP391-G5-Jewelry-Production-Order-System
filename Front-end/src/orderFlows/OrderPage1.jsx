@@ -6,17 +6,38 @@ import CreateRequest from "./CreateRequest";
 
 function OrderPage1() {
   const styleList = [
-    {value:"historic", name: "Historic",},
-    {value:"georgian", name:"Georgian",},
-    {value:"victorian", name:"Victorian"},
-    {value:"edwardian", name:"Edwardian"},
-    {value:"art nouveau", name: "Art Nouveau"},
-    {value:"art deco", name: "Art Deco"},
-    {value:"retro", name: "Retro"},
-    {value:"modernist", name: "Modernist"},
-    {value:"minimalistic", name: "Minimalistic"},
-    {value:"contemporary", name: "Contemporary"},
-    {value:"cultural", name:"Cultural"},
+    {value:"Historic", name: "Historic",},
+    {value:"Georgian", name:"Georgian",},
+    {value:"Victorian", name:"Victorian"},
+    {value:"Edwardian", name:"Edwardian"},
+    {value:"Art nouveau", name: "Art Nouveau"},
+    {value:"Art deco", name: "Art Deco"},
+    {value:"Retro", name: "Retro"},
+    {value:"Modernist", name: "Modernist"},
+    {value:"Minimalistic", name: "Minimalistic"},
+    {value:"Contemporary", name: "Contemporary"},
+    {value:"Cultural", name:"Cultural"},
+  ];
+
+  const occasionList = [
+    {value: "Engagement", name: "Engagement"},
+    {value: "Wedding", name: "Wedding"},
+    {value: "Anniversaries", name: "Anniversaries"},
+    {value: "Birthdays", name: "Birthdays"},
+    {value: "Formal Events", name: "Formal Events"},
+    {value: "Working days", name: "Working days"},
+    {value: "Dinner date", name: "Dinner date"},
+    {value: "Holiday", name: "Holiday"},
+    {value: "Informal gathering", name: "Informal gathering"},
+    {value: "Everyday uses", name: "Everyday uses"},
+  ];
+
+  const jewelryTypeList = [
+    {value: "Rings", name: "Rings"},
+    {value: "Necklace", name: "Necklace"},
+    {value: "Earrings", name: "Earrings"},
+    {value: "Bracelet", name: "Bracelet"},
+    {value: "Anklet", name: "Anklet"},
   ];
 
   const [formState, setFormState] = useState({
@@ -271,17 +292,9 @@ function OrderPage1() {
             <option value="" disabled>
               Choose one
             </option>
-            <option value="historic">Historic</option>
-            <option value="georgian">Georgian</option>
-            <option value="victorian">Victorian</option>
-            <option value="edwardian">Edwardian</option>
-            <option value="art nouveau">Art Nouveau</option>
-            <option value="art deco">Art Deco</option>
-            <option value="retro">Retro</option>
-            <option value="modernist">Modernist</option>
-            <option value="minimalistic">Minimalistic</option>
-            <option value="contemporary">Contemporary</option>
-            <option value="cultural">Cultural</option>
+            {styleList.map((style, index) => {
+              <option key={index} value={style.value}>{style.name}</option>
+            })}
           </Form.Select>
         </Form.Group>
 
@@ -297,16 +310,9 @@ function OrderPage1() {
             <option value="" disabled>
               Choose one
             </option>
-            <option value="Engagement">Engagement</option>
-            <option value="Wedding">Wedding</option>
-            <option value="Anniversaries">Anniversaries</option>
-            <option value="Birthdays">Birthdays</option>
-            <option value="Formal Events">Formal Events</option>
-            <option value="Working days">Working days</option>
-            <option value="Dinner date">Dinner date</option>
-            <option value="Holiday">Holiday</option>
-            <option value="Informal gathering">Informal gathering</option>
-            <option value="Everyday uses">Everyday uses</option>
+            {occasionList.map((occasion, index) => {
+              <option key={index} value={occasion.value}>{occasion.name}</option>
+            })}
           </Form.Select>
         </Form.Group>
 
@@ -322,11 +328,9 @@ function OrderPage1() {
             <option value="" disabled>
               Choose one
             </option>
-            <option value="Rings">Rings</option>
-            <option value="Necklace">Necklace</option>
-            <option value="Earrings">Earrings</option>
-            <option value="Bracelet">Bracelet</option>
-            <option value="Anklet">Anklet</option>
+            {jewelryTypeList.map((type, index) => {
+              <option key={index} value={type.value}>{type.name}</option>
+            })}
           </Form.Select>
         </Form.Group>
 
