@@ -8,10 +8,6 @@ export const OrderStatus = [
         value: "INCOMPLETE"
     },
     {
-        name: "Requesting",
-        value: "REQUESTING"
-    },
-    {
         name: "Await Request Approval",
         value: "REQ_AWAIT_APPROVAL"
     },
@@ -32,8 +28,8 @@ export const OrderStatus = [
         value: "QUO_AWAIT_CUST_APPROVAL"
     },
     {
-        name: "Await Transaction",
-        value: "AWAIT_TRANSACTION"
+        name: "Await Making Bet",
+        value: "AWAIT_BET_TRANSACTION"
     },
     {
         name: "In-Designing",
@@ -56,13 +52,17 @@ export const OrderStatus = [
         value: "PRO_AWAIT_APPROVAL"
     },
     {
-        name: "Delivering",
-        value: "ON_DELIVERING"
+        name: "Await Remaining Transactions",
+        value: "AWAIT_REMAIN_TRANSACTION"
     },
-    {
-        name: "Await Check Delivered",
-        value: "DELIVERED_AWAIT_APPROVAL"
-    },
+    // {
+    //     name: "Delivering",
+    //     value: "ON_DELIVERING"
+    // },
+    // {
+    //     name: "Await Check Delivered",
+    //     value: "DELIVERED_AWAIT_APPROVAL"
+    // },
     {
         name: "Order Completed",
         value: "ORDER_COMPLETED"
