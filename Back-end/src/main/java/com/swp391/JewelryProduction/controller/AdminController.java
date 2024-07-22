@@ -23,6 +23,7 @@ import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 
@@ -195,13 +196,36 @@ public class AdminController {
                 .buildEntity();
     }
 
-    @PostMapping("/gemstone-type/{multiplierType}")
-    public ResponseEntity<Response> createGemstoneType(@RequestBody GemstoneType gemstoneType,
-                                                       @PathVariable("multiplierType") String multiplierType,
-                                                       @RequestParam Long id,
-                                                       @RequestParam double multiplier) {
+    @PostMapping("/gemstone-type")
+    public ResponseEntity<Response> createGemstoneType(@RequestBody GemstoneType gemstoneType) {
+        return Response.builder()
+                .status(HttpStatus.OK)
+                .message("Request sent successfully.")
+                .response("gemstone-type", gemstoneService.createGemstoneType(gemstoneType))
+                .buildEntity();
+    }
+    @PutMapping("/gemstone-type")
+    public ResponseEntity<Response> updateGemstoneType(@RequestBody GemstoneType gemstoneType) {
+        return Response.builder()
+                .status(HttpStatus.OK)
+                .message("Request sent successfully.")
+                .response("gemstone-type", gemstoneService.updateGemstoneType(gemstoneType))
+                .buildEntity();
+    }
+
+    @DeleteMapping("/gemstone-type/{id}")
+    public ResponseEntity<Response> deleteGemstone(@PathVariable("id") long id) {
+        gemstoneService.deleteGemstone(id);
+        return Response.builder()
+                .status(HttpStatus.OK)
+                .message("Request sent successfully.")
+                .buildEntity();
+    }
+
+    @PutMapping("/gemstone-multiplier/{type}")
+    public ResponseEntity<Response> updateGemstoneMultiplier(@PathVariable("type") String type, @RequestParam long id, @RequestParam double multiplier) {
         Object objectMultiplier = null;
-        switch(multiplierType) {
+        switch(type) {
             case "cut-multiplier":
                 objectMultiplier = gemstoneService.updateCutMultiplier(id,multiplier);
                 break;
@@ -220,46 +244,7 @@ public class AdminController {
         return Response.builder()
                 .status(HttpStatus.OK)
                 .message("Request sent successfully.")
-                .response("gemstone", gemstoneService.editGemstoneType(gemstoneType))
-                .response("multiplier", objectMultiplier)
-                .buildEntity();
-    }
-
-//    @PutMapping("/gemstone/{type}")
-//    public ResponseEntity<Response> updateGemstone(@RequestBody Gemstone gemstone, @PathVariable("type") String multiplierType,
-//                                                   @RequestParam Long id,
-//                                                   @RequestParam double multiplier ) {
-//        Object shapeMultiplier = null;
-//        switch(multiplierType) {
-//            case "cut-multiplier":
-//                shapeMultiplier = gemstoneService.updateCutMultiplier(id,multiplier);
-//                break;
-//            case "shape-multiplier":
-//                shapeMultiplier = gemstoneService.updateShapeMultiplier(id,multiplier);
-//                break;
-//            case "color-multiplier":
-//                shapeMultiplier = gemstoneService.updateColorMultiplier(id,multiplier);
-//                break;
-//            case "clarity-multiplier":
-//                shapeMultiplier = gemstoneService.updateClarityMultiplier(id, multiplier);
-//                break;
-//            default:
-//                break;
-//        }
-//        return Response.builder()
-//                .status(HttpStatus.OK)
-//                .message("Request sent successfully.")
-//                .response("gemstone", gemstoneService.updateGemstone(gemstone))
-//                .response("multiplier", shapeMultiplier)
-//                .buildEntity();
-//    }
-
-    @DeleteMapping("/gemstone-type/{id}")
-    public ResponseEntity<Response> deleteGemstone(@PathVariable("id") long id) {
-        gemstoneService.deleteGemstone(id);
-        return Response.builder()
-                .status(HttpStatus.OK)
-                .message("Request sent successfully.")
+                .response(type, objectMultiplier)
                 .buildEntity();
     }
     //</editor-fold>
