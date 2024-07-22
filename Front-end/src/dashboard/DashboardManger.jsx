@@ -404,7 +404,7 @@ export default function DashboardManager() {
                 Revenue
               </p>
               <p style={{ margin: 0, fontSize: 20, fontWeight: 500 }}>
-                $ {dashboard ? dashboard.revenue : "Loading..."}
+                {dashboard ? formatPrice(parseFloat(dashboard.revenue)) : "Loading..."}
               </p>
             </div>
           </div>
@@ -533,3 +533,10 @@ export default function DashboardManager() {
     </Container>
   );
 }
+
+const formatPrice = (price) => {
+  return price.toLocaleString("en-US", {
+      style: "currency",
+      currency: "USD",
+  });
+};
