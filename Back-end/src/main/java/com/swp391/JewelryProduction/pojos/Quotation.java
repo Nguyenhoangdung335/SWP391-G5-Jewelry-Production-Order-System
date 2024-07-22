@@ -75,6 +75,6 @@ public class Quotation {
     }
     
     public Double getHalfPrice () {
-        return roundToDecimal(getTotalPrice(), 2);
+        return roundToDecimal(getTotalPrice() / 2.0, 2);
     }
 }

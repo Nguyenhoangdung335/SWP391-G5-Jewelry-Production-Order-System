@@ -3,6 +3,7 @@ package com.swp391.JewelryProduction.services;
 import com.paypal.api.payments.*;
 import com.paypal.base.rest.APIContext;
 import com.paypal.base.rest.PayPalRESTException;
+import com.swp391.JewelryProduction.enums.OrderStatus;
 import com.swp391.JewelryProduction.pojos.*;
 import com.swp391.JewelryProduction.pojos.Order;
 import com.swp391.JewelryProduction.pojos.Transactions;
@@ -24,7 +25,6 @@ public class PaypalService {
     private final TransactionService transactionService;
 
     public Payment makePayment(
-            Double total,
             String currency,
             String method,
             String intent,
@@ -34,14 +34,13 @@ public class PaypalService {
             Order order
     ) throws PayPalRESTException {
         Quotation quotation = order.getQuotation();
-        UserInfo ownerInfo = order.getOwner().getUserInfo();
 
         Amount amount = new Amount();
         amount.setCurrency(currency);
         amount.setTotal(
                 String.format(
                         Locale.forLanguageTag(currency),
-                        "%.2f", total
+                        "%.2f", quotation.getHalfPrice()
                 )
         );
 

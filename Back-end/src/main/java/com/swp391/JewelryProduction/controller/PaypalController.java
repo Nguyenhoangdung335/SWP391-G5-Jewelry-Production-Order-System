@@ -90,7 +90,6 @@ public class PaypalController {
             Order order = orderService.findOrderById(orderId);
 
             Payment payment = paypalService.makePayment(
-                    quotation.getTotalPrice(),
                     "USD",
                     method.name(),
                     "sale",
