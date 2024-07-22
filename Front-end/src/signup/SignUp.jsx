@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { RiArrowLeftLine } from "react-icons/ri";
 import { Link, useNavigate } from "react-router-dom";
 import { Container, Form, Button, Alert } from "react-bootstrap";
-import { FaGoogle, FaGithub } from "react-icons/fa";
 import axios from "axios";
 import ServerUrl from "../reusable/ServerUrl";
 
@@ -64,11 +63,7 @@ export default function SignUp() {
           backgroundColor: "rgba(217, 217, 217, 0.7)",
         }}
       >
-        <Link
-          to="/login"
-          className="position-absolute"
-          style={{ top: "7%" }}
-        >
+        <Link to="/login" className="position-absolute" style={{ top: "7%" }}>
           <RiArrowLeftLine size={30} color="black" />
         </Link>
         <h2 className="text-center mb-4">Sign up</h2>
@@ -81,8 +76,6 @@ export default function SignUp() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Email"
-              
-              
             />
             <Form.Control.Feedback type="invalid">
               Please provide a valid email.
@@ -94,7 +87,6 @@ export default function SignUp() {
               required
               type="password"
               placeholder="Password"
-              
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />

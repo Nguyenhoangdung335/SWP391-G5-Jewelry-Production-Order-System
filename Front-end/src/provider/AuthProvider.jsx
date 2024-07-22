@@ -27,7 +27,6 @@ export const AuthProvider = ({ children }) => {
     }
 
     axios.defaults.validateStatus = (status) => {
-      console.log(status);
       if (status === 401) {
         setToken(null);
         navigate("/login");
