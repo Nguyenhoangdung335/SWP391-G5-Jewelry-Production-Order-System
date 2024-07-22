@@ -38,8 +38,7 @@ public class QuotationItem {
 
     @ToString.Include
     @EqualsAndHashCode.Include
-    @Formula("quantity * unit_price")
-    @Column(columnDefinition = "decimal(15,2)")
+    @Column(name = "total_price", columnDefinition = "decimal(15,2)")
     private double totalPrice;
 
     @ToString.Exclude
