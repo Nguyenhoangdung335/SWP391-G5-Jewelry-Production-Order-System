@@ -19,19 +19,25 @@ export default function GemstoneManager() {
   const itemsPerPage = 5;
   const [data, setData] = useState([]);
 
-  console.log(data);
+  console.log("Entering");
 
   useEffect(() => {
+    console.log("jhkhj");
     axios({
       method: "GET",
       url: `${ServerUrl}/api/admin/gemstones`,
       headers: { "Content-Type": "application/json" },
     })
       .then((res) => {
+        console.log("Testing")
+        console.log(res.data);
         setData(res.data.responseList);
       })
-      .catch((err) => console.log(err));
-  }, [currentPage]);
+      .catch((err) => {
+        console.error(err);
+        console.log(err);
+      });
+  }, []);
 
   const handleEdit = (record) => {
     setSelectedGemstone(record);
