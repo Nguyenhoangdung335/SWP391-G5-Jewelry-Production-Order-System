@@ -13,6 +13,8 @@ import axios from "axios";
 import { Icon } from "@iconify/react";
 import ServerUrl from "../reusable/ServerUrl";
 import { FaEdit, FaTrash } from "react-icons/fa";
+import { useAuth } from "../provider/AuthProvider";
+import { jwtDecode } from "jwt-decode";
 
 export default function EmployeeManager() {
   const [filterRole, setFilterRole] = useState("ALL");
@@ -25,6 +27,8 @@ export default function EmployeeManager() {
   const itemsPerPage = 5;
   const [data, setData] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
+  const { token } = useAuth();
+  const decodedToken = jwtDecode(token);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -278,7 +282,7 @@ export default function EmployeeManager() {
 
       <div className="mb-2">
         <p style={{ margin: 0, fontSize: 24, fontWeight: "bold" }}>
-          Welcome, Admin!
+          Welcome, {decodedToken.first_name}!
         </p>
         <p style={{ fontSize: 18 }}>Employees Management</p>
       </div>

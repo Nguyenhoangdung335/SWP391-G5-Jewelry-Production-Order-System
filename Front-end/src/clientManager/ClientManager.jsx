@@ -6,6 +6,8 @@ import { roles } from "../data/Roles";
 import ServerUrl from "../reusable/ServerUrl";
 import { FaTrash } from "react-icons/fa";
 import { FaEdit } from "react-icons/fa";
+import { useAuth } from "../provider/AuthProvider";
+import { jwtDecode } from "jwt-decode";
 
 export default function ClientManager() {
   const [filterRole, setFilterRole] = useState("CUSTOMER");
@@ -17,6 +19,8 @@ export default function ClientManager() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [data, setData] = useState([]);
+  const { token } = useAuth();
+  const decodedToken = jwtDecode(token);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -260,7 +264,7 @@ export default function ClientManager() {
 
       <div className="mb-2">
         <p style={{ margin: 0, fontSize: 24, fontWeight: "bold" }}>
-          Welcome, Admin!
+          Welcome, {decodedToken.first_name}!
         </p>
         <p style={{ fontSize: 18 }}>Client Management</p>
       </div>

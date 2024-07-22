@@ -110,7 +110,7 @@ export default function OrderManager() {
     <div style={{ padding: "3%" }}>
       <div className="mb-2">
         <p style={{ margin: 0, fontSize: 24, fontWeight: "bold" }}>
-          Welcome, Admin!
+          Welcome, {decodedToken.first_name}!
         </p>
         <p style={{ fontSize: 18 }}>Orders Management</p>
       </div>
@@ -151,8 +151,9 @@ export default function OrderManager() {
               <td>{arrayToDate(order.createdDate)}</td>
               <td>{arrayToDate(order.completedDate)}</td>
               <td>
-                <Badge className="text-white"
-                  bg={order.status === "ORDER_COMPLETED"? "success": "danger" }
+                <Badge
+                  className="text-white"
+                  bg={order.status === "ORDER_COMPLETED" ? "success" : "danger"}
                 >
                   {order.status}
                 </Badge>

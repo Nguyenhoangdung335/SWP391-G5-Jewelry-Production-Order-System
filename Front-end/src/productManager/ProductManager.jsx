@@ -7,9 +7,9 @@ import axios from "axios";
 import ServerUrl from "../reusable/ServerUrl";
 import { FaEdit } from "react-icons/fa";
 import { FaTrash } from "react-icons/fa";
+import { jwtDecode } from "jwt-decode";
 
 export default function ProductManager() {
-  const { account } = useAuth();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
@@ -18,6 +18,8 @@ export default function ProductManager() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
   const [data, setData] = useState([]);
+  const { token } = useAuth();
+  const decodedToken = jwtDecode(token);
   // const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -186,7 +188,7 @@ export default function ProductManager() {
       `}</style>
       <div className="mb-2">
         <p style={{ margin: 0, fontSize: 24, fontWeight: "bold" }}>
-          Welcome, Admin!
+          Welcome, {decodedToken.first_name}!
         </p>
         <p style={{ fontSize: 18 }}>Product Management</p>
       </div>

@@ -225,6 +225,7 @@ export default function DashboardManager() {
     },
   ];
 
+
   const paginatedDataClient = dataClient.slice(
     (currentPageClients - 1) * itemsPerPage,
     currentPageClients * itemsPerPage
@@ -239,7 +240,7 @@ export default function DashboardManager() {
     <Container fluid style={{ padding: "3%" }}>
       <div className="mb-2">
         <p style={{ margin: 0, fontSize: 24, fontWeight: "bold" }}>
-          Welcome, Admin!
+          Welcome, {decodedToken.first_name}!
         </p>
         <p style={{ fontSize: 18 }}>Dashboard</p>
       </div>
@@ -418,7 +419,7 @@ export default function DashboardManager() {
               borderStyle: "solid",
               borderRadius: 5,
               display: "flex",
-              height:"100%",
+              height: "100%",
               flexDirection: "column",
               justifyContent: "center",
               padding: "10px 10px",
