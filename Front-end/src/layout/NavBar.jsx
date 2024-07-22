@@ -142,12 +142,12 @@ export default function NavBar() {
     //   icon: <FiBox size={30} color="white" />,
     //   label: "Products",
     // },
-    {
-      id: 7,
-      to: "/userManager/gemstone_manager",
-      icon: <IoDiamondOutline size={30} color="white" />,
-      label: "Gemstone",
-    },
+    // {
+    //   id: 7,
+    //   to: "/userManager/gemstone_manager",
+    //   icon: <IoDiamondOutline size={30} color="white" />,
+    //   label: "Gemstone",
+    // },
     {
       id: 8,
       to: "/user_setting_page/profile_page",
