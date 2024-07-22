@@ -1,5 +1,6 @@
 package com.swp391.JewelryProduction.repositories;
 
+import com.swp391.JewelryProduction.enums.OrderStatus;
 import com.swp391.JewelryProduction.pojos.designPojos.Product;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Limit;
@@ -25,6 +26,9 @@ public interface ProductRepository extends JpaRepository<Product, String> {
     @EntityGraph(attributePaths = {"specification.metal", "specification.gemstone.type"})
     @NotNull
     Page<Product> findAll(@NotNull Pageable pageable);
+
+    @EntityGraph(attributePaths = {"specification.metal", "specification.gemstone.type"})
+    Page<Product> findAllByOrderStatusIs (@NotNull Pageable pageable, OrderStatus status);
 
     @Query("SELECT p FROM Product p JOIN FETCH p.specification WHERE p.id = :id")
     @NotNull

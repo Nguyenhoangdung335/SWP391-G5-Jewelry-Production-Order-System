@@ -26,10 +26,10 @@ public class ProductController {
     @GetMapping("")
     public ResponseEntity<Response> getProducts(
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "5") int size
+            @RequestParam(name = "size", defaultValue = "5") int size,
+            @RequestParam(name = "isFinished", defaultValue = "false") boolean isFinished
     ) {
-        Page<Product> productPage = productService.findAll(page, size);
-        productPage.getContent().forEach(System.out::println);
+        Page<Product> productPage = productService.findAll(page, size, isFinished);
         return Response.builder()
                 .status(HttpStatus.OK)
                 .message("Get products successfully")
