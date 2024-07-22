@@ -37,6 +37,7 @@ public interface OrderRepository extends JpaRepository<Order, String> {
     List<Order> findAllByOwnerId (String ownerId);
     Optional<Order> findByProductId (String productId);
 
+    @EntityGraph( attributePaths = {"owner.userInfo", "staffOrderHistory.staff", "design", "product.specification", "transactions", "warranty"} )
     @Query("SELECT o FROM Order o " +
             "JOIN o.staffOrderHistory soh " +
             "WHERE soh.staff.id = :staffId " +
@@ -45,6 +46,7 @@ public interface OrderRepository extends JpaRepository<Order, String> {
             "ORDER BY o.createdDate DESC")
     Page<Order> findLatestUncompletedOrderByStaffAndRole(@Param("staffId") String staffId, @Param("role") Role role, PageRequest request);
 
+    @EntityGraph( attributePaths = {"owner.userInfo", "staffOrderHistory.staff", "design", "product.specification", "transactions", "warranty"} )
     @Query("SELECT o FROM Order o " +
             "JOIN o.staffOrderHistory soh " +
             "WHERE soh.staff.id = :staffId " +
@@ -53,6 +55,7 @@ public interface OrderRepository extends JpaRepository<Order, String> {
             "ORDER BY o.createdDate DESC")
     Page<Order> findAllByOrderByStaffAndStatus (@Param("staffId") String staffId, @Param("role") Role role, @Param("status") OrderStatus status, PageRequest request);
 
+    @EntityGraph( attributePaths = {"owner.userInfo", "staffOrderHistory.staff", "design", "product.specification", "transactions", "warranty"} )
     @Query("SELECT o FROM Order o " +
             "JOIN o.staffOrderHistory soh " +
             "WHERE soh.staff.id = :staffId " +
