@@ -1,9 +1,6 @@
 package com.swp391.JewelryProduction.util;
 
-import com.swp391.JewelryProduction.pojos.Account;
-import com.swp391.JewelryProduction.pojos.Order;
-import com.swp391.JewelryProduction.pojos.Staff;
-import com.swp391.JewelryProduction.pojos.UserInfo;
+import com.swp391.JewelryProduction.pojos.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -146,6 +143,45 @@ public class MessagesConstant {
         }
     }
 
+    public class RemainingTransactionMessage {
+        public String title () {
+            return title = "Your Custom Jewelry is Ready! Complete Your Remaining Payment";
+        }
+
+        public String description (Order order) {
+            Quotation quotation = order.getQuotation();
+
+            return description = String.format(
+                    """
+                    Dear %s,
+                    We are thrilled to inform you that your custom jewelry piece is now complete! \
+                    Thank you for your patience during the crafting process. We are confident that \
+                    you will love the final product.
+                    
+                    As a reminder, you have already made a 50%% payment towards your order. To proceed \
+                    with the delivery, please complete the remaining payment of %.2f.
+                    
+                    Order Details:
+                      -  Order ID:  %s
+                      -  Total Amount: %.2f
+                      -  Amount Paid: %.2f
+                      -  Remaining Amount: %.2f
+                    
+                    If you have any questions or need further assistance, please do not hesitate to \
+                    reach out to our customer support team at %s.
+                    
+                    Thank you for choosing %s for your custom jewelry needs. We look \
+                    forward to delivering your beautiful piece soon!
+                    
+                    Best regards,
+                    %s
+                    """,
+                    customerName, quotation.getHalfPrice(), order.getId(), quotation.getTotalPrice(), quotation.getHalfPrice(),
+                    (quotation.getTotalPrice() - quotation.getHalfPrice()), companyContact, companyName, companyName
+            );
+        }
+    }
+
     public class OrderCancelMessage {
         public String title () {
             return title = "Your Order have been canceled";
@@ -212,6 +248,15 @@ public class MessagesConstant {
                 .customerName(customerName)
                 .title(orderCancelMessage.title())
                 .description(orderCancelMessage.description(reasons, order))
+                .build();
+    }
+
+    public MessagesConstant createRemainingTransactionMessge (String customerName, Order order) {
+        RemainingTransactionMessage message = new RemainingTransactionMessage();
+        return MessagesConstant.builder()
+                .customerName(customerName)
+                .title(message.title())
+                .description(message.description(order))
                 .build();
     }
 }
