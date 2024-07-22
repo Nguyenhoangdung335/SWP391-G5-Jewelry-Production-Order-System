@@ -21,7 +21,7 @@ import java.util.List;
 @Setter
 @Getter
 @Builder
-public class CrawlThread implements Runnable{
+public class CrawlThread implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(CrawlThread.class);
     private List<MetalPrice> metalPrices;
     private ConnectionPage connection;
@@ -44,14 +44,14 @@ public class CrawlThread implements Runnable{
             connectionPage = connection.getConnection(this.urlPage);
             Elements materials = connectionPage.select("#gr24_spot_gold_widget-11 > table > tbody > tr");
 
-            materials.forEach(product ->{
+            materials.forEach(product -> {
                 MetalPrice metalPrice = MetalPrice.builder()
                         .name("Gold")
                         .unit(product.selectFirst("th").text())
-                        .price(Double.parseDouble(product.selectFirst("td").text().replace("$", "").replace(",", "")) * (isVND? rate: 1))
+                        .price(Double.parseDouble(product.selectFirst("td").text().replace("$", "").replace(",", "")) * (isVND ? rate : 1))
                         .updatedTime(LocalDateTime.now())
                         .build();
-                synchronized (materials){
+                synchronized (materials) {
                     this.metalPrices.add(metalPrice);
                 }
             });
