@@ -31,7 +31,7 @@ public interface OrderRepository extends JpaRepository<Order, String> {
     @EntityGraph( attributePaths = {"owner.userInfo", "staffOrderHistory.staff", "design", "product.specification", "transactions", "warranty"} )
     Page<Order> findAll(@NotNull Pageable pageable);
 
-    @EntityGraph( attributePaths = {"quotation.quotationItems"})
+    @EntityGraph( attributePaths = {"transactions"})
     @Query(value = "SELECT o FROM Order o WHERE MONTH(o.createdDate) = :month AND YEAR(o.createdDate) = :year")
     List<Order> findAllByMonthAndYear(@Param("month") int month, @Param("year") int year);
     List<Order> findAllByOwnerId (String ownerId);

@@ -133,8 +133,9 @@ public class OrderServiceImpl implements OrderService {
         owner.setCurrentOrder(order);
         order = orderRepository.save(order);
         instantiateStateMachine(order, this, stateMachineService);
+        order.setName("Order " + order.getId());
 
-        return order;
+        return orderRepository.save(order);
     }
     //</editor-fold>
 
@@ -201,7 +202,7 @@ public class OrderServiceImpl implements OrderService {
         double totalRevenue = 0;
         for(Order order : orderRepository.findAllByMonthAndYear(month, 2024)) {
             if (QUALIFIED_STATUS.contains(order.getStatus()))
-                totalRevenue += order.getQuotation().getTotalPrice();
+                totalRevenue += order.getTransactions().getAmount();
         };
         return totalRevenue;
     }
