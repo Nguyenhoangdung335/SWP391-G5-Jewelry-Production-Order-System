@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Button, Container, Form, Modal } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 import ServerUrl from "../reusable/ServerUrl";
 import CreateRequest from "./CreateRequest";
 
@@ -140,7 +141,10 @@ function OrderPage1() {
           setFormState((prev) => ({ ...prev, selectedLength: "0" }));
           break;
         case "Rings":
-          setFormState((prev) => ({ ...prev, selectedLength: "0.618" }));
+          setFormState((prev) => ({
+            ...prev,
+            selectedLength: "0.618",
+          }));
           break;
         default:
           setFormState((prev) => ({ ...prev, selectedLength: "0" }));
@@ -293,11 +297,11 @@ function OrderPage1() {
             <option value="" disabled>
               Choose one
             </option>
-            {styleList.map((style, index) => (
+            {styleList.map((style, index) => {
               <option key={index} value={style.value}>
                 {style.name}
-              </option>
-            ))}
+              </option>;
+            })}
           </Form.Select>
         </Form.Group>
 
@@ -313,11 +317,11 @@ function OrderPage1() {
             <option value="" disabled>
               Choose one
             </option>
-            {occasionList.map((occasion, index) => (
+            {occasionList.map((occasion, index) => {
               <option key={index} value={occasion.value}>
                 {occasion.name}
-              </option>
-            ))}
+              </option>;
+            })}
           </Form.Select>
         </Form.Group>
 
@@ -333,11 +337,11 @@ function OrderPage1() {
             <option value="" disabled>
               Choose one
             </option>
-            {jewelryTypeList.map((type, index) => (
+            {jewelryTypeList.map((type, index) => {
               <option key={index} value={type.value}>
                 {type.name}
-              </option>
-            ))}
+              </option>;
+            })}
           </Form.Select>
         </Form.Group>
 
@@ -666,7 +670,10 @@ function OrderPage1() {
           <Modal.Title>Create Request</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <CreateRequest productSpecId={productSpecId} />
+          <CreateRequest
+            productSpecId={productSpecId}
+            onClose={handleRequestCanceled}
+          />
         </Modal.Body>
       </Modal>
     </Container>

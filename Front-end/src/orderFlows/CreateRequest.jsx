@@ -6,8 +6,11 @@ import {jwtDecode} from "jwt-decode";
 import {Form, Button} from "react-bootstrap";
 import CustomAlert from "../reusable/CustomAlert";
 import { useAlert } from "../provider/AlertProvider";
+import { useNavigate } from "react-router-dom";
+
 
 function CreateRequest({productSpecId, onClose}) {
+    const navigation = useNavigate();
     const {showAlert} = useAlert();
     const {token} = useAuth();
     const decodedToken = jwtDecode(token);
@@ -59,6 +62,7 @@ function CreateRequest({productSpecId, onClose}) {
                 console.log(response.data);
                 showAlert("Success", "Request sent successfully!", "success");
                 onClose();
+                navigation("/");
             })
             .catch((error) => {
                 console.error("There was an error sending the request!", error);
