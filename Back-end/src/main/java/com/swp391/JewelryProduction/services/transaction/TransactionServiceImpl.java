@@ -39,16 +39,24 @@ public class TransactionServiceImpl implements TransactionService{
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Override
     public Transactions createTransaction(Payment payment, Order order) {
+        Transactions transactions = order.getTransactions();
+        if (transactions == null) {
+            return makeNewTransaction(payment, order);
+        }
+        return transactions;
+    }
+
+    private Transactions makeNewTransaction (Payment payment, Order order) {
         Transactions transactions = null;
         try {
-             transactions = Transactions.builder()
-                     .order(order)
-                     .dateCreated(LocalDateTime.now())
-                     .status(TransactionStatus.CREATED)
-                     .paypalPaymentId(payment.getId())
-                     .build();
-             order.setTransactions(transactions);
-             transactions = orderService.updateOrder(order).getTransactions();
+            transactions = Transactions.builder()
+                    .order(order)
+                    .dateCreated(LocalDateTime.now())
+                    .status(TransactionStatus.CREATED)
+                    .paypalPaymentId(payment.getId())
+                    .build();
+            order.setTransactions(transactions);
+            transactions = orderService.updateOrder(order).getTransactions();
 
         } catch (NumberFormatException ex) {
             log.error("Cannot parse double value for the transaction");
@@ -104,7 +112,11 @@ public class TransactionServiceImpl implements TransactionService{
         Transactions transactions = order.getTransactions();
         if (transactions == null)
             throw new IllegalArgumentException("Cannot make bet transaction, transaction does not exist or does not have required status");
-
+        try {
+            transactions.setAmount(Double.parseDouble(payment.getTransactions().getFirst().getAmount().getTotal()));
+        } catch (NumberFormatException ex) {
+            throw new RuntimeException("Cannot parse amount from paypal transaction");
+        }
         transactions.setStatus(TransactionStatus.BET);
         transactions.setDateUpdated(LocalDateTime.now());
         transactions.setPaypalSaleId(retrieveSale(payment).getId());
@@ -116,7 +128,12 @@ public class TransactionServiceImpl implements TransactionService{
         Transactions transactions = order.getTransactions();
         if (transactions == null)
             throw new IllegalArgumentException("Cannot make bet transaction, transaction does not exist or does not have required status");
-
+        try {
+            double remainingAmount = Double.parseDouble(payment.getTransactions().getFirst().getAmount().getTotal());
+            transactions.setAmount(transactions.getAmount() + remainingAmount);
+        } catch (NumberFormatException ex) {
+            throw new RuntimeException("Cannot parse amount from paypal transaction");
+        }
         transactions.setStatus(TransactionStatus.COMPLETED);
         transactions.setDateUpdated(LocalDateTime.now());
         transactions.setPaypalSaleId(retrieveSale(payment).getId());
