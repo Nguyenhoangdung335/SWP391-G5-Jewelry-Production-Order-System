@@ -11,7 +11,7 @@ import {
   Row,
   Table,
 } from "react-bootstrap";
-import snowfall from "../assets/snowfall.jpg";
+import noImage from "../assets/no_image.jpg";
 import { jwtDecode } from "jwt-decode";
 import { useAuth } from "../provider/AuthProvider";
 import ResizeImage from "../reusable/ResizeImage";
@@ -20,8 +20,10 @@ import AssignedStaff from "../User_Menu/order_detail_components/AssignedStaff";
 import QuotationModal from "../User_Menu/order_detail_components/QuotationModal";
 import CustomAlert from "../reusable/CustomAlert";
 import ProductSpecificationTable from "../User_Menu/order_detail_components/ProductSpecification";
+import { useAlert } from "../provider/AlertProvider";
 
 function OrderDetailManager() {
+  const {showAlert} = useAlert();
   const state = useLocation();
   const [data, setData] = useState(null);
   const [showQuotation, setShowQuotation] = useState(false);
@@ -32,11 +34,17 @@ function OrderDetailManager() {
   const { token } = useAuth();
   const decodedToken = jwtDecode(token);
   const [imageLink, setImageLink] = useState(null);
-  const [showAlert, setShowAlert] = useState(["", "", false, false, ""]);
   const [confirmNotification, setConfirmNotification] = useState(null);
-  const hadFetched = useRef(false);
+  const [startRender, setStartRender] = useState(true);
 
   const isQualifiedApproveSpecification = ["ADMIN", "MANAGER"].includes(decodedToken.role) && data?.status === "REQ_AWAIT_APPROVAL";
+  const isQualifyApproving =
+  ["ADMIN", "CUSTOMER", "MANAGER"].includes(decodedToken.role) &&
+  (
+    (decodedToken.role === "ADMIN" && ["AWAIT", "APPROVAL"].every(sub => data?.status.includes(sub))) ||
+    (decodedToken.role === "CUSTOMER" && ["AWAIT", "APPROVAL", "CUST"].every(sub => data?.status.includes(sub))) ||
+    (decodedToken.role === "MANAGER" && ["AWAIT", "APPROVAL", "MANA"].every(sub => data?.status.includes(sub)))
+  );
 
   const fetchData = async () => {
     try {
@@ -46,24 +54,24 @@ function OrderDetailManager() {
       if (response.status === 200) {
         const orderDetail = response.data.responseList.orderDetail;
         setData(orderDetail);
-        setImageLink(orderDetail.design?.designLink || snowfall);
+        setImageLink(orderDetail.design?.designLink || noImage);
       }
     } catch (error) {
       console.error("Error fetching data", error);
-    } finally {
-      setShowAlert(true);
+      showAlert("Error fetching data", "", "danger");
     }
   };
 
   useEffect(() => {
-    if (!hadFetched.current) {
+    if (startRender) {
+      console.log("Start fetching");
       fetchData();
-      hadFetched.current = true;
+      setStartRender(false);
     }
-  }, [id]);
+  }, [startRender]);
 
   useEffect(() => {
-    if (isQualifiedApproveSpecification) {
+    if (isQualifiedApproveSpecification || isQualifyApproving) {
       axios
         .get(`${ServerUrl}/api/notifications/${data.id}/get-confirm`)
         .then((res) => {
@@ -75,7 +83,7 @@ function OrderDetailManager() {
           console.error(err);
         });
     }
-  }, [isQualifiedApproveSpecification, data]);
+  }, [isQualifiedApproveSpecification, isQualifyApproving, data]);
 
   if (!data) {
     return <div className="d-flex justify-content-center align-items-center">Loading...</div>;
@@ -90,23 +98,20 @@ function OrderDetailManager() {
 
   const handleShowQuotations = () => setShowQuotation(true);
 
-  const handleSetAlertInfo = (alertInfo) => {
-    setShowAlert(alertInfo);
-  };
+  const handleConfirmRequest = async (confirmed) => {
+    if (isQualifyApproving || isQualifiedApproveSpecification) {
+      const confirmedBool = Boolean(confirmed);
+      const url = `${ServerUrl}/api/notifications/${data.id}/${confirmNotification.id}/confirm?confirmed=${confirmedBool}`;
 
-  const handleConfirmSpecification = async (confirmed) => {
-    console.log(confirmed);
-    const confirmedBool = Boolean(confirmed);
-    const url = `${ServerUrl}/api/notifications/${data.id}/${confirmNotification.id}/confirm?confirmed=${confirmedBool}`;
-
-    try {
-      const response = await axios.post(url);
-      if (response.status === 200) {
-        fetchData();
-        setShowAlert(["Confirm successfully", "", true, false, "success"]);
+      try {
+        const response = await axios.post(url);
+        if (response.status === 200) {
+          showAlert("Confirm successfully", "", "success");
+          setStartRender(true);
+        }
+      } catch (error) {
+        showAlert("Confirm failed", "", "danger");
       }
-    } catch (error) {
-      setShowAlert(["Confirm failed", "", true, false, "danger"]);
     }
   };
 
@@ -125,7 +130,7 @@ function OrderDetailManager() {
         }
       );
       if (response.status === 200) {
-        fetchData();
+        setStartRender(true);
         setImageLink(response.data.responseList.designUrl);
         setShowDesignReport(true);
       }
@@ -149,13 +154,13 @@ function OrderDetailManager() {
         }
       );
       if (response.status === 200) {
-        fetchData();
+        setStartRender(true);
         setImageLink(response.data.responseList.designUrl);
         setShowProductReport(true);
-        setShowAlert(["Upload Design image successfully", "", true, false, "success"]);
+        showAlert("Upload Design image successfully", "", "success");
       }
     } else {
-      setShowAlert(["Upload design image failed", "", true, false, "danger"]);
+      showAlert("Upload design image failed", "", "danger");
     }
   };
 
@@ -166,11 +171,11 @@ function OrderDetailManager() {
         updatedStaff
       );
       if (response.status === 200) {
-        fetchData();
-        setShowAlert(["Assigned Staff successfully", "", true, false, "success"]);
+        showAlert("Assigned Staff successfully", "", "success");
+        setStartRender(true);
       }
     } catch (error) {
-      setShowAlert(["Assigned Staff failed", "", true, false, "danger"]);
+      showAlert("Assigned Staff failed", "", "danger");
     }
   };
 
@@ -203,21 +208,14 @@ function OrderDetailManager() {
           >
             <div className="mb-3" style={imageContainerStyle}>
               <img
-                src={imageLink || snowfall}
+                src={imageLink || noImage}
                 alt="Product"
                 style={imageStyle}
               />
             </div>
             <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
-              <div className="p-2">
-                <div
-                  className="mb-2"
-                  style={{
-                    borderBottom: "1px solid rgba(166, 166, 166, 0.5)",
-                  }}
-                >
-                  <h4>{id}</h4>
-                </div>
+              <div className="p-3">
+                <h4 className="pb-2">{id}</h4>
                 <Table bordered hover>
                   <tbody>
                     <tr>
@@ -234,22 +232,18 @@ function OrderDetailManager() {
                     </tr>
                     <tr>
                       <th>Completed Date</th>
-                      <td>{arrayToDate(data.completedDate)}</td>
+                      <td>{data.completedDate ? arrayToDate(data.completedDate): "Ongoing"}</td>
                     </tr>
                     <tr>
                       <th>Total Price</th>
-                      <td>{Math.round(data.quotation?.totalPrice) || 0}</td>
+                      <td>{formatPrice(data.quotation?.totalPrice || 0)}</td>
                     </tr>
                     <tr>
                       <th>Status</th>
                       <td>
-                        <Badge
-                          className="text-white"
+                        <Badge className="text-white"
                           bg={
-                            data.status === "ORDER_COMPLETED"
-                              ? "success"
-                              : "danger"
-                          }
+                            data.status === "ORDER_COMPLETED"? "success": "danger" }
                         >
                           {data.status}
                         </Badge>
@@ -318,11 +312,14 @@ function OrderDetailManager() {
                   >
                     <h4>Specification</h4>
                   </div>
-                  <ProductSpecificationTable selectedProduct={data?.product} />
+                  <ProductSpecificationTable orderStatus={data?.status} selectedProduct={data?.product} role ={decodedToken.role}/>
                   {isQualifiedApproveSpecification && (
-                    <div className="d-flex justify-content-center pt-2">
-                      <Button className="w-100" onClick={handleConfirmSpecification}>
-                        Approve Specification
+                    <div className="d-flex justify-content-center pt-2 gap-5">
+                      <Button className="w-50" onClick={() => handleConfirmRequest(false)}>
+                       Declined
+                      </Button>
+                      <Button className="w-50" onClick={() => handleConfirmRequest(true)}>
+                        Approve
                       </Button>
                     </div>
                   )}
@@ -399,7 +396,7 @@ function OrderDetailManager() {
                         borderBottom: "1px solid rgba(166, 166, 166, 0.5)",
                       }}
                     >
-                      <h4>Upload Image</h4>
+                      <h4>Upload Design Image</h4>
                     </div>
                     <Form noValidate onSubmit={handleDesignImageSubmit}>
                       <Form.Control
@@ -447,6 +444,32 @@ function OrderDetailManager() {
                 </div>
               </Row>
             )}
+            {isQualifyApproving && (
+              <Row className="mb-3">
+                <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
+                  <div className="p-2">
+                    <div
+                      className="mb-2"
+                      style={{
+                        borderBottom: "1px solid rgba(166, 166, 166, 0.5)",
+                      }}
+                    >
+                      <h4>Approve {data.status.includes("DES")? "Design Request": "Final Product Proof"}</h4>
+                    </div>
+                    <Form>
+                      <div className="d-flex justify-content-center pt-2 gap-5">
+                        <Button className="w-50" onClick={() => handleConfirmRequest(false)}>
+                          Declined
+                        </Button>
+                        <Button className="w-50" onClick={() => handleConfirmRequest(true)}>
+                          Approve
+                        </Button>
+                      </div>
+                    </Form>
+                  </div>
+                </div>
+              </Row>
+            )}
           </Col>
         </Row>
       </Container>
@@ -458,6 +481,7 @@ function OrderDetailManager() {
         show={showQuotation}
         onHide={() => setShowQuotation(false)}
         setShowAlert={handleSetAlertInfo}
+        fetchData={() => setStartRender(true)}
       />
 
       {showDesignReport && data.design && (
@@ -494,8 +518,8 @@ function OrderDetailManager() {
 
 
 const imageContainerStyle = {
-  width: '500px',
-  height: '500px',
+  width: '100%',
+  height: 'auto',
   overflow: 'hidden',
   position: 'relative',
   margin: '0 auto',
@@ -505,6 +529,13 @@ const imageStyle = {
   width: '100%',
   height: '100%',
   objectFit: 'contain',
+};
+
+const formatPrice = (price) => {
+  return price.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+  });
 };
 
 export default OrderDetailManager;

@@ -5,7 +5,7 @@ import Ring from "../assets/ring-banner.jpg";
 import AndieNecklace from "../assets/andie-gomez-acebo-sEq4onJnWrI-unsplash.jpg";
 import SabriannaRing from "../assets/sabrianna-uiKSc7-NM2s-unsplash.jpg";
 import React, {useEffect, useState} from "react";
-import Snowfall from "../assets/snowfall.jpg";
+import noImage from "../assets/no_image.jpg";
 import {LiaShippingFastSolid} from "react-icons/lia";
 import {RiCustomerServiceLine} from "react-icons/ri";
 import {MdOutlineCleaningServices} from "react-icons/md";
@@ -275,7 +275,7 @@ function Home() {
                                 width="100%"
                                 height="300px"
                                 className="object-fit-cover"
-                                src={Snowfall}
+                                src={noImage}
                                 variant="top"
                             />
                             <Card.Body>
@@ -299,7 +299,7 @@ function Home() {
                                 width="100%"
                                 height="300px"
                                 className="object-fit-cover"
-                                src={Snowfall}
+                                src={noImage}
                                 variant="top"
                             />
                             <Card.Body>
@@ -321,7 +321,7 @@ function Home() {
                                 width="100%"
                                 height="300px"
                                 className="object-fit-cover"
-                                src={Snowfall}
+                                src={noImage}
                                 variant="top"
                             />
                             <Card.Body>

@@ -1,11 +1,11 @@
 import React from "react";
-import snowfall from "../assets/snowfall.jpg";
+import noImage from "../assets/no_image.jpg";
 
 function Pin({ imageSource, size, onClick }) {
   return (
       <div className="block" style={{ ...styles.pin, ...styles[size] }} onClick={onClick}>
         <img
-            src={imageSource || snowfall}
+            src={imageSource || noImage}
             alt="Product"
             style={{ objectFit: "cover", width: "100%", height: "100%" }}
         />

@@ -5,14 +5,13 @@ import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import ServerUrl from "../reusable/ServerUrl";
 import arrayToDate from "../reusable/ArrayToDate";
-import { Link, useLocation } from "react-router-dom";
-import snowfall from "../assets/snowfall.jpg";
+import { Link } from "react-router-dom";
+import Loader from "../reusable/Loader";
+import noImage from "../assets/no_image.jpg";
 
 function OrderHistory() {
   const [data, setData] = useState([]);
   const { token } = useAuth();
-  const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
   const [hover, setHover] = useState(false);
   const [hoverId, setHoverId] = useState();
 
@@ -27,8 +26,9 @@ function OrderHistory() {
   }, [token]);
 
   if (!data) {
-    // Handle loading state or error
-    return <div>Loading...</div>;
+    return (
+      <Loader/>
+    );
   }
 
   const getOrder = data.map((i) => {
@@ -45,7 +45,7 @@ function OrderHistory() {
               setHover(true);
             }}
             onMouseLeave={() => {
-              setHoverId(i.id);
+              setHoverId(null);
               setHover(false);
             }}
             className=" link-opacity-50-hover"
@@ -57,9 +57,9 @@ function OrderHistory() {
           >
             <Card.Img
               className="rounded-0"
-              onError={(ev) => (ev.target.src = snowfall)}
+              onError={(ev) => (ev.target.src = noImage)}
               variant="top"
-              src={i.imageURL || snowfall}
+              src={i.imageURL || noImage}
               alt="Order Image"
             />
             <Card.Body

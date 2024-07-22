@@ -8,38 +8,47 @@ import {
   Col,
   Row,
   Table,
+  Spinner,
 } from "react-bootstrap";
-import snowfall from "../assets/snowfall.jpg";
+import noImage from "../assets/no_image.jpg";
 import QuotationModal from "./order_detail_components/QuotationModal";
 import WarrantyCertificateModal from "../warranty/WarrantyCertificateModal";
 import AssignedStaff from "./order_detail_components/AssignedStaff";
 import ProductSpecificationTable from "./order_detail_components/ProductSpecification";
-import { useAuth } from "../provider/AuthProvider";
 import CustomAlert from "../reusable/CustomAlert";
 import ConfirmationModal from "../reusable/ConfirmationModal";
+import { useAlert } from "../provider/AlertProvider";
+import Loader from "../reusable/Loader";
 
 function OrderDetail() {
   const quotationQualified = [
     "QUO_AWAIT_CUST_APPROVAL",
-    "AWAIT_TRANSACTION",
+    "AWAIT_BET_TRANSACTION",
     "IN_DESIGNING",
     "DES_AWAIT_MANA_APPROVAL",
     "DES_AWAIT_CUST_APPROVAL",
     "IN_PRODUCTION",
     "PRO_AWAIT_APPROVAL",
+    "AWAIT_REMAIN_TRANSACTION",
     "ORDER_COMPLETED",
   ];
+
+  const { showAlert } = useAlert();
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const [data, setData] = useState();
   const [showQuotation, setShowQuotation] = useState(false);
   const [showWarranty, setShowWarranty] = useState(false);
+  const [buttonIsLoading, setButtonIsLoading] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [imageLink, setImageLink] = useState(null);
-  const [showAlert, setShowAlert] = useState(["", "", false, false, ""]);
+  const [confirmNotification, setConfirmNotification] = useState(null);
 
   const id = location.state || searchParams.get('id');
   const status = searchParams.get('status');
+
+  const isQualifyApproving = ["DES_AWAIT_CUST_APPROVAL", "PRO_AWAIT_CUST_APPROVAL"].includes(data?.status);
+  const isQualifyTransaction = ["AWAIT_BET_TRANSACTION", "AWAIT_REMAIN_TRANSACTION"].includes(data?.status);
 
   const arrayToDate = (date) => {
     if (date === null || date === 0) {
@@ -52,32 +61,53 @@ function OrderDetail() {
   };
 
   const fetchData = async () => {
-    const response = await axios(`${ServerUrl}/api/order/${id}/detail`, {
-      headers: { "Content-Type": "application/json" },
-    });
-    if (response.status === 200) {
-      const orderDetail = response.data.responseList.orderDetail;
-      setData(orderDetail);
-      setImageLink(orderDetail.design?.designLink || snowfall);
+    try {
+      const response = await axios(`${ServerUrl}/api/order/${id}/detail`, {
+        headers: { "Content-Type": "application/json" },
+      });
+      if (response.status === 200) {
+        const orderDetail = response.data.responseList.orderDetail;
+        setData(orderDetail);
+        setImageLink(orderDetail.design?.designLink || noImage);
+      }
+    } catch (error) {
+      console.error("Error fetching data", error);
+      showAlert("Error fetching data", "", "danger");
     }
   };
 
   useEffect(() => {
     if (status === "success") {
-      setShowAlert(["Successfully make payment", "", true, false, "success"])
+      showAlert("Successfully make payment", "", "success");
+      searchParams.delete('status');
     } else if (status === "cancel") {
-      setShowAlert(["Payment cancelled", "", true, false, "info"])
+      showAlert("Payment cancelled", "", "info");
+      searchParams.delete('status');
     }
 
     fetchData();
   }, [id]);
 
-  if (!data) {
-    // Handle loading state or error
-    return <div>Loading...</div>;
-  }
+  useEffect(() => {
+    if (isQualifyApproving) {
+      axios
+        .get(`${ServerUrl}/api/notifications/${data.id}/get-confirm`)
+        .then((res) => {
+          if (res.status === 200) {
+            setConfirmNotification(res.data.responseList.notification);
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    }
+  }, [isQualifyApproving, data]);
 
-  console.log(data);
+  if (!data) {
+    return (
+      <Loader/>
+    );
+  }
 
   const handleShowQuotations = () => {
     setShowQuotation(true);
@@ -98,13 +128,51 @@ function OrderDetail() {
       if (response.status === 200) {
         const body = response.data.responseList;
         setData(body.orderDetail);
-        setShowAlert([response.data.message, "", true, false, ""])
+        showAlert(response.data.message, "", "success");
       } else {
-        setShowAlert([response.data.message, "", true, false, ""])
+        showAlert([response.data.message, "", true, false, "error"]);
       }
     } catch (error) {
       console.error("Error cancelling order:", error);
-      setShowAlert(["An error occurred while cancelling the order.", "", true, false, ""])
+      showAlert("An error occurred while cancelling the order.", "", "error");
+    }
+  };
+
+  const handleSetAlertInfo = (alertInfo) => {
+    showAlert(alertInfo);
+  };
+
+  const handleConfirmRequest = async (confirmed) => {
+    if (isQualifyApproving) {
+      const confirmedBool = Boolean(confirmed);
+      const url = `${ServerUrl}/api/notifications/${data.id}/${confirmNotification.id}/confirm?confirmed=${confirmedBool}`;
+
+      try {
+        const response = await axios.post(url);
+        if (response.status === 200) {
+          showAlert("Confirm successfully", "", "success");
+          fetchData();
+        }
+      } catch (error) {
+        showAlert("Confirm failed", "", true, false, "danger");
+      }
+    }
+  };
+
+  const handleMakePayment = async (ev) => {
+    setButtonIsLoading(true);
+
+    const resultURL = `${window.location.href}?id=${data.id}`;
+    try {
+      const response = await axios.post(
+        `${ServerUrl}/api/payment/create/${data.id}?quotationId=${data.quotation.id}&resultURL=${resultURL}`
+      );
+      if (response.status === 200) {
+        window.location.href = response.data.responseList.url;
+        setButtonIsLoading(false);
+      }
+    } catch (error) {
+      showAlert("Failed to redirect user to payment page", "", "danger");
     }
   };
 
@@ -129,11 +197,11 @@ function OrderDetail() {
               <Table bordered hover>
                 <tr>
                   <th>Id</th>
-                  <td>{data.product.id}</td>
+                  <td>{data.product.id || "NaN"}</td>
                 </tr>
                 <tr>
                   <th>Name</th>
-                  <td>{data.product.name}</td>
+                  <td>{data.product.name || "NaN"}</td>
                 </tr>
                 <tr>
                   <th>Created Date</th>
@@ -141,7 +209,7 @@ function OrderDetail() {
                 </tr>
                 <tr>
                   <th>Completed Date</th>
-                  <td>{arrayToDate(data.completedDate)}</td>
+                  <td>{data.completedDate? arrayToDate(data.completedDate): "Ongoing"}</td>
                 </tr>
                 <tr>
                   <th>Total Price</th>
@@ -153,9 +221,8 @@ function OrderDetail() {
                 <tr>
                   <th>Status</th>
                   <td>
-                    <Badge
-                      className="text-white"
-                      bg={data.status === "ORDER_COMPLETED"? "success": data.status === "CANCEL"? "danger": "warning"}
+                    <Badge className="text-white"
+                      bg={data.status === "ORDER_COMPLETED"? "success": "danger" }
                     >
                       {data.status}
                     </Badge>
@@ -241,7 +308,7 @@ function OrderDetail() {
               </div>
             </Row>
           )}
-          <Row>
+          {data.status === "ORDER_COMPLETED" && (<Row>
             <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
               <div className="p-2">
                 <div
@@ -260,6 +327,56 @@ function OrderDetail() {
               </div>
             </div>
           </Row>
+          )}
+          {isQualifyApproving && (
+            <Row className="mb-3">
+              <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
+                <div className="p-2">
+                  <div
+                    className="mb-2"
+                    style={{
+                      borderBottom: "1px solid rgba(166, 166, 166, 0.5)",
+                    }}
+                  >
+                    <h4>Approve {data.status.includes("DES")? "Design Request": "Final Product Proof"}</h4>
+                  </div>
+                    <div className="d-flex justify-content-center pt-2 gap-5">
+                      <Button className="w-50" onClick={() => handleConfirmRequest(false)}>
+                        Declined
+                      </Button>
+                      <Button className="w-50" onClick={() => handleConfirmRequest(true)}>
+                        Approve
+                      </Button>
+                    </div>
+                </div>
+              </div>
+            </Row>
+          )}
+          {isQualifyTransaction && (
+            <Row className="mb-3">
+              <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
+                <div className="p-2">
+                  <div
+                    className="mb-2"
+                    style={{
+                      borderBottom: "1px solid rgba(166, 166, 166, 0.5)",
+                    }}
+                  >
+                    <h4>Make Payment</h4>
+                  </div>
+                    <div className="d-flex justify-content-center pt-2 gap-5">
+                      <Button
+                        className="w-100"
+                        onClick={buttonIsLoading ? null: handleMakePayment}
+                        disabled={buttonIsLoading}
+                      >
+                        {buttonIsLoading ? "Loading...": "Make Payment"}
+                      </Button>
+                    </div>
+                </div>
+              </div>
+            </Row>
+          )}
           {!["ORDER_COMPLETED", "CANCEL"].includes(data.status) && (
             <Row className="mt-2">
               <Button variant="danger" onClick={handleShowConfirmation}>
@@ -277,9 +394,12 @@ function OrderDetail() {
           show={showQuotation}
           onHide={() => setShowQuotation(false)}
           onQuotationChange={fetchData}
+          setShowAlert={handleSetAlertInfo}
+          fetchData={() => fetchData()}
         />
       )}
       <WarrantyCertificateModal
+        data={data}
         show={showWarranty}
         handleClose={() => setShowWarranty(false)}
       />
@@ -305,8 +425,8 @@ function OrderDetail() {
 }
 
 const imageContainerStyle = {
-  width: '500px',
-  height: '500px',
+  width: '100%',
+  height: 'auto',
   overflow: 'hidden',
   position: 'relative',
   margin: '0 auto',
