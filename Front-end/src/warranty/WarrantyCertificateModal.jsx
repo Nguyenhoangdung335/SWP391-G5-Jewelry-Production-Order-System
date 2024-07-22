@@ -1,4 +1,3 @@
-import warrantyCertificateHTML from "./warrantyCertificate";
 import React, { useRef } from "react";
 import { Modal, Button } from "react-bootstrap";
 import html2pdf from "html2pdf.js";
@@ -6,6 +5,8 @@ import warranty_logo from "./../assets/warranty_logo.png"
 
 function WarrantyCertificateModal({ data, show, handleClose }) {
   const certificateRef = useRef();
+  const completedDate = new Date(formatDate(data.completedDate));
+  const expiredDate = new Date(completedDate.setFullYear(completedDate.getFullYear() + 3));
 
   const handleDownloadPDF = () => {
     const element = certificateRef.current.querySelector('.certificate');
@@ -44,9 +45,9 @@ function WarrantyCertificateModal({ data, show, handleClose }) {
               <div className="service-info">
                 <p>
                   <strong>Service: </strong>
-                  <span>Accident insurance</span>
+                  <span>Custom Jewelry</span>
                 </p>
-                <p>[certificate.uuid]</p>
+                <p>data.id</p>
               </div>
               <div className="signatures">
                 <div className="signature">
@@ -66,19 +67,19 @@ function WarrantyCertificateModal({ data, show, handleClose }) {
                 </div>
                 <div className="signature">
                   <hr />
-                  <p>Jeremiah Elmers | Customer</p>
+                  <p>{data.owner.userInfo.firstName + " " + data.owner.userInfo.lastName} | Customer</p>
                   <p>
                     Warranty Period:
                     <br />
-                    [certificate.expired_on]
+                    {expiredDate}
                   </p>
                 </div>
               </div>
               <div className="company-info">
                 <p>
-                  Your company name
+                  CaraJewelry
                   <br />
-                  www.yourcompany.com
+                  {window.location.hostname}
                 </p>
               </div>
             </div>
@@ -215,5 +216,13 @@ function WarrantyCertificateModal({ data, show, handleClose }) {
     </Modal>
   );
 }
+
+const formatDate = (date) => {
+  const d = new Date(date);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
 
 export default WarrantyCertificateModal;
