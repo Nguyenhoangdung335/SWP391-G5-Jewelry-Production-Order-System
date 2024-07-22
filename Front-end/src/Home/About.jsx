@@ -25,14 +25,14 @@ export default function About() {
 
   const styles = {
     container: {
-      padding: "6% 0%",
+      padding: "0", // Remove padding
       overflowX: "hidden",
       scrollBehavior: "smooth",
       backgroundColor: "#f5f5f5",
       fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
     },
     section: {
-      height: "100vh",
+      minHeight: "100vh",
       display: "flex",
       alignItems: "center",
     },
@@ -41,12 +41,10 @@ export default function About() {
     },
     imgFull: {
       width: "100%",
+      height: "100%",
+      objectFit: "cover", // Ensure the image covers the entire area
       borderRadius: "8px",
       boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-    },
-    paddingX2: {
-      paddingLeft: "2%",
-      paddingRight: "2%",
     },
     paddingX6: {
       paddingLeft: "6%",
@@ -116,48 +114,48 @@ export default function About() {
 
   return (
     <div ref={scrollRef} style={styles.container}>
-      <div style={styles.section} className="row mt-5">
-        <div className="col-6">
-          <img style={{ ...styles.imgFull, height: "75vh" }} src={imgTesla} alt="Tesla image" />
+      <div style={styles.section} className="row mt-0">
+        <div className="col-6 p-0">
+          <img style={styles.imgFull} src={imgTesla} alt="Tesla image" />
         </div>
         <div style={styles.paddingX6} className="col-6 d-flex flex-column justify-content-center">
           <p style={styles.headerText}>About Us</p>
           <p style={styles.borderedText}>
-          CaraJewel System proudly stands as one of the pioneering platforms providing optimal and comprehensive solutions for the jewelry industry. We constantly strive to deliver high-quality products and services that meet the diverse needs of our customers.
+            CaraJewel System proudly stands as one of the pioneering platforms providing optimal and comprehensive solutions for the jewelry industry. We constantly strive to deliver high-quality products and services that meet the diverse needs of our customers.
           </p>
         </div>
       </div>
-      <div style={styles.section} className="row mt-5">
+      <div style={styles.section} className="row mt-0">
         <div style={styles.paddingX6} className="col-6 d-flex flex-column justify-content-center">
           <p style={styles.headerText}>Our Team</p>
           <p style={styles.subHeaderText}>
-          Our Group 5 consists of passionate and talented members, always ready to contribute to the continuous growth of CaraJewel System:
+            Our Group 5 consists of passionate and talented members, always ready to contribute to the continuous growth of CaraJewel System:
           </p>
           <p style={styles.borderedText}>
-          - Nguyen Hoang Dung: Dung is a software development expert with exceptional programming skills. He consistently brings innovative and effective technological solutions.<br/>
-          - Vu Tien Đat: Đat is a software engineer with extensive knowledge in database management systems. He plays a crucial role in optimizing the system and ensuring the platform's stability.<br/>
-          - Nguyễn Viet Thai: With strong logical thinking and data analysis capabilities, Viet Thai significantly contributes to developing analytical and reporting solutions for the system.
+            - Nguyen Hoang Dung: Dung is a software development expert with exceptional programming skills. He consistently brings innovative and effective technological solutions.<br />
+            - Vu Tien Đat: Đat is a software engineer with extensive knowledge in database management systems. He plays a crucial role in optimizing the system and ensuring the platform's stability.<br />
+            - Nguyễn Viet Thai: With strong logical thinking and data analysis capabilities, Viet Thai significantly contributes to developing analytical and reporting solutions for the system.
           </p>
         </div>
-        <div className="col-6">
-          <img style={{ ...styles.imgFull, paddingLeft: "2%", height: "75vh" }} src={Oppenheimer} alt="Oppenheimer image" />
+        <div className="col-6 p-0">
+          <img style={styles.imgFull} src={Oppenheimer} alt="Oppenheimer image" />
         </div>
       </div>
-      <div style={styles.section} className="row mt-5">
-        <div className="col-6">
-          <img style={{ ...styles.imgFull, height: "75vh" }} src={hoden} alt="Black hole image" />
+      <div style={styles.section} className="row mt-0">
+        <div className="col-6 p-0">
+          <img style={styles.imgFull} src={hoden} alt="Black hole image" />
         </div>
         <div style={styles.paddingX6} className="col-6 d-flex flex-column justify-content-center">
           <p style={styles.borderedText}>
-          - Tran Mai Quang Khai: With excellent leadership skills and sharp project management abilities, Quang Khai ensures the progress and quality of our developed products.<br/>
-          - Bui Khanh Duy: Khanh Duy is an expert in user interfaces with unique UX/UI design skills, creating user-friendly and easy-to-use interfaces for users.
+            - Tran Mai Quang Khai: With excellent leadership skills and sharp project management abilities, Quang Khai ensures the progress and quality of our developed products.<br />
+            - Bui Khanh Duy: Khanh Duy is an expert in user interfaces with unique UX/UI design skills, creating user-friendly and easy-to-use interfaces for users.
           </p>
         </div>
       </div>
       <div style={styles.missionContainer}>
         <p style={styles.missionHeader}>Our Mission</p>
         <p style={styles.missionText}>
-        We believe that our success stems not only from the products we create but also from the trust and satisfaction of our customers with our services. Thank you for visiting and learning about us!
+          We believe that our success stems not only from the products we create but also from the trust and satisfaction of our customers with our services. Thank you for visiting and learning about us!
         </p>
         <img style={styles.missionImg} src={ourMission} alt="Our Mission" />
       </div>
