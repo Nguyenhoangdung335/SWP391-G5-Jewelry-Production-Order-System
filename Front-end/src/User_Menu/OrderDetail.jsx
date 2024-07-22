@@ -2,14 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
 import ServerUrl from "../reusable/ServerUrl";
-import {
-  Badge,
-  Button,
-  Col,
-  Row,
-  Table,
-  Spinner,
-} from "react-bootstrap";
+import { Badge, Button, Col, Row, Table, Spinner } from "react-bootstrap";
 import noImage from "../assets/no_image.jpg";
 import QuotationModal from "./order_detail_components/QuotationModal";
 import WarrantyCertificateModal from "../warranty/WarrantyCertificateModal";
@@ -44,11 +37,17 @@ function OrderDetail() {
   const [imageLink, setImageLink] = useState(null);
   const [confirmNotification, setConfirmNotification] = useState(null);
 
-  const id = location.state || searchParams.get('id');
-  const status = searchParams.get('status');
+  const id = location.state || searchParams.get("id");
+  const status = searchParams.get("status");
 
-  const isQualifyApproving = ["DES_AWAIT_CUST_APPROVAL", "PRO_AWAIT_APPROVAL"].includes(data?.status);
-  const isQualifyTransaction = ["AWAIT_BET_TRANSACTION", "AWAIT_REMAIN_TRANSACTION"].includes(data?.status);
+  const isQualifyApproving = [
+    "DES_AWAIT_CUST_APPROVAL",
+    "PRO_AWAIT_APPROVAL",
+  ].includes(data?.status);
+  const isQualifyTransaction = [
+    "AWAIT_BET_TRANSACTION",
+    "AWAIT_REMAIN_TRANSACTION",
+  ].includes(data?.status);
 
   const arrayToDate = (date) => {
     if (date === null || date === 0) {
@@ -68,7 +67,11 @@ function OrderDetail() {
       if (response.status === 200) {
         const orderDetail = response.data.responseList.orderDetail;
         setData(orderDetail);
-        setImageLink(orderDetail.product.imageURL ? orderDetail.product.imageURL : (orderDetail.design?.designLink || noImage) );
+        setImageLink(
+          orderDetail.product.imageURL
+            ? orderDetail.product.imageURL
+            : orderDetail.design?.designLink || noImage
+        );
       }
     } catch (error) {
       console.error("Error fetching data", error);
@@ -79,10 +82,10 @@ function OrderDetail() {
   useEffect(() => {
     if (status === "success") {
       showAlert("Successfully make payment", "", "success");
-      searchParams.delete('status');
+      searchParams.delete("status");
     } else if (status === "cancel") {
       showAlert("Payment cancelled", "", "info");
-      searchParams.delete('status');
+      searchParams.delete("status");
     }
 
     fetchData();
@@ -104,9 +107,7 @@ function OrderDetail() {
   }, [isQualifyApproving, data]);
 
   if (!data) {
-    return (
-      <Loader/>
-    );
+    return <Loader />;
   }
 
   const handleShowQuotations = () => {
@@ -189,7 +190,12 @@ function OrderDetail() {
           }}
         >
           <div className="pb-2" style={imageContainerStyle}>
-            <img src={imageLink} alt="Product" className="w-100 h-100" style={imageStyle}/>
+            <img
+              src={imageLink}
+              alt="Product"
+              className="w-100 h-100"
+              style={imageStyle}
+            />
           </div>
           <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
             <div className="p-3">
@@ -201,7 +207,7 @@ function OrderDetail() {
                 </tr>
                 <tr>
                   <th>Name</th>
-                  <td>{data.product.name || "NaN"}</td>
+                  <td>{data.name || "NaN"}</td>
                 </tr>
                 <tr>
                   <th>Created Date</th>
@@ -209,20 +215,27 @@ function OrderDetail() {
                 </tr>
                 <tr>
                   <th>Completed Date</th>
-                  <td>{data.completedDate? arrayToDate(data.completedDate): "Ongoing"}</td>
+                  <td>
+                    {data.completedDate
+                      ? arrayToDate(data.completedDate)
+                      : "Ongoing"}
+                  </td>
                 </tr>
                 <tr>
                   <th>Total Price</th>
                   <td>
-                    {Math.round(data.quotation?.totalPrice) ||
+                    {data?.quotation?.totalPrice ? formatPrice(data.quotation?.totalPrice) :
                       "Dont have quotation yet"}
                   </td>
                 </tr>
                 <tr>
                   <th>Status</th>
                   <td>
-                    <Badge className="text-white"
-                      bg={data.status === "ORDER_COMPLETED"? "success": "danger" }
+                    <Badge
+                      className="text-white"
+                      bg={
+                        data.status === "ORDER_COMPLETED" ? "success" : "danger"
+                      }
                     >
                       {data.status}
                     </Badge>
@@ -308,25 +321,26 @@ function OrderDetail() {
               </div>
             </Row>
           )}
-          {data.status === "ORDER_COMPLETED" && (<Row>
-            <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
-              <div className="p-2">
-                <div
-                  className="mb-2"
-                  style={{
-                    borderBottom: "1px solid rgba(166, 166, 166, 0.5)",
-                  }}
-                >
-                  <div className="d-flex justify-content-between mb-2">
-                    <h4 style={{ display: "inline-block" }}>Warranty</h4>
-                    <Button onClick={() => setShowWarranty(true)}>
-                      Show Warranty
-                    </Button>
+          {data.status === "ORDER_COMPLETED" && (
+            <Row>
+              <div style={{ border: "1px solid rgba(166, 166, 166, 0.5)" }}>
+                <div className="p-2">
+                  <div
+                    className="mb-2"
+                    style={{
+                      borderBottom: "1px solid rgba(166, 166, 166, 0.5)",
+                    }}
+                  >
+                    <div className="d-flex justify-content-between mb-2">
+                      <h4 style={{ display: "inline-block" }}>Warranty</h4>
+                      <Button onClick={() => setShowWarranty(true)}>
+                        Show Warranty
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </Row>
+            </Row>
           )}
           {isQualifyApproving && (
             <Row className="mb-3">
@@ -338,16 +352,27 @@ function OrderDetail() {
                       borderBottom: "1px solid rgba(166, 166, 166, 0.5)",
                     }}
                   >
-                    <h4>Approve {data.status.includes("DES")? "Design Request": "Final Product Proof"}</h4>
+                    <h4>
+                      Approve{" "}
+                      {data.status.includes("DES")
+                        ? "Design Request"
+                        : "Final Product Proof"}
+                    </h4>
                   </div>
-                    <div className="d-flex justify-content-center pt-2 gap-5">
-                      <Button className="w-50" onClick={() => handleConfirmRequest(false)}>
-                        Declined
-                      </Button>
-                      <Button className="w-50" onClick={() => handleConfirmRequest(true)}>
-                        Approve
-                      </Button>
-                    </div>
+                  <div className="d-flex justify-content-center pt-2 gap-5">
+                    <Button
+                      className="w-50"
+                      onClick={() => handleConfirmRequest(false)}
+                    >
+                      Declined
+                    </Button>
+                    <Button
+                      className="w-50"
+                      onClick={() => handleConfirmRequest(true)}
+                    >
+                      Approve
+                    </Button>
+                  </div>
                 </div>
               </div>
             </Row>
@@ -364,15 +389,15 @@ function OrderDetail() {
                   >
                     <h4>Make Payment</h4>
                   </div>
-                    <div className="d-flex justify-content-center pt-2 gap-5">
-                      <Button
-                        className="w-100"
-                        onClick={buttonIsLoading ? null: handleMakePayment}
-                        disabled={buttonIsLoading}
-                      >
-                        {buttonIsLoading ? "Loading...": "Make Payment"}
-                      </Button>
-                    </div>
+                  <div className="d-flex justify-content-center pt-2 gap-5">
+                    <Button
+                      className="w-100"
+                      onClick={buttonIsLoading ? null : handleMakePayment}
+                      disabled={buttonIsLoading}
+                    >
+                      {buttonIsLoading ? "Loading..." : "Make Payment"}
+                    </Button>
+                  </div>
                 </div>
               </div>
             </Row>
@@ -424,18 +449,25 @@ function OrderDetail() {
   );
 }
 
+const formatPrice = (price) => {
+  return price.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+  });
+};
+
 const imageContainerStyle = {
-  width: '100%',
-  height: 'auto',
-  overflow: 'hidden',
-  position: 'relative',
-  margin: '0 auto',
+  width: "100%",
+  height: "auto",
+  overflow: "hidden",
+  position: "relative",
+  margin: "0 auto",
 };
 
 const imageStyle = {
-  width: '100%',
-  height: '100%',
-  objectFit: 'contain',
+  width: "100%",
+  height: "100%",
+  objectFit: "contain",
 };
 
 export default OrderDetail;

@@ -23,7 +23,7 @@ import { useAlert } from "../provider/AlertProvider";
 import Loader from "../reusable/Loader";
 
 function OrderDetailManager() {
-  const {showAlert} = useAlert();
+  const { showAlert } = useAlert();
   const state = useLocation();
   const [data, setData] = useState(null);
   const [showQuotation, setShowQuotation] = useState(false);
@@ -37,13 +37,15 @@ function OrderDetailManager() {
   const [confirmNotification, setConfirmNotification] = useState(null);
   const [startRender, setStartRender] = useState(true);
 
-  const isQualifiedApproveSpecification = ["ADMIN", "MANAGER"].includes(decodedToken.role) && data?.status === "REQ_AWAIT_APPROVAL";
+  const isQualifiedApproveSpecification =
+    ["ADMIN", "MANAGER"].includes(decodedToken.role) &&
+    data?.status === "REQ_AWAIT_APPROVAL";
   const isQualifyApproving =
-  ["ADMIN", "MANAGER"].includes(decodedToken.role) &&
-  (
-    (decodedToken.role === "ADMIN" && ["AWAIT", "APPROVAL"].every(sub => data?.status.includes(sub))) ||
-    (decodedToken.role === "MANAGER" && data?.status === "DES_AWAIT_MANA_APPROVAL")
-  );
+    ["ADMIN", "MANAGER"].includes(decodedToken.role) &&
+    ((decodedToken.role === "ADMIN" &&
+      ["AWAIT", "APPROVAL"].every((sub) => data?.status.includes(sub))) ||
+      (decodedToken.role === "MANAGER" &&
+        data?.status === "DES_AWAIT_MANA_APPROVAL"));
 
   const fetchData = async () => {
     try {
@@ -53,7 +55,11 @@ function OrderDetailManager() {
       if (response.status === 200) {
         const orderDetail = response.data.responseList.orderDetail;
         setData(orderDetail);
-        setImageLink(orderDetail.product.imageURL ? orderDetail.product.imageURL : (orderDetail.design?.designLink || noImage) );
+        setImageLink(
+          orderDetail.product.imageURL
+            ? orderDetail.product.imageURL
+            : orderDetail.design?.designLink || noImage
+        );
       }
     } catch (error) {
       console.error("Error fetching data", error);
@@ -85,13 +91,15 @@ function OrderDetailManager() {
   }, [isQualifiedApproveSpecification, isQualifyApproving, data]);
 
   if (!data || data === undefined) {
-    return (
-      <Loader />
-    );
+    return <Loader />;
   }
 
   if (!data) {
-    return <div className="d-flex justify-content-center align-items-center">Loading...</div>;
+    return (
+      <div className="d-flex justify-content-center align-items-center">
+        Loading...
+      </div>
+    );
   }
 
   const arrayToDate = (date) => {
@@ -229,7 +237,7 @@ function OrderDetailManager() {
                     </tr>
                     <tr>
                       <th>Name</th>
-                      <td>{data.product?.name || "NaN"}</td>
+                      <td>{data.name || "NaN"}</td>
                     </tr>
                     <tr>
                       <th>Created Date</th>
@@ -237,7 +245,11 @@ function OrderDetailManager() {
                     </tr>
                     <tr>
                       <th>Completed Date</th>
-                      <td>{data.completedDate ? arrayToDate(data.completedDate): "Ongoing"}</td>
+                      <td>
+                        {data.completedDate
+                          ? arrayToDate(data.completedDate)
+                          : "Ongoing"}
+                      </td>
                     </tr>
                     <tr>
                       <th>Total Price</th>
@@ -246,9 +258,13 @@ function OrderDetailManager() {
                     <tr>
                       <th>Status</th>
                       <td>
-                        <Badge className="text-white"
+                        <Badge
+                          className="text-white"
                           bg={
-                            data.status === "ORDER_COMPLETED"? "success": "danger" }
+                            data.status === "ORDER_COMPLETED"
+                              ? "success"
+                              : "danger"
+                          }
                         >
                           {data.status}
                         </Badge>
@@ -317,13 +333,23 @@ function OrderDetailManager() {
                   >
                     <h4>Specification</h4>
                   </div>
-                  <ProductSpecificationTable orderStatus={data?.status} selectedProduct={data?.product} role ={decodedToken.role}/>
+                  <ProductSpecificationTable
+                    orderStatus={data?.status}
+                    selectedProduct={data?.product}
+                    role={decodedToken.role}
+                  />
                   {isQualifiedApproveSpecification && (
                     <div className="d-flex justify-content-center pt-2 gap-5">
-                      <Button className="w-50" onClick={() => handleConfirmRequest(false)}>
-                       Declined
+                      <Button
+                        className="w-50"
+                        onClick={() => handleConfirmRequest(false)}
+                      >
+                        Declined
                       </Button>
-                      <Button className="w-50" onClick={() => handleConfirmRequest(true)}>
+                      <Button
+                        className="w-50"
+                        onClick={() => handleConfirmRequest(true)}
+                      >
                         Approve
                       </Button>
                     </div>
@@ -422,14 +448,25 @@ function OrderDetailManager() {
                         borderBottom: "1px solid rgba(166, 166, 166, 0.5)",
                       }}
                     >
-                      <h4>Approve {data.status.includes("DES")? "Design Request": "Final Product Proof"}</h4>
+                      <h4>
+                        Approve{" "}
+                        {data.status.includes("DES")
+                          ? "Design Request"
+                          : "Final Product Proof"}
+                      </h4>
                     </div>
                     <Form>
                       <div className="d-flex justify-content-center pt-2 gap-5">
-                        <Button className="w-50" onClick={() => handleConfirmRequest(false)}>
+                        <Button
+                          className="w-50"
+                          onClick={() => handleConfirmRequest(false)}
+                        >
                           Declined
                         </Button>
-                        <Button className="w-50" onClick={() => handleConfirmRequest(true)}>
+                        <Button
+                          className="w-50"
+                          onClick={() => handleConfirmRequest(true)}
+                        >
                           Approve
                         </Button>
                       </div>
@@ -474,19 +511,18 @@ function OrderDetailManager() {
   );
 }
 
-
 const imageContainerStyle = {
-  width: '100%',
-  height: 'auto',
-  overflow: 'hidden',
-  position: 'relative',
-  margin: '0 auto',
+  width: "100%",
+  height: "auto",
+  overflow: "hidden",
+  position: "relative",
+  margin: "0 auto",
 };
 
 const imageStyle = {
-  width: '100%',
-  height: '100%',
-  objectFit: 'contain',
+  width: "100%",
+  height: "100%",
+  objectFit: "contain",
 };
 
 const formatPrice = (price) => {
