@@ -29,6 +29,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 
+import static com.swp391.JewelryProduction.util.CustomFormatter.roundToDecimal;
+
 @Component
 @Slf4j
 public class DataInitializer implements CommandLineRunner {
@@ -368,7 +370,7 @@ public class DataInitializer implements CommandLineRunner {
         for(int i = 0; i < GEMSTONE_NAMES.length; i++) {
             gemstoneTypes[i] = GemstoneType.builder()
                     .name(GEMSTONE_NAMES[i])
-                    .basePricePerCarat(rand.nextDouble(500.0, 5000.0))
+                    .basePricePerCarat(roundToDecimal(rand.nextDouble(500.0, 5000.0), 2))
                     .status(true)
                     .build();
         }
@@ -669,22 +671,27 @@ public class DataInitializer implements CommandLineRunner {
         detail.put(1, SpecificationDetail.builder()
                 .name("Vintage Wedding Necklace")
                 .description("A stunning vintage necklace perfect for weddings, featuring a smooth gold texture and a round diamond gemstone.")
+                .imageURL("https://firebasestorage.googleapis.com/v0/b/chat-d8802.appspot.com/o/product-images%2FProductSpecification1.jpeg?alt=media&token=37afff2c-4b51-4ae5-9a9c-ce1eebb0d13c")
                 .build());
         detail.put(2, SpecificationDetail.builder()
                 .name("Modern Anniversary Bracelet")
                 .description("A sleek and modern silver bracelet, ideal for anniversaries. Textured with a Cuban chain and adorned with an oval emerald.")
+                .imageURL("https://firebasestorage.googleapis.com/v0/b/chat-d8802.appspot.com/o/product-images%2FProductSpecification2.jpeg?alt=media&token=419cd661-e3ee-4dbf-bf38-636384f6a167")
                 .build());
         detail.put(3, SpecificationDetail.builder()
                 .name("Classic Engagement Ring")
                 .description("A classic platinum engagement ring with a polished finish, featuring a square sapphire gemstone.")
+                .imageURL("https://firebasestorage.googleapis.com/v0/b/chat-d8802.appspot.com/o/product-images%2FProductSpecification3.jpeg?alt=media&token=7dc435ae-4e39-44ef-ae1c-3f11e4cf99b1")
                 .build());
         detail.put(4, SpecificationDetail.builder()
                 .name("Bohemian Casual Earrings")
                 .description("Bohemian style earrings with a hammered rose gold texture and heart-shaped ruby gemstones, perfect for casual wear.")
+                .imageURL("https://firebasestorage.googleapis.com/v0/b/chat-d8802.appspot.com/o/product-images%2FProductSpecification4.jpeg?alt=media&token=f55653b4-c11b-4be0-b173-cd97795aecdd")
                 .build());
         detail.put(5, SpecificationDetail.builder()
                 .name("Minimalist Birthday Pendant")
                 .description("A minimalist titanium pendant with a matte finish, featuring a pear-shaped opal gemstone, perfect for birthdays.")
+                .imageURL("https://firebasestorage.googleapis.com/v0/b/chat-d8802.appspot.com/o/product-images%2FProductSpecification5.jpg?alt=media&token=59bf88c8-1673-429e-a0df-388627ae2719")
                 .build());
         detail.put(6, SpecificationDetail.builder()
                 .name("Trendy Summer Anklet")
@@ -761,7 +768,7 @@ public class DataInitializer implements CommandLineRunner {
                     .name(temp.name)
                     .description(temp.description)
                     .order(order)
-                    .imageURL(imageURL)
+                    .imageURL(temp.imageURL == null? imageURL: temp.imageURL)
                     .build();
             Quotation quotation = Quotation.builder()
                     .createdDate(LocalDate.from(createdDate))
@@ -817,5 +824,6 @@ public class DataInitializer implements CommandLineRunner {
     private static class SpecificationDetail {
         String name;
         String description;
+        String imageURL;
     }
 }
