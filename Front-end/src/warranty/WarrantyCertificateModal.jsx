@@ -1,25 +1,33 @@
 import React, { useRef } from "react";
 import { Modal, Button } from "react-bootstrap";
 import html2pdf from "html2pdf.js";
-import warranty_logo from "./../assets/warranty_logo.png"
+import warranty_logo from "./../assets/warranty_logo.png";
 
 function WarrantyCertificateModal({ data, show, handleClose }) {
   const certificateRef = useRef();
-  const completedDate = new Date(formatDate(data.completedDate));
-  const expiredDate = new Date(completedDate.setFullYear(completedDate.getFullYear() + 3));
+  // const completedDate = new Date(data.completedDate);
+  // console.log("", completedDate);
+  // const expiredDate = new Date(
+  //   completedDate.setFullYear(completedDate.getFullYear() + 5)
+  // );
+
+  const completedDate = new Date(data.completedDate);
+  const expiredDate = new Date(completedDate);
+  expiredDate.setFullYear(completedDate.getFullYear() + 3);
+  console.log(expiredDate);
 
   const handleDownloadPDF = () => {
-    const element = certificateRef.current.querySelector('.certificate');
+    const element = certificateRef.current.querySelector(".certificate");
     const opt = {
       margin: 0,
-      filename: 'warranty_certificate.pdf',
-      image: { type: 'jpeg', quality: 0.98 },
+      filename: "warranty_certificate.pdf",
+      image: { type: "jpeg", quality: 0.98 },
       html2canvas: { scale: 2 },
       jsPDF: {
-        unit: 'px',
+        unit: "px",
         format: [element.offsetWidth, element.offsetHeight],
-        orientation: 'landscape',
-      }
+        orientation: "landscape",
+      },
     };
     html2pdf().from(element).set(opt).save();
   };
@@ -47,7 +55,7 @@ function WarrantyCertificateModal({ data, show, handleClose }) {
                   <strong>Service: </strong>
                   <span>Custom Jewelry</span>
                 </p>
-                <p>data.id</p>
+                <p>{data.id}</p>
               </div>
               <div className="signatures">
                 <div className="signature">
@@ -60,18 +68,20 @@ function WarrantyCertificateModal({ data, show, handleClose }) {
                   </p>
                 </div>
                 <div className="seal">
-                  <img
-                    src={warranty_logo}
-                    alt="Quality Guarantee"
-                  />
+                  <img src={warranty_logo} alt="Quality Guarantee" />
                 </div>
                 <div className="signature">
                   <hr />
-                  <p>{data.owner.userInfo.firstName + " " + data.owner.userInfo.lastName} | Customer</p>
+                  <p>
+                    {data.owner.userInfo.firstName +
+                      " " +
+                      data.owner.userInfo.lastName}{" "}
+                    | Customer
+                  </p>
                   <p>
                     Warranty Period:
                     <br />
-                    {expiredDate}
+                    {data.completedDate ? arrayToDate(data.completedDate) : "NaN"}
                   </p>
                 </div>
               </div>
@@ -217,12 +227,16 @@ function WarrantyCertificateModal({ data, show, handleClose }) {
   );
 }
 
-const formatDate = (date) => {
-  const d = new Date(date);
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
+const arrayToDate = (dateArray) => {
+  const dateObject = new Date(
+    dateArray[0] + 3,
+    dateArray[1] - 1,
+    dateArray[2],
+    dateArray[3],
+    dateArray[4],
+    dateArray[5]
+  );
+  return dateObject.toLocaleString(); // Format the date as needed
 };
 
 export default WarrantyCertificateModal;
