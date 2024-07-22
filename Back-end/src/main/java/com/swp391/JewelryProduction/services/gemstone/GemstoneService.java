@@ -19,7 +19,8 @@ public interface GemstoneService {
     List<ClarityMultiplier> getClarityMultipliers();
     void deleteGemstone(long id);
 
-    GemstoneType editGemstoneType(GemstoneType gemstoneType);
+    GemstoneType createGemstoneType(GemstoneType gemstoneType);
+    GemstoneType updateGemstoneType(GemstoneType gemstoneType);
 
 
     CutMultiplier updateCutMultiplier(long id, double multiplier);
