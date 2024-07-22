@@ -52,7 +52,7 @@ const NotificationPage = () => {
     return () => {
       
     };
-  }, [ServerUrl, decodedToken.id]);
+  }, [decodedToken.id]);
 
   if (loading) {
     return <div>Loading...</div>;

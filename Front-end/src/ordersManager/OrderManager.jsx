@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, Modal, Form, Row, Col } from "react-bootstrap";
+import { Table, Button, Badge } from "react-bootstrap";
 import axios from "axios";
-import { Icon } from "@iconify/react";
 import { useAuth } from "../provider/AuthProvider";
 import { jwtDecode } from "jwt-decode";
 import { OrderStatus } from "../data/OrderStatus";
@@ -10,14 +9,8 @@ import { useNavigate } from "react-router-dom";
 
 export default function OrderManager() {
   const { token } = useAuth();
-  let decodedToken;
+  let decodedToken = jwtDecode(token);
 
-  if (token) {
-    decodedToken = jwtDecode(token);
-  }
-
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [data, setData] = useState([]);
@@ -54,13 +47,12 @@ export default function OrderManager() {
   const handleFilterChange = (event) => {
     const selectedValue = event.target.value;
     setFilteredStatus(selectedValue);
-    setCurrentPage(1); // Reset to first page when filter changes
+    setCurrentPage(1);
   };
 
   const columns = [
     { title: "ID", dataIndex: "id" },
     { title: "Name", dataIndex: "name" },
-    // { title: "Budget", dataIndex: "budget" },
     { title: "Created Date", dataIndex: "createdDate" },
     { title: "Completed Date", dataIndex: "completedDate" },
     { title: "Status", dataIndex: "status" },
@@ -76,8 +68,6 @@ export default function OrderManager() {
   const showDetail = (order) => {
     navigate("/userManager/orders_manager/order_detail", { state: order.id });
   };
-
-  const handleClose = () => setIsModalVisible(false);
 
   const styles = {
     paginationContainer: {
@@ -126,7 +116,6 @@ export default function OrderManager() {
       </div>
 
       <div className="rounded-lg bg-neutral-500 mb-4 flex items-center">
-        {/* <div>Role Filter: </div> */}
         <div className="w-25">
           <select
             className="bg-neutral-500 form-select inline-block text-orange-500 w-44"
@@ -143,9 +132,6 @@ export default function OrderManager() {
             ))}
           </select>
         </div>
-        {/* <div className="relative right-6 pb-2">
-          <Icon icon="fa:sort-down" />
-        </div> */}
       </div>
 
       <Table striped bordered hover>
@@ -165,15 +151,11 @@ export default function OrderManager() {
               <td>{arrayToDate(order.createdDate)}</td>
               <td>{arrayToDate(order.completedDate)}</td>
               <td>
-                <span
-                  className={`badge ${
-                    order.status === "ORDER_COMPLETED"
-                      ? "bg-success"
-                      : "bg-danger"
-                  }`}
+                <Badge className="text-white"
+                  bg={order.status === "ORDER_COMPLETED"? "success": "danger" }
                 >
-                  {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                </span>
+                  {order.status}
+                </Badge>
               </td>
               <td>
                 <Button variant="primary" onClick={() => showDetail(order)}>
@@ -221,44 +203,6 @@ export default function OrderManager() {
           &gt;
         </div>
       </div>
-
-      <Modal show={isModalVisible} onHide={handleClose}>
-        <Modal.Header>
-          <Modal.Title>Order Details</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {selectedOrder && (
-            <div>
-              <p>
-                <strong>ID:</strong> {selectedOrder.id}
-              </p>
-              <p>
-                <strong>Name:</strong> {selectedOrder.name}
-              </p>
-              <p>
-                <strong>Budget:</strong> {selectedOrder.budget}
-              </p>
-              <p>
-                <strong>Created Date:</strong> {selectedOrder.createdDate}
-              </p>
-              <p>
-                <strong>Completed Date:</strong> {selectedOrder.completedDate}
-              </p>
-              <p>
-                <strong>Status:</strong> {selectedOrder.status}
-              </p>
-              <p>
-                <strong>Details:</strong> Details of the order go here...
-              </p>
-            </div>
-          )}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Close
-          </Button>
-        </Modal.Footer>
-      </Modal>
     </div>
   );
 }

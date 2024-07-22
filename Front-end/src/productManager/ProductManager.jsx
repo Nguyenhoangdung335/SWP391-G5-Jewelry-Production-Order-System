@@ -18,6 +18,7 @@ export default function ProductManager() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
   const [data, setData] = useState([]);
+  // const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     axios({

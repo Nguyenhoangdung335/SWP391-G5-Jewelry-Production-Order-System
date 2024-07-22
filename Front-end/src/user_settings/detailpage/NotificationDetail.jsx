@@ -118,7 +118,7 @@ const NotificationDetail = () => {
               style={{
                 paddingInline: "5%",
                 maxWidth: "100%",
-                fontSize: "1.5rem",
+                fontSize: "1.3rem",
                 wordBreak: "break-all",
                 whiteSpace: "pre-wrap",
               }}

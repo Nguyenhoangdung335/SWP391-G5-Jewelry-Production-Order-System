@@ -4,7 +4,7 @@ import becomeTeacherImage from "../assets/becomeTeacher.jpg";
 import { Link } from "react-router-dom";
 import { Container } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
+// import "bootstrap-icons/font/bootstrap-icons.css";
 
 export default function Blogs() {
     return (

@@ -5,6 +5,20 @@ import ServerUrl from "../reusable/ServerUrl";
 import CreateRequest from "./CreateRequest";
 
 function OrderPage1() {
+  const styleList = [
+    {value:"historic", name: "Historic",},
+    {value:"georgian", name:"Georgian",},
+    {value:"victorian", name:"Victorian"},
+    {value:"edwardian", name:"Edwardian"},
+    {value:"art nouveau", name: "Art Nouveau"},
+    {value:"art deco", name: "Art Deco"},
+    {value:"retro", name: "Retro"},
+    {value:"modernist", name: "Modernist"},
+    {value:"minimalistic", name: "Minimalistic"},
+    {value:"contemporary", name: "Contemporary"},
+    {value:"cultural", name:"Cultural"},
+  ];
+
   const [formState, setFormState] = useState({
     selectedStyle: "",
     selectedType: "",
@@ -47,7 +61,7 @@ function OrderPage1() {
           const data = response.data.responseList;
           setMetalData(data.metal);
           setGemstoneData({
-            types: data.gemstoneType,
+            types: data.type,
             shapes: data.shape,
             cuts: data.cut,
             clarities: data.clarity,
@@ -87,7 +101,7 @@ function OrderPage1() {
         metalUnits: units,
       }));
     }
-  }, [formState.selectedMetalName]);
+  }, [formState]);
 
   useEffect(() => {
     const updateLength = () => {

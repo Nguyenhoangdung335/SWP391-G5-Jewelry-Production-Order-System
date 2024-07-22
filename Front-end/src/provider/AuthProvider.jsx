@@ -38,14 +38,9 @@ export const AuthProvider = ({ children }) => {
 
     const interceptor = axios.interceptors.response.use(
       (response) => {
-        console.log(response);
         return response;
       },
       (error) => {
-        console.log(error);
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
         if (error.response && error.response.status === 401) {
           setToken(null);
           navigate("/login");
