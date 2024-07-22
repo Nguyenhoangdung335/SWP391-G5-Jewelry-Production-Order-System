@@ -59,9 +59,9 @@ function RouteMap() {
       <Route
         path="/userManager"
         element={
-          //<ProtectedRoute>
-          <UserManagerLayout />
-          //</ProtectedRoute>
+          <ProtectedRoute>
+            <UserManagerLayout />
+          </ProtectedRoute>
         }
       ></Route>
       <Route path="/userManager" element={<UserManagerLayout />}>
@@ -202,11 +202,7 @@ function RouteMap() {
         <Route
           path="/userManager/gemstone_manager"
           element={
-            <ProtectedRoute
-              roles={[
-                "ADMIN",
-              ]}
-            >
+            <ProtectedRoute roles={["ADMIN"]}>
               <GemstoneManager />
             </ProtectedRoute>
           }
@@ -233,11 +229,7 @@ function RouteMap() {
         <Route
           path="/user_setting_page/order_history_page"
           element={
-            <ProtectedRoute
-              roles={[
-                "CUSTOMER",
-              ]}
-            >
+            <ProtectedRoute roles={["CUSTOMER"]}>
               <OrderHistory />
             </ProtectedRoute>
           }
@@ -245,11 +237,7 @@ function RouteMap() {
         <Route
           path="/user_setting_page/order_detail_page"
           element={
-            <ProtectedRoute
-              roles={[
-                "CUSTOMER",
-              ]}
-            >
+            <ProtectedRoute roles={["CUSTOMER"]}>
               <OrderDetail />
             </ProtectedRoute>
           }
