@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, Modal, Form } from "react-bootstrap";
+import { Table, Button, Modal, Form, Row, Col } from "react-bootstrap";
 import { FiPlus } from "react-icons/fi";
 import { FaBox } from "react-icons/fa";
 import { useAuth } from "../provider/AuthProvider";
@@ -7,12 +7,17 @@ import axios from "axios";
 import ServerUrl from "../reusable/ServerUrl";
 import { FaEdit } from "react-icons/fa";
 import { FaTrash } from "react-icons/fa";
-import { jwtDecode } from "jwt-decode";
+import ProductSpecificationTable from "../User_Menu/order_detail_components/ProductSpecification";
+import { useAlert } from "../provider/AlertProvider";
+import EditProductModal from "./EditProductModal";
 
 export default function ProductManager() {
+  const { token } = useAuth();
+  const { showAlert } = useAlert();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  const [showEditing, setShowEditing] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [deleteProduct, setDeleteProduct] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -44,6 +49,44 @@ export default function ProductManager() {
     setIsDeleteModalVisible(true);
   };
 
+  // const handleCreateNewProduct = () => {
+  //   setSelectedProduct({
+  //               "name": "",
+  //               "description": "",
+  //               "imageURL": "https://firebasestorage.googleapis.com/v0/b/chat-d8802.appspot.com/o/product-images%2FProductSpecification14.jpg?alt=media&token=e368f6f4-6059-4014-bdb3-726571e8c11a",
+  //               "specification": {
+  //                   "id": 14,
+  //                   "type": "Earrings",
+  //                   "style": "Drop",
+  //                   "occasion": "Cocktail",
+  //                   "length": "N/A",
+  //                   "metal": {
+  //                       "id": 5,
+  //                       "name": "Gold",
+  //                       "unit": "Gram 22K",
+  //                       "price": 70.68,
+  //                       "updatedTime": "00:15 23-07-2024"
+  //                   },
+  //                   "texture": "Smooth",
+  //                   "chainType": "N/A",
+  //                   "gemstone": {
+  //                       "id": 14,
+  //                       "type": {
+  //                           "id": 5,
+  //                           "name": "Amethyst",
+  //                           "basePricePerCarat": 3630.06,
+  //                           "status": true
+  //                       },
+  //                       "shape": "PRINCESS",
+  //                       "cut": "FAIR",
+  //                       "clarity": "FL",
+  //                       "color": "H",
+  //                       "caratWeight": 4.65
+  //                   }
+  //               }});
+  //   setIsCreateModalVisible(true);
+  // }
+
   const handleCancel = () => {
     setIsModalVisible(false);
     setSelectedProduct(null);
@@ -70,10 +113,6 @@ export default function ProductManager() {
       });
   };
 
-  const handleAddCancel = () => {
-    setIsCreateModalVisible(false);
-  };
-
   const handleSave = (event) => {
     event.preventDefault();
     const form = event.currentTarget;
@@ -97,13 +136,11 @@ export default function ProductManager() {
       description: form.formProductDescription.value,
     };
 
-    // Kiểm tra nếu bất kỳ trường nào bị bỏ trống
     if (!newProduct.id || !newProduct.name || !newProduct.description) {
       alert("Please fill in all fields");
       return;
     }
 
-    // Gửi yêu cầu POST tới back-end
     axios({
       method: "POST",
       url: `${ServerUrl}/api/products`,
@@ -111,7 +148,6 @@ export default function ProductManager() {
       data: newProduct,
     })
       .then((res) => {
-        // Thêm sản phẩm mới vào trạng thái data nếu thành công
         setData([...data, res.data]);
         setIsCreateModalVisible(false);
       })
@@ -208,7 +244,7 @@ export default function ProductManager() {
             alignItems: "center",
           }}
         >
-          <div onClick={() => setIsCreateModalVisible(true)}>
+          <div onClick={() => setShowEditing(true)}>
             <Button>
               <FiPlus />
               New Product
@@ -331,6 +367,7 @@ export default function ProductManager() {
           )}
         </Modal.Body>
       </Modal>
+      <EditProductModal show={showEditing} onHide={() => setShowEditing(!showEditing)} />
       <Modal show={isDeleteModalVisible} onHide={handleCancelDelete} centered>
         <Modal.Header>
           <Modal.Title>Confirm Delete</Modal.Title>
@@ -347,44 +384,59 @@ export default function ProductManager() {
           </Button>
         </Modal.Footer>
       </Modal>
-      <Modal show={isCreateModalVisible} onHide={handleAddCancel} centered>
-        <Modal.Header>
-          <Modal.Title>Create Product</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div className="mb-4">
-            <FaBox /> <span className="text-4xl ml-3 font-medium">Product</span>
-          </div>
-          <Form onSubmit={handleAdd}>
-            <Form.Group controlId="formProductId">
-              <Form.Label>ID</Form.Label>
-              <Form.Control type="text" />
-            </Form.Group>
-            <Form.Group controlId="formProductName">
-              <Form.Label>Name</Form.Label>
-              <Form.Control type="text" />
-            </Form.Group>
-            <Form.Group controlId="formProductDescription">
-              <Form.Label>Description</Form.Label>
-              <Form.Control type="text" />
-            </Form.Group>
-            <div className="mt-4 d-flex justify-content-between">
-              <Button variant="secondary" onClick={handleAddCancel}>
-                Back
-              </Button>
-              <Button type="submit">Save changes</Button>
-
-              {/* <Button
-                variant="secondary"
-                onClick={handleAddCancel}
-                style={{ marginLeft: 8 }}
-              >
-                Create Your Dream Jewelry
-              </Button> */}
-            </div>
-          </Form>
-        </Modal.Body>
-      </Modal>
     </div>
   );
 }
+
+// function ProductEditor ({selectedProduct}) {
+//   const newProduct = {
+//     "name": "",
+//     "description": "",
+//     "imageURL": "",
+//     "specification": {
+//         "type": "",
+//         "style": "",
+//         "occasion": "",
+//         "length": "",
+//         "metal": {
+//             "id": 5,
+//             "name": "Gold",
+//             "unit": "Gram 22K",
+//             "price": 70.68,
+//             "updatedTime": "00:15 23-07-2024"
+//         },
+//         "texture": "Smooth",
+//         "chainType": "N/A",
+//         "gemstone": {
+//             "id": 14,
+//             "type": {
+//                 "id": 5,
+//                 "name": "Amethyst",
+//                 "basePricePerCarat": 3630.06,
+//                 "status": true
+//             },
+//             "shape": "PRINCESS",
+//             "cut": "FAIR",
+//             "clarity": "FL",
+//             "color": "H",
+//             "caratWeight": 4.65
+//         }
+//     }};
+//     const productSpecification = {
+//       type: formState.selectedType,
+//       style: formState.selectedStyle,
+//       occasion: formState.selectedOccasion,
+//       length: formState.selectedLength,
+//       metal: formState.selectedMetal,
+//       texture: formState.selectedTexture,
+//       chainType: formState.selectedChainType,
+//       gemstone: {
+//         type: formState.selectedGemstoneType,
+//         shape: formState.selectedGemstoneShape.shape,
+//         cut: formState.selectedGemstoneCut.cutQuality,
+//         clarity: formState.selectedGemstoneClarity.clarity,
+//         color: formState.selectedGemstoneColor.color,
+//         caratWeight: formState.selectedGemstoneWeight,
+//       },
+//     };
+// }
