@@ -10,9 +10,9 @@ import { FaTrash } from "react-icons/fa";
 import ProductSpecificationTable from "../User_Menu/order_detail_components/ProductSpecification";
 import { useAlert } from "../provider/AlertProvider";
 import EditProductModal from "./EditProductModal";
+import { jwtDecode } from "jwt-decode";
 
 export default function ProductManager() {
-  const { token } = useAuth();
   const { showAlert } = useAlert();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
@@ -367,7 +367,10 @@ export default function ProductManager() {
           )}
         </Modal.Body>
       </Modal>
-      <EditProductModal show={showEditing} onHide={() => setShowEditing(!showEditing)} />
+      <EditProductModal
+        show={showEditing}
+        onHide={() => setShowEditing(!showEditing)}
+      />
       <Modal show={isDeleteModalVisible} onHide={handleCancelDelete} centered>
         <Modal.Header>
           <Modal.Title>Confirm Delete</Modal.Title>

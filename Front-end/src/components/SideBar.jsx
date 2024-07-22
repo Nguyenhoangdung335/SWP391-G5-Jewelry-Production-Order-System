@@ -1,20 +1,20 @@
-import React, {useEffect, useState} from "react";
-import {Link, NavLink} from "react-router-dom";
-import {IoMdNotificationsOutline} from "react-icons/io";
-import {IoLogOutOutline} from "react-icons/io5";
-import {useAuth} from "../provider/AuthProvider";
-import {LuUser2} from "react-icons/lu";
-import {MdHistory} from "react-icons/md";
-import {jwtDecode} from "jwt-decode";
-import {Badge} from "react-bootstrap";
+import React, { useEffect, useState } from "react";
+import { Link, NavLink } from "react-router-dom";
+import { IoMdNotificationsOutline } from "react-icons/io";
+import { IoLogOutOutline } from "react-icons/io5";
+import { useAuth } from "../provider/AuthProvider";
+import { LuUser2 } from "react-icons/lu";
+import { MdHistory, MdOutlineDashboard } from "react-icons/md";
+import { jwtDecode } from "jwt-decode";
+import { Badge } from "react-bootstrap";
 import ServerUrl from "../reusable/ServerUrl";
 import axios from "axios";
 import logo_white from "./../assets/logo_white.svg";
 
 function SideBar() {
-    const {token, setToken} = useAuth();
-    let decodedToken;
-    const [unreadCount, setUnreadCount] = useState(0);
+  const { token, setToken } = useAuth();
+  let decodedToken;
+  const [unreadCount, setUnreadCount] = useState(0);
 
   if (token) {
     decodedToken = jwtDecode(token);
@@ -99,7 +99,13 @@ function SideBar() {
     <>
       <div className="text-center text-decoration-none">
         <Link to="/" className="text-decoration-none text-white">
-          <div className="logo-container"><img src={logo_white} alt="logo_white" className="logo logo_white" /></div>
+          <div className="logo-container">
+            <img
+              src={logo_white}
+              alt="logo_white"
+              className="logo logo_white"
+            />
+          </div>
         </Link>
       </div>
       <div className="d-flex flex-column gap-3 mt-4">
