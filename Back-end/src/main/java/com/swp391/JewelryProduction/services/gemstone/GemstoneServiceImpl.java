@@ -98,12 +98,22 @@ public class GemstoneServiceImpl implements GemstoneService{
     }
 
     @Override
-    public GemstoneType editGemstoneType(GemstoneType gemstoneType) {
-        GemstoneType type = gemstoneTypeRepository.findByName(gemstoneType.getName())
-                .orElse(GemstoneType.builder()
-                        .name(gemstoneType.getName())
-                        .status(true)
-                        .build());
+    public GemstoneType createGemstoneType(GemstoneType gemstoneType) {
+        if(gemstoneType.getName().isEmpty() || gemstoneType.getName().isBlank()) {
+            return null;
+        } else {
+            return gemstoneTypeRepository.save(GemstoneType.builder()
+                            .status(true)
+                            .basePricePerCarat(gemstoneType.getBasePricePerCarat())
+                            .name(gemstoneType.getName())
+                            .build());
+        }
+    }
+
+    @Override
+    public GemstoneType updateGemstoneType(GemstoneType gemstoneType) {
+        GemstoneType type = gemstoneTypeRepository.findById(gemstoneType.getId())
+                .orElseThrow(() -> new ObjectNotFoundException(("Gemstone with ID " + gemstoneType.getId() + " not found")));
         type.setBasePricePerCarat(gemstoneType.getBasePricePerCarat());
         return gemstoneTypeRepository.save(type);
     }
