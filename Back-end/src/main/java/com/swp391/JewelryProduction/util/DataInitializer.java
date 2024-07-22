@@ -696,42 +696,52 @@ public class DataInitializer implements CommandLineRunner {
         detail.put(6, SpecificationDetail.builder()
                 .name("Trendy Summer Anklet")
                 .description("A trendy copper anklet with a braided texture and marquise-shaped amethyst gemstone, ideal for summer.")
+                .imageURL("https://firebasestorage.googleapis.com/v0/b/chat-d8802.appspot.com/o/product-images%2FProductSpecification6.jpg?alt=media&token=e5a204a2-f1ea-4dbc-b90e-2228d6b59a64")
                 .build());
         detail.put(7, SpecificationDetail.builder()
                 .name("Art Deco Formal Brooch")
                 .description("An art deco style brooch in white gold with a filigree texture and a trillion topaz gemstone, perfect for formal occasions.")
+                .imageURL("https://firebasestorage.googleapis.com/v0/b/chat-d8802.appspot.com/o/product-images%2FProductSpecification7.jpg?alt=media&token=3aa36056-1fcc-4cbf-a382-ec3351ec21ec")
                 .build());
         detail.put(8, SpecificationDetail.builder()
                 .name("Contemporary Business Cufflinks")
                 .description("Contemporary stainless steel cufflinks with a brushed texture, featuring cushion-shaped garnet gemstones, perfect for business attire.")
+                .imageURL("https://firebasestorage.googleapis.com/v0/b/chat-d8802.appspot.com/o/product-images%2FProductSpecification8.jpg?alt=media&token=20658d7c-649f-4676-ad8a-1ba58394d449")
                 .build());
         detail.put(9, SpecificationDetail.builder()
                 .name("Vintage Formal Tie Clip")
                 .description("A vintage style tie clip in brass with an engraved texture and an emerald-cut citrine gemstone, perfect for formal wear.")
+                .imageURL("https://firebasestorage.googleapis.com/v0/b/chat-d8802.appspot.com/o/product-images%2FProductSpecification9.jpg?alt=media&token=a81c652e-a42e-410d-b09a-042948bfc3fa")
                 .build());
         detail.put(10, SpecificationDetail.builder()
                 .name("Whimsical Everyday Charm")
                 .description("A whimsical sterling silver charm with a polished texture, featuring a round peridot gemstone, perfect for everyday wear.")
+                .imageURL("https://firebasestorage.googleapis.com/v0/b/chat-d8802.appspot.com/o/product-images%2FProductSpecification10.jpg?alt=media&token=1e6edc8d-face-464d-b2d2-0c422add30a2")
                 .build());
         detail.put(11, SpecificationDetail.builder()
                 .name("Statement Party Necklace")
                 .description("A bold statement necklace in gold plated metal with an etched texture and teardrop onyx gemstones, ideal for parties.")
+                .imageURL("https://firebasestorage.googleapis.com/v0/b/chat-d8802.appspot.com/o/product-images%2FProductSpecification11.jpg?alt=media&token=c737e706-790c-4561-91af-55decc03b8b7")
                 .build());
         detail.put(12, SpecificationDetail.builder()
                 .name("Beaded Casual Bracelet")
                 .description("A casual bracelet with leather and beaded texture, featuring oval turquoise gemstones, perfect for everyday wear.")
+                .imageURL("https://firebasestorage.googleapis.com/v0/b/chat-d8802.appspot.com/o/product-images%2FProductSpecification12.jpg?alt=media&token=843cdd2d-e847-4830-9547-da0f21cdf6d0")
                 .build());
         detail.put(13, SpecificationDetail.builder()
                 .name("Halo Wedding Ring")
                 .description("A halo style wedding ring in yellow gold with a high polish texture and radiant-cut aquamarine gemstones.")
+                .imageURL("https://firebasestorage.googleapis.com/v0/b/chat-d8802.appspot.com/o/product-images%2FProductSpecification13.jpg?alt=media&token=77417b73-41d6-4243-a4d2-62e3c27d370e")
                 .build());
         detail.put(14, SpecificationDetail.builder()
                 .name("Drop Cocktail Earrings")
                 .description("Drop earrings in rose gold plated metal with a smooth texture and princess-cut zircon gemstones, perfect for cocktail parties.")
+                .imageURL("https://firebasestorage.googleapis.com/v0/b/chat-d8802.appspot.com/o/product-images%2FProductSpecification14.jpg?alt=media&token=e368f6f4-6059-4014-bdb3-726571e8c11a")
                 .build());
         detail.put(15, SpecificationDetail.builder()
                 .name("Geometric Fashion Pendant")
                 .description("A geometric style fashion pendant in aluminum with a hammered texture, featuring hexagon-shaped moonstone gemstones.")
+                .imageURL("https://firebasestorage.googleapis.com/v0/b/chat-d8802.appspot.com/o/product-images%2FProductSpecification15.jpg?alt=media&token=e91fa33e-a3a6-46c7-a8e6-40e6f446bbed")
                 .build());
     }
 
@@ -778,15 +788,28 @@ public class DataInitializer implements CommandLineRunner {
                     .build();
             List<QuotationItem> items = new ArrayList<>();
             for (int j = 0; j < rand.nextInt(5, 10); j++) {
+                double unitPrice = roundToDecimal(rand.nextDouble(100, 500), 2);
+                double quantity = roundToDecimal(rand.nextDouble(0.5, 10), 2);
+                double totalPrice = roundToDecimal(unitPrice * quantity, 2);
                 items.add(QuotationItem.builder()
                         .name(faker.commerce().material())
-                        .unitPrice(rand.nextDouble(100, 500))
-                        .quantity(rand.nextDouble(0.5, 10))
+                        .unitPrice(unitPrice)
+                        .quantity(quantity)
+                        .totalPrice(totalPrice)
                         .quotation(quotation)
                         .build());
             }
-
             quotation.setQuotationItems(items);
+
+            Transactions transactions = Transactions.builder()
+                    .order(order)
+                    .dateCreated(LocalDateTime.now())
+                    .dateUpdated(LocalDateTime.now())
+                    .amount(quotation.getTotalPrice())
+                    .status(TransactionStatus.COMPLETED)
+                    .build();
+
+
             Design design = Design.builder()
                     .lastUpdated(quotation.getCreatedDate().atStartOfDay().plusDays(5))
                     .designLink(imageURL)
@@ -796,6 +819,7 @@ public class DataInitializer implements CommandLineRunner {
             order.setProduct(product);
             order.setQuotation(quotation);
             order.setDesign(design);
+            order.setTransactions(transactions);
             order.setSaleStaff(saleStaff != null ? staffRepository.save(saleStaff) : null);
             order.setDesignStaff(designStaff != null ? staffRepository.save(designStaff) : null);
             order.setProductionStaff(productionStaff != null ? staffRepository.save(productionStaff) : null);
