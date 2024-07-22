@@ -8,7 +8,7 @@
     export const AlertProvider = ({ children }) => {
     const [alerts, setAlerts] = useState([]);
 
-    const showAlert = (title, text, isShow, onClose, variant, autoCloseTime = 3000) => {
+    const showAlert = (title, text, variant, isShow, onClose, autoCloseTime = 3000) => {
         const id = new Date().getTime();
         setAlerts([...alerts, { id, title, text, variant, autoCloseTime }]);
     };

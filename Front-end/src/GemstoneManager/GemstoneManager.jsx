@@ -2,14 +2,12 @@ import React, { useState, useEffect } from "react";
 import { Table, Button, Modal, Form } from "react-bootstrap";
 import { FiPlus } from "react-icons/fi";
 import { FaBox } from "react-icons/fa";
-import { useAuth } from "../provider/AuthProvider";
 import axios from "axios";
 import ServerUrl from "../reusable/ServerUrl";
 import { FaEdit } from "react-icons/fa";
 import { FaTrash } from "react-icons/fa";
 
 export default function GemstoneManager() {
-  const { account } = useAuth();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);

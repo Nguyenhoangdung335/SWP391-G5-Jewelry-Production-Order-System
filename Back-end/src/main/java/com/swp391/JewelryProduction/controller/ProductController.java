@@ -1,18 +1,24 @@
 package com.swp391.JewelryProduction.controller;
 
 import com.swp391.JewelryProduction.dto.ProductDTO;
+import com.swp391.JewelryProduction.pojos.Design;
+import com.swp391.JewelryProduction.pojos.Order;
 import com.swp391.JewelryProduction.pojos.designPojos.Product;
 import com.swp391.JewelryProduction.pojos.designPojos.ProductSpecification;
 import com.swp391.JewelryProduction.services.product.ProductService;
 import com.swp391.JewelryProduction.util.Response;
+import com.swp391.JewelryProduction.websocket.image.ImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
+import java.time.LocalDateTime;
 
 import static com.swp391.JewelryProduction.util.CustomFormatter.roundToDecimal;
 
@@ -21,6 +27,7 @@ import static com.swp391.JewelryProduction.util.CustomFormatter.roundToDecimal;
 @RequestMapping("api/products")
 public class ProductController {
     private final ProductService productService;
+    private final ImageService imageService;
 
     //<editor-fold desc="PRODUCT ENDPOINTS" defaultstate="collapsed">
     @GetMapping("")
@@ -72,6 +79,17 @@ public class ProductController {
                 .response("products", productService.findAllByOrderByIdDesc(Limit.of(4)))
                 .message("Request send successfully.")
                 .buildEntity();
+    }
+
+    @PostMapping("/image")
+    public String submitProductImage (
+            @RequestParam MultipartFile imageFile
+    ) {
+        try {
+            return imageService.uploadImage(imageFile, "product-images");
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to upload image", e);
+        }
     }
     //</editor-fold>
 

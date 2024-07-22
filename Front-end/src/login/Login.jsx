@@ -38,8 +38,6 @@ export default function Login() {
             showAlert(
                 "Login Failed",
                 "Your Password or Email is incorrect please check again !!",
-                true,
-                false,
                 "danger",
             );
           }

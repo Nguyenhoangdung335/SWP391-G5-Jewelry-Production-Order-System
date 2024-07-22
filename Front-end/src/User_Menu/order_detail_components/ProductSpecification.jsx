@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Table, Form, Button } from "react-bootstrap";
 import ServerUrl from "../../reusable/ServerUrl";
 import axios from "axios";
@@ -41,14 +41,14 @@ const renderSpecification = ( specification, editMode, handleChange, parentKey =
                       type="text"
                       value={value.name}
                       onChange={(e) =>
-                        handleChange(`${formattedKey}.name`, e.target.value)
+                        handleChange(e, `${formattedKey}.name`, e.target.value)
                       }
                     />
                     <Form.Control
                       type="text"
                       value={value.unit}
                       onChange={(e) =>
-                        handleChange(`${formattedKey}.unit`, e.target.value)
+                        handleChange(e, `${formattedKey}.unit`, e.target.value)
                       }
                     />
                   </>
@@ -70,13 +70,13 @@ const renderSpecification = ( specification, editMode, handleChange, parentKey =
               <td style={{ width: "50%" }}>{formatString("Gemstone")}</td>
               <td>
                 {editMode ? (
-                  <Form.Control
-                    type="text"
-                    value={value.name}
-                    onChange={(e) =>
-                      handleChange(`${formattedKey}.name`, e.target.value)
-                    }
-                  />
+                    <Form.Control
+                      type="text"
+                      value={value.name}
+                      onChange={(e) =>
+                        handleChange(e, `${formattedKey}.name`, e.target.value)
+                      }
+                    />
                 ) : (
                   formatString(value.name)
                 )}
@@ -89,7 +89,7 @@ const renderSpecification = ( specification, editMode, handleChange, parentKey =
       } else {
         if (formattedKey.toLowerCase().includes("gemstone")) key = "Gemstone " + key;
         return (
-          !formattedKey.toLowerCase().includes("id") &&
+          !formattedKey.toLowerCase().includes("id") && !key.toLowerCase().includes("status") &&
           key !== "id" && (
             <tr key={formattedKey}>
               <td style={{ width: "50%" }}>{formatString(key)}</td>
@@ -99,7 +99,7 @@ const renderSpecification = ( specification, editMode, handleChange, parentKey =
                     type={typeof value === "number" ? "number" : "text"}
                     value={value}
                     onChange={(e) =>
-                      handleChange(formattedKey, e.target.value)
+                      handleChange(e, formattedKey, e.target.value)
                     }
                   />
                 ) : (
@@ -122,8 +122,41 @@ const ProductSpecificationTable = ({ orderStatus, selectedProduct, role, isEditi
   const {showAlert} = useAlert();
   const [editMode, setEditMode] = useState(isEditing);
   const [formValues, setFormValues] = useState(selectedProduct.specification);
+  const [metalData, setMetalData] = useState([]);
+  const [gemstoneData, setGemstoneData] = useState({
+    types: [],
+    shapes: [],
+    cuts: [],
+    clarities: [],
+    colors: [],
+  });
 
-  const handleChange = (key, value) => {
+  useEffect(() => {
+    if (isQualifiedEdit) {
+      const fetchPrice = async () => {
+        try {
+          const response = await axios.get(`${ServerUrl}/api/gemstone/factors`);
+          if (response.status === 200) {
+            const data = response.data.responseList;
+            setMetalData(data.metal);
+            setGemstoneData({
+              types: data.type,
+              shapes: data.shape,
+              cuts: data.cut,
+              clarities: data.clarity,
+              colors: data.color,
+            });
+          }
+        } catch (error) {
+          console.error("Error fetching gemstone and metal:", error);
+        }
+      };
+
+      fetchPrice();
+    }
+  }, [isQualifiedEdit]);
+
+  const handleChange = (event, key, newValue) => {
     const keys = key.split(".");
     let updatedValues = { ...formValues };
 
@@ -131,10 +164,21 @@ const ProductSpecificationTable = ({ orderStatus, selectedProduct, role, isEditi
     for (let i = 0; i < keys.length - 1; i++) {
       temp = temp[keys[i]];
     }
-    temp[keys[keys.length - 1]] = value;
+    temp[keys[keys.length - 1]] = newValue;
 
     setFormValues(updatedValues);
-  };
+
+    if (key === "metal") {
+      const selectedMetal = metalData.find((metal) => metal.id === newValue);
+      setFormValues(prev => ({
+        ...prev,
+        metal: selectedMetal
+      }));
+    } else if (key.startsWith("gemstone")) {
+      // Handle gemstone attributes similarly
+      // Assume `newValue` is the selected ID and map it to the appropriate gemstone object
+    }
+  }
 
   const handleSave = async () => {
     try {
@@ -156,9 +200,9 @@ const ProductSpecificationTable = ({ orderStatus, selectedProduct, role, isEditi
   return (
     <>
       <Table striped bordered hover>
-        <tbody>{renderSpecification(formValues, editMode, handleChange)}</tbody>
+        <tbody>{renderSpecification(formValues, editMode, handleChange, metalData, gemstoneData, )}</tbody>
       </Table>
-      {isQualifiedEdit && ((editMode && (
+      {/* {isQualifiedEdit && ((editMode && (
         <div className="d-flex justify-content-between gap-lg-5 gap-sm-2">
           <Button style={{ width: "100%" }} variant="primary" onClick={handleSave}>
             Save
@@ -172,7 +216,7 @@ const ProductSpecificationTable = ({ orderStatus, selectedProduct, role, isEditi
         <Button style={{ width: "100%" }} variant="primary" onClick={() => setEditMode(true)}>
           Edit
         </Button>
-      )))}
+      )))} */}
     </>
   );
 };

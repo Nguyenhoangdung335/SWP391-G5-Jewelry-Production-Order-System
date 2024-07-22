@@ -2,10 +2,12 @@ package com.swp391.JewelryProduction.services.product;
 
 import com.swp391.JewelryProduction.enums.OrderStatus;
 import com.swp391.JewelryProduction.pojos.Order;
+import com.swp391.JewelryProduction.pojos.Price.MetalPrice;
 import com.swp391.JewelryProduction.pojos.designPojos.Product;
 import com.swp391.JewelryProduction.pojos.designPojos.ProductSpecification;
 import com.swp391.JewelryProduction.pojos.gemstone.Gemstone;
 import com.swp391.JewelryProduction.pojos.gemstone.GemstoneType;
+import com.swp391.JewelryProduction.repositories.MetalPriceRepository;
 import com.swp391.JewelryProduction.repositories.ProductRepository;
 import com.swp391.JewelryProduction.repositories.ProductSpecificationRepository;
 import com.swp391.JewelryProduction.repositories.gemstoneRepositories.GemstoneTypeRepository;
@@ -31,6 +33,7 @@ public class ProductServiceImpl implements ProductService {
     private final OrderService orderService;
     private final GemstoneTypeRepository gemstoneTypeRepository;
     private final GemstoneService gemstoneService;
+    private final MetalPriceRepository metalPriceRepository;
     private final CrawlDataService crawlDataService;
 
     @Value("${price.default.sale_staff}")
@@ -102,12 +105,17 @@ public class ProductServiceImpl implements ProductService {
         }
         Gemstone gemstone = specs.getGemstone();
         GemstoneType gemstoneType = gemstone.getType();
+        MetalPrice metal = specs.getMetal();
 
-        // Ensure the GemstoneType is managed
         if (gemstoneType != null) {
             gemstoneType = gemstoneTypeRepository.findById(gemstoneType.getId())
                     .orElseThrow(() -> new IllegalArgumentException("Invalid GemstoneType ID"));
             gemstone.setType(gemstoneType);
+        }
+        if (metal != null) {
+            metal = metalPriceRepository.findById(metal.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid MetalPrice ID"));
+            specs.setMetal(metal);
         }
         return productSpecificationRepository.save(specs);
     }

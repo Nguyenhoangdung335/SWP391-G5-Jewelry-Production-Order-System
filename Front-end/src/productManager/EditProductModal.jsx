@@ -1,27 +1,69 @@
 import React, { useState } from "react";
-import { Modal, Form, Button, Row, Col } from "react-bootstrap";
+import { Modal, Form, Button, Row, Col, Image } from "react-bootstrap";
 import ProductSpecificationTable from "../User_Menu/order_detail_components/ProductSpecification";
+import axios from "axios";
+import ResizeImage from "../reusable/ResizeImage";
+import ServerUrl from "../reusable/ServerUrl";
+import { useAlert } from "../provider/AlertProvider";
 
 const EditProductModal = ({ show, onHide, product = defaultProduct }) => {
+    const {showAlert} = useAlert();
   const [productDetails, setProductDetails] = useState(product);
+  const [imageDetails, setImageDetails] = useState({
+    imageURL: "",
+    imageFile: null,
+  });
 
-  const handleProductChange = (key, value) => {
-    const keys = key.split(".");
-    let updatedProduct = { ...productDetails };
+  const handleDesignImageSubmit = async () => {
+    const formData = new FormData();
 
-    let temp = updatedProduct;
-    for (let i = 0; i < keys.length - 1; i++) {
-      temp = temp[keys[i]];
+    if (imageDetails.imageFile instanceof File) {
+      const resizedImageFile = await ResizeImage(imageDetails.imageFile);
+      formData.append("file", resizedImageFile);
+      const response = await axios.post(
+        `${ServerUrl}/api/products/image`,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+      if (response.status === 200) {
+        setImageDetails({
+            ...imageDetails,
+            imageURL: response.data,
+        });
+      }
+    } else {
+      console.error("designImage is not a File");
     }
-    temp[keys[keys.length - 1]] = value;
-
-    setProductDetails(updatedProduct);
   };
 
-  const handleSave = () => {
-    // Handle saving logic here
-    console.log("Product details saved:", productDetails);
-    onHide();
+  const handleSave = async () => {
+    handleDesignImageSubmit();
+    setProductDetails({
+        ...productDetails,
+        imageURL: imageDetails.imageURL
+    });
+    const response = await axios.post(`${ServerUrl}/api/products`);
+    if (response.status === 200) {
+        showAlert("Product updated successfully", "", "success");
+        onHide();
+    }
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImageDetails({
+          ...imageDetails,
+          imageFile: file,
+          imageURL: reader.result,
+        });
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
@@ -33,6 +75,11 @@ const EditProductModal = ({ show, onHide, product = defaultProduct }) => {
         <Form>
             <Row>
                 <Col md={6}>
+                    {imageDetails.imageURL && (
+                        <div >
+                            <Image src={imageDetails.imageURL} fluid />
+                        </div>
+                    )}
                     {/* Product Name */}
                     <Form.Group controlId="formProductName">
                         <Form.Label>Product Name</Form.Label>
@@ -54,17 +101,11 @@ const EditProductModal = ({ show, onHide, product = defaultProduct }) => {
                         />
                     </Form.Group>
 
-                    {/* Product Image URL */}
-                    <Form.Group controlId="formProductImageURL">
-                        <Form.Label>Image URL</Form.Label>
-                        <Form.Control
-                        type="text"
-                        value={productDetails.imageURL}
-                        onChange={(e) =>
-                            setProductDetails({ ...productDetails, imageURL: e.target.value })
-                        }
-                        />
-                    </Form.Group>
+                    <Form.Control
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                    />
                 </Col>
                 <Col md={6}>
                     {/* Product Specification */}
@@ -102,16 +143,12 @@ const defaultProduct = {
       metal: {
         name: "",
         unit: "",
-        price: 0,
-        updatedTime: "",
       },
       texture: "",
       chainType: "",
       gemstone: {
         type: {
           name: "",
-          basePricePerCarat: 0,
-          status: false,
         },
         shape: "",
         cut: "",

@@ -42,7 +42,7 @@ public class ProductSpecification {
 
     @ToString.Include
     @EqualsAndHashCode.Include
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "metal_id")
     private MetalPrice metal;
 

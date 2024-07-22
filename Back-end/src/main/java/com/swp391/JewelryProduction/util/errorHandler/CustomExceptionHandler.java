@@ -1,5 +1,6 @@
 package com.swp391.JewelryProduction.util.errorHandler;
 
+import com.paypal.base.rest.PayPalRESTException;
 import com.swp391.JewelryProduction.util.Response;
 import com.swp391.JewelryProduction.util.exceptions.MissingContextVariableException;
 import com.swp391.JewelryProduction.util.exceptions.ObjectExistsException;
@@ -200,6 +201,14 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
         return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
     }
+
+//    @ExceptionHandler(PayPalRESTException.class)
+//    public ResponseEntity<Response> handlePaypalRESTException (
+//            PayPalRESTException ex,
+//            WebRequest request
+//    ) {
+//
+//    }
 
 //    @Override
 //    protected ResponseEntity<Object> handleExceptionInternal(
