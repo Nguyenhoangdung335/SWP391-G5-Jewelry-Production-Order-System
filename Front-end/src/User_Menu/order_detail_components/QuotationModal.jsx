@@ -14,19 +14,24 @@ import CreateReport from "../../orderFlows/CreateReport";
 import { jwtDecode } from "jwt-decode";
 import { useAuth } from "../../provider/AuthProvider";
 import "./css/QuotationModal.css";
+import { useAlert } from "../../provider/AlertProvider";
 
-function QuotationModal({ data, quotation, orderId, show, onHide, setShowAlert }) {
+function QuotationModal({ data, quotation, orderId, show, onHide, fetchData }) {
+  const {showAlert} = useAlert();
   const { token } = useAuth();
   const decodedToken = jwtDecode(token);
   const currentDate = new Date();
   const paymentMethods = ["CREDIT_CARD", "PAYPAL", "BANK", "CARRIER", "ALTERNATE_PAYMENT", "PAY_UPON_INVOICE", ];
 
-
   const isQualifyApproving =
-    ["ADMIN", "CUSTOMER", "MANAGER"].includes(decodedToken.role) &&
-    data.status.includes("AWAIT") &&
-    data.status.includes("APPROVAL");
-  const isQualifyCreateQuotation =
+  ["ADMIN", "CUSTOMER", "MANAGER"].includes(decodedToken.role) &&
+  (
+    (decodedToken.role === "ADMIN" && ["AWAIT", "APPROVAL"].every(sub => data.status.includes(sub))) ||
+    (decodedToken.role === "CUSTOMER" && data.status === "QUO_AWAIT_CUST_APPROVAL") ||
+    (decodedToken.role === "MANAGER" && data.status === "QUO_AWAIT_MANA_APPROVAL")
+  );
+
+    const isQualifyCreateQuotation =
     ["ADMIN", "SALE_STAFF"].includes(decodedToken.role) &&
     data.status === "IN_EXCHANGING";
 
@@ -48,7 +53,7 @@ function QuotationModal({ data, quotation, orderId, show, onHide, setShowAlert }
   const initialQuotation = quotation
     ? quotation
     : {
-        title: "",
+        title: "Quotation for order " + data.id,
         createdDate: currentDate.toISOString().split("T")[0],
         expiredDate: new Date(currentDate.setMonth(currentDate.getMonth() + 3)).toISOString().split("T")[0],
         quotationItems: [],
@@ -64,19 +69,7 @@ function QuotationModal({ data, quotation, orderId, show, onHide, setShowAlert }
   const [showCreateReport, setShowCreateReport] = useState(false);
   const [quotationId, setQuotationId] = useState(null);
   const [confirmNotification, setConfirmNotification] = useState(null);
-  // const [showAlert, setShowAlert] = useState(["", "", false, false, ""]);
-
-  const handleFetchInitialQuotation = async () => {
-    try {
-      const response = await axios.get(`${ServerUrl}/api/quotation/${orderId}/default-items`);
-      if (response.status === 200) {
-        setQuotationItems(response.data.responseList.items);
-        setCurrentId(response.data.responseList.items.length || 0);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  const [buttonIsLoading, setButtonIsLoading] = useState(false);
 
   useEffect(() => {
     if (isQualifyCreateQuotation) {
@@ -85,14 +78,26 @@ function QuotationModal({ data, quotation, orderId, show, onHide, setShowAlert }
         updatedQuotationItems = quotation.quotationItems;
         setQuotationItems(updatedQuotationItems);
         setCurrentId(updatedQuotationItems?.length || 0);
+        setTitle(quotation?.title);
+        setCreatedDate(quotation?.createdDate);
+        setExpiredDate(quotation?.expiredDate);
       } else {
+        const handleFetchInitialQuotation = async () => {
+          try {
+            const response = await axios.get(`${ServerUrl}/api/quotation/${orderId}/default-items`);
+            if (response.status === 200) {
+              setQuotationItems(response.data.responseList.items);
+              setCurrentId(response.data.responseList.items.length || 0);
+            }
+          } catch (error) {
+            console.error(error);
+          }
+        };
+
         handleFetchInitialQuotation();
       }
-      setTitle(quotation?.title);
-      setCreatedDate(quotation?.createdDate || createdDate);
-      setExpiredDate(quotation?.expiredDate || expiredDate);
     }
-  }, [quotation, isQualifyCreateQuotation]);
+  }, [quotation, isQualifyCreateQuotation, orderId]);
 
   useEffect(() => {
     if (isQualifyApproving) {
@@ -154,10 +159,11 @@ function QuotationModal({ data, quotation, orderId, show, onHide, setShowAlert }
       const response = await axios.post(url);
       if (response.status === 200) {
         onHide();
-        setShowAlert(["Quotation confirm successfully", "", true, false, "success"]);
+        showAlert("Quotation confirm successfully", "", "success");
+        fetchData();
       }
     } catch (error) {
-      setShowAlert(["Failed to confirm quotation", "", true, false, "danger"]);
+      showAlert("Failed to confirm quotation", "", "danger");
     }
   };
 
@@ -242,14 +248,17 @@ function QuotationModal({ data, quotation, orderId, show, onHide, setShowAlert }
         setQuotationId(response.data.responseList.quotation.id);
         setShowCreateReport(true);
         onHide();
-        setShowAlert(["Quotation Submit successfully", "", true, false, "success"]);
+        fetchData();
+        showAlert("Quotation Submit successfully", "", "success");
       }
     } catch (error) {
-      setShowAlert(["Failed to submit quotation", "", true, false, "danger"]);
+      showAlert("Failed to submit quotation", "", "danger");
     }
   };
 
   const handleMakePayment = async (ev) => {
+    setButtonIsLoading(true);
+
     const resultURL = `${window.location.href}?id=${orderId}`;
     try {
       const response = await axios.post(
@@ -257,9 +266,10 @@ function QuotationModal({ data, quotation, orderId, show, onHide, setShowAlert }
       );
       if (response.status === 200) {
         window.location.href = response.data.responseList.url;
+        setButtonIsLoading(false);
       }
     } catch (error) {
-      setShowAlert(["Failed to redirect user to payment page", "", true, false, "danger"]);
+      showAlert("Failed to redirect user to payment page", "", "danger");
     }
   };
 
@@ -283,10 +293,6 @@ function QuotationModal({ data, quotation, orderId, show, onHide, setShowAlert }
           </Modal.Title>
         </Modal.Header>
         <Modal.Body style={{width: "100%"}}>
-          {/* {isQualifyApproving && (
-            <Col md={4}>
-            </Col>
-          )} */}
           <Col md={12}>
             <Form.Group as={Row} className="mb-3">
               <Form.Label column sm="2">Title:</Form.Label>
@@ -354,11 +360,19 @@ function QuotationModal({ data, quotation, orderId, show, onHide, setShowAlert }
               <Button onClick={handleSubmit}>Submit quotation</Button>
             )}
           {["CUSTOMER"].includes(decodedToken.role) &&
-            data.status === "AWAIT_TRANSACTION" && (
-              <Button onClick={handleMakePayment}>Make Payment</Button>
+            ["AWAIT_BET_TRANSACTION", "AWAIT_REMAIN_TRANSACTION"].includes(data.status) && (
+              <Button
+                onClick={buttonIsLoading ? null: handleMakePayment}
+                disabled={buttonIsLoading}
+              >
+                {buttonIsLoading ? "Loading...": "Make Payment"}
+              </Button>
             )}
           {isQualifyApproving && (
-            <Button onClick={handleApproveQuotation}>Approve Quotation</Button>
+            <>
+              <Button onClick={() => handleApproveQuotation(false)}>Declined Quotation</Button>
+              <Button onClick={() => handleApproveQuotation(true)}>Approve Quotation</Button>
+            </>
           )}
         </Modal.Footer>
       </Modal>
@@ -371,16 +385,6 @@ function QuotationModal({ data, quotation, orderId, show, onHide, setShowAlert }
           onHide={() => setShowCreateReport(false)}
         />
       )}
-
-      {/* {showAlert && (
-        <CustomAlert
-          title={showAlert[0]}
-          text={showAlert[1]}
-          isShow={showAlert[2]}
-          onClose={showAlert[3]}
-          alertVariant={showAlert[4]}
-        />
-      )} */}
     </>
   );
 }
