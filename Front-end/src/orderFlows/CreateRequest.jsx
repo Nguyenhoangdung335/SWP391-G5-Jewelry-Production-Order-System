@@ -58,7 +58,7 @@ function CreateRequest({productSpecId, onClose}) {
             .then((response) => {
                 console.log(response.data);
                 showAlert("Success", "Request sent successfully!", "success");
-                // setTimeout(() => onClose(), 2000);
+                onClose();
             })
             .catch((error) => {
                 console.error("There was an error sending the request!", error);

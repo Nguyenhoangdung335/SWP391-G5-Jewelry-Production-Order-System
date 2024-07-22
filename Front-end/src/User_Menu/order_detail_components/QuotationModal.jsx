@@ -136,7 +136,7 @@ function QuotationModal({ data, quotation, orderId, show, onHide, fetchData }) {
 
   const handleInputChange = (itemID, field, value) => {
     const updatedItems = quotationItems.map((item) => {
-      if (item.itemID === itemID) {
+      if (item.itemID === itemID && !item.name.toLowerCase().includes("gemstone")) {
         const updatedItem = { ...item, [field]: value };
         if (field === "quantity" || field === "unitPrice") {
           const quantity = updatedItem.quantity || 0;
@@ -248,8 +248,8 @@ function QuotationModal({ data, quotation, orderId, show, onHide, fetchData }) {
         setQuotationId(response.data.responseList.quotation.id);
         setShowCreateReport(true);
         onHide();
-        fetchData();
         showAlert("Quotation Submit successfully", "", "success");
+        fetchData();
       }
     } catch (error) {
       showAlert("Failed to submit quotation", "", "danger");
@@ -282,6 +282,7 @@ function QuotationModal({ data, quotation, orderId, show, onHide, fetchData }) {
         show={show}
         onHide={onHide}
         backdrop="static"
+        animation
         size="xl"
         aria-labelledby="contained-modal-title-vcenter"
         centered

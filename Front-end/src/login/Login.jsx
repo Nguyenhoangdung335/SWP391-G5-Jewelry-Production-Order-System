@@ -12,13 +12,9 @@ export default function Login() {
   const [validated, setValidated] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  // const [showAlert, setShowAlert] = useState(["", "", false, false, ""]);
   const { setToken } = useAuth();
   const navigate = useNavigate();
 
-  console.log(ServerUrl);
-
-  //Handle submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     const form = e.currentTarget;
@@ -36,9 +32,7 @@ export default function Login() {
           if (response.status === 200) {
             setToken(response.data.responseList.token);
             showAlert("Login Successfully", "", "success");
-            // setTimeout(() => {
-              navigate("/userManager");
-            // }, 1000);
+            navigate("/userManager");
           } else if (response.status === 400) {
             throw new Error(response.message);
           }
@@ -60,15 +54,6 @@ export default function Login() {
       style={{ height: "90vh" }}
       className="d-flex justify-content-center align-items-center"
     >
-      {/* {showAlert && (
-        <CustomAlert
-          title={showAlert[0]}
-          text={showAlert[1]}
-          isShow={showAlert[2]}
-          onClose={showAlert[3]}
-          alertVariant={showAlert[4]}
-        />
-      )} */}
       <div
         className="p-4 rounded-4"
         style={{

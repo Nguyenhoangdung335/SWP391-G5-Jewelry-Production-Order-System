@@ -43,13 +43,9 @@ const rbacConfig = {
     "MANAGER",
     "ADMIN",
   ],
-  "/userManager/gemstone_manager": [
-    "SALE_STAFF",
-    "DESIGN_STAFF",
-    "PRODUCTION_STAFF",
-    "MANAGER",
-    "ADMIN",
-  ],
+  // "/userManager/gemstone_manager": [
+  //   "ADMIN",
+  // ],
   "/user_setting_page": [
     "SALE_STAFF",
     "DESIGN_STAFF",
@@ -61,41 +57,49 @@ const rbacConfig = {
 
 const navLinks = [
   {
+    id: 1,
     to: "/userManager/dashboard",
     icon: <MdSpaceDashboard size={30} color="white" />,
     label: "Dashboard",
   },
   {
+    id: 2,
     to: "/userManager/client_manager",
     icon: <FaUsers size={30} color="white" />,
     label: "Clients",
   },
   {
+    id: 3,
     to: "/userManager/orders_manager",
     icon: <IoMdCart size={30} color="white" />,
     label: "Orders",
   },
   // {
-  //   to: "/userManager/blogs_manager",
+  //   id: 4,
+//     to: "/userManager/blogs_manager",
   //   icon: <IoChatboxEllipses size={30} color="white" />,
   //   label: "Blogs",
   // },
   {
+    id: 5,
     to: "/userManager/employees_manager",
     icon: <LuUser2 size={30} color="white" />,
     label: "Employees",
   },
   {
+    id: 6,
     to: "/userManager/products_manager",
     icon: <FiBox size={30} color="white" />,
     label: "Products",
   },
   {
+    id: 7,
     to: "/userManager/gemstone_manager",
     icon: <IoDiamondOutline size={30} color="white" />,
     label: "Gemstone",
   },
   {
+    id: 8,
     to: "/user_setting_page",
     icon: <IoSettingsOutline size={30} color="white" />,
     label: "Settings",
@@ -131,9 +135,11 @@ export default function NavBar() {
       <div className="d-flex flex-column gap-3 mt-4">
         {navLinks.map((navLink) =>
           isAllowed(userRole, navLink.to) ? (
-            <div className=" side-bar-item side-bar-ltr">
+            <div
+              key={navLink.to}
+              className=" side-bar-item side-bar-ltr"
+            >
               <NavLink
-                key={navLink.to}
                 style={({ isActive }) => ({
                   backgroundColor: isActive
                     ? "rgb(125, 125, 125)"

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Alert from "react-bootstrap/Alert";
 import './../App.css';
 
-function CustomAlert({ title, text, isShow, onClose, alertVariant, autoCloseTime = 5500 }) {
+function CustomAlert({ title, text, isShow, onClose, alertVariant, autoCloseTime = 1500 }) {
   const [show, setShow] = useState(isShow);
   const [fade, setFade] = useState('fade-in');
 
@@ -52,8 +52,7 @@ const alertStyle = {
   right: "20px",
   width: "50ch",
   zIndex: "1100",
-  paddingTop: "10px",
-  paddingLeft:"10px",
+  padding: "15px",
   cursor: "pointer",
   transition: "all 0.3s ease-in-out",
 };

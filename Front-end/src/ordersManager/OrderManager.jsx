@@ -100,7 +100,7 @@ export default function OrderManager() {
   };
 
   const arrayToDate = (date) => {
-    if (!date) return "NaN";
+    if (!date) return "Ongoing";
     const dateObject1 = new Date(date[0], date[1] - 1, date[2]);
     const isoString = dateObject1.toISOString();
     return isoString.substring(0, 10);
@@ -149,7 +149,7 @@ export default function OrderManager() {
               <td>{order.name}</td>
               {/* <td>{order.budget}</td> */}
               <td>{arrayToDate(order.createdDate)}</td>
-              <td>{arrayToDate(order.completedDate)}</td>
+              <td>{arrayToDate(order?.completedDate)}</td>
               <td>
                 <Badge
                   className="text-white"

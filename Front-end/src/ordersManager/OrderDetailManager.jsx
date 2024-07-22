@@ -20,6 +20,7 @@ import AssignedStaff from "../User_Menu/order_detail_components/AssignedStaff";
 import QuotationModal from "../User_Menu/order_detail_components/QuotationModal";
 import ProductSpecificationTable from "../User_Menu/order_detail_components/ProductSpecification";
 import { useAlert } from "../provider/AlertProvider";
+import Loader from "../reusable/Loader";
 
 function OrderDetailManager() {
   const {showAlert} = useAlert();
@@ -38,11 +39,10 @@ function OrderDetailManager() {
 
   const isQualifiedApproveSpecification = ["ADMIN", "MANAGER"].includes(decodedToken.role) && data?.status === "REQ_AWAIT_APPROVAL";
   const isQualifyApproving =
-  ["ADMIN", "CUSTOMER", "MANAGER"].includes(decodedToken.role) &&
+  ["ADMIN", "MANAGER"].includes(decodedToken.role) &&
   (
     (decodedToken.role === "ADMIN" && ["AWAIT", "APPROVAL"].every(sub => data?.status.includes(sub))) ||
-    (decodedToken.role === "CUSTOMER" && ["AWAIT", "APPROVAL", "CUST"].every(sub => data?.status.includes(sub))) ||
-    (decodedToken.role === "MANAGER" && ["AWAIT", "APPROVAL", "MANA"].every(sub => data?.status.includes(sub)))
+    (decodedToken.role === "MANAGER" && data?.status === "DES_AWAIT_MANA_APPROVAL")
   );
 
   const fetchData = async () => {
@@ -53,7 +53,7 @@ function OrderDetailManager() {
       if (response.status === 200) {
         const orderDetail = response.data.responseList.orderDetail;
         setData(orderDetail);
-        setImageLink(orderDetail.design?.designLink || noImage);
+        setImageLink(orderDetail.product.imageURL ? orderDetail.product.imageURL : (orderDetail.design?.designLink || noImage) );
       }
     } catch (error) {
       console.error("Error fetching data", error);
@@ -83,6 +83,12 @@ function OrderDetailManager() {
         });
     }
   }, [isQualifiedApproveSpecification, isQualifyApproving, data]);
+
+  if (!data || data === undefined) {
+    return (
+      <Loader />
+    );
+  }
 
   if (!data) {
     return <div className="d-flex justify-content-center align-items-center">Loading...</div>;

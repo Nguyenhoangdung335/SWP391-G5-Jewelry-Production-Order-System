@@ -22,7 +22,7 @@ const ProtectedRoute = ({ children, roles, ...rest }) => {
   }
 
   //Navigate to Home Page if the logged in user don't have enough permission
-  if (roles && !roles.includes(decodedToken.role)) {
+  if ((roles && !roles.includes(decodedToken.role)) || roles === null || roles === undefined) {
     return <Navigate to="/" />;
   }
 

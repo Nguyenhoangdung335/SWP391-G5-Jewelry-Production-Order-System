@@ -47,7 +47,7 @@ function OrderDetail() {
   const id = location.state || searchParams.get('id');
   const status = searchParams.get('status');
 
-  const isQualifyApproving = ["DES_AWAIT_CUST_APPROVAL", "PRO_AWAIT_CUST_APPROVAL"].includes(data?.status);
+  const isQualifyApproving = ["DES_AWAIT_CUST_APPROVAL", "PRO_AWAIT_APPROVAL"].includes(data?.status);
   const isQualifyTransaction = ["AWAIT_BET_TRANSACTION", "AWAIT_REMAIN_TRANSACTION"].includes(data?.status);
 
   const arrayToDate = (date) => {
@@ -68,7 +68,7 @@ function OrderDetail() {
       if (response.status === 200) {
         const orderDetail = response.data.responseList.orderDetail;
         setData(orderDetail);
-        setImageLink(orderDetail.design?.designLink || noImage);
+        setImageLink(orderDetail.product.imageURL ? orderDetail.product.imageURL : (orderDetail.design?.designLink || noImage) );
       }
     } catch (error) {
       console.error("Error fetching data", error);
