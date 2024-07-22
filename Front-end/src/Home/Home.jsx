@@ -70,6 +70,9 @@ function Home() {
                 isShow: true,
                 alertVariant: "danger",
             });
+            setTimeout(() => {
+                navigate("/login");
+            }, 2000)
         } else if (decodedToken.role !== "CUSTOMER") {
             setAlertConfig({
                 title: "Access Denied",

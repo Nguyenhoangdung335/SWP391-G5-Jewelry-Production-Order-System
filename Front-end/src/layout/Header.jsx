@@ -68,6 +68,9 @@ export default function Header() {
                 isShow: true,
                 alertVariant: "danger",
             });
+            setTimeout(() => {
+                navigate("/login");
+            }, 500)
         } else if (role !== "CUSTOMER") {
             setAlertConfig({
                 title: "Access Denied",

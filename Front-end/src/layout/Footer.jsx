@@ -38,6 +38,9 @@ export default function Footer() {
                 isShow: true,
                 alertVariant: "danger",
             });
+            setTimeout(() => {
+                navigate("/login");
+            }, 500)
         } else if (decodedToken.role !== "CUSTOMER") {
             setAlertConfig({
                 title: "Access Denied",

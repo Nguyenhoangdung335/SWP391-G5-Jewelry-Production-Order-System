@@ -10,6 +10,7 @@ import {jwtDecode} from "jwt-decode";
 import {useAuth} from "../provider/AuthProvider";
 import ProductSpecificationTable from "../User_Menu/order_detail_components/ProductSpecification";
 import CustomAlert from "../reusable/CustomAlert";
+import {useNavigate} from "react-router-dom";
 
 const size = ["small", "medium", "large"];
 const pageSize = 5;
@@ -37,6 +38,7 @@ function Collections() {
         isShow: false,
         alertVariant: "primary",
     });
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (token) {
@@ -103,6 +105,9 @@ function Collections() {
                 isShow: true,
                 alertVariant: "danger",
             });
+            setTimeout(() => {
+                navigate("/login");
+            }, 500)
         } else if (decodedToken.role !== "CUSTOMER") {
             setAlertConfig({
                 title: "Access Denied",
