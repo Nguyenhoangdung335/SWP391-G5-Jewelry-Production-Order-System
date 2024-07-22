@@ -19,6 +19,8 @@ export default function GemstoneManager() {
   const itemsPerPage = 5;
   const [data, setData] = useState([]);
 
+  console.log(data);
+
   useEffect(() => {
     axios({
       method: "GET",
@@ -26,7 +28,7 @@ export default function GemstoneManager() {
       headers: { "Content-Type": "application/json" },
     })
       .then((res) => {
-        setData(res.data.responseList.gemstoneType);
+        setData(res.data.responseList);
       })
       .catch((err) => console.log(err));
   }, [currentPage]);
@@ -128,7 +130,7 @@ export default function GemstoneManager() {
     setCurrentPage(pageNumber);
   };
 
-  const paginatedData = data.slice(
+  const paginatedData = data.gemstoneType.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
@@ -230,7 +232,7 @@ export default function GemstoneManager() {
               <td>{gemstone.id}</td>
               <td>{gemstone.name}</td>
               <td>{gemstone.basePricePerCarat}</td>
-              <td>{gemstone.status ? "True":"False"}</td>
+              <td>{gemstone.status ? "True" : "False"}</td>
               <td>
                 <div className="d-flex justify-content-center gap-2">
                   <Button
