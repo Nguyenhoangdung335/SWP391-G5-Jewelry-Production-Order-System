@@ -5,20 +5,22 @@ import {useAuth} from "../provider/AuthProvider";
 import {jwtDecode} from "jwt-decode";
 import {Form, Button} from "react-bootstrap";
 import CustomAlert from "../reusable/CustomAlert";
+import { useAlert } from "../provider/AlertProvider";
 
 function CreateRequest({productSpecId, onClose}) {
+    const {showAlert} = useAlert();
     const {token} = useAuth();
     const decodedToken = jwtDecode(token);
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [errors, setErrors] = useState({});
     const [validated, setValidated] = useState(false);
-    const [alertConfig, setAlertConfig] = useState({
-        title: "",
-        text: "",
-        isShow: false,
-        alertVariant: "primary",
-    });
+    // const [alertConfig, setAlertConfig] = useState({
+    //     title: "",
+    //     text: "",
+    //     isShow: false,
+    //     alertVariant: "primary",
+    // });
 
     // const handleValidate = () => {
     //     const newErrors = {};
@@ -55,22 +57,12 @@ function CreateRequest({productSpecId, onClose}) {
             .post(serverUrl + `/api/report/${decodedToken.id}/${productSpecId}/create/request`, request)
             .then((response) => {
                 console.log(response.data);
-                setAlertConfig({
-                    title: "Success",
-                    text: "Request sent successfully!",
-                    isShow: true,
-                    alertVariant: "success",
-                });
-                setTimeout(() => onClose(), 2000);
+                showAlert("Success", "Request sent successfully!", "success");
+                // setTimeout(() => onClose(), 2000);
             })
             .catch((error) => {
                 console.error("There was an error sending the request!", error);
-                setAlertConfig({
-                    title: "Error",
-                    text: "Error sending request.",
-                    isShow: true,
-                    alertVariant: "danger",
-                });
+                showAlert("Error", "Error sending request.", "danger");
             });
     };
 
@@ -141,13 +133,13 @@ function CreateRequest({productSpecId, onClose}) {
                     Confirm
                 </Button>
             </Form>
-            <CustomAlert
+            {/* <CustomAlert
                 title={alertConfig.title}
                 text={alertConfig.text}
                 show={alertConfig.isShow}
                 onClose={() => setAlertConfig({...alertConfig, isShow: false})}
                 variant={alertConfig.alertVariant}
-            />
+            /> */}
         </>
     );
 }

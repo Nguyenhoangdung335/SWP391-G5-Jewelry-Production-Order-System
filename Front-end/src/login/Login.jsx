@@ -5,13 +5,14 @@ import { FaGoogle, FaGithub } from "react-icons/fa";
 import { useAuth } from "../provider/AuthProvider";
 import axios from "axios";
 import ServerUrl from "../reusable/ServerUrl";
-import CustomAlert from "../reusable/CustomAlert";
+import { useAlert } from "../provider/AlertProvider";
 
 export default function Login() {
+  const { showAlert } = useAlert();
   const [validated, setValidated] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showAlert, setShowAlert] = useState(["", "", false, false, ""]);
+  // const [showAlert, setShowAlert] = useState(["", "", false, false, ""]);
   const { setToken } = useAuth();
   const navigate = useNavigate();
 
@@ -34,25 +35,20 @@ export default function Login() {
         .then((response) => {
           if (response.status === 200) {
             setToken(response.data.responseList.token);
-            setShowAlert(["Login Successfully", "", true, false, "success"]);
-            setTimeout(() => {
+            showAlert("Login Successfully", "", "success");
+            // setTimeout(() => {
               navigate("/userManager");
-            }, 1000);
+            // }, 1000);
           } else if (response.status === 400) {
             throw new Error(response.message);
           }
         })
         .catch((error) => {
-          setShowAlert([
+          showAlert(
             "Login Failed",
             "Your Password or Email is incorrect please check again !!",
-            true,
-            false,
             "danger",
-          ]);
-          setTimeout(() => {
-            setShowAlert(["", "", false, false, ""]);
-          }, 3000);
+          );
           console.error("There was an error!", error);
         });
     }
@@ -64,7 +60,7 @@ export default function Login() {
       style={{ height: "90vh" }}
       className="d-flex justify-content-center align-items-center"
     >
-      {showAlert && (
+      {/* {showAlert && (
         <CustomAlert
           title={showAlert[0]}
           text={showAlert[1]}
@@ -72,7 +68,7 @@ export default function Login() {
           onClose={showAlert[3]}
           alertVariant={showAlert[4]}
         />
-      )}
+      )} */}
       <div
         className="p-4 rounded-4"
         style={{

@@ -5,8 +5,10 @@ import serverUrl from "../reusable/ServerUrl";
 import { useAuth } from "../provider/AuthProvider";
 import { jwtDecode } from "jwt-decode";
 import { Form, Button, Modal } from "react-bootstrap";
+import { useAlert } from "../provider/AlertProvider";
 
 function CreateReport({ reportContentId, orderId, reportType, onHide }) {
+  const {showAlert} = useAlert();
   const { token } = useAuth();
   const decodedToken = jwtDecode(token);
   const [title, setTitle] = useState("");
@@ -38,14 +40,12 @@ function CreateReport({ reportContentId, orderId, reportType, onHide }) {
     axios
       .post(url(), request)
       .then((response) => {
-        console.log(response.data);
-        alert("Request sent successfully!");
-        setRequestSent(true);
-        onHide(); // Close the modal after successful submission
+        onHide();
+        showAlert("Submit Request successfully", "", "success");
       })
       .catch((error) => {
         console.error("There was an error sending the request!", error);
-        alert("Error sending request.");
+        showAlert("Submit Request Failed", "", "error");
       });
   };
 
@@ -60,6 +60,8 @@ function CreateReport({ reportContentId, orderId, reportType, onHide }) {
       size="lg"
       aria-labelledby="contained-modal-title-vcenter"
       centered
+      animation
+      backdrop="static"
     >
       <Modal.Header className="w-100" closeButton>
         <Modal.Title id="contained-modal-title-vcenter">

@@ -2,24 +2,24 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import ServerUrl from "../../reusable/ServerUrl";
 import { Button, Form } from "react-bootstrap";
+import { useAlert } from "../../provider/AlertProvider";
 
 function AssignedStaff({ decodedToken, data, onSubmit }) {
+  const {showAlert} = useAlert();
   const [staff, setStaff] = useState({
     saleStaffs: [],
     designStaffs: [],
     productionStaffs: [],
   });
-  //   const [loading, setLoading] = useState(true);
-  // const [staffOptions, setStaffOptions] = useState();
-  const [selectedSaleStaff, setSelectedSaleStaff] = useState(
-    data.saleStaff ?? ""
-  );
-  const [selectedDesignStaff, setSelectedDesignStaff] = useState(
-    data.designStaff ?? ""
-  );
-  const [selectedProductionStaff, setSelectedProductionStaff] = useState(
-    data.productionStaff ?? ""
-  );
+  const [selectedSaleStaff, setSelectedSaleStaff] = useState();
+  const [selectedDesignStaff, setSelectedDesignStaff] = useState();
+  const [selectedProductionStaff, setSelectedProductionStaff] = useState();
+
+  useEffect(() => {
+    setSelectedSaleStaff(data.saleStaff ?? "");
+    setSelectedDesignStaff(data.designStaff ?? "");
+    setSelectedProductionStaff(data.productionStaff ?? "");
+  }, [data]);
 
   const isQualifiedAssigningStaff =
       decodedToken &&
@@ -44,12 +44,16 @@ function AssignedStaff({ decodedToken, data, onSubmit }) {
   }, [isQualifiedAssigningStaff]);
 
   const handleSubmit = () => {
-    const updatedStaff = {
-      saleStaffID: selectedSaleStaff,
-      designStaffID: selectedDesignStaff,
-      productionStaffID: selectedProductionStaff,
-    };
-    onSubmit(updatedStaff);
+    if (selectedSaleStaff && selectedDesignStaff && selectedProductionStaff) {
+      const updatedStaff = {
+        saleStaffID: selectedSaleStaff,
+        designStaffID: selectedDesignStaff,
+        productionStaffID: selectedProductionStaff,
+      };
+      onSubmit(updatedStaff);
+    } else {
+      showAlert("", "Please select a staff to be assigned to this order", "warning");
+    }
   };
 
   return (
