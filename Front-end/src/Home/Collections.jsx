@@ -214,8 +214,8 @@ function Collections() {
                     size="lg"
                     backdrop="static"
                 >
-                    <Modal.Header>
-                        <Modal.Title>Create Request</Modal.Title>
+                    <Modal.Header style={{ width: "100%"}} closeButton>
+                        <Modal.Title className="d-flex justify-content-center">Create Request</Modal.Title>
                     </Modal.Header>
                     <Modal.Body style={{ width: "100%", height: "70%" }}>
                         <CreateRequest productSpecId={selectedProduct.specification.id} onClose={handleCloseCreateRequestModal} />
