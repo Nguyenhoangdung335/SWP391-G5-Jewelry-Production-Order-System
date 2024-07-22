@@ -9,17 +9,14 @@ import ServerUrl from "../reusable/ServerUrl";
 import GemStoneBanner from "../assets/Gemstone.mp4";
 import CustomAlert from "../reusable/CustomAlert";
 import Loader from "../reusable/Loader";
+import {useAlert} from "../provider/AlertProvider";
 
 function ControlledCarousel() {
   const {token} = useAuth();
   const [decodedToken, setDecodedToken] = useState(null);
   const navigate = useNavigate();
-  const [alertConfig, setAlertConfig] = useState({
-    title: "",
-    text: "",
-    isShow: false,
-    alertVariant: "primary",
-  });
+  const { showAlert } = useAlert();
+
   const [loading, setLoading] = useState(true); // State to manage loading
 
   useEffect(() => {
@@ -42,42 +39,49 @@ function ControlledCarousel() {
 
   const checkCurrentOrder = () => {
     if (decodedToken === null) {
-      setAlertConfig({
-        title: "Access Denied",
-        text: "You must login to use this feature",
-        isShow: true,
-        alertVariant: "danger",
-      });
+      showAlert(
+          "Access Denied",
+          "You must login to use this feature",
+          true,
+          false,
+          "danger"
+      );
+      setTimeout(() => {
+        navigate("/login");
+      }, 500)
     } else if (decodedToken.role !== "CUSTOMER") {
-      setAlertConfig({
-        title: "Access Denied",
-        text: "You don't have permission to use this feature",
-        isShow: true,
-        alertVariant: "danger",
-      });
+      showAlert(
+          "Access Denied",
+          "You don't have permission to use this feature",
+          true,
+          false,
+          "danger"
+      );
     } else {
       axios
         .get(`${ServerUrl}/api/account/${decodedToken.id}/check-current-order`)
         .then((response) => {
           if (response.data) {
-            setAlertConfig({
-              title: "Ongoing Order",
-              text: "You already have an ongoing order. Please complete it before designing new jewelry.",
-              isShow: true,
-              alertVariant: "warning",
-            });
+            showAlert(
+                "Ongoing Order",
+                "You already have permission to use this feature. Please complete it before designing new jewelry.",
+                true,
+                false,
+                "warning"
+            );
           } else {
             navigate("/order_page");
           }
         })
         .catch((error) => {
           console.error("Error checking current order:", error);
-          setAlertConfig({
-            title: "Error",
-            text: "Error checking current order. Please try again later.",
-            isShow: true,
-            alertVariant: "danger",
-          });
+          showAlert(
+              "Error",
+              "Error checking current order. Please try again later.",
+              true,
+              false,
+              "danger"
+          );
         });
     }
   };
@@ -123,13 +127,6 @@ function ControlledCarousel() {
           </Carousel.Caption>
         </Carousel.Item>
       </Carousel>
-      <CustomAlert
-        title={alertConfig.title}
-        text={alertConfig.text}
-        isShow={alertConfig.isShow}
-        onClose={() => setAlertConfig({ ...alertConfig, isShow: false })}
-        alertVariant={alertConfig.alertVariant}
-      />
     </>
   );
 }
