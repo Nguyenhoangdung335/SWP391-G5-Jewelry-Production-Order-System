@@ -9,16 +9,18 @@ import ServerUrl from "../reusable/ServerUrl";
 import {jwtDecode} from "jwt-decode";
 import {useAuth} from "../provider/AuthProvider";
 import ProductSpecificationTable from "../User_Menu/order_detail_components/ProductSpecification";
-import CustomAlert from "../reusable/CustomAlert";
 import { useAlert } from "../provider/AlertProvider";
+import Loader from "./../reusable/Loader";
 
 const size = ["small", "medium", "large"];
 const pageSize = 10;
 
-const getImageSize = () => {
-    const getIndex = Math.floor(Math.random() * size.length);
+const getImageSize = (idSeed) => {
+    const seed = hashStringToNumber(idSeed);
+    const randomValue = seededRandom(seed);
+    const getIndex = Math.floor(randomValue * size.length);
     return size[getIndex];
-};
+  };
 
 function Collections() {
     const {token} = useAuth();
@@ -47,7 +49,7 @@ function Collections() {
             const fetchProducts = async () => {
                 try {
                     const response = await axios.get(
-                        `${ServerUrl}/api/products?page=${page}&size=${pageSize}`
+                        `${ServerUrl}/api/products?page=${page}&size=${pageSize}&isFinished=true`
                     );
                     if (response.status === 200) {
                         setPage(page + 1);
@@ -81,6 +83,31 @@ function Collections() {
                 .catch((error) => console.log(error));
         }
     }, [selectedProduct]);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver((entries) => {
+            const entry = entries[0];
+            if (entry.isIntersecting && page < totalPages) {
+                setPage((prevPage) => prevPage + 1);
+            }
+        });
+
+        if (loader.current) {
+            observer.observe(loader.current);
+        }
+
+        return () => {
+            if (loader.current) {
+                observer.unobserve(loader.current);
+            }
+        };
+    }, [page, totalPages]);
+
+    if (!products || products.length === 0) {
+        return (
+            <Loader size="xl"/>
+        );
+    }
 
     const handlePinClick = (product) => {
         setSelectedProduct(product);
@@ -129,25 +156,6 @@ function Collections() {
         checkCurrentOrder();
     };
 
-    useEffect(() => {
-        const observer = new IntersectionObserver((entries) => {
-            const entry = entries[0];
-            if (entry.isIntersecting && page < totalPages) {
-                setPage((prevPage) => prevPage + 1);
-            }
-        });
-
-        if (loader.current) {
-            observer.observe(loader.current);
-        }
-
-        return () => {
-            if (loader.current) {
-                observer.unobserve(loader.current);
-            }
-        };
-    }, [page, totalPages]);
-
     return (
         <Container style={{ paddingTop: "10px" }}>
             <div className="view" style={styles.pin_container}>
@@ -155,7 +163,7 @@ function Collections() {
                     <Pin
                         key={product.id}
                         imageSource={product.imageURL || noImage}
-                        size={getImageSize()}
+                        size={getImageSize(product.id)}
                         onClick={() => handlePinClick(product)}
                     />
                 ))}
@@ -204,6 +212,7 @@ function Collections() {
                     show={showCreateRequestModal}
                     onHide={handleCloseCreateRequestModal}
                     size="lg"
+                    backdrop="static"
                 >
                     <Modal.Header>
                         <Modal.Title>Create Request</Modal.Title>
@@ -242,5 +251,21 @@ const styles = {
         flex: 1,
     },
 };
+
+function seededRandom(seed) {
+    const x = Math.sin(seed) * 10000;
+    return x - Math.floor(x);
+}
+
+function hashStringToNumber(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      const char = str.charCodeAt(i);
+      hash = (hash << 5) - hash + char;
+      hash |= 0; // Convert to 32-bit integer
+    }
+    return Math.abs(hash);
+  }
+  
 
 export default Collections;
