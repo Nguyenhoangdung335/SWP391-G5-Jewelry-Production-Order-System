@@ -4,6 +4,7 @@ import com.swp391.JewelryProduction.enums.*;
 import com.swp391.JewelryProduction.util.StringToEnum;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.AsyncTaskExecutor;
@@ -26,6 +27,9 @@ import java.util.Locale;
 public class WebConfig implements WebMvcConfigurer {
 
     private final AsyncTaskExecutor taskExecutor;
+
+    @Value("${url.fe}")
+    private String feURL;
 
     public WebConfig(@Qualifier("asyncTaskExecutor") AsyncTaskExecutor taskExecutor) {
         this.taskExecutor = taskExecutor;
