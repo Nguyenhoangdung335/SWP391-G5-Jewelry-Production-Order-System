@@ -1,15 +1,18 @@
 package com.swp391.JewelryProduction.services.gemstone;
 
+import com.swp391.JewelryProduction.dto.RequestDTOs.GemstoneRequest;
 import com.swp391.JewelryProduction.enums.gemstone.GemstoneClarity;
 import com.swp391.JewelryProduction.enums.gemstone.GemstoneColor;
 import com.swp391.JewelryProduction.enums.gemstone.GemstoneCut;
 import com.swp391.JewelryProduction.enums.gemstone.GemstoneShape;
-import com.swp391.JewelryProduction.pojos.designPojos.ProductSpecification;
-import com.swp391.JewelryProduction.pojos.gemstone.*;
+import com.swp391.JewelryProduction.pojos.designPojos.Gemstone;
+import com.swp391.JewelryProduction.repositories.GemstoneRepository;
 import com.swp391.JewelryProduction.repositories.ProductSpecificationRepository;
-import com.swp391.JewelryProduction.repositories.gemstoneRepositories.*;
 import com.swp391.JewelryProduction.util.exceptions.ObjectNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,172 +23,71 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class GemstoneServiceImpl implements GemstoneService{
-    private final GemstoneTypeRepository gemstoneTypeRepository;
-    private final ShapeMultiplierRepository shapeMultiplierRepository;
-    private final CutMultiplierRepository cutMultiplierRepository;
-    private final ClarityMultiplierRepository clarityMultiplierRepository;
-    private final ColorMultiplierRepository colorMultiplierRepository;
-    private final GemstoneRepository gemstoneRepository;
 
+    private final GemstoneRepository gemstoneRepository;
     private final ProductSpecificationRepository productSpecificationRepository;
+
+    @Override
+    public Gemstone findById(Long id) {
+        return gemstoneRepository.findById(id).orElseThrow(
+                () -> new ObjectNotFoundException("Gemstone with id "+id+" does not exist")
+        );
+    }
+
+    @Override
+    public Page<Gemstone> findAll(int page, int pageSize) {
+        return findAll(page, pageSize, "caratWeightFrom");
+    }
+
+    @Override
+    public Page<Gemstone> findAll(int page, int pageSize, String sortBy) {
+        return gemstoneRepository.findAll(PageRequest.of(page, pageSize, Sort.by(sortBy).ascending()));
+    }
+
+    @Override
+    public List<Gemstone> searchByProperties(GemstoneRequest gemstoneRequest) {
+        return gemstoneRepository.findGemstonesByRequest(
+                gemstoneRequest.getName(),
+                gemstoneRequest.getShape(),
+                gemstoneRequest.getClarity(),
+                gemstoneRequest.getColor(),
+                gemstoneRequest.getCut(),
+                gemstoneRequest.getWeight()
+        );
+    }
 
     @Override
     public Map<String, Object> getGemstoneFactor () {
         Map<String, Object> response = new HashMap<>();
-        response.put("type", gemstoneTypeRepository.findAllByStatusTrue());
-        response.put("shape", shapeMultiplierRepository.findAll());
-        response.put("cut", cutMultiplierRepository.findAll());
-        response.put("clarity", clarityMultiplierRepository.findAll());
-        response.put("color", colorMultiplierRepository.findAll());
+        response.put("names", gemstoneRepository.getAllDistinctGemstoneName());
+        response.put("shapes", gemstoneRepository.getAllDistinctGemstoneShape());
+        response.put("cuts", gemstoneRepository.getAllDistinctGemstoneCut());
+        response.put("clarities", gemstoneRepository.getAllDistinctGemstoneClarity());
+        response.put("colors", gemstoneRepository.getAllDistinctGemstoneColor());
+        response.put("minWeight", gemstoneRepository.findLowestCaratWeightFrom());
+        response.put("maxWeight", gemstoneRepository.findHighestCaratWeightTo());
         return response;
-    }
-
-    @Override
-    public double calculatePrice(Gemstone gemstone) {
-        double basePrice = getBasePricePerCarat(gemstone.getType().getId());
-        double weightMultiplier = getWeightMultiplier(gemstone.getCaratWeight());
-        double shapeMultiplier = getShapeMultiplier(gemstone.getShape());
-        double cutMultiplier = getCutMultiplier(gemstone.getCut());
-        double clarityMultiplier = getClarityMultiplier(gemstone.getClarity());
-        double colorMultiplier = getColorMultiplier(gemstone.getColor());
-
-        return basePrice * gemstone.getCaratWeight() * weightMultiplier * shapeMultiplier * cutMultiplier * clarityMultiplier * colorMultiplier;
-    }
-
-    @Override
-    public Map<String, Double> getAppliedMultiplier(Gemstone gemstone) {
-        Map<String, Double> appliedMultiplier = new HashMap<>();
-
-        appliedMultiplier.put(String.format("Shape (%s)", gemstone.getShape()), getShapeMultiplier(gemstone.getShape()));
-        appliedMultiplier.put(String.format("Cut (%s)", gemstone.getCut()), getCutMultiplier(gemstone.getCut()));
-        appliedMultiplier.put(String.format("Clarity (%s)", gemstone.getClarity()), getClarityMultiplier(gemstone.getClarity()));
-        appliedMultiplier.put(String.format("Color (%s)", gemstone.getColor()), getColorMultiplier(gemstone.getColor()));
-
-        return appliedMultiplier;
-    }
-
-    @Override
-    public List<GemstoneType> getGemstoneTypes() {
-        return gemstoneTypeRepository.findAllByStatusTrue();
-    }
-
-    @Override
-    public List<ShapeMultiplier> getShapeMultipliers() {
-        return shapeMultiplierRepository.findAll().stream().toList();
-    }
-
-    @Override
-    public List<CutMultiplier> getCutMultipliers() {
-        return cutMultiplierRepository.findAll().stream().toList();
-    }
-
-    @Override
-    public List<ColorMultiplier> getColorMultipliers() {
-        return colorMultiplierRepository.findAll().stream().toList();
-    }
-
-    @Override
-    public List<ClarityMultiplier> getClarityMultipliers() {
-        return clarityMultiplierRepository.findAll().stream().toList();
     }
 
     @Transactional
     @Override
     public void deleteGemstone(long id) {
-        GemstoneType gemstoneType = gemstoneTypeRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException(("Gemstone with id " + id + " not found")));
-        gemstoneType.setStatus(false);
-        gemstoneTypeRepository.save(gemstoneType);
+        Gemstone gemstone = gemstoneRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException(("Gemstone with id " + id + " not found")));
+        gemstone.setActive(false);
+        gemstoneRepository.save(gemstone);
     }
 
     @Override
-    public GemstoneType createGemstoneType(GemstoneType gemstoneType) {
-        if(gemstoneType.getName().isEmpty() || gemstoneType.getName().isBlank()) {
-            return null;
-        } else {
-            return gemstoneTypeRepository.save(GemstoneType.builder()
-                            .status(true)
-                            .basePricePerCarat(gemstoneType.getBasePricePerCarat())
-                            .name(gemstoneType.getName())
-                            .build());
-        }
+    public Gemstone createGemstone(Gemstone gemstone) {
+        return gemstoneRepository.save(gemstone);
     }
 
     @Override
-    public GemstoneType updateGemstoneType(GemstoneType gemstoneType) {
-        GemstoneType type = gemstoneTypeRepository.findById(gemstoneType.getId())
-                .orElseThrow(() -> new ObjectNotFoundException(("Gemstone with ID " + gemstoneType.getId() + " not found")));
-        type.setBasePricePerCarat(gemstoneType.getBasePricePerCarat());
-        return gemstoneTypeRepository.save(type);
+    public Gemstone updateGemstone(Gemstone gemstone) {
+        Gemstone searchGemstone = gemstoneRepository.findById(gemstone.getId()).orElseThrow(
+                () -> new ObjectNotFoundException("Gemstone with Id "+gemstone.getId()+" not found")
+        );
+        searchGemstone = searchGemstone.copyGemstone(gemstone);
+        return gemstoneRepository.save(searchGemstone);
     }
-
-    @Override
-    public CutMultiplier updateCutMultiplier(long id, double multiplier) {
-        CutMultiplier cutMultiplier = cutMultiplierRepository
-                .findById(id).orElseThrow(() -> new ObjectNotFoundException("CutMultiplier with id " + id + " not found"));
-        cutMultiplier.setMultiplier(multiplier);
-        return cutMultiplierRepository.save(cutMultiplier);
-    }
-
-    @Override
-    public ColorMultiplier updateColorMultiplier(long id, double multiplier) {
-        ColorMultiplier colorMultiplier = colorMultiplierRepository
-                .findById(id).orElseThrow(() -> new ObjectNotFoundException("ColorMultiplier with id " + id + " not found"));
-        colorMultiplier.setMultiplier(multiplier);
-        return colorMultiplierRepository.save(colorMultiplier);
-    }
-
-    @Override
-    public ClarityMultiplier updateClarityMultiplier(long id, double multiplier) {
-        ClarityMultiplier clarityMultiplier = clarityMultiplierRepository
-                .findById(id).orElseThrow(() -> new ObjectNotFoundException("ClarityMultiplier with id " + id + " not found"));
-        clarityMultiplier.setMultiplier(multiplier);
-        return clarityMultiplierRepository.save(clarityMultiplier);
-    }
-
-    @Override
-    public ShapeMultiplier updateShapeMultiplier(long id, double multiplier) {
-        ShapeMultiplier shapeMultiplier = shapeMultiplierRepository
-                .findById(id).orElseThrow(() -> new ObjectNotFoundException("ShapeMultiplier with id " + id + " not found"));
-        shapeMultiplier.setMultiplier(multiplier);
-        return shapeMultiplierRepository.save(shapeMultiplier);
-    }
-
-    //<editor-fold desc="PRIVATE METHODS" defaultstate="collapsed">
-    private double getBasePricePerCarat(Long gemstoneId) {
-        GemstoneType type = gemstoneTypeRepository.findById(gemstoneId).orElse(null);
-        return type != null ? type.getBasePricePerCarat() : 0;
-    }
-
-    private double getWeightMultiplier(double caratWeight) {
-        if (caratWeight <= 0.5) {
-            return 1.0;
-        } else if (caratWeight <= 1.0) {
-            return 1.1;
-        } else if (caratWeight <= 2.0) {
-            return 1.2;
-        } else {
-            return 1.3;
-        }
-    }
-
-    private double getShapeMultiplier(GemstoneShape shape) {
-        ShapeMultiplier multiplier = shapeMultiplierRepository.findByShape(shape).orElse(null);
-        return multiplier != null ? multiplier.getMultiplier() : 1.0;
-    }
-
-    private double getCutMultiplier (GemstoneCut cut) {
-        CutMultiplier cutMultiplier = cutMultiplierRepository.findByCutQuality(cut).orElse(null);
-        return cutMultiplier != null ? cutMultiplier.getMultiplier() : 1.0;
-    }
-
-    private double getClarityMultiplier (GemstoneClarity clarity) {
-        ClarityMultiplier clarityMultiplier = clarityMultiplierRepository.findByClarity(clarity).orElse(null);
-        return clarityMultiplier != null ? clarityMultiplier.getMultiplier() : 1.0;
-    }
-
-    private double getColorMultiplier (GemstoneColor color) {
-        ColorMultiplier colorMultiplier = colorMultiplierRepository.findByColor(color).orElse(null);
-        return colorMultiplier != null ? colorMultiplier.getMultiplier() : 1.0;
-    }
-    //</editor-fold>
 }
