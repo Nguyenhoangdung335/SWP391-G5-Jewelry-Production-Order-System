@@ -40,4 +40,8 @@ public interface AccountRepository extends JpaRepository<Account, String> {
     @EntityGraph(attributePaths = {"userInfo", "pastOrder"})
     @Query("SELECT a from Account a WHERE a.id = :accountId")
     Optional<Account> findAccountByIdForSync (@Param("accountId") String accountId);
+
+    @EntityGraph(attributePaths = {"userInfo", "pastOrder", "sendingReports"})
+    @Query("SELECT a from Account a WHERE a.id = :accountId")
+    Optional<Account> findAccountByIdForDelete (@Param("accountId") String accountId);
 }

@@ -30,6 +30,7 @@ public interface AccountService {
     Page<Account> findAllByRole(Role role, int offset, int elementsPerPage);
     Page<Account> findAll(int offset);
     Page<Account> findAll(int offset, int elementPerPage);
+
     Account createAccount(AccountDTO accountDTO);
     void deleteAccount(String accountId);
     Account updateAccount(AccountDTO accountDTO);

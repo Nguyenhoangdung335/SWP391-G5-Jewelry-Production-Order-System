@@ -88,7 +88,7 @@ public class Account{
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @OneToMany(mappedBy = "sender", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "sender", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @Builder.Default
     @JsonIgnore
     private List<Report> sendingReports = new LinkedList<>();

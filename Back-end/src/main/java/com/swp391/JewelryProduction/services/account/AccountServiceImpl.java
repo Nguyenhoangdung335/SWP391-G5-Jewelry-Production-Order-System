@@ -302,7 +302,16 @@ public class AccountServiceImpl implements AccountService {
     @Transactional
     @Override
     public void deleteAccount(String accountId) {
-        accountRepository.delete(accountRepository.findById(accountId).orElseThrow(() -> new ObjectNotFoundException("Account with id " + accountId + " not found")));
+        Account deletingAccount = accountRepository.findById(accountId).orElseThrow(
+                () -> new ObjectNotFoundException("Account with id " + accountId + " not found")
+        );
+        deletingAccount.getPastOrder().forEach(order -> {
+            order.setOwner(null);
+        });
+        deletingAccount.setPastOrder(null);
+        deletingAccount = accountRepository.save(deletingAccount);
+
+        accountRepository.delete(deletingAccount);
     }
 
     public Account setAccount(AccountDTO accountDTO) {
