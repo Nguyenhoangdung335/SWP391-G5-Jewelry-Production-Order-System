@@ -4,7 +4,12 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
@@ -22,12 +27,17 @@ public class Metal {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank
     @Column(nullable = false, length = 20)
     private String name;
 
+    @NotBlank
     @Column(nullable = false, length = 20)
     private String unit;
 
+    @NotNull
+    @DecimalMin("0.0")
+    @DecimalMax("100000.0")
     @Column(nullable = false)
     private Double price;
 
@@ -49,5 +59,14 @@ public class Metal {
                 ", price='" + price + '\'' +
                 ", crawlTime='" + updatedTime + '\'' +
                 '}';
+    }
+
+    public Metal copyValue (Metal copy) {
+        this.name = copy.getName();
+        this.unit = copy.getUnit();
+        this.price = copy.getPrice();
+        this.updatedTime = copy.getUpdatedTime();
+        this.specifications = copy.getSpecifications();
+        return this;
     }
 }
