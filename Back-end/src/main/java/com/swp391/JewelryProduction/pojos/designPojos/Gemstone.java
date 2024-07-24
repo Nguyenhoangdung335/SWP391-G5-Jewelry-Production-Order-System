@@ -10,6 +10,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
+import java.util.List;
+
 import static com.swp391.JewelryProduction.util.CustomFormatter.roundToDecimal;
 
 @AllArgsConstructor
@@ -84,8 +86,8 @@ public class Gemstone {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @JsonIgnore
-    @OneToOne(mappedBy = "gemstone")
-    private ProductSpecification specification;
+    @OneToMany(mappedBy = "gemstone")
+    private List<ProductSpecification> specifications;
 
     public Gemstone copyGemstone (Gemstone gemstone) {
         this.name = gemstone.getName();
