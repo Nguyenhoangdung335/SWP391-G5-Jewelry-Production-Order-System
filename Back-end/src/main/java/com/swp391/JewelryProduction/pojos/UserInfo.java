@@ -53,4 +53,14 @@ public class UserInfo {
     @MapsId
     @JoinColumn(name = "id")
     private Account account;
+
+    public UserInfo copyValue (UserInfo newInfo) {
+        this.firstName = newInfo.getFirstName();
+        this.lastName = newInfo.getLastName();
+        this.birthDate = newInfo.getBirthDate();
+        this.gender = newInfo.getGender();
+        this.phoneNumber = newInfo.getPhoneNumber();
+        this.address = newInfo.getAddress();
+        return this;
+    }
 }
