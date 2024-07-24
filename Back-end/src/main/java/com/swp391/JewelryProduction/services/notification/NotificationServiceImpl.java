@@ -5,6 +5,7 @@ import com.swp391.JewelryProduction.pojos.Account;
 import com.swp391.JewelryProduction.pojos.Notification;
 import com.swp391.JewelryProduction.pojos.Report;
 import com.swp391.JewelryProduction.repositories.NotificationRepository;
+import com.swp391.JewelryProduction.services.account.AccountService;
 import com.swp391.JewelryProduction.services.email.EmailService;
 import com.swp391.JewelryProduction.util.exceptions.ObjectNotFoundException;
 import jakarta.mail.MessagingException;
@@ -27,6 +28,8 @@ import java.util.List;
 @Slf4j
 public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepository notificationRepository;
+
+    private final AccountService accountService;
     private final EmailService emailService;
 
     //<editor-fold desc="MVC Service methods" defaultstate="collapsed">
@@ -61,23 +64,15 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public List<Notification> getAllNotificationsByReceiverNotRead(Account receiver) {
-        return notificationRepository.findAllByReceiverAndDeliveredFalse(receiver);
-    }
-
-    @Override
-    public List<Notification> getAllNotificationsByReceiver(Account receiver) {
-        return notificationRepository.findAllByReceiver(receiver);
-    }
-
-    @Override
     public void clearAllNotifications() {
         notificationRepository.deleteAll();
     }
 
     @Override
     public void clearAllNotificationsByReceiver(Account receiver) {
-        notificationRepository.deleteAllByReceiver(receiver);
+        receiver.setNotifications(null);
+        receiver = accountService.updateAccount(receiver);
+        notificationRepository.deleteAllByReceiverId(receiver.getId());
     }
 
     @Override

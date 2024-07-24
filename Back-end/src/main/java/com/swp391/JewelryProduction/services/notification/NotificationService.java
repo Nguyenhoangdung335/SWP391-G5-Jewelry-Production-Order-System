@@ -15,9 +15,8 @@ public interface NotificationService {
     Notification createNotification(Notification notification) throws MessagingException;
     Notification createNotification(Notification notification, boolean isOption) throws MessagingException;
     Notification createNotification(Notification notification, boolean isOption, boolean sendEmail) throws MessagingException;
+
     Notification getNotificationById(Integer id);
-    List<Notification> getAllNotificationsByReceiverNotRead(Account receiver);
-    List<Notification> getAllNotificationsByReceiver(Account receiver);
     void clearAllNotifications();
     void clearAllNotificationsByReceiver(Account receiver);
 
