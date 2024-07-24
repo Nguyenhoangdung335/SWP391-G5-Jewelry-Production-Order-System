@@ -20,7 +20,6 @@ import java.util.List;
 @Builder
 @Entity
 @Table(name = "[Order]")
-@ToString(onlyExplicitlyIncluded = true)
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "id"
@@ -106,6 +105,12 @@ public class Order {
     @JoinColumn(name = "warranty_id")
     @JsonManagedReference("Order-Warranty")
     private Warranty warranty;
+
+    @ToString.Include
+    @EqualsAndHashCode.Include
+    @Column(name = "is_from_template")
+    @Builder.Default
+    private boolean isFromTemplate = false;
 
     @JsonIgnore
     @OneToMany(
