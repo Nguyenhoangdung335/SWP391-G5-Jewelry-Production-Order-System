@@ -11,32 +11,25 @@ import org.springframework.data.domain.PageRequest;
 import java.util.List;
 
 public interface AccountService {
-    List<Account> getAllAccounts();
-    List<Account> findAllAccounts();
-    Account updateAccountPassword(RegistrationRequest request);
-    Account updateAccountInfo(UserInfo info, String accountId);
-    Account saveAccountIfNew(RegistrationRequest request);
-    Account saveUserInfo(UserInfo info, String email);
-    Account findAccountById(String accountId);
-    Account findAccountByEmailAndPassword(String email, String password);
-    Account findAccountByEmail(String email);
-    Account updateAccountStatusActive (String email);
-    UserInfo findInfoById(String id);
-    UserInfo findInfoByEmail(String email);
-    Account findAccountByRole(Role role);
-    void saveAccountPassword(AccountDTO accountDTO, String newPassword);
-    boolean checkCurrentOrderExist(String accountId);
-    Page<Account> findAllByRole(Role role, int offset);
     Page<Account> findAllByRole(Role role, int offset, int elementsPerPage);
-    Page<Account> findAll(int offset);
     Page<Account> findAll(int offset, int elementPerPage);
 
+    List<Account> findAllByRole(Role role);
+
+    Account findAccountById(String accountId);
+    Account findAccountByEmail(String email);
+
+    Account saveAccountIfNew(RegistrationRequest request);
+    Account saveUserInfo(UserInfo info, String email);
     Account createAccount(AccountDTO accountDTO);
+
     void deleteAccount(String accountId);
+
+    Account updateAccount(Account account);
     Account updateAccount(AccountDTO accountDTO);
-    List<Account> findAccountsByRoles(List<Role> role);
+    Account updateAccountPassword(RegistrationRequest request);
 
+    void updateAccountStatusActive (String email);
     Long countAllAccountByRole (List<Role> role);
-
-    Account findAccountForFirestoreSync (String accountId);
+    boolean checkCurrentOrderExist(String accountId);
 }
