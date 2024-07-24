@@ -1,5 +1,6 @@
 package com.swp391.JewelryProduction.config;
 
+import com.swp391.JewelryProduction.enums.Role;
 import com.swp391.JewelryProduction.security.jwt.JWTAuthenticationFilter;
 import com.swp391.JewelryProduction.util.CustomAuthenticationFailureHandler;
 import com.swp391.JewelryProduction.util.CustomLogoutSuccessHandler;
@@ -28,24 +29,6 @@ import java.util.Arrays;
 public class SecurityConfig {
     private final JWTAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
-    private final PasswordEncoder passwordEncoder;
-
-    @Bean
-    public InMemoryUserDetailsManager inMemoryUserDetailsManager() {
-        UserDetails user1 = User.withUsername("user1")
-                .password(passwordEncoder.encode("12345"))
-                .roles("USER")
-                .build();
-        UserDetails user2 = User.withUsername("user2")
-                .password(passwordEncoder.encode("56789"))
-                .roles("USER")
-                .build();
-        UserDetails admin = User.withUsername("admin")
-                .password(passwordEncoder.encode("adminPass"))
-                .roles("ADMIN")
-                .build();
-        return new InMemoryUserDetailsManager(user1, user2, admin);
-    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -53,26 +36,15 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
-//                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/staff/get-all").hasAnyAuthority("ADMIN", "MANAGER")
+                        .requestMatchers("/api/admin/dashboard").hasAuthority("ADMIN")
 //                        .requestMatchers("/user/**").hasRole("USER")
 //                        .requestMatchers("/anonymous").anonymous()
 //                        .requestMatchers("/login", "/api").permitAll()
 //                        .anyRequest().authenticated()
-                        .requestMatchers("/api/auth/**", "/api/registration/**", "/**").permitAll()
+                        .requestMatchers("/api/registration/**", "/**").permitAll()
                         .anyRequest().authenticated()
                 )
-//                .formLogin(login -> login
-//                        .loginPage("/login.jsp")
-//                        .loginProcessingUrl("/perform_login")
-//                        .defaultSuccessUrl("/homepage.html", true)
-//                        .failureUrl("/login.html?error=true")
-//                        .failureHandler(authenticationFailureHandler())
-//                )
-//                .logout(logout -> logout
-//                        .logoutUrl("/perform_logout")
-//                        .deleteCookies("JSESSIONID")
-//                        .logoutSuccessHandler(logoutSuccessHandler())
-//                )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
@@ -82,18 +54,4 @@ public class SecurityConfig {
 
         return http.build();
     }
-
-    @Bean
-    public AuthenticationFailureHandler authenticationFailureHandler() {
-        return new CustomAuthenticationFailureHandler();
-    }
-
-    public LogoutSuccessHandler logoutSuccessHandler() {
-        return new CustomLogoutSuccessHandler();
-    }
-//
-//    @Bean
-//    public PasswordEncoder passwordEncoder() {
-//        return new BCryptPasswordEncoder();
-//    }
 }

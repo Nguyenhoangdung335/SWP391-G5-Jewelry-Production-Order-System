@@ -1,4 +1,4 @@
-package com.swp391.JewelryProduction.pojos.gemstone;
+package com.swp391.JewelryProduction.pojos.designPojos;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;

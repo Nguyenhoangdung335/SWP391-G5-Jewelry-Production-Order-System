@@ -1,9 +1,8 @@
-package com.swp391.JewelryProduction.pojos.Price;
+package com.swp391.JewelryProduction.pojos.designPojos;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.swp391.JewelryProduction.pojos.designPojos.ProductSpecification;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -16,10 +15,9 @@ import java.util.List;
 @Data
 @Builder
 @Entity
-@Table(name = "Metal_Price")
+@Table(name = "Metal")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class MetalPrice {
-
+public class Metal {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
