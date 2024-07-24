@@ -4,5 +4,5 @@ public enum GemstoneCut {
     FAIR,
     GOOD,
     VERY_GOOD,
-    EXCEPTIONAL
+    EXCELLENT
 }

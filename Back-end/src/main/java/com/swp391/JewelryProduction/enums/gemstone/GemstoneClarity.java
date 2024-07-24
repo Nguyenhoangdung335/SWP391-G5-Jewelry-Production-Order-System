@@ -1,12 +1,13 @@
 package com.swp391.JewelryProduction.enums.gemstone;
 
 public enum GemstoneClarity {
-    SI2,
-    SI1,
-    VS2,
+    IF_VVS,
     VS1,
-    VVS2,
-    VVS1,
-    IF,
-    FL
+    VS2,
+    SI1,
+    SI2,
+    S3,
+    I1,
+    I2,
+    I3
 }

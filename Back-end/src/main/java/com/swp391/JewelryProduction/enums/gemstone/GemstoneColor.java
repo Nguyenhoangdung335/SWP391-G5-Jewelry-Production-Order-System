@@ -8,5 +8,6 @@ public enum GemstoneColor {
     G,
     F,
     E,
-    D
+    D,
+    M
 }
