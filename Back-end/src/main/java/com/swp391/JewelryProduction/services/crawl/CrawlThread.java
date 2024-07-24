@@ -32,7 +32,7 @@ public class CrawlThread implements Runnable {
     private String urlExchange;
     @Value("${page.url}")
     private String urlPage;
-
+    //*[@id="gr24_spot_gold_widget-11"]/table/tbody/tr[1]/th
     @Override
     public void run() {
         Document connectionPage = null;

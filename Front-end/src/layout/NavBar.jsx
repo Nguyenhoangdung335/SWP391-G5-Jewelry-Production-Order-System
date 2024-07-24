@@ -46,23 +46,21 @@ const rbacConfig = {
     "MANAGER",
     "ADMIN",
   ],
-  // "/userManager/gemstone_manager": [
+  "/userManager/gemstone_manager": ["ADMIN"],
+  // "/user_setting_page/profile_page": [
+  //   "SALE_STAFF",
+  //   "DESIGN_STAFF",
+  //   "PRODUCTION_STAFF",
+  //   "MANAGER",
   //   "ADMIN",
   // ],
-  "/user_setting_page/profile_page": [
-    "SALE_STAFF",
-    "DESIGN_STAFF",
-    "PRODUCTION_STAFF",
-    "MANAGER",
-    "ADMIN",
-  ],
-  "/user_setting_page/notification_page": [
-    "SALE_STAFF",
-    "DESIGN_STAFF",
-    "PRODUCTION_STAFF",
-    "MANAGER",
-    "ADMIN",
-  ],
+  // "/user_setting_page/notification_page": [
+  //   "SALE_STAFF",
+  //   "DESIGN_STAFF",
+  //   "PRODUCTION_STAFF",
+  //   "MANAGER",
+  //   "ADMIN",
+  // ],
 };
 
 // Utility function to check if a role is allowed
@@ -136,27 +134,27 @@ export default function NavBar() {
       icon: <LuUser2 size={30} color="white" />,
       label: "Employees",
     },
-    // {
-    //   id: 6,
-    //   to: "/userManager/products_manager",
-    //   icon: <FiBox size={30} color="white" />,
-    //   label: "Products",
-    // },
-    // {
-    //   id: 7,
-    //   to: "/userManager/gemstone_manager",
-    //   icon: <IoDiamondOutline size={30} color="white" />,
-    //   label: "Gemstone",
-    // },
+    {
+      id: 6,
+      to: "/userManager/products_manager",
+      icon: <FiBox size={30} color="white" />,
+      label: "Products",
+    },
+    {
+      id: 7,
+      to: "/userManager/gemstone_manager",
+      icon: <IoDiamondOutline size={30} color="white" />,
+      label: "Gemstone",
+    },
     {
       id: 8,
-      to: "/user_setting_page/profile_page",
+      to: "/userManager/profile",
       icon: <LuUser2 size={30} color="white" />,
       label: "Profile",
     },
     {
       id: 9,
-      to: "/user_setting_page/notification_page",
+      to: "/userManager/notifications",
       icon: (
         <div style={{ position: "relative" }}>
           <IoMdNotificationsOutline size={30} color="white" />
