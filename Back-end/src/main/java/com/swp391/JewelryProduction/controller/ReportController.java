@@ -18,7 +18,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -32,16 +31,16 @@ public class ReportController {
     private final QuotationService quotationService;
     private final DesignService designService;
 
-    @PostMapping("/{accountId}/{productSpecId}/create/request")
+    @PostMapping("/{senderId}/{productSpecId}/create/request")
     public ResponseEntity<Response> createRequest(
             @Valid @RequestBody ReportRequest request,
             @PathVariable("productSpecId") Integer specificationId,
-            @PathVariable("accountId") String accountId)
+            @PathVariable("senderId") String senderId)
     {
         request.setReportContentID(String.valueOf(specificationId));
-        request.setSenderId(accountId);
+        request.setSenderId(senderId);
 
-        if (accountService.checkCurrentOrderExist(accountId))
+        if (accountService.checkCurrentOrderExist(senderId))
             throw new ObjectExistsException("Your account currently has an on-going order");
         ProductSpecification specification;
         Product product;
@@ -58,7 +57,7 @@ public class ReportController {
             throw new RuntimeException(ex);
         }
 
-        Report report = reportService.createRequest(request, orderService.saveNewOrder(accountId), product);
+        Report report = reportService.createRequestReport(request, orderService.saveNewOrder(senderId), product);
         return Response.builder()
                 .status(HttpStatus.OK)
                 .message("Request sent successfully.")
@@ -66,13 +65,13 @@ public class ReportController {
                 .buildEntity();
     }
 
-    @PostMapping("/{accountId}/{orderId}/create/quote")
+    @PostMapping("/{senderId}/{orderId}/create/quote")
     public ResponseEntity<Response> createQuoteReport(
             @Valid @RequestBody ReportRequest quoteReport,
-            @PathVariable("accountId") String accountId,
+            @PathVariable("senderId") String senderId,
             @PathVariable("orderId") String orderId)
     {
-        quoteReport.setSenderId(accountId);
+        quoteReport.setSenderId(senderId);
         Quotation quotation = quotationService.findById(quoteReport.getReportContentID());
         reportService.createQuotationReport(quoteReport, orderService.findOrderById(orderId), quotation);
         return Response.builder()
@@ -81,13 +80,13 @@ public class ReportController {
                 .buildEntity();
     }
 
-    @PostMapping("/{accountId}/{orderId}/create/design")
+    @PostMapping("/{senderId}/{orderId}/create/design")
     public ResponseEntity<Response> createDesignReport(
             @Valid @RequestBody ReportRequest designReport,
-            @PathVariable("accountId") String accountId,
+            @PathVariable("senderId") String senderId,
             @PathVariable("orderId") String orderId)
     {
-        designReport.setSenderId(accountId);
+        designReport.setSenderId(senderId);
         Design design = designService.findById(designReport.getReportContentID());
         reportService.createDesignReport(designReport, orderService.findOrderById(orderId), design);
         return Response.builder()
@@ -96,17 +95,26 @@ public class ReportController {
                 .buildEntity();
     }
 
-    @PostMapping("/{accountId}/{orderId}/create/product")
+    @PostMapping("/{senderId}/{orderId}/create/product")
     public ResponseEntity<Response> createProductionReport(
             @Valid @RequestBody ReportRequest productReport,
-            @PathVariable("accountId") String accountId,
+            @PathVariable("senderId") String senderId,
             @PathVariable("orderId") String orderId)
     {
-        productReport.setSenderId(accountId);
+        productReport.setSenderId(senderId);
         reportService.createFinishedProductReport(productReport, orderService.findOrderById(orderId));
         return Response.builder()
                 .status(HttpStatus.OK)
                 .message("Report created successfully.")
                 .buildEntity();
     }
+
+//    @PostMapping("/{senderId}")
+//    public ResponseEntity<Response> requestForExistingTemplate (
+//            @Valid @RequestBody ReportRequest productReport,
+//            @PathVariable("senderId") String senderId
+//    ) {
+//        productReport.setSenderId(senderId);
+//
+//    }
 }
