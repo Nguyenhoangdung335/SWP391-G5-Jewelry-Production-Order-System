@@ -2,13 +2,12 @@ package com.swp391.JewelryProduction.pojos.designPojos;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.swp391.JewelryProduction.pojos.Price.GemstonePrice;
-import com.swp391.JewelryProduction.pojos.Price.MetalPrice;
-import com.swp391.JewelryProduction.pojos.gemstone.Gemstone;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
+
+import static com.swp391.JewelryProduction.util.CustomFormatter.roundToDecimal;
 
 @Data
 @AllArgsConstructor
@@ -42,12 +41,6 @@ public class ProductSpecification {
 
     @ToString.Include
     @EqualsAndHashCode.Include
-    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-    @JoinColumn(name = "metal_id")
-    private MetalPrice metal;
-
-    @ToString.Include
-    @EqualsAndHashCode.Include
     private String texture;
 
     @ToString.Include
@@ -56,13 +49,43 @@ public class ProductSpecification {
 
     @ToString.Include
     @EqualsAndHashCode.Include
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "gemstone_id")
     private Gemstone gemstone;
+
+    @ToString.Include
+    @EqualsAndHashCode.Include
+    private Double gemstoneWeight;
+
+    @ToString.Include
+    @EqualsAndHashCode.Include
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @JoinColumn(name = "metal_id")
+    private Metal metal;
+
+    @ToString.Include
+    @EqualsAndHashCode.Include
+    private Double metalWeight;
 
     @JsonIgnore
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "specification", fetch = FetchType.LAZY)
     private List<Product> products;
+
+    @JsonIgnore
+    public double getTotalMetalCost() {
+        if (metal != null && metalWeight != null) {
+            return roundToDecimal(metal.getPrice() * metalWeight, 2);
+        }
+        return 0.0;
+    }
+
+    @JsonIgnore
+    public double getTotalGemstoneCost() {
+        if (gemstone != null && gemstoneWeight != null) {
+            return roundToDecimal(gemstone.getPricePerCaratInHundred() * 100 * gemstoneWeight, 2);
+        }
+        return 0.0;
+    }
 }
