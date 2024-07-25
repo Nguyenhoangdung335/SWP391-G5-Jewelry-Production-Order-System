@@ -8,9 +8,15 @@ import { FaTrash } from "react-icons/fa";
 import { FaEdit } from "react-icons/fa";
 import { useAuth } from "../provider/AuthProvider";
 import { jwtDecode } from "jwt-decode";
+import { useAlert } from "../provider/AlertProvider";
 
 export default function ClientManager() {
+  const {showAlert} = useAlert();
+  const { token } = useAuth();
+  const decodedToken = jwtDecode(token);
+
   const [filterRole, setFilterRole] = useState("CUSTOMER");
+  const [sort, setSort] = useState("dateCreated");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -18,30 +24,31 @@ export default function ClientManager() {
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [isUpdated, setIsUpdated] = useState(true);
   const [data, setData] = useState([]);
-  const { token } = useAuth();
-  const decodedToken = jwtDecode(token);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await axios.get(
-          `${ServerUrl}/api/admin/get/account/${
-            currentPage - 1
-          }?role=${filterRole}`,
-          {
-            headers: { "Content-Type": "application/json" },
+    if (isUpdated) {
+      const fetchData = async () => {
+        try {
+          const res = await axios.get(
+            `${ServerUrl}/api/account/${currentPage - 1}?role=${filterRole}&sort-by=${sort}`,
+            {
+              headers: { "Content-Type": "application/json" },
+            }
+          );
+          if (res.status === 200) {
+            setData(res.data.responseList.accounts);
+            setTotalPages(res.data.responseList.totalPages);
+            setIsUpdated(false);
           }
-        );
-        setData(res.data.responseList.accounts);
-        setTotalPages(res.data.responseList.totalPages);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
-    fetchData();
-  }, [filterRole, currentPage]);
+        } catch (err) {
+          console.log(err);
+        }
+      };
+      fetchData();
+    }
+  }, [filterRole, currentPage, sort, isUpdated]);
 
   const handleFilterChange = (event) => {
     const selectedValue = event.target.value;
@@ -82,23 +89,22 @@ export default function ClientManager() {
 
     try {
       const res = await axios.put(
-        `${ServerUrl}/api/admin/update/account`,
+        `${ServerUrl}/api/account`,
         values,
         {
           headers: { "Content-Type": "application/json" },
         }
       );
       console.log("Update Response:", res.data);
-
-      // Cập nhật trạng thái dữ liệu trên client sau khi chỉnh sửa thành công
-      const updatedData = data.map((item) =>
-        item.id === values.id ? values : item
-      );
-      setData(updatedData);
-      setIsModalVisible(false);
-      setSelectedUser(null);
+      if (res.status === 200) {
+        showAlert("");
+        setIsUpdated(true);
+      }
     } catch (err) {
       console.error("Error updating account:", err);
+    } finally {
+      setIsModalVisible(false);
+      setSelectedUser(null);
     }
   };
 
@@ -123,17 +129,19 @@ export default function ClientManager() {
 
     try {
       const res = await axios.post(
-        `${ServerUrl}/api/admin/create/account`,
+        `${ServerUrl}/api/account`,
         newEmployee,
         {
           headers: { "Content-Type": "application/json" },
         }
       );
-      console.log("Add Response:", res.data.responseList.account);
-      setData([...data, res.data.responseList.account]); // Cập nhật trạng thái dữ liệu trên client sau khi thêm thành công
-      setIsAddModalVisible(false);
+      if (res.status === 200) {
+        setIsUpdated(true);
+      }
     } catch (err) {
       console.error("Error adding account:", err);
+    } finally {
+      setIsAddModalVisible(false);
     }
   };
 
@@ -149,21 +157,21 @@ export default function ClientManager() {
   const handleConfirmDelete = async () => {
     try {
       const res = await axios.delete(
-        `${ServerUrl}/api/admin/delete/account?accountId=${deleteUser}`,
+        `${ServerUrl}/api/account/${deleteUser}`,
         {
           headers: { "Content-Type": "application/json" },
         }
       );
       console.log("Delete Response:", res.data);
-
-      // Cập nhật trạng thái dữ liệu trên client sau khi xóa thành công
-      const updatedData = data.filter((item) => item.id !== deleteUser);
-      setData(updatedData);
+      if (res.status === 200) {
+        setIsUpdated(true);
+      }
     } catch (err) {
       console.log("Error deleting account:", err);
+    } finally {
+      setDeleteModalVisible(false);
+      setDeleteUser(null);
     }
-    setDeleteModalVisible(false);
-    setDeleteUser(null);
   };
 
   const handleCancelDelete = () => {
