@@ -60,7 +60,7 @@ public class StateMachineUtil {
             OrderService orderService,
             StateMachineService<OrderStatus, OrderEvent> stateMachineService) {
         String orderId = order.getId();
-        StateMachine<OrderStatus, OrderEvent> stateMachine = stateMachineService.acquireStateMachine(orderId, true);
+        StateMachine<OrderStatus, OrderEvent> stateMachine = stateMachineService.acquireStateMachine(orderId, false);
         stateMachine.getExtendedState().getVariables().put(Keywords.ORDER_ID, orderId);
         stateMachine.getStateMachineAccessor()
                 .doWithAllRegions(
@@ -84,13 +84,32 @@ public class StateMachineUtil {
         ).subscribe();
     }
 
-//    public static StateMachine<OrderStatus, OrderEvent> resetState (
-//            Order orderWithNewState,
-//            StateMachineService<OrderStatus, OrderEvent> stateMachineService
-//    ) {
-//        String orderId = orderWithNewState.getId();
-//        StateMachine<OrderStatus, OrderEvent> stateMachine = stateMachineService.acquireStateMachine(orderId, false);
-//        stateMachine.stopReactively().block();
-//        stateMachine.getStateMachineAccessor().doWithAllRegions(access -> access.resetStateMachineReactively(new DefaultStateMachineContext<>(orderWithNewState.getStatus(), null, null, stateMachine.getExtendedState(), null, stateMachine.getId())));
-//    }
+    public static StateMachine<OrderStatus, OrderEvent> resetState (
+            Order orderWithNewState,
+            StateMachineService<OrderStatus, OrderEvent> stateMachineService
+    ) {
+        String orderId = orderWithNewState.getId();
+        StateMachine<OrderStatus, OrderEvent> stateMachine = stateMachineService.acquireStateMachine(orderId, false);
+
+        stateMachine.stopReactively()
+                .then(Mono.defer(() -> {
+                    stateMachine.getStateMachineAccessor().doWithAllRegions(access -> {
+                        access.resetStateMachineReactively(
+                                new DefaultStateMachineContext<>(
+                                        orderWithNewState.getStatus(),
+                                        null,
+                                        null,
+                                        stateMachine.getExtendedState(),
+                                        null,
+                                        stateMachine.getId()
+                                )
+                        ).block();
+                    });
+                    return Mono.empty();
+                }))
+                .then(stateMachine.startReactively())
+                .block();
+
+        return stateMachine;
+    }
 }
