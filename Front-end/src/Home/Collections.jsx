@@ -184,6 +184,7 @@ function Collections() {
                     show={showProductModal}
                     onHide={handleCloseProductModal}
                     size="lg"
+                    scrollable
                 >
                     <Modal.Header className="w-100" closeButton>
                         <Modal.Title>{selectedProduct.name}</Modal.Title>
@@ -227,7 +228,7 @@ function Collections() {
                         <Modal.Title className="d-flex justify-content-center">Create Request</Modal.Title>
                     </Modal.Header>
                     <Modal.Body style={{ width: "100%", height: "70%" }}>
-                        <CreateRequest productSpecId={selectedProduct.specification.id} onClose={handleCloseCreateRequestModal} />
+                        <CreateRequest productSpecId={selectedProduct.specification.id} onClose={handleCloseCreateRequestModal} isFromTemplate={true} />
                     </Modal.Body>
                 </Modal>
             )}

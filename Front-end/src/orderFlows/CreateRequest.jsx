@@ -8,7 +8,7 @@ import { useAlert } from "../provider/AlertProvider";
 import { useNavigate } from "react-router-dom";
 
 
-function CreateRequest({productSpecId, handleCancelRequest}) {
+function CreateRequest({productSpecId, handleCancelRequest, isFromTemplate}) {
     const navigation = useNavigate();
     const {showAlert} = useAlert();
     const {token} = useAuth();
@@ -32,11 +32,13 @@ function CreateRequest({productSpecId, handleCancelRequest}) {
         };
 
         axios
-            .post(serverUrl + `/api/report/${decodedToken.id}/${productSpecId}/create/request`, request)
+            .post(serverUrl + `/api/report/${decodedToken.id}/${productSpecId}/create/request?template=${Boolean(isFromTemplate)}`, request)
             .then((response) => {
-                console.log(response.data);
-                showAlert("Success", "Request sent successfully!", "success");
-                navigation("/");
+                if (response.status === 200) {
+                    console.log(response.data);
+                    showAlert("Success", "Request sent successfully!", "success");
+                    navigation("/");
+                }
             })
             .catch((error) => {
                 console.error("There was an error sending the request!", error);
