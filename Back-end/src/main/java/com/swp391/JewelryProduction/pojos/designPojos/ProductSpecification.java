@@ -70,8 +70,8 @@ public class ProductSpecification {
     @JsonIgnore
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @OneToMany(mappedBy = "specification", fetch = FetchType.LAZY)
-    private List<Product> products;
+    @OneToOne(mappedBy = "specification", fetch = FetchType.LAZY)
+    private Product product;
 
     @JsonIgnore
     public double getTotalMetalCost() {

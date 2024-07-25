@@ -8,6 +8,9 @@ import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
+import java.util.LinkedList;
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -47,11 +50,12 @@ public class Product {
 
     @ToString.Include
     @EqualsAndHashCode.Include
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private ProductSpecification specification;
 
+    @Builder.Default
     @ToString.Exclude
-    @OneToOne(mappedBy = "product", fetch = FetchType.LAZY)
-    @JsonBackReference("Order-Product")
-    private Order order;
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Order> orders = new LinkedList<>();
 }

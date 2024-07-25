@@ -94,9 +94,8 @@ public class Order {
 
     @ToString.Include
     @EqualsAndHashCode.Include
-    @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
-    @JsonManagedReference("Order-Product")
     private Product product;
 
     @ToString.Include
@@ -110,7 +109,7 @@ public class Order {
     @EqualsAndHashCode.Include
     @Column(name = "is_from_template")
     @Builder.Default
-    private boolean isFromTemplate = false;
+    private boolean fromTemplate = false;
 
     @JsonIgnore
     @OneToMany(
