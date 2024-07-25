@@ -8,6 +8,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -73,6 +74,18 @@ public class Quotation {
     @EqualsAndHashCode.Include
     @Column(name = "staffs_cost", nullable = false)
     private double staffsCost;
+
+    public Quotation (Quotation copy) {
+        this.title = copy.getTitle();
+        this.createdDate = LocalDate.now();
+        this.expiredDate = LocalDate.now().plus(Period.between(copy.getCreatedDate(), copy.getExpiredDate()));
+        this.quotationItems = new LinkedList<>();
+        copy.getQuotationItems().forEach(item -> {
+            QuotationItem newItem = new QuotationItem(item);
+            newItem.setQuotation(this);
+            this.quotationItems.add(newItem);
+        });
+    }
 
     public Double getTotalPrice () {
         double total = 0.0;

@@ -48,6 +48,14 @@ public class QuotationItem {
     @JsonIgnore
     private Quotation quotation;
 
+    public QuotationItem (QuotationItem copy) {
+        this.itemID = copy.getItemID();
+        this.name = copy.getName();
+        this.unitPrice = copy.getUnitPrice();
+        this.totalPrice = copy.getTotalPrice();
+        this.quantity = copy.getQuantity();
+    }
+
     public Integer getItemID () {
         return itemID = quotation.getQuotationItems().indexOf(this);
     }
