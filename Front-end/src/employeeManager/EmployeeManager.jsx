@@ -34,7 +34,7 @@ export default function EmployeeManager() {
     const fetchData = async () => {
       try {
         const res = await axios.get(
-          `${ServerUrl}/api/admin/get/account/${currentPage - 1}`,
+          `${ServerUrl}/api/account/${currentPage - 1}`,
           {
             headers: { "Content-Type": "application/json" },
             params: {
@@ -100,7 +100,7 @@ export default function EmployeeManager() {
 
     try {
       const res = await axios.put(
-        `${ServerUrl}/api/admin/update/account`,
+        `${ServerUrl}/api/account`,
         values,
         {
           headers: { "Content-Type": "application/json" },
@@ -139,7 +139,7 @@ export default function EmployeeManager() {
 
     try {
       const res = await axios.post(
-        `${ServerUrl}/api/admin/create/account`,
+        `${ServerUrl}/api/account`,
         newEmployee,
         {
           headers: { "Content-Type": "application/json" },
@@ -165,7 +165,7 @@ export default function EmployeeManager() {
   const handleConfirmDelete = async () => {
     try {
       const res = await axios.delete(
-        `${ServerUrl}/api/admin/delete/account?accountId=${deleteUser}`,
+        `${ServerUrl}/api/account/${deleteUser}`,
         {
           headers: { "Content-Type": "application/json" },
         }
