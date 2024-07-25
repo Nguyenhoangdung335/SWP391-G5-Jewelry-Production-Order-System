@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.config.EnableStateMachineFactory;
 import org.springframework.statemachine.config.EnumStateMachineConfigurerAdapter;
 import org.springframework.statemachine.config.builders.StateMachineConfigurationConfigurer;
@@ -47,6 +48,11 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
                 // Optional: Log state changes
                 log.info("State changed from {} to {}", (from == null)? null: from.getIds(), to.getIds());
             }
+            @Override
+            public void stateMachineError(StateMachine<OrderStatus, OrderEvent> stateMachine, Exception exception) {
+                log.error("An exception has occurred during state machine {} transitioning", stateMachine.getId(), exception);
+                super.stateMachineError(stateMachine, exception);
+            }
         };
     }
 
@@ -71,7 +77,7 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
                 .state(OrderStatus.PRODUCTION)
                 .state(OrderStatus.TRANSPORT)
                 .state(OrderStatus.CANCEL)
-//                .history(OrderStatus.ORDER_RESTORED, StateConfigurer.History.DEEP)          //History state for reverting back
+//                .history(OrderStatus.ORDER_RESTORED, StateConfigurer.History.DEEP)
                 .state(OrderStatus.FINISH)
                 .end(OrderStatus.ORDER_COMPLETED)                                           //End state for finalize the order
                 .state(OrderStatus.ORDER_COMPLETED, actionAndGuardConfiguration.notifyOrderCompleteAction(), null)
@@ -81,26 +87,28 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
                     .parent(OrderStatus.REQUEST)
                         .initial(OrderStatus.REQUESTING)
                         .state(OrderStatus.REQ_AWAIT_APPROVAL)
-                            .choice(OrderStatus.REQ_APPROVAL_PROCESS)
+                            .choice(OrderStatus.REQ_APPROVAL_CHOICE)
                                 .state(OrderStatus.REQ_APPROVED, actionAndGuardConfiguration.approvedAction(), null)
                                 .state(OrderStatus.REQ_DECLINED, actionAndGuardConfiguration.declinedAction(), null)
                         .state(OrderStatus.AWAIT_ASSIGN_STAFF)
+                        .choice(OrderStatus.ASSIGN_STAFF_CHOICE)
                         .state(OrderStatus.IN_EXCHANGING, actionAndGuardConfiguration.notifySaleStaffAction(), null)
 
                 .and()
                     .withStates()
                     .parent(OrderStatus.QUOTATION)
                         .initial(OrderStatus.QUO_AWAIT_MANA_APPROVAL)
-                            .choice(OrderStatus.QUO_MANA_APPROVAL_PROCESS)
+                            .choice(OrderStatus.QUO_MANA_APPROVAL_CHOICE)
                                 .state(OrderStatus.QUO_MANA_APPROVED, actionAndGuardConfiguration.approvedAction(), null)
                                 .state(OrderStatus.QUO_MANA_DECLINED, actionAndGuardConfiguration.declinedAction(), null)
                         .state(OrderStatus.QUO_AWAIT_CUST_APPROVAL)
-                            .choice(OrderStatus.QUO_CUST_APPROVAL_PROCESS)
+                            .choice(OrderStatus.QUO_CUST_APPROVAL_CHOICE)
                                 .state(OrderStatus.QUO_CUST_APPROVED, actionAndGuardConfiguration.approvedAction(), null)
                                 .state(OrderStatus.QUO_CUST_DECLINED, actionAndGuardConfiguration.declinedAction(), null)
                         .state(OrderStatus.AWAIT_BET_TRANSACTION)
-                            .choice(OrderStatus.BET_TRANSACTION_PROCESS)
+                            .choice(OrderStatus.BET_TRANSACTION_CHOICE)
                                 .state(OrderStatus.BET_TRANSACTION_SUCCESSFUL, actionAndGuardConfiguration.approvedAction(), null)
+                                .choice(OrderStatus.BET_TRANSACTION_SUCCESSFUL_CHOICE)
                                 .state(OrderStatus.BET_TRANSACTION_UNSUCCESSFUL, actionAndGuardConfiguration.declinedAction(), null)
 
                 .and()
@@ -109,11 +117,11 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
                         .initial(OrderStatus.IN_DESIGNING)
                         .state(OrderStatus.IN_DESIGNING, actionAndGuardConfiguration.notifyDesignStaffAction(), null)
                         .state(OrderStatus.DES_AWAIT_MANA_APPROVAL)
-                            .choice(OrderStatus.DES_MANA_APPROVAL_PROCESS)
+                            .choice(OrderStatus.DES_MANA_APPROVAL_CHOICE)
                                 .state(OrderStatus.DES_MANA_APPROVED, actionAndGuardConfiguration.approvedAction(), null)
                                 .state(OrderStatus.DES_MANA_DECLINED, actionAndGuardConfiguration.declinedAction(), null)
                         .state(OrderStatus.DES_AWAIT_CUST_APPROVAL)
-                            .choice(OrderStatus.DES_CUST_APPROVAL_PROCESS)
+                            .choice(OrderStatus.DES_CUST_APPROVAL_CHOICE)
                                 .state(OrderStatus.DES_CUST_APPROVED, actionAndGuardConfiguration.approvedAction(), null)
                                 .state(OrderStatus.DES_CUST_DECLINED, actionAndGuardConfiguration.declinedAction(), null)
 
@@ -123,7 +131,7 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
                         .initial(OrderStatus.IN_PRODUCTION)
                         .state(OrderStatus.IN_PRODUCTION, actionAndGuardConfiguration.notifyProductionStaffAction(), null)
                         .state(OrderStatus.PRO_AWAIT_APPROVAL)
-                            .choice(OrderStatus.PRO_APPROVAL_PROCESS)
+                            .choice(OrderStatus.PRO_APPROVAL_CHOICE)
                                 .state(OrderStatus.PRO_APPROVED, actionAndGuardConfiguration.approvedAction(), null)
                                 .state(OrderStatus.PRO_DECLINED, actionAndGuardConfiguration.declinedAction(), null)
 
@@ -132,14 +140,15 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
                     .parent(OrderStatus.TRANSPORT)
                         .initial(OrderStatus.ON_DELIVERING)
                         .state(OrderStatus.DELIVERED_AWAIT_APPROVAL)
-                            .choice(OrderStatus.DELIVERED_APPROVAL_PROCESS)
+                            .choice(OrderStatus.DELIVERED_APPROVAL_CHOICE)
                                 .state(OrderStatus.DELIVERED_CONFIRMED, actionAndGuardConfiguration.approvedAction(), null)
                                 .state(OrderStatus.DELIVERED_DENIED, actionAndGuardConfiguration.declinedAction(), null)
+
                 .and()
                     .withStates()
                         .parent(OrderStatus.FINISH)
                         .initial(OrderStatus.AWAIT_REMAIN_TRANSACTION)
-                            .choice(OrderStatus.REMAIN_TRANSACTION_PROCESS)
+                            .choice(OrderStatus.REMAIN_TRANSACTION_CHOICE)
                                 .state(OrderStatus.REMAIN_TRANSACTION_SUCCESSFUL, actionAndGuardConfiguration.approvedAction(), actionAndGuardConfiguration.notifyTransactionReceiptAction())
                                 .state(OrderStatus.REMAIN_TRANSACTION_UNSUCCESSFUL, actionAndGuardConfiguration.declinedAction(), null)
         ;
@@ -149,8 +158,8 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
     @Override
     public void configure(StateMachineTransitionConfigurer<OrderStatus, OrderEvent> transitions) throws Exception {
         transitions
-                /*----------------------------------------------------------------------------------------------------*/
-                /*--------------------------------CANCEL TRANSITION LOGIC (IN-WORKING)--------------------------------*/
+    /*----------------------------------------------------------------------------------------------------*/
+    /*--------------------------------CANCEL TRANSITION LOGIC (IN-WORKING)--------------------------------*/
 
 //                .withExternal()
 //                .source(OrderStatus.CANCEL).target(OrderStatus.ORDER_RESTORED)
@@ -159,22 +168,21 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
 //                .and()
 //                .withHistory()
 //                .source(OrderStatus.ORDER_RESTORED).target(OrderStatus.REQUESTING)  //Placeholder target
-//
-                /*---------------------------------------------------------------------------------------------------*/
-                /*--------------------------------REQUEST SUPERSTATE LOCAL TRANSITION--------------------------------*/
 
-//                .and()
+    /*---------------------------------------------------------------------------------------------------*/
+    /*--------------------------------REQUEST SUPERSTATE LOCAL TRANSITION--------------------------------*/
+
             .withLocal()
                 .source(OrderStatus.REQUESTING).target(OrderStatus.REQ_AWAIT_APPROVAL)
                 .event(OrderEvent.REQ_RECEIVED)
                 .action(actionAndGuardConfiguration.notifyManagerApprovalAction())
             .and()
             .withLocal()
-                .source(OrderStatus.REQ_AWAIT_APPROVAL).target(OrderStatus.REQ_APPROVAL_PROCESS)
+                .source(OrderStatus.REQ_AWAIT_APPROVAL).target(OrderStatus.REQ_APPROVAL_CHOICE)
                 .event(OrderEvent.REQ_PROCESS)
             .and()
             .withChoice()
-                .source(OrderStatus.REQ_APPROVAL_PROCESS)
+                .source(OrderStatus.REQ_APPROVAL_CHOICE)
                 .first(OrderStatus.REQ_APPROVED, actionAndGuardConfiguration.checkApprovalGuard())
                 .last(OrderStatus.REQ_DECLINED)
             .and()
@@ -189,11 +197,17 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
                 .action(actionAndGuardConfiguration.notifyRequestApprovedAction())
             .and()
             .withLocal()
-                .source(OrderStatus.AWAIT_ASSIGN_STAFF).target(OrderStatus.IN_EXCHANGING)
+                .source(OrderStatus.AWAIT_ASSIGN_STAFF).target(OrderStatus.ASSIGN_STAFF_CHOICE)
                 .event(OrderEvent.ASSIGN_STAFF)
 
-                /*------------------------------------------------------------------------------------------------*/
-                /*------------------------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------------------------*/
+
+            .and()
+            .withChoice()
+                .source(OrderStatus.ASSIGN_STAFF_CHOICE)
+                .first(OrderStatus.AWAIT_BET_TRANSACTION, actionAndGuardConfiguration.checkIsFromTemplate())
+                .last(OrderStatus.IN_EXCHANGING)
 
             .and()
             .withExternal()
@@ -201,21 +215,16 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
                 .event(OrderEvent.QUO_FINISH)
                 .action(actionAndGuardConfiguration.notifyManagerApprovalAction())
 
-                /*-----------------------------------------------------------------------------------------------------*/
-                /*--------------------------------QUOTATION SUPERSTATE LOCAL TRANSITION--------------------------------*/
+    /*-----------------------------------------------------------------------------------------------------*/
+    /*--------------------------------QUOTATION SUPERSTATE LOCAL TRANSITION--------------------------------*/
 
-//            .and()
-//            .withLocal()
-//                .source(OrderStatus.AWAIT_QUO).target(OrderStatus.QUO_AWAIT_MANA_APPROVAL)
-//                .event(OrderEvent.QUO_FINISH)
-//                .action(actionAndGuardConfiguration.notifyManagerApprovalAction())
             .and()
             .withLocal()
-                .source(OrderStatus.QUO_AWAIT_MANA_APPROVAL).target(OrderStatus.QUO_MANA_APPROVAL_PROCESS)
+                .source(OrderStatus.QUO_AWAIT_MANA_APPROVAL).target(OrderStatus.QUO_MANA_APPROVAL_CHOICE)
                 .event(OrderEvent.QUO_MANA_PROCESS)
             .and()
             .withChoice()
-                .source(OrderStatus.QUO_MANA_APPROVAL_PROCESS)
+                .source(OrderStatus.QUO_MANA_APPROVAL_CHOICE)
                 .first(OrderStatus.QUO_MANA_APPROVED, actionAndGuardConfiguration.checkApprovalGuard())
                 .last(OrderStatus.QUO_MANA_DECLINED)
             .and()
@@ -229,11 +238,11 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
                 .event(OrderEvent.QUO_MANA_DECLINE)
             .and()
             .withLocal()
-                .source(OrderStatus.QUO_AWAIT_CUST_APPROVAL).target(OrderStatus.QUO_CUST_APPROVAL_PROCESS)
+                .source(OrderStatus.QUO_AWAIT_CUST_APPROVAL).target(OrderStatus.QUO_CUST_APPROVAL_CHOICE)
                 .event(OrderEvent.QUO_CUST_PROCESS)
             .and()
             .withChoice()
-                .source(OrderStatus.QUO_CUST_APPROVAL_PROCESS)
+                .source(OrderStatus.QUO_CUST_APPROVAL_CHOICE)
                 .first(OrderStatus.QUO_CUST_APPROVED, actionAndGuardConfiguration.checkApprovalGuard())
                 .last(OrderStatus.QUO_CUST_DECLINED)
             .and()
@@ -247,11 +256,11 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
                 .event(OrderEvent.QUO_CUST_DECLINE)
             .and()
             .withLocal()
-                .source(OrderStatus.AWAIT_BET_TRANSACTION).target(OrderStatus.BET_TRANSACTION_PROCESS)
+                .source(OrderStatus.AWAIT_BET_TRANSACTION).target(OrderStatus.BET_TRANSACTION_CHOICE)
                 .event(OrderEvent.BET_TRANSACTION_MAKE)
             .and()
             .withChoice()
-                .source(OrderStatus.BET_TRANSACTION_PROCESS)
+                .source(OrderStatus.BET_TRANSACTION_CHOICE)
                 .first(OrderStatus.BET_TRANSACTION_SUCCESSFUL, actionAndGuardConfiguration.checkTransactionGuard())
                 .last(OrderStatus.BET_TRANSACTION_UNSUCCESSFUL)
             .and()
@@ -259,17 +268,23 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
                 .source(OrderStatus.BET_TRANSACTION_UNSUCCESSFUL).target(OrderStatus.AWAIT_BET_TRANSACTION)
                 .event(OrderEvent.BET_TRANSACTION_DECLINE)
 
-                /*------------------------------------------------------------------------------------------------*/
-                /*------------------------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------------------------*/
 
             .and()
             .withExternal()
-                .source(OrderStatus.BET_TRANSACTION_SUCCESSFUL).target(OrderStatus.IN_DESIGNING)
+                .source(OrderStatus.BET_TRANSACTION_SUCCESSFUL).target(OrderStatus.BET_TRANSACTION_SUCCESSFUL_CHOICE)
                 .event(OrderEvent.BET_TRANSACTION_APPROVE)
                 .action(actionAndGuardConfiguration.notifyDesignStaffAction())
 
-                /*--------------------------------------------------------------------------------------------------*/
-                /*--------------------------------DESIGN SUPERSTATE LOCAL TRANSITION--------------------------------*/
+            .and()
+            .withChoice()
+                .source(OrderStatus.BET_TRANSACTION_SUCCESSFUL_CHOICE)
+                .first(OrderStatus.IN_PRODUCTION, actionAndGuardConfiguration.checkIsFromTemplate())
+                .last(OrderStatus.IN_DESIGNING)
+
+    /*--------------------------------------------------------------------------------------------------*/
+    /*--------------------------------DESIGN SUPERSTATE LOCAL TRANSITION--------------------------------*/
 
             .and()
             .withLocal()
@@ -278,11 +293,11 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
                 .action(actionAndGuardConfiguration.notifyManagerApprovalAction())
             .and()
             .withLocal()
-                .source(OrderStatus.DES_AWAIT_MANA_APPROVAL).target(OrderStatus.DES_MANA_APPROVAL_PROCESS)
+                .source(OrderStatus.DES_AWAIT_MANA_APPROVAL).target(OrderStatus.DES_MANA_APPROVAL_CHOICE)
                 .event(OrderEvent.DES_MANA_PROCESS)
             .and()
             .withChoice()
-                .source(OrderStatus.DES_MANA_APPROVAL_PROCESS)
+                .source(OrderStatus.DES_MANA_APPROVAL_CHOICE)
                 .first(OrderStatus.DES_MANA_APPROVED, actionAndGuardConfiguration.checkApprovalGuard())
                 .last(OrderStatus.DES_MANA_DECLINED)
             .and()
@@ -297,11 +312,11 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
                 .action(actionAndGuardConfiguration.deleteImageAction())
             .and()
             .withLocal()
-                .source(OrderStatus.DES_AWAIT_CUST_APPROVAL).target(OrderStatus.DES_CUST_APPROVAL_PROCESS)
+                .source(OrderStatus.DES_AWAIT_CUST_APPROVAL).target(OrderStatus.DES_CUST_APPROVAL_CHOICE)
                 .event(OrderEvent.DES_CUST_PROCESS)
             .and()
             .withChoice()
-                .source(OrderStatus.DES_CUST_APPROVAL_PROCESS)
+                .source(OrderStatus.DES_CUST_APPROVAL_CHOICE)
                 .first(OrderStatus.DES_CUST_APPROVED, actionAndGuardConfiguration.checkApprovalGuard())
                 .last(OrderStatus.DES_CUST_DECLINED)
             .and()
@@ -309,8 +324,8 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
                 .source(OrderStatus.DES_CUST_DECLINED).target(OrderStatus.IN_DESIGNING)
                 .event(OrderEvent.DES_CUST_DECLINE)
 
-                /*------------------------------------------------------------------------------------------------*/
-                /*------------------------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------------------------*/
 
             .and()
             .withExternal()
@@ -318,30 +333,30 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
                 .event(OrderEvent.DES_CUST_APPROVE)
                 .action(actionAndGuardConfiguration.notifyProductionStaffAction())
 
-                /*------------------------------------------------------------------------------------------------------*/
-                /*--------------------------------PRODUCTION SUPERSTATE LOCAL TRANSITION--------------------------------*/
+    /*------------------------------------------------------------------------------------------------------*/
+    /*--------------------------------PRODUCTION SUPERSTATE LOCAL TRANSITION--------------------------------*/
 
-                .and()
-                .withLocal()
+            .and()
+            .withLocal()
                 .source(OrderStatus.IN_PRODUCTION).target(OrderStatus.PRO_AWAIT_APPROVAL)
                 .event(OrderEvent.PRO_FINISH)
                 .action(actionAndGuardConfiguration.notifyCustomerApprovalAction())
-                .and()
-                .withLocal()
-                .source(OrderStatus.PRO_AWAIT_APPROVAL).target(OrderStatus.PRO_APPROVAL_PROCESS)
+            .and()
+            .withLocal()
+                .source(OrderStatus.PRO_AWAIT_APPROVAL).target(OrderStatus.PRO_APPROVAL_CHOICE)
                 .event(OrderEvent.PRO_PROCESS)
-                .and()
-                .withChoice()
-                .source(OrderStatus.PRO_APPROVAL_PROCESS)
+            .and()
+            .withChoice()
+                .source(OrderStatus.PRO_APPROVAL_CHOICE)
                 .first(OrderStatus.PRO_APPROVED, actionAndGuardConfiguration.checkApprovalGuard())
                 .last(OrderStatus.PRO_DECLINED)
-                .and()
-                .withLocal()
+            .and()
+            .withLocal()
                 .source(OrderStatus.PRO_DECLINED).target(OrderStatus.IN_PRODUCTION)
                 .event(OrderEvent.PRO_DECLINE)
 
-                /*------------------------------------------------------------------------------------------------*/
-                /*------------------------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------------------------*/
 
             .and()
             .withExternal()
@@ -349,16 +364,16 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
                 .event(OrderEvent.PRO_APPROVE)
                 .action(actionAndGuardConfiguration.notifyRemainingTransactionAction())
 
-                /*--------------------------------------------------------------------------------------------------*/
-                /*--------------------------------FINISH SUPERSTATE LOCAL TRANSITION--------------------------------*/
+    /*--------------------------------------------------------------------------------------------------*/
+    /*--------------------------------FINISH SUPERSTATE LOCAL TRANSITION--------------------------------*/
 
             .and()
             .withLocal()
-                .source(OrderStatus.AWAIT_REMAIN_TRANSACTION).target(OrderStatus.REMAIN_TRANSACTION_PROCESS)
+                .source(OrderStatus.AWAIT_REMAIN_TRANSACTION).target(OrderStatus.REMAIN_TRANSACTION_CHOICE)
                 .event(OrderEvent.REMAIN_TRANSACTION_MAKE)
             .and()
             .withChoice()
-                .source(OrderStatus.REMAIN_TRANSACTION_PROCESS)
+                .source(OrderStatus.REMAIN_TRANSACTION_CHOICE)
                 .first(OrderStatus.REMAIN_TRANSACTION_SUCCESSFUL, actionAndGuardConfiguration.checkTransactionGuard())
                 .last(OrderStatus.REMAIN_TRANSACTION_UNSUCCESSFUL)
             .and()
@@ -366,8 +381,8 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
                 .source(OrderStatus.REMAIN_TRANSACTION_UNSUCCESSFUL).target(OrderStatus.AWAIT_REMAIN_TRANSACTION)
                 .event(OrderEvent.REMAIN_TRANSACTION_DECLINE)
 
-                /*------------------------------------------------------------------------------------------------*/
-                /*------------------------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------------------------*/
 
             .and()
             .withExternal()
@@ -375,32 +390,32 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
                 .event(OrderEvent.REMAIN_TRANSACTION_APPROVE)
                 .action(actionAndGuardConfiguration.notifyOrderCompleteAction())
 
-                /*-----------------------------------------------------------------------------------------------------*/
-                /*--------------------------------TRANSPORT SUPERSTATE LOCAL TRANSITION--------------------------------*/
+    /*-----------------------------------------------------------------------------------------------------*/
+    /*--------------------------------TRANSPORT SUPERSTATE LOCAL TRANSITION--------------------------------*/
 
-                .and()
-                .withLocal()
+            .and()
+            .withLocal()
                 .source(OrderStatus.ON_DELIVERING).target(OrderStatus.DELIVERED_AWAIT_APPROVAL)
                 .event(OrderEvent.DELIVERED)
                 .action(actionAndGuardConfiguration.notifyDeliveredAction())
-                .and()
-                .withLocal()
-                .source(OrderStatus.DELIVERED_AWAIT_APPROVAL).target(OrderStatus.DELIVERED_APPROVAL_PROCESS)
+            .and()
+            .withLocal()
+                .source(OrderStatus.DELIVERED_AWAIT_APPROVAL).target(OrderStatus.DELIVERED_APPROVAL_CHOICE)
                 .event(OrderEvent.DELIVERED_PROCESS)
-                .and()
-                .withChoice()
-                .source(OrderStatus.DELIVERED_APPROVAL_PROCESS)
+            .and()
+            .withChoice()
+                .source(OrderStatus.DELIVERED_APPROVAL_CHOICE)
                 .first(OrderStatus.DELIVERED_CONFIRMED, actionAndGuardConfiguration.checkApprovalGuard())
                 .last(OrderStatus.DELIVERED_DENIED)
-                .and()
-                .withLocal()
+            .and()
+            .withLocal()
                 .source(OrderStatus.DELIVERED_DENIED).target(OrderStatus.ON_DELIVERING)
                 .event(OrderEvent.DELIVERED_DENY)
 
-                /*------------------------------------------------------------------------------------------------*/
-                /*------------------------------------------------------------------------------------------------*/
-                .and()
-                .withExternal()
+    /*------------------------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------------------------*/
+            .and()
+            .withExternal()
                 .source(OrderStatus.DELIVERED_CONFIRMED).target(OrderStatus.ORDER_COMPLETED)
                 .event(OrderEvent.DELIVERED_APPROVE)
         ;
