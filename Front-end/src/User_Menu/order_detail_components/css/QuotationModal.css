@@ -16,7 +16,8 @@
 }
 
 .table-fixed tbody {
-  height: 240px; /* Same as the max-height defined for the scrollable class */
+  min-height: 0;
+  max-height: 240px; /* Same as the max-height defined for the scrollable class */
   overflow-y: auto;
 }
 

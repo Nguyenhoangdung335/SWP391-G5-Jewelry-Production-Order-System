@@ -98,3 +98,12 @@
   width: 150%;
   height: 150%;
 }
+
+
+.selected-row {
+  background-color: #3f3e3e !important;
+}
+
+.unselected-row {
+  background-color: white;
+}

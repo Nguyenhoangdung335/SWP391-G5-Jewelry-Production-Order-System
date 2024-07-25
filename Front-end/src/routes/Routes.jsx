@@ -11,7 +11,7 @@ import ConfirmPassword from "../forgot_password/ConfirmPassword";
 import Collections from "../Home/Collections";
 import About from "../Home/About";
 import Blogs from "../Home/Blogs";
-import OrderPage1 from "../orderFlows/OrderPage1";
+import CustomDesignOptions from "../orderFlows/CustomDesignOptions";
 import UserManagerLayout from "../layout/UserManagerLayout";
 import ClientManager from "../clientManager/ClientManager";
 import DashboardManger from "../dashboard/DashboardManger";
@@ -51,7 +51,7 @@ function RouteMap() {
           path="/order_page"
           element={
             <ProtectedRoute roles={["CUSTOMER"]}>
-              <OrderPage1 />
+              <CustomDesignOptions />
             </ProtectedRoute>
           }
         />
