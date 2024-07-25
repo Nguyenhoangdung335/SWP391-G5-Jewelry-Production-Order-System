@@ -31,7 +31,7 @@ function AssignedStaff({ decodedToken, data, onSubmit }) {
       const fetchStaff = async () => {
         try {
           const response = await axios.get(
-            `${ServerUrl}/api/admin/get/staff?role=${decodedToken.role}`
+            `${ServerUrl}/api/staff/get-all`
           );
           setStaff(response.data.responseList);
         } catch (error) {
