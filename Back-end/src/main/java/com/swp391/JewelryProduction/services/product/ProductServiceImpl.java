@@ -1,7 +1,6 @@
 package com.swp391.JewelryProduction.services.product;
 
 import com.swp391.JewelryProduction.enums.OrderStatus;
-import com.swp391.JewelryProduction.pojos.Order;
 import com.swp391.JewelryProduction.pojos.designPojos.Metal;
 import com.swp391.JewelryProduction.pojos.designPojos.Product;
 import com.swp391.JewelryProduction.pojos.designPojos.ProductSpecification;
@@ -50,7 +49,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Page<Product> findAll(int page, int size, boolean isFinished) {
         if (isFinished)
-            return productRepository.findAllByOrderStatusIs(PageRequest.of(page, size), OrderStatus.ORDER_COMPLETED);
+            return productRepository.findAllByOrdersStatusIs(PageRequest.of(page, size), OrderStatus.ORDER_COMPLETED);
         else
             return productRepository.findAll(PageRequest.of(page, size));
     }
@@ -72,10 +71,15 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     @Override
     public void deleteProduct(String id) {
-        Order order = orderService.findOrderByProductId(id);
-        if (order != null)
-            order.setProduct(null);
-        order = orderService.updateOrder(order);
+        Product product = productRepository.findById(id).orElseThrow(
+                () -> new ObjectNotFoundException("Product with id "+id+" does not exist")
+        );
+        product.getOrders().forEach(order -> {
+                order.setProduct(null);
+                orderService.updateOrder(order);
+        });
+        product.setOrders(null);
+        productRepository.save(product);
         productRepository.deleteById(id);
     }
     //</editor-fold>
