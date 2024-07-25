@@ -40,14 +40,17 @@ public class Quotation {
     @EqualsAndHashCode.Include
     @Column(length = 8, nullable = false, unique = true)
     private String id;
+
     @ToString.Include
     @EqualsAndHashCode.Include
     private String title;
+
     @ToString.Include
     @EqualsAndHashCode.Include
     @JsonFormat(pattern="yyyy-MM-dd")
     @Column(name = "created_date", nullable = false)
     private LocalDate createdDate;
+
     @ToString.Include
     @EqualsAndHashCode.Include
     @JsonFormat(pattern="yyyy-MM-dd")
@@ -65,6 +68,11 @@ public class Quotation {
     @OneToOne(mappedBy = "quotation", fetch = FetchType.LAZY)
     @JsonBackReference("Order-Quotation")
     private Order order;
+
+    @ToString.Include
+    @EqualsAndHashCode.Include
+    @Column(name = "staffs_cost", nullable = false)
+    private double staffsCost;
 
     public Double getTotalPrice () {
         double total = 0.0;
