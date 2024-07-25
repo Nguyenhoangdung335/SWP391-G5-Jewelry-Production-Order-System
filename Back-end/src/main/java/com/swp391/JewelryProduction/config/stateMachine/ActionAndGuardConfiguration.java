@@ -79,6 +79,15 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
         };
     }
 
+    @Bean
+    public Guard<OrderStatus, OrderEvent> checkIsFromTemplate () {
+        return context -> {
+            OrderService orderService = applicationContext.getBean(OrderService.class);
+            Order order = getOrder(context, orderService);
+            return order != null && order.isFromTemplate();
+        };
+    }
+
 //    public Guard<OrderStatus, OrderEvent> checkAppropriateApprovalActionGuard () {
 //        return context -> {
 //            log.info("checkAppropriateApprovalActionGuard is called before transition to state {}", context.getTransition().getSource());
