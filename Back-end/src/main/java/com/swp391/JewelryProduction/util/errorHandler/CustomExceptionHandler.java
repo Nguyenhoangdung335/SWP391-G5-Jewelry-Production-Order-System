@@ -80,10 +80,14 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         String error = ex.getParameterName() + " parameter is missing";
 
         log.error(error);
-        ApiError apiError =
-                new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), List.of(error));
-        return new ResponseEntity<Object>(
-                apiError, new HttpHeaders(), apiError.getStatus());
+        Response response = Response.builder()
+                .status(HttpStatus.BAD_REQUEST)
+                .message("Missing request parameter")
+                .response("Missing parameters", ex.getParameterName())
+                .response("cause", ex.getCause())
+                .build();
+        return new ResponseEntity<>(
+                response, new HttpHeaders(), response.getStatus());
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
