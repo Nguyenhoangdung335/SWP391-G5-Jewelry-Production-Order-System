@@ -27,7 +27,7 @@ export default function DashboardManager() {
   useEffect(() => {
     async function fetchOrder() {
       try {
-        const response = await axios.get(`${ServerUrl}/api/admin/get/order/0`, {
+        const response = await axios.get(`${ServerUrl}/api/order/0`, {
           headers: { "Content-Type": "application/json" },
           params: {
             role: userRole,
@@ -45,20 +45,7 @@ export default function DashboardManager() {
       }
     }
     fetchOrder();
-    // async function fetchDashboard() {
-    //   try {
-    //     const response = await axios.get(`${ServerUrl}/api/admin/dashboard`);
-    //     if (response.data.status === "OK") {
-    //       setDashboard(response.data.responseList);
-    //     } else {
-    //       console.error("Failed to fetch orders:", response.data.message);
-    //     }
-    //   } catch (error) {
-    //     console.error("Error fetching orders:", error);
-    //   }
-    // }
-    // fetchDashboard();
-  }, []);
+  }, [accountId, userRole]);
 
   useEffect(() => {
     // Check if an EventSource connection already exists
