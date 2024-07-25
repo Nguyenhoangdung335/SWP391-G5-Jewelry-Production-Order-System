@@ -123,6 +123,13 @@ public class Account{
         return null;
     }
 
+    public void setCurrentOrder (Order order) {
+        if (order != null && !order.getStatus().equals(OrderStatus.ORDER_COMPLETED) && !order.getStatus().equals(OrderStatus.CANCEL)) {
+            pastOrder.add(order);
+            currentOrder = order;
+        }
+    }
+
     public void setUserInfo (UserInfo userInfo) {
         this.userInfo = userInfo;
         userInfo.setAccount(this);
