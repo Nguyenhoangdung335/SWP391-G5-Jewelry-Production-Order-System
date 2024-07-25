@@ -8,7 +8,7 @@ import { useAlert } from "../provider/AlertProvider";
 import { useNavigate } from "react-router-dom";
 
 
-function CreateRequest({productSpecId}) {
+function CreateRequest({productSpecId, handleCancelRequest}) {
     const navigation = useNavigate();
     const {showAlert} = useAlert();
     const {token} = useAuth();
@@ -17,30 +17,6 @@ function CreateRequest({productSpecId}) {
     const [description, setDescription] = useState("");
     const [errors, setErrors] = useState({});
     const [validated, setValidated] = useState(false);
-    // const [alertConfig, setAlertConfig] = useState({
-    //     title: "",
-    //     text: "",
-    //     isShow: false,
-    //     alertVariant: "primary",
-    // });
-
-    // const handleValidate = () => {
-    //     const newErrors = {};
-    //     if (!title.trim()) {
-    //         newErrors.title = "Title is required.";
-    //     }
-
-    //     if (!description.trim()) {
-    //         newErrors.description = "Description is required.";
-    //     }
-    //     setErrors(newErrors);
-
-    //     if (Object.keys(newErrors).length === 0) {
-    //         setValidated(true);
-    //         return true;
-    //     }
-    //     return false;
-    // }
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -131,17 +107,15 @@ function CreateRequest({productSpecId}) {
                     </Form.Control.Feedback>
                 </Form.Group>
 
-                <Button variant="primary" type="submit">
-                    Confirm
-                </Button>
+                <div className="d-flex justify-content-around">
+                    <Button variant="danger" type="button" onClick={() => handleCancelRequest()}>
+                        Cancel
+                    </Button>
+                    <Button variant="primary" type="submit">
+                        Confirm
+                    </Button>
+                </div>
             </Form>
-            {/* <CustomAlert
-                title={alertConfig.title}
-                text={alertConfig.text}
-                show={alertConfig.isShow}
-                onClose={() => setAlertConfig({...alertConfig, isShow: false})}
-                variant={alertConfig.alertVariant}
-            /> */}
         </>
     );
 }
