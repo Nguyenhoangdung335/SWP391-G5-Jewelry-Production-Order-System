@@ -1,5 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { Form } from "react-bootstrap";
+import React, { useCallback, useEffect, useState } from "react";
+import { Form, Container, Row, Col, Table, OverlayTrigger, Tooltip, Image } from "react-bootstrap";
+import DoubleRangeSlider from "../reusable/DoubleRangeSlider/DoubleRangeSlider";
+import axios from "axios";
+import ServerUrl from "../reusable/ServerUrl";
+import "./../App.css";
 
 const JewelryType = ({ value, onChange }) => {
   const [typeList, setTypeList] = useState([]);
@@ -36,7 +40,6 @@ const DesignStyle = ({ value, onChange }) => {
   const [styleList, setStyleList] = useState([]);
 
   useEffect(() => {
-    // Fetch style list from server
     setStyleList([
         {value:"Historic", name: "Historic",},
         {value:"Georgian", name:"Georgian",},
@@ -55,7 +58,7 @@ const DesignStyle = ({ value, onChange }) => {
   return (
     <Form.Group className="mb-3">
       <Form.Label>Design Style*</Form.Label>
-      <Form.Select name="selectedDesignStyle" value={value} size="sm" onChange={onChange}>
+      <Form.Select name="selectedStyle" value={value} size="sm" onChange={onChange}>
         <option value="" disabled>
           Choose one
         </option>
@@ -105,7 +108,7 @@ const Occasion = ({ value, onChange }) => {
   );
 };
 
-const Length = ({ selectedType, selectedLength, handleChange }) => {
+const Length = ({ selectedType, selectedLength, onChange }) => {
     return (
       <>
         {selectedType && (
@@ -121,7 +124,7 @@ const Length = ({ selectedType, selectedLength, handleChange }) => {
                   min="14"
                   max="42"
                   value={selectedLength}
-                  onChange={handleChange}
+                  onChange={onChange}
                 />
               </>
             )}
@@ -131,7 +134,7 @@ const Length = ({ selectedType, selectedLength, handleChange }) => {
                 <Form.Select
                   name="selectedLength"
                   value={selectedLength}
-                  onChange={handleChange}
+                  onChange={onChange}
                   size="sm"
                 >
                   <option value="" disabled>
@@ -163,7 +166,7 @@ const Length = ({ selectedType, selectedLength, handleChange }) => {
                   min="0"
                   max="10"
                   value={selectedLength}
-                  onChange={handleChange}
+                  onChange={onChange}
                 />
               </>
             )}
@@ -178,7 +181,7 @@ const Length = ({ selectedType, selectedLength, handleChange }) => {
                   min="0.618"
                   max="0.846"
                   value={selectedLength}
-                  onChange={handleChange}
+                  onChange={onChange}
                 />
               </>
             )}
@@ -188,7 +191,7 @@ const Length = ({ selectedType, selectedLength, handleChange }) => {
                 <Form.Select
                   name="selectedLength"
                   value={selectedLength}
-                  onChange={handleChange}
+                  onChange={onChange}
                   size="sm"
                 >
                   <option value="" disabled>
@@ -237,7 +240,7 @@ const ChainType = ({ value, onChange }) => {
     ]);
   }, []);
 
-  return (
+  return(
     <Form.Group className="mb-3">
       <Form.Label>Chain Type</Form.Label>
       <Form.Select name="selectedChainType" value={value} size="sm" onChange={onChange}>
@@ -345,53 +348,161 @@ const MetalUnit = ({ value, onChange, selectedMetalName }) => {
   );
 };
 
-const GemstoneType = ({ value, onChange, gemstoneData }) => (
-  <Form.Group className="mb-3">
-    <Form.Label>Gemstone Type*</Form.Label>
-    <Form.Select name="selectedGemstoneTypeId" value={value} size="sm" onChange={onChange}>
-      <option value="" disabled>
-        Choose one
-      </option>
-      {gemstoneData.map((gemstone) => (
-        <option key={gemstone.id} value={gemstone.id}>
-          {gemstone.name}
-        </option>
-      ))}
-    </Form.Select>
-  </Form.Group>
-);
+const MetalWeight = ({ value = 0, onChange, minVal = 1, maxVal = 1000, step = 1, selectedUnit}) => {
+  const [tempValue, setTempValue] = useState(value);
+  const [convertRate, setConvertRate] = useState()
+  const handleMouseUp = (e) => {
+    onChange({ target: { name: e.target.name, value: tempValue } });
+  };
 
-const GemstoneShape = ({ value, onChange, gemstoneData }) => {
-  const selectedGemstoneType = gemstoneData.find((gem) => gem.id === value);
+  const handleTouchEnd = (e) => {
+    onChange({ target: { name: e.target.name, value: tempValue } });
+  };
+
+  const handleChange = (event) => {
+    setTempValue(event.target.value);
+  };
+  if (selectedUnit.toLowerCase() === "kilogram") {
+    maxVal = 10;
+    step = 0.001;
+  }
+
+  useEffect(() => {
+    switch (selectedUnit.toLowerCase()) {
+      case "kilogram":
+        setConvertRate(1000);
+        break;
+      case "ounce":
+        setConvertRate(28.35);
+        break;
+      case "tola":
+          setConvertRate(11.6638);
+          break;
+      default:
+          setConvertRate(1);
+    }
+  }, [selectedUnit]);
+
+  const formatUnit = (num) => {
+    return Number(num).toLocaleString('en', {minimumFractionDigits: 0, maximumFractionDigits: 2});
+  }
 
   return (
+    <Form.Group className="mb-3 position-relative">
+      <Form.Label className="d-block">Metal Weight*: {formatUnit(tempValue)} {selectedUnit} {!selectedUnit.toLowerCase().includes("gram")? "(" + formatUnit(tempValue*convertRate) + " gram)" : ""}</Form.Label>
+      <div className="d-flex justify-content-between align-items-center">
+        <span >{minVal}</span>
+        <Form.Range
+          style={{ display: "inline-block", width: "90%", margin: "0 auto"}}
+          name="selectedMetalWeight"
+          value={tempValue}
+          size="sm"
+          placeholder="Weight"
+          onChange={handleChange}
+          onMouseUp={handleMouseUp}
+          onTouchEnd={handleTouchEnd}
+          min={minVal}
+          max={maxVal}
+          step={step}
+        />
+        <span>{maxVal}</span>
+      </div>
+    </Form.Group>
+  );
+}
+
+const GemstoneWeightRange = ({ minWeight, maxWeight, handleWeightChange}) => {
+  return (
     <Form.Group className="mb-3">
-      <Form.Label>Gemstone Shape*</Form.Label>
-      <Form.Select name="selectedGemstoneShape" value={value} size="sm" onChange={onChange} disabled={!selectedGemstoneType}>
-        <option value="" disabled>
-          Choose one
-        </option>
-        {selectedGemstoneType?.shapes.map((shape) => (
-          <option key={shape} value={shape}>
-            {shape}
-          </option>
-        ))}
-      </Form.Select>
+      <Form.Label>Gemstone Weight Range</Form.Label>
+      <div className="d-flex justify-content-center align-items-center">
+        <div style={{fontSize: ".9rem", marginInline: "0.5rem"}}>{minWeight / 100}</div>
+        <DoubleRangeSlider min={1} max={1100} onChange={handleWeightChange} />
+        <div style={{fontSize: ".9rem", marginInline: "0.5rem"}}>{maxWeight / 100}</div>
+      </div>
     </Form.Group>
   );
 };
 
-const GemstoneCut = ({ value, onChange, gemstoneData }) => {
-  const selectedGemstoneType = gemstoneData.find((gem) => gem.id === value);
+const GemstoneName = ({ value, onChange, gemstoneName }) => {
+  return (
+    <Form.Group className="mb-3">
+      <Form.Label>Gemstone</Form.Label>
+      <Form.Select name="selectedGemstoneName" value={value} size="sm" onChange={onChange}>
+        <option value="">
+          None
+        </option>
+        {gemstoneName.map((gemstone, index) => (
+          <option key={index} value={gemstone}>
+            {gemstone}
+          </option>
+        ))}
+      </Form.Select>
+    </Form.Group>
+  )
+};
 
+const GemstoneShape = ({ value, onChange, gemstoneShape }) => {
+  const [hoveredShape, setHoveredShape] = useState(null);
+  const images = importAllImages(require.context('../assets/GemstoneShape', false, /\.png$/));
+
+  const handleMouseOver = (shape) => {
+    setHoveredShape(shape);
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredShape(null);
+  };
+
+  const handleChange = (event) => {
+    onChange(event);
+    setHoveredShape(event.target.value);
+  };
+
+  const renderGemstoneShapePreview = (shape) => {
+    const imageName = shape.charAt(0) + shape.slice(1).toLowerCase();
+    const imageUrl = images[imageName];
+    return imageUrl ? <Image src={imageUrl} thumbnail/> : <span>Image not found</span>;
+  };
+
+  return (
+    <Form.Group className="mb-3 position-relative">
+      <Form.Label>Gemstone Shape</Form.Label>
+      <div style={{position: "relative"}}>
+        <Form.Select name="selectedGemstoneShape" value={value} size="sm" onChange={handleChange}>
+          <option value="">
+            All
+          </option>
+          {gemstoneShape?.map((shape) => (
+            <option
+              key={shape}
+              value={shape}
+              onMouseOver={() => handleMouseOver(shape)}
+              onMouseLeave={handleMouseLeave}
+            >
+              {shape}
+            </option>
+          ))}
+        </Form.Select>
+        {hoveredShape && (
+          <div style={{position: "absolute", top: "-100%", right: "105%", marginLeft: "10px", zIndex: "1", width: "100px", height: "auto"}}>
+            {renderGemstoneShapePreview(hoveredShape)}
+          </div>
+        )}
+      </div>
+    </Form.Group>
+  );
+};
+
+const GemstoneCut = ({ value, onChange, gemstoneCut }) => {
   return (
     <Form.Group className="mb-3">
       <Form.Label>Gemstone Cut*</Form.Label>
-      <Form.Select name="selectedGemstoneCut" value={value} size="sm" onChange={onChange} disabled={!selectedGemstoneType}>
-        <option value="" disabled>
-          Choose one
+      <Form.Select name="selectedGemstoneCut" value={value} size="sm" onChange={onChange}>
+        <option value="">
+          All
         </option>
-        {selectedGemstoneType?.cuts.map((cut) => (
+        {gemstoneCut.map((cut) => (
           <option key={cut} value={cut}>
             {cut}
           </option>
@@ -401,17 +512,15 @@ const GemstoneCut = ({ value, onChange, gemstoneData }) => {
   );
 };
 
-const GemstoneClarity = ({ value, onChange, gemstoneData }) => {
-  const selectedGemstoneType = gemstoneData.find((gem) => gem.id === value);
-
+const GemstoneClarity = ({ value, onChange, gemstoneClarity }) => {
   return (
     <Form.Group className="mb-3">
       <Form.Label>Gemstone Clarity*</Form.Label>
-      <Form.Select name="selectedGemstoneClarity" value={value} size="sm" onChange={onChange} disabled={!selectedGemstoneType}>
-        <option value="" disabled>
-          Choose one
+      <Form.Select name="selectedGemstoneClarity" value={value} size="sm" onChange={onChange}>
+        <option value="">
+          All
         </option>
-        {selectedGemstoneType?.clarities.map((clarity) => (
+        {gemstoneClarity.map((clarity) => (
           <option key={clarity} value={clarity}>
             {clarity}
           </option>
@@ -421,17 +530,15 @@ const GemstoneClarity = ({ value, onChange, gemstoneData }) => {
   );
 };
 
-const GemstoneColor = ({ value, onChange, gemstoneData }) => {
-  const selectedGemstoneType = gemstoneData.find((gem) => gem.id === value);
-
+const GemstoneColor = ({ value, onChange, gemstoneColor }) => {
   return (
     <Form.Group className="mb-3">
       <Form.Label>Gemstone Color*</Form.Label>
-      <Form.Select name="selectedGemstoneColor" value={value} size="sm" onChange={onChange} disabled={!selectedGemstoneType}>
-        <option value="" disabled>
-          Choose one
+      <Form.Select name="selectedGemstoneColor" value={value} size="sm" onChange={onChange}>
+        <option value="">
+          All
         </option>
-        {selectedGemstoneType?.colors.map((color) => (
+        {gemstoneColor.map((color) => (
           <option key={color} value={color}>
             {color}
           </option>
@@ -441,22 +548,186 @@ const GemstoneColor = ({ value, onChange, gemstoneData }) => {
   );
 };
 
-const GemstoneWeight = ({ value, onChange }) => (
-  <Form.Group className="mb-3">
-    <Form.Label>Gemstone Weight (Carat)*</Form.Label>
-    <Form.Control
-      type="number"
-      name="selectedGemstoneWeight"
-      value={value}
-      size="sm"
-      placeholder="Weight"
-      onChange={onChange}
-      min="0.05"
-      max="5"
-      step="0.01"
-    />
-  </Form.Group>
-);
+const GemstoneWeight = ({ value: gemstoneWeight, onChange, minVal = 0.05, maxVal = 5, step = 0.01 }) => {
+  const [tempValue, setTempValue] = useState(gemstoneWeight);
+  const handleMouseUp = (e) => {
+    onChange({ target: { name: e.target.name, value: tempValue } });
+  };
+
+  const handleTouchEnd = (e) => {
+    onChange({ target: { name: e.target.name, value: tempValue } });
+  };
+
+  const handleChange = (event) => {
+    setTempValue(event.target.value);
+  };
+
+  return (
+    <Form.Group className="mb-3 position-relative">
+      <Form.Label className="d-block">Gemstone Weight*: {gemstoneWeight} Carat</Form.Label>
+      <div className="d-flex justify-content-between align-items-center">
+        <span >{minVal}</span>
+        <Form.Range
+          style={{ display: "inline-block", width: "90%", margin: "0 auto"}}
+          name="selectedGemstoneWeight"
+          value={tempValue}
+          size="sm"
+          placeholder="Weight"
+          onChange={handleChange}
+          onMouseUp={handleMouseUp}
+          onTouchEnd={handleTouchEnd}
+          min={minVal}
+          max={maxVal}
+          step={step}
+        />
+        <span>{maxVal}</span>
+      </div>
+    </Form.Group>
+  );
+};
+
+const GemstoneForm = ({gemstoneData, onChange, selectedData}) => {
+  const handleSelectGemstone = useCallback((data) => {
+    console.log(data);
+    onChange({target: { name: "selectedGemstone", value: data}})
+  }, [onChange]);
+
+  return (
+    <Container>
+      <Row>
+        <Col sm={12}>
+          <GemstoneName gemstoneName={gemstoneData.names} onChange={onChange} value={selectedData.selectedGemstoneName} />
+        </Col>
+        {selectedData.selectedGemstoneName && (
+          <>
+            <Col sm={12} md={6}>
+              <GemstoneShape gemstoneShape={gemstoneData.shapes} onChange={onChange} value={selectedData.selectedGemstoneShape} />
+            </Col>
+            <Col sm={12} md={6}>
+              <GemstoneCut gemstoneCut={gemstoneData.cuts} onChange={onChange} value={selectedData.selectedGemstoneCut} />
+            </Col>
+            <Col sm={12} md={6}>
+              <GemstoneClarity gemstoneClarity={gemstoneData.clarities} onChange={onChange} value={selectedData.selectedGemstoneClarity} />
+            </Col>
+            <Col sm={12} md={6}>
+              <GemstoneColor gemstoneColor={gemstoneData.colors} onChange={onChange} value={selectedData.selectedGemstoneColor} />
+            </Col>
+            <Col sm={12}>
+              <GemstoneWeight onChange={onChange} value={selectedData.selectedGemstoneWeight} minVal={gemstoneData.minWeight} maxVal={gemstoneData.maxWeight} step={0.01} />
+            </Col>
+          </>
+        )}
+      </Row>
+      <Row>
+        <RenderGemstoneTable selectedGemstoneProp={selectedData} handleSelectGemstone={handleSelectGemstone} />
+      </Row>
+    </Container>
+  );
+}
+
+function RenderGemstoneTable ({selectedGemstoneProp, handleSelectGemstone}) {
+  const [gemstoneData, setGemstoneData] = useState([]);
+  const [selectedGemstone, setSelectedGemstone] = useState(null);
+  const isQualifiedRender = selectedGemstoneProp.selectedGemstoneName;
+
+  useEffect(() =>  {
+    if ( isQualifiedRender ) {
+      const requestBody = {
+        name: selectedGemstoneProp.selectedGemstoneName,
+        shape: selectedGemstoneProp.selectedGemstoneShape,
+        clarity: selectedGemstoneProp.selectedGemstoneClarity,
+        color: selectedGemstoneProp.selectedGemstoneColor,
+        weight: selectedGemstoneProp.selectedGemstoneWeight,
+        cut: selectedGemstoneProp.selectedGemstoneCut,
+      };
+
+      const request = {
+        method: 'POST',
+        url: `${ServerUrl}/api/gemstone/search`,
+        headers: {
+            'content-type': 'application/json',
+        },
+        data: requestBody,
+      };
+
+      const fetchGemstone = async () => {
+        const response = await axios.request(request);
+        if (response.status === 200) {
+          const gemstone = response.data.responseList.gemstone;
+          setGemstoneData(gemstone);
+          handleSelectGemstone(gemstone[0]);
+        }
+      }
+
+      fetchGemstone();
+    }
+  }, [isQualifiedRender,
+    selectedGemstoneProp.selectedGemstoneName,
+    selectedGemstoneProp.selectedGemstoneShape,
+    selectedGemstoneProp.selectedGemstoneColor,
+    selectedGemstoneProp.selectedGemstoneClarity,
+    selectedGemstoneProp.selectedGemstoneCut,
+    selectedGemstoneProp.selectedGemstoneWeight,
+    handleSelectGemstone
+  ]);
+
+  const handleRowClick = (gemstone) => {
+    setSelectedGemstone(gemstone);
+    handleSelectGemstone(gemstone);
+  };
+
+  return isQualifiedRender && (
+    <Table striped bordered hover className="table-fixed">
+      <thead>
+        <tr>
+          <th>Gemstone</th>
+          <th>Shape</th>
+          <th>Cut</th>
+          <th>Clarity</th>
+          <th>Color</th>
+          <th>Weight</th>
+          <th>Price Per Carat</th>
+        </tr>
+      </thead>
+      <tbody>
+        {gemstoneData && gemstoneData.length > 0 && (
+          gemstoneData
+            .sort((a, b) => (a === selectedGemstone ? -1 : b === selectedGemstone ? 1 : 0))
+            .map((gemstone) => (
+            <tr key={gemstone.id} onClick={() => handleRowClick(gemstone)} className={gemstone === selectedGemstone ? 'selected-row' : 'unselected-row'} style={{ cursor: 'pointer',}}>
+              <td>{gemstone === selectedGemstone ? '✔️ ' : ''}{gemstone.name}</td>
+              <td>{gemstone.shape}</td>
+              <td>{gemstone.cut}</td>
+              <td>{gemstone.clarity}</td>
+              <td>{gemstone.color}</td>
+              <td>{gemstone.caratWeightFrom}-{gemstone.caratWeightTo}</td>
+              <td>{formatPrice(gemstone.pricePerCaratInHundred * 100)}</td>
+              </tr>
+          )))}
+          {(!gemstoneData || (gemstoneData && gemstoneData.length === 0)) && (
+            <tr>
+              <td colSpan={7} style={{textAlign: "center"}}>There is no entries</td>
+            </tr>
+          )}
+      </tbody>
+    </Table>
+  )
+}
+
+const formatPrice = (price) => {
+  return price.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+  });
+};
+
+function importAllImages(r) {
+  let images = {};
+  r.keys().map((item, index) => {
+    images[item.replace('./', '').replace('.png', '')] = r(item);
+  });
+  return images;
+}
 
 export {
   JewelryType,
@@ -467,10 +738,13 @@ export {
   Texture,
   MetalType,
   MetalUnit,
-  GemstoneType,
+  MetalWeight,
+  GemstoneName,
   GemstoneShape,
   GemstoneCut,
   GemstoneClarity,
   GemstoneColor,
-  GemstoneWeight
+  GemstoneWeightRange,
+  GemstoneWeight,
+  GemstoneForm
 };
