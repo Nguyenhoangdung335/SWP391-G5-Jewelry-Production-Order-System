@@ -1,14 +1,13 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
 import ServerUrl from "../reusable/ServerUrl";
-import { Badge, Button, Col, Row, Table, Spinner } from "react-bootstrap";
+import { Badge, Button, Col, Row, Table } from "react-bootstrap";
 import noImage from "../assets/no_image.jpg";
 import QuotationModal from "./order_detail_components/QuotationModal";
 import WarrantyCertificateModal from "../warranty/WarrantyCertificateModal";
 import AssignedStaff from "./order_detail_components/AssignedStaff";
 import ProductSpecificationTable from "./order_detail_components/ProductSpecification";
-import CustomAlert from "../reusable/CustomAlert";
 import ConfirmationModal from "../reusable/ConfirmationModal";
 import { useAlert } from "../provider/AlertProvider";
 import Loader from "../reusable/Loader";
@@ -59,7 +58,7 @@ function OrderDetail() {
     return formattedDate;
   };
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const response = await axios(`${ServerUrl}/api/order/${id}/detail`, {
         headers: { "Content-Type": "application/json" },
@@ -77,7 +76,7 @@ function OrderDetail() {
       console.error("Error fetching data", error);
       showAlert("Error fetching data", "", "danger");
     }
-  };
+  }, [id, showAlert]);
 
   useEffect(() => {
     if (status === "success") {
@@ -89,7 +88,7 @@ function OrderDetail() {
     }
 
     fetchData();
-  }, [id]);
+  }, [id, fetchData,]);
 
   useEffect(() => {
     if (isQualifyApproving) {
@@ -131,16 +130,12 @@ function OrderDetail() {
         setData(body.orderDetail);
         showAlert(response.data.message, "", "success");
       } else {
-        showAlert([response.data.message, "", true, false, "error"]);
+        showAlert(response.data.message, "", "error");
       }
     } catch (error) {
       console.error("Error cancelling order:", error);
       showAlert("An error occurred while cancelling the order.", "", "error");
     }
-  };
-
-  const handleSetAlertInfo = (alertInfo) => {
-    showAlert(alertInfo);
   };
 
   const handleConfirmRequest = async (confirmed) => {
@@ -203,7 +198,7 @@ function OrderDetail() {
               <Table bordered hover>
                 <tr>
                   <th>Id</th>
-                  <td>{data.product.id || "NaN"}</td>
+                  <td>{data.id || "NaN"}</td>
                 </tr>
                 <tr>
                   <th>Name</th>
@@ -419,7 +414,6 @@ function OrderDetail() {
           show={showQuotation}
           onHide={() => setShowQuotation(false)}
           onQuotationChange={fetchData}
-          setShowAlert={handleSetAlertInfo}
           fetchData={() => fetchData()}
         />
       )}
@@ -429,15 +423,6 @@ function OrderDetail() {
         handleClose={() => setShowWarranty(false)}
       />
 
-      {showAlert && showAlert[2] && (
-        <CustomAlert
-          title={showAlert[0]}
-          text={showAlert[1]}
-          isShow={showAlert[2]}
-          onClose={showAlert[3]}
-          alertVariant={showAlert[4]}
-        />
-      )}
       <ConfirmationModal
         show={showConfirm}
         onConfirm={handleConfirmCancel}
