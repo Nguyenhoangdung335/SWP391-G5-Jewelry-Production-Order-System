@@ -17,6 +17,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -125,6 +126,21 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         if (errorMsg == null || errorMsg.isEmpty())
             errorMsg = "Object not found";
 
+        log.error(errorMsg);
+
+        return Response.builder()
+                .status(HttpStatus.BAD_REQUEST)
+                .message(errorMsg)
+                .response("Error", ex.getClass().getCanonicalName())
+                .response("Cause", ex.getCause())
+                .buildEntity();
+    }
+
+    @ExceptionHandler( {UsernameNotFoundException.class} )
+    public ResponseEntity<Response> handleUserNameNotFoundException (UsernameNotFoundException ex, WebRequest request) {
+        String errorMsg = ex.getLocalizedMessage();
+        if (errorMsg == null || errorMsg.isEmpty())
+            errorMsg = "Account with this email does not exist";
         log.error(errorMsg);
 
         return Response.builder()
