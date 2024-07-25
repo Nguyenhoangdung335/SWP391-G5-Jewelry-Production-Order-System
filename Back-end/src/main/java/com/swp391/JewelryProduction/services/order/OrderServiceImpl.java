@@ -22,15 +22,11 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.messaging.support.MessageBuilder;
-import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.service.StateMachineService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
-import java.util.LinkedList;
 import java.util.List;
 
 import static com.swp391.JewelryProduction.config.stateMachine.StateMachineUtil.*;
@@ -119,16 +115,14 @@ public class OrderServiceImpl implements OrderService {
 
     //<editor-fold desc="CREATE OPERATIONS" defaultstate="collapsed">
     @Override
-    public Order saveNewOrder(String accountId) {
-        Account owner = modelMapper.map(accountService.findAccountById(accountId), Account.class);
+    public Order saveNewOrder(String accountId, boolean isFromTemplate) {
+        Account owner = accountService.findAccountById(accountId);
 
         Order order = Order.builder()
                 .status(OrderStatus.REQUESTING)
                 .owner(owner)
                 .createdDate(LocalDateTime.now())
-                .relatedReports(new LinkedList<>())
-                .notifications(new LinkedList<>())
-                .staffOrderHistory(new LinkedList<>())
+                .fromTemplate(isFromTemplate)
                 .build();
         owner.setCurrentOrder(order);
         order = orderRepository.save(order);
@@ -137,6 +131,19 @@ public class OrderServiceImpl implements OrderService {
 
         return orderRepository.save(order);
     }
+
+//    public Order createNewOrderFromTemplate (String accountId) {
+//        Account owner = accountService.findAccountById(accountId);
+//        Order order = Order.builder()
+//                .status(OrderStatus.REQUESTING)
+//                .owner(owner)
+//                .createdDate(LocalDateTime.now())
+//                .fromTemplate(true)
+//                .build();
+//        owner.setCurrentOrder(order);
+//        order = orderRepository.save(order);
+//        instantiateStateMachine(order, this, stateMachineService);
+//    }
     //</editor-fold>
 
     //<editor-fold desc="UPDATE OPERATIONS" defaultstate="collapsed">
@@ -232,8 +239,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order findOrderByProductId(String productId) {
-        return orderRepository.findByProductId(productId).orElse(null);
+    public List<Order> findOrdersByProductId(String productId) {
+        return orderRepository.findAllByProductId(productId);
     }
 
     @Transactional
@@ -260,7 +267,7 @@ public class OrderServiceImpl implements OrderService {
                             .id(orderDTO.getProduct().getId())
                             .name(orderDTO.getProduct().getName())
                             .description(orderDTO.getProduct().getDescription())
-                            .order(order)
+                            .orders(List.of(order))
                     .build());
         }
         if(orderDTO.getQuotation() != null) {
