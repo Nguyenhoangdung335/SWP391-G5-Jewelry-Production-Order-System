@@ -7,7 +7,6 @@ import {useAuth} from "../provider/AuthProvider";
 import axios from "axios";
 import ServerUrl from "../reusable/ServerUrl";
 import GemStoneBanner from "../assets/Gemstone.mp4";
-import CustomAlert from "../reusable/CustomAlert";
 import Loader from "../reusable/Loader";
 import {useAlert} from "../provider/AlertProvider";
 
@@ -42,8 +41,6 @@ function ControlledCarousel() {
       showAlert(
           "Access Denied",
           "You must login to use this feature",
-          true,
-          false,
           "danger"
       );
       setTimeout(() => {
@@ -53,8 +50,6 @@ function ControlledCarousel() {
       showAlert(
           "Access Denied",
           "You don't have permission to use this feature",
-          true,
-          false,
           "danger"
       );
     } else {
@@ -65,8 +60,6 @@ function ControlledCarousel() {
             showAlert(
                 "Ongoing Order",
                 "You already have permission to use this feature. Please complete it before designing new jewelry.",
-                true,
-                false,
                 "warning"
             );
           } else {
@@ -78,8 +71,6 @@ function ControlledCarousel() {
           showAlert(
               "Error",
               "Error checking current order. Please try again later.",
-              true,
-              false,
               "danger"
           );
         });

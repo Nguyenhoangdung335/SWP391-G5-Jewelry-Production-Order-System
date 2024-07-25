@@ -46,8 +46,6 @@ export default function Login() {
           showAlert(
             "Login Failed",
             "There was an error!",
-              true,
-              false,
             "danger",
           );
           console.error("There was an error!", error);

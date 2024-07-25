@@ -62,8 +62,6 @@ function Home() {
             showAlert(
                 "Access Denied",
                 "You must login to use this feature",
-                true,
-                false,
                 "danger"
             );
             setTimeout(() => {
@@ -73,8 +71,6 @@ function Home() {
             showAlert(
                 "Access Denied",
                 "You don't have permission to use this feature",
-                true,
-                false,
                 "danger"
             );
         } else {
@@ -85,8 +81,6 @@ function Home() {
                         showAlert(
                             "Ongoing Order",
                             "You already have an ongoing order. Please complete it before designing new jewelry.",
-                            true,
-                            false,
                             "warning"
                         );
                     } else {
@@ -98,8 +92,6 @@ function Home() {
                     showAlert(
                         "Error",
                         "Error checking current order. Please try again later.",
-                        true,
-                        false,
                         "danger"
                     );
                 });
