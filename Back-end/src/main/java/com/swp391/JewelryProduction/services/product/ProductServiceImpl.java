@@ -2,15 +2,13 @@ package com.swp391.JewelryProduction.services.product;
 
 import com.swp391.JewelryProduction.enums.OrderStatus;
 import com.swp391.JewelryProduction.pojos.Order;
-import com.swp391.JewelryProduction.pojos.Price.MetalPrice;
+import com.swp391.JewelryProduction.pojos.designPojos.Metal;
 import com.swp391.JewelryProduction.pojos.designPojos.Product;
 import com.swp391.JewelryProduction.pojos.designPojos.ProductSpecification;
-import com.swp391.JewelryProduction.pojos.gemstone.Gemstone;
-import com.swp391.JewelryProduction.pojos.gemstone.GemstoneType;
-import com.swp391.JewelryProduction.repositories.MetalPriceRepository;
+import com.swp391.JewelryProduction.pojos.designPojos.Gemstone;
+import com.swp391.JewelryProduction.repositories.MetalRepository;
 import com.swp391.JewelryProduction.repositories.ProductRepository;
 import com.swp391.JewelryProduction.repositories.ProductSpecificationRepository;
-import com.swp391.JewelryProduction.repositories.gemstoneRepositories.GemstoneTypeRepository;
 import com.swp391.JewelryProduction.services.crawl.CrawlDataService;
 import com.swp391.JewelryProduction.services.gemstone.GemstoneService;
 import com.swp391.JewelryProduction.services.order.OrderService;
@@ -31,9 +29,8 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final ProductSpecificationRepository productSpecificationRepository;
     private final OrderService orderService;
-    private final GemstoneTypeRepository gemstoneTypeRepository;
     private final GemstoneService gemstoneService;
-    private final MetalPriceRepository metalPriceRepository;
+    private final MetalRepository metalRepository;
     private final CrawlDataService crawlDataService;
 
     @Value("${price.default.sale_staff}")
@@ -78,6 +75,7 @@ public class ProductServiceImpl implements ProductService {
         Order order = orderService.findOrderByProductId(id);
         if (order != null)
             order.setProduct(null);
+        order = orderService.updateOrder(order);
         productRepository.deleteById(id);
     }
     //</editor-fold>
@@ -104,17 +102,16 @@ public class ProductServiceImpl implements ProductService {
             if(proSpecs.equals(specs)) return proSpecs;
         }
         Gemstone gemstone = specs.getGemstone();
-        GemstoneType gemstoneType = gemstone.getType();
-        MetalPrice metal = specs.getMetal();
+        Metal metal = specs.getMetal();
 
-        if (gemstoneType != null) {
-            gemstoneType = gemstoneTypeRepository.findById(gemstoneType.getId())
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid GemstoneType ID"));
-            gemstone.setType(gemstoneType);
+        if (gemstone != null) {
+            gemstone = gemstoneService.findById(metal.getId());
+            specs.setGemstone(gemstone);
         }
+
         if (metal != null) {
-            metal = metalPriceRepository.findById(metal.getId())
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid MetalPrice ID"));
+            metal = metalRepository.findById(metal.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid Metal ID"));
             specs.setMetal(metal);
         }
         return productSpecificationRepository.save(specs);
@@ -131,20 +128,27 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     @Override
     public void deleteSpecificationById(int id) {
+        ProductSpecification specification = productSpecificationRepository.findById(id).orElseThrow(
+                () -> new ObjectNotFoundException("Cannot found specification with id "+id)
+        );
+        specification.setGemstone(null);
+        specification.setMetal(null);
+        specification = productSpecificationRepository.save(specification);
         List<Product> products = productRepository.findAllBySpecificationId(id);
         products.forEach(prod -> {
             prod.setSpecification(ProductSpecification.builder().build());
         });
         productRepository.saveAll(products);
-        productSpecificationRepository.deleteById(id);
+        productSpecificationRepository.delete(specification);
     }
 
     @Override
     public Double calculateRoughProductPrice(int productSpecificationId) {
-        return calculatePrice(
-                productSpecificationRepository.findById(productSpecificationId).orElseThrow(
-                        () -> new ObjectNotFoundException("Specification with id "+ productSpecificationId+" not found")
-        ));
+//        return calculatePrice(
+//                productSpecificationRepository.findById(productSpecificationId).orElseThrow(
+//                        () -> new ObjectNotFoundException("Specification with id "+ productSpecificationId+" not found")
+//        ));
+        return 0.0;
     }
 
     @Override
@@ -152,12 +156,12 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findAllByOrderByIdDesc(limit);
     }
 
-    private Double calculatePrice (ProductSpecification specs) {
-        double price = gemstoneService.calculatePrice(specs.getGemstone());
-        price += DEFAULT_SALE_STAFF_PRICE + DEFAULT_DESIGN_STAFF_PRICE + DEFAULT_PRODUCTION_STAFF_PRICE;
-        price += specs.getMetal().getPrice();
-        return price;
-    }
+//    private Double calculatePrice (ProductSpecification specs) {
+//        double price = gemstoneService.calculatePrice(specs.getGemstone());
+//        price += DEFAULT_SALE_STAFF_PRICE + DEFAULT_DESIGN_STAFF_PRICE + DEFAULT_PRODUCTION_STAFF_PRICE;
+//        price += specs.getMetal().getPrice();
+//        return price;
+//    }
     //</editor-fold>
 
     private ProductSpecification mapNewSpecification (ProductSpecification oldSpecs, ProductSpecification newSpecs) {

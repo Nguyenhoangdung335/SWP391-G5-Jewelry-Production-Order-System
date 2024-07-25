@@ -1,11 +1,8 @@
 package com.swp391.JewelryProduction.services.crawl;
 
-import com.swp391.JewelryProduction.pojos.Price.GemstonePrice;
-import com.swp391.JewelryProduction.pojos.Price.MetalPrice;
-import com.swp391.JewelryProduction.repositories.GemstonePriceRepository;
-import com.swp391.JewelryProduction.repositories.MetalPriceRepository;
+import com.swp391.JewelryProduction.pojos.designPojos.Metal;
+import com.swp391.JewelryProduction.repositories.MetalRepository;
 import com.swp391.JewelryProduction.services.connection.ConnectionPage;
-import com.swp391.JewelryProduction.util.exceptions.ObjectNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class CrawlDataServiceImpl implements CrawlDataService {
 
-    private final MetalPriceRepository metalPriceRepository;
+    private final MetalRepository metalRepository;
     private final ConnectionPage connection;
 
     @Value("${exchange.url}")
@@ -38,13 +35,13 @@ public class CrawlDataServiceImpl implements CrawlDataService {
     @Override
     public void crawData() {
         log.info("Starting to crawl data ...");
-        List<MetalPrice> metalPrices = new ArrayList<>();
+        List<Metal> metals = new ArrayList<>();
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();
 
         try {
             CrawlThread crawlThread = CrawlThread.builder()
-                    .metalPrices(metalPrices)
+                    .metals(metals)
                     .connection(connection)
                     .urlExchange(urlExchange)
                     .urlPage(urlPage)
@@ -60,15 +57,15 @@ public class CrawlDataServiceImpl implements CrawlDataService {
                 log.warn("Executor was abruptly shut down. " + droppedTasks.size() + " tasks will not be executed.");
             }
 
-            for (MetalPrice metalPrice : metalPrices) {
-                Optional<MetalPrice> existingMaterialOpt = metalPriceRepository.findByNameAndUnit(metalPrice.getName(), metalPrice.getUnit());
+            for (Metal metal : metals) {
+                Optional<Metal> existingMaterialOpt = metalRepository.findByNameAndUnit(metal.getName(), metal.getUnit());
                 if (existingMaterialOpt.isPresent()) {
-                    MetalPrice existingMetalPrice = existingMaterialOpt.get();
-                    existingMetalPrice.setPrice(metalPrice.getPrice());
-                    existingMetalPrice.setUpdatedTime(metalPrice.getUpdatedTime());
-                    metalPriceRepository.save(existingMetalPrice);
+                    Metal existingMetal = existingMaterialOpt.get();
+                    existingMetal.setPrice(metal.getPrice());
+                    existingMetal.setUpdatedTime(metal.getUpdatedTime());
+                    metalRepository.save(existingMetal);
                 } else {
-                    metalPriceRepository.save(metalPrice);
+                    metalRepository.save(metal);
                 }
             }
             log.info("Finished crawling data!");
@@ -87,33 +84,33 @@ public class CrawlDataServiceImpl implements CrawlDataService {
     }
 
     @Override
-    public Flux<ServerSentEvent<List<MetalPrice>>> getAll() {
+    public Flux<ServerSentEvent<List<Metal>>> getAll() {
         return Flux.merge(getHeartBeat(), getPrice());
     }
 
     @Override
-    public List<MetalPrice> getAllMetalPrices() {
-        return metalPriceRepository.findAll();
+    public List<Metal> getAllMetalPrices() {
+        return metalRepository.findAll();
     }
 
-    private Flux<ServerSentEvent<List<MetalPrice>>> getHeartBeat() {
+    private Flux<ServerSentEvent<List<Metal>>> getHeartBeat() {
         return Flux.interval(Duration.ofSeconds(3))
-                .map(seq -> ServerSentEvent.<List<MetalPrice>>builder()
+                .map(seq -> ServerSentEvent.<List<Metal>>builder()
                         .id("heartbeat")
                         .event("heartbeat")
                         .build());
     }
 
-    private Flux<ServerSentEvent<List<MetalPrice>>> getPrice() {
-        List<MetalPrice> list = metalPriceRepository.findAll();
+    private Flux<ServerSentEvent<List<Metal>>> getPrice() {
+        List<Metal> list = metalRepository.findAll();
         return Flux.interval(Duration.ofSeconds(10))
                 .publishOn(Schedulers.boundedElastic())
-                .map(priceData -> ServerSentEvent.<List<MetalPrice>>builder()
+                .map(priceData -> ServerSentEvent.<List<Metal>>builder()
                         .id(String.valueOf(list.size()))  // Use priceData size as ID
                         .event("live")
                         .data(list)
                         .build())
-                .startWith(ServerSentEvent.<List<MetalPrice>>builder()
+                .startWith(ServerSentEvent.<List<Metal>>builder()
                         .id(String.valueOf(list.size()))
                         .event("live")
                         .data(list)

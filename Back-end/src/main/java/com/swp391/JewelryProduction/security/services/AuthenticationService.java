@@ -29,7 +29,6 @@ import java.util.concurrent.TimeUnit;
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
-    private static final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -54,7 +53,7 @@ public class AuthenticationService {
                 .userInfo(new UserInfo())
                 .build();
         user.getAccount().setPassword(passwordEncoder.encode(user.getPassword()));
-        logger.info(user.toString());
+        log.info(user.toString());
 
         Map<String, Object> claims = new HashMap<>();
         claims.put("id", user.getAccount().getId());
@@ -91,6 +90,7 @@ public class AuthenticationService {
             otp.insert(0, "0");
         }
         otpCache.put(emailKey, otp.toString());
+        log.info("OTP code: " + otp);
         return otp.toString();
     }
 

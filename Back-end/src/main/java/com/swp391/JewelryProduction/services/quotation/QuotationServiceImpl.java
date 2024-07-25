@@ -2,10 +2,9 @@ package com.swp391.JewelryProduction.services.quotation;
 
 import com.swp391.JewelryProduction.dto.ResponseDTOs.QuotationItemResponse;
 import com.swp391.JewelryProduction.pojos.Order;
-import com.swp391.JewelryProduction.pojos.Price.MetalPrice;
+import com.swp391.JewelryProduction.pojos.designPojos.Metal;
 import com.swp391.JewelryProduction.pojos.Quotation;
-import com.swp391.JewelryProduction.pojos.QuotationItem;
-import com.swp391.JewelryProduction.pojos.gemstone.Gemstone;
+import com.swp391.JewelryProduction.pojos.designPojos.Gemstone;
 import com.swp391.JewelryProduction.repositories.QuotationRepository;
 import com.swp391.JewelryProduction.services.gemstone.GemstoneService;
 import com.swp391.JewelryProduction.services.order.OrderService;
@@ -17,9 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-
-import static com.swp391.JewelryProduction.util.CustomFormatter.roundToDecimal;
 
 @Service
 @RequiredArgsConstructor
@@ -73,10 +69,10 @@ public class QuotationServiceImpl implements QuotationService {
     @Override
     public List<QuotationItemResponse> getDefaultQuotationItems(Order order) {
         Gemstone gemstone = order.getProduct().getSpecification().getGemstone();
-        MetalPrice metal = order.getProduct().getSpecification().getMetal();
-        Map<String, Double> appliedMultiplier = gemstoneService.getAppliedMultiplier(gemstone);
-        double price = gemstoneService.calculatePrice(gemstone);
-        double rawGemstonePrice = gemstone.getGemstonePriceByCaratWeight();
+        Metal metal = order.getProduct().getSpecification().getMetal();
+//        Map<String, Double> appliedMultiplier = gemstoneService.getAppliedMultiplier(gemstone);
+//        double price = gemstoneService.calculatePrice(gemstone);
+//        double rawGemstonePrice = gemstone.getGemstonePriceByCaratWeight();
 
         int index = 0;
         List<QuotationItemResponse> items = new LinkedList<>();
@@ -84,7 +80,7 @@ public class QuotationServiceImpl implements QuotationService {
         items.add(QuotationItemResponse.builder().itemID(index++).name("Design cost").quantity(1).unitPrice(100.0).totalPrice(100.0).build());
         items.add(QuotationItemResponse.builder().itemID(index++).name("Production cost").quantity(1).unitPrice(200.0).totalPrice(200.0).build());
         items.add(QuotationItemResponse.builder().itemID(index++).name("Metal ("+metal.getName()+")").quantity(1).unitPrice(metal.getPrice()).totalPrice(metal.getPrice()).build());
-        items.add(QuotationItemResponse.builder().itemID(index++).name("Gemstone ("+gemstone.getType().getName()+")").quantity(gemstone.getCaratWeight()).unitPrice(gemstone.getType().getBasePricePerCarat()).totalPrice(gemstoneService.calculatePrice(gemstone)).build());
+//        items.add(QuotationItemResponse.builder().itemID(index++).name("Gemstone ("+gemstone.getType().getName()+")").quantity(gemstone.getCaratWeight()).unitPrice(gemstone.getType().getBasePricePerCarat()).totalPrice(gemstoneService.calculatePrice(gemstone)).build());
 
         return items;
     }

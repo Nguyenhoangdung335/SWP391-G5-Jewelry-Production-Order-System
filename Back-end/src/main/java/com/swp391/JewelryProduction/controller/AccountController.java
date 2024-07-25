@@ -46,7 +46,6 @@ public class AccountController {
     ) {
         Account updatedAcc = accountService.findAccountById(accountId);
         updatedAcc = accountService.saveUserInfo(userInfo, updatedAcc.getEmail());
-        System.out.println("Test 2");
         return Response.builder()
                 .response("account", updatedAcc)
                 .buildEntity();

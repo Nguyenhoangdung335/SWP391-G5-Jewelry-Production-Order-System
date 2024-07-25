@@ -23,11 +23,11 @@ public interface ProductRepository extends JpaRepository<Product, String> {
     @Override
     List<Product> findAll();
 
-    @EntityGraph(attributePaths = {"specification.metal", "specification.gemstone.type"})
+    @EntityGraph(attributePaths = {"specification.metal", "specification.gemstone"})
     @NotNull
     Page<Product> findAll(@NotNull Pageable pageable);
 
-    @EntityGraph(attributePaths = {"specification.metal", "specification.gemstone.type"})
+    @EntityGraph(attributePaths = {"specification.metal", "specification.gemstone"})
     Page<Product> findAllByOrderStatusIs (@NotNull Pageable pageable, OrderStatus status);
 
     @Query("SELECT p FROM Product p JOIN FETCH p.specification WHERE p.id = :id")
@@ -36,5 +36,6 @@ public interface ProductRepository extends JpaRepository<Product, String> {
     @Override
     Optional<Product> findById(@NotNull @Param("id") String id);
 
+    @EntityGraph(attributePaths = {"order", "specification"})
     List<Product> findAllByOrderByIdDesc(Limit limit);
 }

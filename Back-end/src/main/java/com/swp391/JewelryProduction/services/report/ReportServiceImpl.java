@@ -42,13 +42,14 @@ public class ReportServiceImpl implements ReportService {
 
     private final StateMachineService<OrderStatus, OrderEvent> stateMachineService;
 
+    @Override
     public Report saveReport(Report report) {
         return reportRepository.save(report);
     }
 
     @Transactional
     @Override
-    public Report createRequest(ReportRequest report, Order order, Product product) {
+    public Report   createRequestReport(ReportRequest report, Order order, Product product) {
         Account sender = accountService.findAccountById(report.getSenderId());
         Report requestReport = Report.builder()
                         .reportingOrder(order)
@@ -149,6 +150,21 @@ public class ReportServiceImpl implements ReportService {
         return productReport;
     }
 
+    @Transactional
+    @Override
+    public Report createNormalReport(Order order, String title, String content) {
+        Report newReport = Report.builder()
+                .title(title)
+                .description(content)
+                .sender(null)
+                .createdDate(LocalDateTime.now())
+                .reportingOrder(order)
+                .type(ReportType.NONE)
+                .build();
+        order.getRelatedReports().add(newReport);
+        return reportRepository.save(newReport);
+    }
+
     @Override
     @Transactional
     public void handleUserResponse(int notificationId, String orderId, boolean isApproved) throws RuntimeException {
@@ -167,33 +183,11 @@ public class ReportServiceImpl implements ReportService {
         stateMachine.sendEvent(Mono.just(MessageBuilder.withPayload(triggerEvent).build())).subscribe();
     }
 
-    @Transactional
-    @Override
-    public Report createNormalReport(Order order, String title, String content) {
-        Report newReport = Report.builder()
-                .title(title)
-                .description(content)
-                .sender(null)
-                .createdDate(LocalDateTime.now())
-                .reportingOrder(order)
-                .type(ReportType.NONE)
-                .build();
-        order.getRelatedReports().add(newReport);
-        return reportRepository.save(newReport);
-    }
-
     @Override
     public Report findReportByID(Integer id) {
-        return reportRepository
-                .findById(id)
-                .orElseThrow(
-                        () -> new ObjectNotFoundException("Order of id " + id + " cannot be found")
-                );
-    }
-
-    @Override
-    public Report updateReport(Report report) {
-        return reportRepository.save(report);
+        return reportRepository.findById(id).orElseThrow(
+                () -> new ObjectNotFoundException("Report of id "+id+" cannot be found")
+        );
     }
 
     private OrderEvent getApprovalEvent(OrderStatus approvalType) {
@@ -208,6 +202,4 @@ public class ReportServiceImpl implements ReportService {
             default -> throw new IllegalArgumentException("Invalid approval type");
         };
     }
-
-
 }

@@ -67,7 +67,6 @@ public class FirestoreService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void saveOrUpdateUser(Firestore db, Account owner) {
         log.info("Begin syncing");
-//        Account owner = accountService.findAccountForFirestoreSync(ownerId);
 
         DocumentReference docRef = db.collection(USER_COLLECTION_NAME).document(owner.getId());
         Map<String, Object> userData = new HashMap<>();
@@ -81,7 +80,7 @@ public class FirestoreService {
             userData.put("saleStaff", currentOrder.getSaleStaff().getId());
 
         ApiFuture<WriteResult> result = docRef.set(userData, SetOptions.merge());
-            try {
+        try {
             result.get();
             // Log success
             System.out.println("Synced user " + owner.getId() + " to Firestore " + docRef.getId());

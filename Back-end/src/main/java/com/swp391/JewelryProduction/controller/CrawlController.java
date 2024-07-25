@@ -1,11 +1,8 @@
 package com.swp391.JewelryProduction.controller;
 
 import com.swp391.JewelryProduction.dto.DataDTO;
-import com.swp391.JewelryProduction.pojos.Price.MetalPrice;
-import com.swp391.JewelryProduction.pojos.gemstone.Gemstone;
+import com.swp391.JewelryProduction.pojos.designPojos.Metal;
 import com.swp391.JewelryProduction.services.crawl.CrawlDataService;
-import com.swp391.JewelryProduction.services.gemstone.GemstoneService;
-import com.swp391.JewelryProduction.util.Response;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +35,7 @@ public class CrawlController {
     }
 
     @GetMapping()
-    public Flux<ServerSentEvent<List<MetalPrice>>> getPrice() throws IOException {
+    public Flux<ServerSentEvent<List<Metal>>> getPrice() throws IOException {
         return crawlDataService.getAll();
     }
 

@@ -59,24 +59,9 @@ public class PaypalController {
             });
     private final OrderServiceImpl orderServiceImpl;
 
-//    @PostMapping("/bet/create/{orderId}")
-//    public ResponseEntity<Response> createBet(
-//            @RequestParam("quotationId") String quotationId,
-//            @PathVariable("orderId") String orderId,
-//            @RequestParam(name = "resultURL", required = false, defaultValue = "") String resultURL,
-//            HttpServletRequest request
-//    ) {
-//        String baseURL = String.format("%s://%s:%d", request.getScheme(), request.getServerName(), request.getServerPort());
-//        String cancelURL = baseURL + "/api/payment/cancel?orderId="+orderId;
-//        String successURL = baseURL + "/api/payment/success?orderId="+orderId;
-//
-//        urlCache.put("resultURL" + "-" + orderId, resultURL);
-//    }
-
     @PostMapping("/create/{orderId}")
     public ResponseEntity<Response> createPayment(
             @PathVariable("orderId") String orderId,
-            @RequestParam("quotationId") String quotationId,
             @RequestParam(name = "resultURL") String resultURL,
             @RequestParam(name = "method", defaultValue = "PAYPAL") PaymentMethods method,
             HttpServletRequest request
@@ -86,8 +71,8 @@ public class PaypalController {
         String successURL = baseURL + "/api/payment/success?orderId="+orderId;
         urlCache.put(String.format("resultURL-%s", orderId), resultURL);
         try {
-            Quotation quotation = quotationService.findById(quotationId);
             Order order = orderService.findOrderById(orderId);
+            Quotation quotation = order.getQuotation();
 
             Payment payment = paypalService.makePayment(
                     "USD",

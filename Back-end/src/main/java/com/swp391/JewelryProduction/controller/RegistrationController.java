@@ -11,6 +11,7 @@ import com.swp391.JewelryProduction.services.email.EmailService;
 import com.swp391.JewelryProduction.util.Response;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
@@ -72,7 +73,7 @@ public class RegistrationController {
             log.info(otp + ": " + isVerified);
             if (!isVerified)
                 throw new RuntimeException("The OTP is wrong, please try again");
-            Account registerAcc = accountService.updateAccountStatusActive(emailKey);
+            accountService.updateAccountStatusActive(emailKey);
         } catch (Exception e) {
             return Response.builder().status(HttpStatus.BAD_REQUEST).message(e.getMessage()).buildEntity();
         }
@@ -85,8 +86,6 @@ public class RegistrationController {
     @RequestMapping("/resend-otp")
     public ResponseEntity<Response> resendOTP (@RequestHeader("Key") String email) {
         String otp = authenticationService.generateOTP(email);
-
-        log.info("OTP code: " + otp);
         try {
             emailService.sendOtpTextEmail(email, otp);
         } catch (MessagingException e) { throw new RuntimeException(e); }
@@ -98,10 +97,9 @@ public class RegistrationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Response> login (@Valid @RequestBody RegistrationRequest request, BindingResult bindingResult) {
-        ResponseEntity<Response> errorMsg = getResponseError(bindingResult);
-        if (errorMsg != null) return errorMsg;
-
+    public ResponseEntity<Response> login (@Valid @RequestBody RegistrationRequest request) {
+//        ResponseEntity<Response> errorMsg = getResponseError(bindingResult);
+//        if (errorMsg != null) return errorMsg;
         String jwtToken = authenticationService.authenticate(request);
         return Response.builder()
                 .status(HttpStatus.OK)
@@ -113,7 +111,7 @@ public class RegistrationController {
     @PostMapping("/user-info")
     public ResponseEntity<Response> userInfo (
             @RequestBody UserInfo info,
-            @RequestHeader(name = "key") String email) {
+            @RequestHeader("key") String email) {
         Account acc = accountService.saveUserInfo(info, email);
 
         return Response.builder()
@@ -125,15 +123,14 @@ public class RegistrationController {
     @PostMapping("/forget-password")
     public ResponseEntity<Response> forgetPassword (
             @Pattern(regexp = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message = "Email is invalid")
-            @NotEmpty
+            @NotBlank
             @RequestHeader("key") String email
     ) {
         try {
-            accountService.findAccountByEmail(email);
-            String otp = authenticationService.generateOTP(email);
-            log.info("OTP code: " + otp);
+            Account acc = accountService.findAccountByEmail(email);
+            String otp = authenticationService.generateOTP(acc.getEmail());
 
-            emailService.sendOtpTextEmail(email, otp);
+            emailService.sendOtpTextEmail(acc.getEmail(), otp);
         } catch (MessagingException e) { throw new RuntimeException(e); }
 
         return Response.builder()

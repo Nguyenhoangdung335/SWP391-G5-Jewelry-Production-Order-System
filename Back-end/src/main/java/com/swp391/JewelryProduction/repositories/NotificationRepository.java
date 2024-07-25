@@ -33,5 +33,5 @@ public interface NotificationRepository extends JpaRepository<Notification, Inte
 
     Optional<Notification> findFirstByOrderIdAndOptionIsTrue(String orderId);
 
-    void deleteAllByReceiver (Account receiver);
+    void deleteAllByReceiverId (String receiverId);
 }

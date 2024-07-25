@@ -28,7 +28,7 @@ public class UserRepositoryImpl implements UserRepository {
         Account foundUser = null;
         UserInfo userInfo = null;
         try {
-            foundUser = accRepo.findByEmail(email).orElseThrow(() -> new NullPointerException("No account found"));
+            foundUser = accRepo.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("No account found"));
             user.setAccount(foundUser);
             userInfo = userInfoRepo.findById(foundUser.getId()).orElse(new UserInfo());
             user.setUserInfo(userInfo);

@@ -1,6 +1,6 @@
 package com.swp391.JewelryProduction.services.crawl;
 
-import com.swp391.JewelryProduction.pojos.Price.MetalPrice;
+import com.swp391.JewelryProduction.pojos.designPojos.Metal;
 import com.swp391.JewelryProduction.services.connection.ConnectionPage;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,7 +23,7 @@ import java.util.List;
 @Builder
 public class CrawlThread implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(CrawlThread.class);
-    private List<MetalPrice> metalPrices;
+    private List<Metal> metals;
     private ConnectionPage connection;
     @Builder.Default
     private boolean isVND = true;
@@ -45,14 +45,14 @@ public class CrawlThread implements Runnable {
             Elements materials = connectionPage.select("#gr24_spot_gold_widget-11 > table > tbody > tr");
 
             materials.forEach(product -> {
-                MetalPrice metalPrice = MetalPrice.builder()
+                Metal metal = Metal.builder()
                         .name("Gold")
                         .unit(product.selectFirst("th").text())
                         .price(Double.parseDouble(product.selectFirst("td").text().replace("$", "").replace(",", "")) * (isVND ? rate : 1))
                         .updatedTime(LocalDateTime.now())
                         .build();
                 synchronized (materials) {
-                    this.metalPrices.add(metalPrice);
+                    this.metals.add(metal);
                 }
             });
         } catch (IOException e) {
