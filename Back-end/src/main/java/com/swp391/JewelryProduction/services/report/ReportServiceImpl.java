@@ -23,6 +23,9 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static com.swp391.JewelryProduction.config.stateMachine.StateMachineUtil.*;
@@ -49,7 +52,7 @@ public class ReportServiceImpl implements ReportService {
 
     @Transactional
     @Override
-    public Report   createRequestReport(ReportRequest report, Order order, Product product) {
+    public Report createRequestReport(ReportRequest report, Order order, Product product) {
         Account sender = accountService.findAccountById(report.getSenderId());
         Report requestReport = Report.builder()
                         .reportingOrder(order)
@@ -63,16 +66,32 @@ public class ReportServiceImpl implements ReportService {
         order.getRelatedReports().add(requestReport);
         order.setProduct(product);
         requestReport = reportRepository.save(requestReport);
-        product.setOrder(order);
-        order = orderService.updateOrder(order);
+        product.getOrders().add(order);
 
-        StateMachine<OrderStatus, OrderEvent> stateMachine = getStateMachine(order.getId(), stateMachineService);
-        stateMachine.getExtendedState().getVariables().put(REPORT_ID, requestReport.getId());
-        stateMachine.sendEvent(
-                Mono.just(MessageBuilder
-                        .withPayload(OrderEvent.REQ_RECEIVED)
-                        .build())
-        ).subscribe();
+        if (order.isFromTemplate()) {
+            try {
+                Order oldOrder = orderService.findOrdersByProductId(product.getId()).getFirst();
+                order.setQuotation(new Quotation(oldOrder.getQuotation()));
+                order.setDesign(Design.builder()
+                        .lastUpdated(LocalDateTime.now())
+                        .designLink(oldOrder.getDesign().getDesignLink())
+                        .build());
+            } catch (NoSuchElementException ex) {
+                throw new RuntimeException("Cannot copy from old order!", ex);
+            }
+        }
+
+        order = orderService.updateOrder(order);
+//
+//        StateMachine<OrderStatus, OrderEvent> stateMachine = getStateMachine(order.getId(), stateMachineService);
+//        stateMachine.getExtendedState().getVariables().put(REPORT_ID, requestReport.getId());
+//        stateMachine.sendEvent(
+//                Mono.just(MessageBuilder
+//                        .withPayload(OrderEvent.REQ_RECEIVED)
+//                        .build())
+//        ).subscribe();
+        sendEvent(stateMachineService, order.getId(), OrderEvent.REQ_RECEIVED, Map.of(REPORT_ID, requestReport.getId()));
+
         return requestReport;
     }
 

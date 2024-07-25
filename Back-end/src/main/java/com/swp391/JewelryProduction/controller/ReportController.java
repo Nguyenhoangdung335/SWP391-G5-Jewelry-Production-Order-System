@@ -2,6 +2,7 @@ package com.swp391.JewelryProduction.controller;
 
 import com.swp391.JewelryProduction.dto.RequestDTOs.ReportRequest;
 import com.swp391.JewelryProduction.pojos.Design;
+import com.swp391.JewelryProduction.pojos.Order;
 import com.swp391.JewelryProduction.pojos.Quotation;
 import com.swp391.JewelryProduction.pojos.Report;
 import com.swp391.JewelryProduction.pojos.designPojos.Product;
@@ -35,8 +36,9 @@ public class ReportController {
     public ResponseEntity<Response> createRequest(
             @Valid @RequestBody ReportRequest request,
             @PathVariable("productSpecId") Integer specificationId,
-            @PathVariable("senderId") String senderId)
-    {
+            @PathVariable("senderId") String senderId,
+            @RequestParam(name = "template", required = false, defaultValue = "false") boolean isFromTemplate
+    ) {
         request.setReportContentID(String.valueOf(specificationId));
         request.setSenderId(senderId);
 
@@ -44,20 +46,25 @@ public class ReportController {
             throw new ObjectExistsException("Your account currently has an on-going order");
         ProductSpecification specification;
         Product product;
+        Order order = orderService.saveNewOrder(senderId, isFromTemplate);
 
         try {
             specification = productService
                     .findProductSpecificationById(
                             Integer.parseInt(request.getReportContentID())
                     );
-            product = productService.saveProduct(Product.builder()
-                    .specification(specification)
-                    .build());
+            if (!order.isFromTemplate()) {
+                product = productService.saveProduct(Product.builder()
+                        .specification(specification)
+                        .build());
+            } else {
+                product = specification.getProduct();
+            }
         } catch (NumberFormatException ex) {
             throw new RuntimeException(ex);
         }
 
-        Report report = reportService.createRequestReport(request, orderService.saveNewOrder(senderId), product);
+        Report report = reportService.createRequestReport(request, order, product);
         return Response.builder()
                 .status(HttpStatus.OK)
                 .message("Request sent successfully.")
@@ -109,7 +116,7 @@ public class ReportController {
                 .buildEntity();
     }
 
-//    @PostMapping("/{senderId}")
+//    @PostMapping("/{senderId}/request-template")
 //    public ResponseEntity<Response> requestForExistingTemplate (
 //            @Valid @RequestBody ReportRequest productReport,
 //            @PathVariable("senderId") String senderId
