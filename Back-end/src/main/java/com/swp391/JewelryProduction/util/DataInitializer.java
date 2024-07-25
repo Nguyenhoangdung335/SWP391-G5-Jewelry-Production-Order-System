@@ -7,14 +7,11 @@ import com.swp391.JewelryProduction.enums.gemstone.GemstoneColor;
 import com.swp391.JewelryProduction.enums.gemstone.GemstoneCut;
 import com.swp391.JewelryProduction.enums.gemstone.GemstoneShape;
 import com.swp391.JewelryProduction.pojos.*;
-import com.swp391.JewelryProduction.pojos.gemstone.*;
-import com.swp391.JewelryProduction.pojos.Price.MetalPrice;
+import com.swp391.JewelryProduction.pojos.designPojos.Metal;
 import com.swp391.JewelryProduction.pojos.designPojos.Product;
 import com.swp391.JewelryProduction.pojos.designPojos.ProductSpecification;
-import com.swp391.JewelryProduction.pojos.gemstone.Gemstone;
-import com.swp391.JewelryProduction.pojos.gemstone.GemstoneType;
+import com.swp391.JewelryProduction.pojos.designPojos.Gemstone;
 import com.swp391.JewelryProduction.repositories.*;
-import com.swp391.JewelryProduction.repositories.gemstoneRepositories.*;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static com.swp391.JewelryProduction.util.CustomFormatter.roundToDecimal;
@@ -49,28 +47,16 @@ public class DataInitializer implements CommandLineRunner {
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
-    private ShapeMultiplierRepository shapeMultiplierRepository;
-    @Autowired
-    private CutMultiplierRepository cutMultiplierRepository;
-    @Autowired
-    private ClarityMultiplierRepository clarityMultiplierRepository;
-    @Autowired
-    private ColorMultiplierRepository colorMultiplierRepository;
-    @Autowired
     private GemstoneRepository gemstoneRepository;
 
 
     private final Faker faker = new Faker();
     private final Random rand = new Random();
     private final HashMap<Integer, SpecificationDetail> detail = new HashMap<>();
-    private List<MetalPrice> metalPrices = new LinkedList<>();
+    private List<Metal> metals = new LinkedList<>();
     private List<Gemstone> gemstones = new LinkedList<>();
     @Autowired
-    private MetalPriceRepository metalPriceRepository;
-    @Autowired
-    private GemstonePriceRepository gemstonePriceRepository;
-    @Autowired
-    private GemstoneTypeRepository gemstoneTypeRepository;
+    private MetalRepository metalRepository;
 
 
     @Transactional
@@ -81,62 +67,74 @@ public class DataInitializer implements CommandLineRunner {
         initializeFakeStaffAccount(Role.DESIGN_STAFF);
         initializeFakeStaffAccount(Role.PRODUCTION_STAFF);
         initializeAccount();
-//        initializeFakeMetalPrice();
-        initializeShapeMultipliers();
-        initializeCutMultipliers();
-        initializeClarityMultipliers();
-        initializeColorMultipliers();
-        initializeFakeGemstone(50);
-
+        initializeFakeMetalPrice();
+        initializeFakeGemstone();
         initializeFakeProductSpecification();
         initializeFakeOrder();
     }
-    
+
     private void initializeAccount () {
         Account admin = Account.builder()
-                .email("nguyenhoangdung335@gmail.com")
-                .password(passwordEncoder.encode("#Dung111004"))
+                .email("admin@gmail.com")
+                .password(passwordEncoder.encode("@Admin1234"))
                 .dateCreated(LocalDateTime.now())
                 .role(Role.ADMIN)
                 .status(AccountStatus.ACTIVE)
                 .build();
         admin.setUserInfo(UserInfo.builder()
-                .firstName("Dung")
-                .lastName("Nguyen Hoang")
+                .firstName("Admin")
+                .lastName("SWP")
                 .gender(Gender.MALE)
-                .address("Vinhomes")
+                .address("FPT U")
                 .birthDate(LocalDate.parse("2004-10-11"))
                 .phoneNumber("0916320563")
                 .build());
         admin = accountRepository.save(admin);
 
         Account acc = Account.builder()
-                .email("dungnhse180163@fpt.edu.vn")
-                .password(passwordEncoder.encode("#Dung111004"))
+                .email("manager@gmail.com")
+                .password(passwordEncoder.encode("@Manager1234"))
                 .dateCreated(LocalDateTime.now())
                 .role(Role.MANAGER)
                 .status(AccountStatus.ACTIVE)
                 .build();
         acc.setUserInfo(UserInfo.builder()
-                .firstName("Dung")
-                .lastName("Nguyen Hoang")
+                .firstName("Manager")
+                .lastName("SWP")
                 .gender(Gender.MALE)
-                .address("Vinhomes")
+                .address("FPT U")
                 .birthDate(LocalDate.parse("2004-10-11"))
                 .phoneNumber("0916320563")
                 .build());
         accountRepository.save(acc);
 
         acc = Account.builder()
-                .email("rpgsuper123@gmail.com")
+                .email("customer@gmail.com")
+                .password(passwordEncoder.encode("@Customer1234"))
+                .dateCreated(LocalDateTime.now())
+                .role(Role.CUSTOMER)
+                .status(AccountStatus.ACTIVE)
+                .build();
+        acc.setUserInfo(UserInfo.builder()
+                .firstName("Customer")
+                .lastName("SWP")
+                .gender(Gender.MALE)
+                .address("FPT U")
+                .birthDate(LocalDate.parse("2004-10-11"))
+                .phoneNumber("0916320563")
+                .build());
+        accountRepository.save(acc);
+
+        acc = Account.builder()
+                .email("nguyenhoangdung335@gmail.com")
                 .password(passwordEncoder.encode("#Dung111004"))
                 .dateCreated(LocalDateTime.now())
                 .role(Role.CUSTOMER)
                 .status(AccountStatus.ACTIVE)
                 .build();
         acc.setUserInfo(UserInfo.builder()
-                .firstName("Dung")
-                .lastName("Nguyen Hoang")
+                .firstName("Dũng")
+                .lastName("Nguyễn Hoàng")
                 .gender(Gender.MALE)
                 .address("Vinhomes")
                 .birthDate(LocalDate.parse("2004-10-11"))
@@ -145,51 +143,51 @@ public class DataInitializer implements CommandLineRunner {
         accountRepository.save(acc);
 
         Staff staff = Staff.builder()
-                .email("nguyenhoangd335@gmail.com")
-                .password(passwordEncoder.encode("#Dung111004"))
+                .email("salestaff@gmail.com")
+                .password(passwordEncoder.encode("@SaleStaff1234"))
                 .dateCreated(LocalDateTime.now())
                 .role(Role.SALE_STAFF)
                 .status(AccountStatus.ACTIVE)
                 .build();
         staff.setUserInfo(UserInfo.builder()
-                .firstName("Dung")
-                .lastName("Nguyen Hoang")
+                .firstName("Sale Staff")
+                .lastName("SWP")
                 .gender(Gender.MALE)
-                .address("Vinhomes")
+                .address("FPT U")
                 .birthDate(LocalDate.parse("2004-10-11"))
                 .phoneNumber("0916320563")
                 .build());
         staffRepository.save(staff);
 
         staff = Staff.builder()
-                .email("dungnh335@gmail.com")
-                .password(passwordEncoder.encode("#Dung111004"))
+                .email("designstaff@gmail.com")
+                .password(passwordEncoder.encode("@DesignStaff1234"))
                 .dateCreated(LocalDateTime.now())
                 .role(Role.DESIGN_STAFF)
                 .status(AccountStatus.ACTIVE)
                 .build();
         staff.setUserInfo(UserInfo.builder()
-                .firstName("Dung")
-                .lastName("Nguyen Hoang")
+                .firstName("Design Staff")
+                .lastName("SWP")
                 .gender(Gender.MALE)
-                .address("Vinhomes")
+                .address("FPT U")
                 .birthDate(LocalDate.parse("2004-10-11"))
                 .phoneNumber("0916320563")
                 .build());
         staffRepository.save(staff);
 
         staff = Staff.builder()
-                .email("dung1234@gmail.com")
-                .password(passwordEncoder.encode("#Dung111004"))
+                .email("productionstaff@gmail.com")
+                .password(passwordEncoder.encode("@ProductionStaff1234"))
                 .dateCreated(LocalDateTime.now())
                 .role(Role.PRODUCTION_STAFF)
                 .status(AccountStatus.ACTIVE)
                 .build();
         staff.setUserInfo(UserInfo.builder()
-                .firstName("Dung")
-                .lastName("Nguyen Hoang")
+                .firstName("Production Staff")
+                .lastName("SWP")
                 .gender(Gender.MALE)
-                .address("Vinhomes")
+                .address("FPT U")
                 .birthDate(LocalDate.parse("2004-10-11"))
                 .phoneNumber("0916320563")
                 .build());
@@ -201,7 +199,7 @@ public class DataInitializer implements CommandLineRunner {
         for (int i = 0; i < 10; i++) {
             acc = Account.builder()
                     .email(faker.internet().safeEmailAddress())
-                    .password(passwordEncoder.encode("#Customer1234"))
+                    .password(passwordEncoder.encode("@Customer1234"))
                     .dateCreated(LocalDateTime.now().minusMonths(rand.nextLong(10)).plusDays(rand.nextLong(31)))
                     .role(Role.CUSTOMER)
                     .status(AccountStatus.ACTIVE)
@@ -225,7 +223,7 @@ public class DataInitializer implements CommandLineRunner {
         for (int i = 0; i < 5; i++) {
             staff = Staff.builder()
                     .email(faker.internet().safeEmailAddress())
-                    .password(passwordEncoder.encode("#Staff1234"))
+                    .password(passwordEncoder.encode("@Staff1234"))
                     .dateCreated(LocalDateTime.now().minusMonths(rand.nextLong(10)).plusDays(rand.nextLong(31)))
                     .role(role)
                     .status(AccountStatus.ACTIVE)
@@ -245,246 +243,1030 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void initializeFakeMetalPrice () {
-        MetalPrice metal1 = MetalPrice.builder()
-                .name("Gold")
-                .unit("Ounce")
-                .price(61452.847799999996)
-                .updatedTime(LocalDateTime.now())
-                .build();
+//        Metal metal1 = Metal.builder()
+//                .name("Gold")
+//                .unit("Ounce")
+//                .price(61452.847799999996)
+//                .updatedTime(LocalDateTime.now())
+//                .build();
+//
+//        Metal metal2 = Metal.builder()
+//                .name("Gold")
+//                .unit("Tola")
+//                .price(23044.7862)
+//                .updatedTime(LocalDateTime.now())
+//                .build();
+//        Metal metal3 = Metal.builder()
+//                .name("Gold")
+//                .unit("Kilogram")
+//                .price(1975973.859)
+//                .updatedTime(LocalDateTime.now())
+//                .build();
+//        Metal metal4 = Metal.builder()
+//                .name("Gold")
+//                .unit("Gram 24K")
+//                .price(1976.0867999999998)
+//                .updatedTime(LocalDateTime.now())
+//                .build();
+//        Metal metal5 = Metal.builder()
+//                .name("Gold")
+//                .unit("Gram 22K")
+//                .price(1811.1168)
+//                .updatedTime(LocalDateTime.now())
+//                .build();
+//        Metal metal6 = Metal.builder()
+//                .name("Gold")
+//                .unit("Gram 21K")
+//                .price(1728.6317999999999)
+//                .updatedTime(LocalDateTime.now())
+//                .build();
+//        Metal metal7 = Metal.builder()
+//                .name("Gold")
+//                .unit("Gram 18K")
+//                .price(1481.4306)
+//                .updatedTime(LocalDateTime.now())
+//                .build();
+//        Metal metal8 = Metal.builder()
+//                .name("Gold")
+//                .unit("Gram 14K")
+//                .price(1153.0134)
+//                .updatedTime(LocalDateTime.now())
+//                .build();
+//
+//        Metal metal9 = Metal.builder()
+//                .name("Gold")
+//                .unit("Gram 12K")
+//                .price(988.0433999999999)
+//                .updatedTime(LocalDateTime.now())
+//                .build();
+//
+//        Metal metal10 = Metal.builder()
+//                .name("Gold")
+//                .unit("Gram 10K")
+//                .price(823.3272)
+//                .updatedTime(LocalDateTime.now())
+//                .build();
 
-        MetalPrice metal2 = MetalPrice.builder()
-                .name("Gold")
-                .unit("Tola")
-                .price(23044.7862)
-                .updatedTime(LocalDateTime.now())
-                .build();
-        MetalPrice metal3 = MetalPrice.builder()
-                .name("Gold")
-                .unit("Kilogram")
-                .price(1975973.859)
-                .updatedTime(LocalDateTime.now())
-                .build();
-        MetalPrice metal4 = MetalPrice.builder()
-                .name("Gold")
-                .unit("Gram 24K")
-                .price(1976.0867999999998)
-                .updatedTime(LocalDateTime.now())
-                .build();
-        MetalPrice metal5 = MetalPrice.builder()
-                .name("Gold")
-                .unit("Gram 22K")
-                .price(1811.1168)
-                .updatedTime(LocalDateTime.now())
-                .build();
-        MetalPrice metal6 = MetalPrice.builder()
-                .name("Gold")
-                .unit("Gram 21K")
-                .price(1728.6317999999999)
-                .updatedTime(LocalDateTime.now())
-                .build();
-        MetalPrice metal7 = MetalPrice.builder()
-                .name("Gold")
-                .unit("Gram 18K")
-                .price(1481.4306)
-                .updatedTime(LocalDateTime.now())
-                .build();
-        MetalPrice metal8 = MetalPrice.builder()
-                .name("Gold")
-                .unit("Gram 14K")
-                .price(1153.0134)
-                .updatedTime(LocalDateTime.now())
-                .build();
-
-        MetalPrice metal9 = MetalPrice.builder()
-                .name("Gold")
-                .unit("Gram 12K")
-                .price(988.0433999999999)
-                .updatedTime(LocalDateTime.now())
-                .build();
-
-        MetalPrice metal10 = MetalPrice.builder()
-                .name("Gold")
-                .unit("Gram 10K")
-                .price(823.3272)
-                .updatedTime(LocalDateTime.now())
-                .build();
-        metalPrices = metalPriceRepository.saveAll(List.of(metal1,metal2,metal3,metal4,metal5,metal6,metal7,metal8,metal9,metal10));
+//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm dd-MM-yyyy");
+//        List<Metal> metalsList = Arrays.asList(
+//                Metal.builder()
+//                        .name("Aluminum")
+//                        .unit("kg")
+//                        .price(2000.0)
+//                        .updatedTime(LocalDateTime.parse("10:30 15-07-2024", formatter))
+//                        .build(),
+//
+//                Metal.builder()
+//                        .name("Copper")
+//                        .unit("kg")
+//                        .price(7500.0)
+//                        .updatedTime(LocalDateTime.parse("14:15 16-07-2024", formatter))
+//                        .build(),
+//
+//                Metal.builder()
+//                        .name("Steel")
+//                        .unit("ton")
+//                        .price(50000.0)
+//                        .updatedTime(LocalDateTime.parse("09:00 17-07-2024", formatter))
+//                        .build(),
+//
+//                Metal.builder()
+//                        .name("Iron")
+//                        .unit("ton")
+//                        .price(30000.0)
+//                        .updatedTime(LocalDateTime.parse("13:45 18-07-2024", formatter))
+//                        .build(),
+//
+//                Metal.builder()
+//                        .name("Nickel")
+//                        .unit("kg")
+//                        .price(15000.0)
+//                        .updatedTime(LocalDateTime.parse("11:20 19-07-2024", formatter))
+//                        .build(),
+//
+//                Metal.builder()
+//                        .name("Lead")
+//                        .unit("kg")
+//                        .price(2500.0)
+//                        .updatedTime(LocalDateTime.parse("16:10 20-07-2024", formatter))
+//                        .build(),
+//
+//                Metal.builder()
+//                        .name("Tin")
+//                        .unit("kg")
+//                        .price(18000.0)
+//                        .updatedTime(LocalDateTime.parse("08:40 21-07-2024", formatter))
+//                        .build(),
+//
+//                Metal.builder()
+//                        .name("Zinc")
+//                        .unit("kg")
+//                        .price(1200.0)
+//                        .updatedTime(LocalDateTime.parse("17:30 22-07-2024", formatter))
+//                        .build(),
+//
+//                Metal.builder()
+//                        .name("Silver")
+//                        .unit("kg")
+//                        .price(90000.0)
+//                        .updatedTime(LocalDateTime.parse("15:00 23-07-2024", formatter))
+//                        .build(),
+//
+//                Metal.builder()
+//                        .name("Gold")
+//                        .unit("g")
+//                        .price(98000.0)
+//                        .updatedTime(LocalDateTime.parse("12:50 24-07-2024", formatter))
+//                        .build()
+//        );
+//        metals = metalRepository.saveAll(metalsList);
     }
 
-    private void initializeShapeMultipliers() {
-        shapeMultiplierRepository.save(ShapeMultiplier.builder().shape(GemstoneShape.ASSCHER).multiplier(1.1).build());
-        shapeMultiplierRepository.save(ShapeMultiplier.builder().shape(GemstoneShape.BAGUETTE).multiplier(0.9).build());
-        shapeMultiplierRepository.save(ShapeMultiplier.builder().shape(GemstoneShape.BRIOLETTE).multiplier(1.2).build());
-        shapeMultiplierRepository.save(ShapeMultiplier.builder().shape(GemstoneShape.CALF).multiplier(1.0).build());
-        shapeMultiplierRepository.save(ShapeMultiplier.builder().shape(GemstoneShape.CUSHION).multiplier(1.05).build());
-        shapeMultiplierRepository.save(ShapeMultiplier.builder().shape(GemstoneShape.EMERALD).multiplier(1.15).build());
-        shapeMultiplierRepository.save(ShapeMultiplier.builder().shape(GemstoneShape.HALF_MOON).multiplier(1.1).build());
-        shapeMultiplierRepository.save(ShapeMultiplier.builder().shape(GemstoneShape.HEART).multiplier(1.2).build());
-        shapeMultiplierRepository.save(ShapeMultiplier.builder().shape(GemstoneShape.MARQUISE).multiplier(1.1).build());
-        shapeMultiplierRepository.save(ShapeMultiplier.builder().shape(GemstoneShape.OCTAGONAL).multiplier(1.0).build());
-        shapeMultiplierRepository.save(ShapeMultiplier.builder().shape(GemstoneShape.OVAL).multiplier(1.05).build());
-        shapeMultiplierRepository.save(ShapeMultiplier.builder().shape(GemstoneShape.PEAR).multiplier(1.1).build());
-        shapeMultiplierRepository.save(ShapeMultiplier.builder().shape(GemstoneShape.PRINCESS).multiplier(1.1).build());
-        shapeMultiplierRepository.save(ShapeMultiplier.builder().shape(GemstoneShape.RADIANT).multiplier(1.2).build());
-        shapeMultiplierRepository.save(ShapeMultiplier.builder().shape(GemstoneShape.ROUND).multiplier(1.3).build());
-        shapeMultiplierRepository.save(ShapeMultiplier.builder().shape(GemstoneShape.SQUARE_CUSHION).multiplier(1.05).build());
-        shapeMultiplierRepository.save(ShapeMultiplier.builder().shape(GemstoneShape.SQUARE_RADIANT).multiplier(1.1).build());
-        shapeMultiplierRepository.save(ShapeMultiplier.builder().shape(GemstoneShape.TRILLION).multiplier(1.0).build());
+    private void initializeFakeGemstone () {
+        Gemstone gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.IF_VVS).color(GemstoneColor.D).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(8.3)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.VS1).color(GemstoneColor.D).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(7.3)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.VS2).color(GemstoneColor.D).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(5.4)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.SI1).color(GemstoneColor.D).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(4.8)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.SI2).color(GemstoneColor.D).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(4.3)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.S3).color(GemstoneColor.D).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(2.6)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I1).color(GemstoneColor.D).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(2.3)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I2).color(GemstoneColor.D).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(2.0)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I3).color(GemstoneColor.D).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(1.8)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.IF_VVS).color(GemstoneColor.G).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(6.4)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.VS1).color(GemstoneColor.G).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(5.8)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.VS2).color(GemstoneColor.G).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(5.4)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.SI1).color(GemstoneColor.G).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(4.0)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.SI2).color(GemstoneColor.G).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(3.5)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.S3).color(GemstoneColor.G).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(2.5)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I1).color(GemstoneColor.G).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(2.2)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I2).color(GemstoneColor.G).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(1.9)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I3).color(GemstoneColor.G).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(1.7)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.IF_VVS).color(GemstoneColor.I).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(4.7)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.VS1).color(GemstoneColor.I).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(4.5)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.VS2).color(GemstoneColor.I).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(4.0)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.SI1).color(GemstoneColor.I).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(3.4)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.SI2).color(GemstoneColor.I).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(3.0)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.S3).color(GemstoneColor.I).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(2.3)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I1).color(GemstoneColor.I).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(2.1)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I2).color(GemstoneColor.I).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(1.8)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I3).color(GemstoneColor.I).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(1.5)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.IF_VVS).color(GemstoneColor.K).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(3.9)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.VS1).color(GemstoneColor.K).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(3.4)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.VS2).color(GemstoneColor.K).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(3.1)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.SI1).color(GemstoneColor.K).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(2.7)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.SI2).color(GemstoneColor.K).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(2.4)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.S3).color(GemstoneColor.K).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(2.1)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I1).color(GemstoneColor.K).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(1.7)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I2).color(GemstoneColor.K).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(1.5)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I3).color(GemstoneColor.K).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(1.3)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.IF_VVS).color(GemstoneColor.M).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(2.9)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.VS1).color(GemstoneColor.M).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(2.6)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.VS2).color(GemstoneColor.M).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(2.3)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.SI1).color(GemstoneColor.M).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(2.0)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.SI2).color(GemstoneColor.M).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(1.8)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.S3).color(GemstoneColor.M).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(1.7)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I1).color(GemstoneColor.M).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(1.5)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I2).color(GemstoneColor.M).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(1.3)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I3).color(GemstoneColor.M).caratWeightFrom(0.01).caratWeightTo(0.03).pricePerCaratInHundred(1.1)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.IF_VVS).color(GemstoneColor.D).caratWeightFrom(0.04).caratWeightTo(0.07).pricePerCaratInHundred(8.5)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.VS1).color(GemstoneColor.D).caratWeightFrom(0.04).caratWeightTo(0.07).pricePerCaratInHundred(7.7)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.VS2).color(GemstoneColor.D).caratWeightFrom(0.04).caratWeightTo(0.07).pricePerCaratInHundred(6.2)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.SI1).color(GemstoneColor.D).caratWeightFrom(0.04).caratWeightTo(0.07).pricePerCaratInHundred(5.4)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.SI2).color(GemstoneColor.D).caratWeightFrom(0.04).caratWeightTo(0.07).pricePerCaratInHundred(4.6)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.S3).color(GemstoneColor.D).caratWeightFrom(0.04).caratWeightTo(0.07).pricePerCaratInHundred(3.1)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I1).color(GemstoneColor.D).caratWeightFrom(0.04).caratWeightTo(0.07).pricePerCaratInHundred(2.8)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I2).color(GemstoneColor.D).caratWeightFrom(0.04).caratWeightTo(0.07).pricePerCaratInHundred(2.4)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I3).color(GemstoneColor.D).caratWeightFrom(0.04).caratWeightTo(0.07).pricePerCaratInHundred(2.1)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.IF_VVS).color(GemstoneColor.G).caratWeightFrom(0.04).caratWeightTo(0.07).pricePerCaratInHundred(6.7)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.VS1).color(GemstoneColor.G).caratWeightFrom(0.04).caratWeightTo(0.07).pricePerCaratInHundred(6.2)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.VS2).color(GemstoneColor.G).caratWeightFrom(0.04).caratWeightTo(0.07).pricePerCaratInHundred(5.5)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.SI1).color(GemstoneColor.G).caratWeightFrom(0.04).caratWeightTo(0.07).pricePerCaratInHundred(4.9)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.SI2).color(GemstoneColor.G).caratWeightFrom(0.04).caratWeightTo(0.07).pricePerCaratInHundred(4.0)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.S3).color(GemstoneColor.G).caratWeightFrom(0.04).caratWeightTo(0.07).pricePerCaratInHundred(3.0)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I1).color(GemstoneColor.G).caratWeightFrom(0.04).caratWeightTo(0.07).pricePerCaratInHundred(2.5)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I2).color(GemstoneColor.G).caratWeightFrom(0.04).caratWeightTo(0.07).pricePerCaratInHundred(2.2)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I3).color(GemstoneColor.G).caratWeightFrom(0.04).caratWeightTo(0.07).pricePerCaratInHundred(1.9)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.IF_VVS).color(GemstoneColor.I).caratWeightFrom(0.04).caratWeightTo(0.07).pricePerCaratInHundred(5.0)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.VS1).color(GemstoneColor.I).caratWeightFrom(0.04).caratWeightTo(0.07).pricePerCaratInHundred(4.8)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.VS2).color(GemstoneColor.I).caratWeightFrom(0.04).caratWeightTo(0.07).pricePerCaratInHundred(4.4)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.SI1).color(GemstoneColor.I).caratWeightFrom(0.04).caratWeightTo(0.07).pricePerCaratInHundred(3.8)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.SI2).color(GemstoneColor.I).caratWeightFrom(0.04).caratWeightTo(0.07).pricePerCaratInHundred(3.3)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.S3).color(GemstoneColor.I).caratWeightFrom(0.04).caratWeightTo(0.07).pricePerCaratInHundred(2.8)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I1).color(GemstoneColor.I).caratWeightFrom(0.04).caratWeightTo(0.07).pricePerCaratInHundred(2.5)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I2).color(GemstoneColor.I).caratWeightFrom(0.04).caratWeightTo(0.07).pricePerCaratInHundred(2.2)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I3).color(GemstoneColor.I).caratWeightFrom(0.04).caratWeightTo(0.07).pricePerCaratInHundred(1.9)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.IF_VVS).color(GemstoneColor.K).caratWeightFrom(0.04).caratWeightTo(0.07).pricePerCaratInHundred(4.1)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.VS1).color(GemstoneColor.K).caratWeightFrom(0.04).caratWeightTo(0.07).pricePerCaratInHundred(3.6)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.VS2).color(GemstoneColor.K).caratWeightFrom(0.04).caratWeightTo(0.07).pricePerCaratInHundred(3.4)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.SI1).color(GemstoneColor.K).caratWeightFrom(0.04).caratWeightTo(0.07).pricePerCaratInHundred(2.9)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.SI2).color(GemstoneColor.K).caratWeightFrom(0.04).caratWeightTo(0.07).pricePerCaratInHundred(2.6)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.S3).color(GemstoneColor.K).caratWeightFrom(0.04).caratWeightTo(0.07).pricePerCaratInHundred(2.3)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I1).color(GemstoneColor.K).caratWeightFrom(0.04).caratWeightTo(0.07).pricePerCaratInHundred(1.9)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I2).color(GemstoneColor.K).caratWeightFrom(0.04).caratWeightTo(0.07).pricePerCaratInHundred(1.7)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I3).color(GemstoneColor.K).caratWeightFrom(0.04).caratWeightTo(0.07).pricePerCaratInHundred(1.5)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.IF_VVS).color(GemstoneColor.M).caratWeightFrom(0.04).caratWeightTo(0.07).pricePerCaratInHundred(3.1)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.VS1).color(GemstoneColor.M).caratWeightFrom(0.04).caratWeightTo(0.07).pricePerCaratInHundred(2.8)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.VS2).color(GemstoneColor.M).caratWeightFrom(0.04).caratWeightTo(0.07).pricePerCaratInHundred(2.4)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.IF_VVS).color(GemstoneColor.D).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(20.1)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.VS1).color(GemstoneColor.D).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(17.9)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.VS2).color(GemstoneColor.D).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(15.3)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.SI1).color(GemstoneColor.D).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(12.5)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.SI2).color(GemstoneColor.D).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(11.0)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.S3).color(GemstoneColor.D).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(9.8)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I1).color(GemstoneColor.D).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(8.7)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I2).color(GemstoneColor.D).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(7.8)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I3).color(GemstoneColor.D).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(7.0)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.IF_VVS).color(GemstoneColor.G).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(18.4)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.VS1).color(GemstoneColor.G).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(16.2)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.VS2).color(GemstoneColor.G).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(14.1)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.SI1).color(GemstoneColor.G).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(12.0)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.SI2).color(GemstoneColor.G).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(10.5)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.S3).color(GemstoneColor.G).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(9.3)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I1).color(GemstoneColor.G).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(8.2)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I2).color(GemstoneColor.G).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(7.4)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I3).color(GemstoneColor.G).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(6.6)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.IF_VVS).color(GemstoneColor.I).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(15.7)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.VS1).color(GemstoneColor.I).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(14.0)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.VS2).color(GemstoneColor.I).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(12.5)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.SI1).color(GemstoneColor.I).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(10.8)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.SI2).color(GemstoneColor.I).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(9.4)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.S3).color(GemstoneColor.I).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(8.5)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I1).color(GemstoneColor.I).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(7.6)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I2).color(GemstoneColor.I).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(6.8)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I3).color(GemstoneColor.I).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(6.1)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.IF_VVS).color(GemstoneColor.K).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(13.6)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.VS1).color(GemstoneColor.K).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(12.0)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.VS2).color(GemstoneColor.K).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(10.8)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.SI1).color(GemstoneColor.K).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(9.2)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.SI2).color(GemstoneColor.K).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(8.1)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.S3).color(GemstoneColor.K).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(7.3)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I1).color(GemstoneColor.K).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(6.6)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I2).color(GemstoneColor.K).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(5.9)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I3).color(GemstoneColor.K).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(5.2)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.IF_VVS).color(GemstoneColor.M).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(10.5)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.VS1).color(GemstoneColor.M).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(9.5)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.VS2).color(GemstoneColor.M).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(8.6)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.SI1).color(GemstoneColor.M).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(7.5)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.SI2).color(GemstoneColor.M).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(6.8)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.S3).color(GemstoneColor.M).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(6.0)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I1).color(GemstoneColor.M).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(5.4)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I2).color(GemstoneColor.M).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(4.8)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I3).color(GemstoneColor.M).caratWeightFrom(0.3).caratWeightTo(0.39).pricePerCaratInHundred(4.3)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.IF_VVS).color(GemstoneColor.D).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(32.5)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.VS1).color(GemstoneColor.D).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(29.0)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.VS2).color(GemstoneColor.D).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(26.3)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.SI1).color(GemstoneColor.D).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(21.5)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.SI2).color(GemstoneColor.D).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(18.5)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.S3).color(GemstoneColor.D).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(16.2)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I1).color(GemstoneColor.D).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(14.6)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I2).color(GemstoneColor.D).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(13.1)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I3).color(GemstoneColor.D).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(11.8)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.IF_VVS).color(GemstoneColor.G).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(29.8)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.VS1).color(GemstoneColor.G).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(26.7)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.VS2).color(GemstoneColor.G).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(24.3)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.SI1).color(GemstoneColor.G).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(21.0)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.SI2).color(GemstoneColor.G).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(18.0)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.S3).color(GemstoneColor.G).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(15.7)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I1).color(GemstoneColor.G).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(14.1)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I2).color(GemstoneColor.G).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(12.8)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I3).color(GemstoneColor.G).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(11.5)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.IF_VVS).color(GemstoneColor.I).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(25.7)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.VS1).color(GemstoneColor.I).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(23.1)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.VS2).color(GemstoneColor.I).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(21.0)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.SI1).color(GemstoneColor.I).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(18.2)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.SI2).color(GemstoneColor.I).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(16.0)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.S3).color(GemstoneColor.I).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(14.1)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I1).color(GemstoneColor.I).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(12.8)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I2).color(GemstoneColor.I).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(11.5)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I3).color(GemstoneColor.I).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(10.3)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.IF_VVS).color(GemstoneColor.K).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(21.8)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.VS1).color(GemstoneColor.K).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(19.5)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.VS2).color(GemstoneColor.K).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(17.5)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.SI1).color(GemstoneColor.K).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(15.2)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.SI2).color(GemstoneColor.K).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(13.5)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.S3).color(GemstoneColor.K).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(12.1)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I1).color(GemstoneColor.K).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(10.8)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I2).color(GemstoneColor.K).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(9.8)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I3).color(GemstoneColor.K).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(8.7)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.IF_VVS).color(GemstoneColor.M).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(18.0)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.VS1).color(GemstoneColor.M).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(16.5)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.VS2).color(GemstoneColor.M).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(14.8)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.SI1).color(GemstoneColor.M).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(13.2)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.SI2).color(GemstoneColor.M).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(11.5)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.S3).color(GemstoneColor.M).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(10.0)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I1).color(GemstoneColor.M).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(9.0)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I2).color(GemstoneColor.M).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(8.0)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+
+        gemstone = Gemstone.builder().name("Diamond").shape(GemstoneShape.ROUND).cut(GemstoneCut.EXCELLENT).clarity(GemstoneClarity.I3).color(GemstoneColor.M).caratWeightFrom(0.5).caratWeightTo(0.69).pricePerCaratInHundred(7.0)
+                .build();
+        gemstoneRepository.save(gemstone);
+
+        gemstones = gemstoneRepository.findAll();
     }
 
-    private void initializeCutMultipliers() {
-        cutMultiplierRepository.save(CutMultiplier.builder().cutQuality(GemstoneCut.FAIR).multiplier(0.8).build());
-        cutMultiplierRepository.save(CutMultiplier.builder().cutQuality(GemstoneCut.GOOD).multiplier(1.0).build());
-        cutMultiplierRepository.save(CutMultiplier.builder().cutQuality(GemstoneCut.VERY_GOOD).multiplier(1.2).build());
-        cutMultiplierRepository.save(CutMultiplier.builder().cutQuality(GemstoneCut.EXCEPTIONAL).multiplier(1.5).build());
+    private double generateRandomGemstoneWeight () {
+        return roundToDecimal(rand.nextDouble(0.01, 10.99), 2);
     }
 
-    private void initializeClarityMultipliers() {
-        clarityMultiplierRepository.save(ClarityMultiplier.builder().clarity(GemstoneClarity.SI2).multiplier(0.8).build());
-        clarityMultiplierRepository.save(ClarityMultiplier.builder().clarity(GemstoneClarity.SI1).multiplier(0.9).build());
-        clarityMultiplierRepository.save(ClarityMultiplier.builder().clarity(GemstoneClarity.VS2).multiplier(1.0).build());
-        clarityMultiplierRepository.save(ClarityMultiplier.builder().clarity(GemstoneClarity.VS1).multiplier(1.1).build());
-        clarityMultiplierRepository.save(ClarityMultiplier.builder().clarity(GemstoneClarity.VVS2).multiplier(1.2).build());
-        clarityMultiplierRepository.save(ClarityMultiplier.builder().clarity(GemstoneClarity.VVS1).multiplier(1.3).build());
-        clarityMultiplierRepository.save(ClarityMultiplier.builder().clarity(GemstoneClarity.IF).multiplier(1.4).build());
-        clarityMultiplierRepository.save(ClarityMultiplier.builder().clarity(GemstoneClarity.FL).multiplier(1.5).build());
-    }
-
-    private void initializeColorMultipliers() {
-        colorMultiplierRepository.save(ColorMultiplier.builder().color(GemstoneColor.K).multiplier(0.8).build());
-        colorMultiplierRepository.save(ColorMultiplier.builder().color(GemstoneColor.J).multiplier(0.85).build());
-        colorMultiplierRepository.save(ColorMultiplier.builder().color(GemstoneColor.I).multiplier(0.9).build());
-        colorMultiplierRepository.save(ColorMultiplier.builder().color(GemstoneColor.H).multiplier(0.95).build());
-        colorMultiplierRepository.save(ColorMultiplier.builder().color(GemstoneColor.G).multiplier(1.0).build());
-        colorMultiplierRepository.save(ColorMultiplier.builder().color(GemstoneColor.F).multiplier(1.05).build());
-        colorMultiplierRepository.save(ColorMultiplier.builder().color(GemstoneColor.E).multiplier(1.1).build());
-        colorMultiplierRepository.save(ColorMultiplier.builder().color(GemstoneColor.D).multiplier(1.2).build());
-    }
-
-    private void initializeFakeGemstone (int limit) {
-        String[] GEMSTONE_NAMES = {
-                "Diamond", "Ruby", "Emerald", "Sapphire", "Amethyst",
-                "Topaz", "Opal", "Aquamarine", "Garnet", "Peridot"
-        };
-        GemstoneType[] gemstoneTypes = new GemstoneType[10];
-        for(int i = 0; i < GEMSTONE_NAMES.length; i++) {
-            gemstoneTypes[i] = GemstoneType.builder()
-                    .name(GEMSTONE_NAMES[i])
-                    .basePricePerCarat(roundToDecimal(rand.nextDouble(500.0, 5000.0), 2))
-                    .status(true)
-                    .build();
-        }
-        gemstoneTypeRepository.saveAll(List.of(gemstoneTypes));
-
-        GemstoneShape[] shapes = GemstoneShape.values();
-        GemstoneCut[] cuts = GemstoneCut.values();
-        GemstoneClarity[] clarities = GemstoneClarity.values();
-        GemstoneColor[] colors = GemstoneColor.values();
-
-        for (int i = 0; i < limit; i++) {
-            Gemstone stone = Gemstone.builder()
-                    .type(gemstoneTypes[rand.nextInt(gemstoneTypes.length)])
-                    .shape(shapes[rand.nextInt(shapes.length)])
-                    .cut(cuts[rand.nextInt(cuts.length)])
-                    .clarity(clarities[rand.nextInt(clarities.length)])
-                    .color(colors[rand.nextInt(colors.length)])
-                    .caratWeight(generateRandomWeight())
-                    .build();
-            gemstones.add(stone);
-        }
-        gemstones = gemstoneRepository.saveAll(gemstones);
-    }
-
-    private double generateRandomWeight () {
-        int randomInt = rand.nextInt(100) + 1;
-        return (double)randomInt / 20.0;
+    private double generateRandomMetalWeight () {
+        return roundToDecimal(rand.nextDouble(0.001, 200), 2);
     }
 
     private void initializeFakeProductSpecification () {
-//        GemstonePrice gemstone1 = GemstonePrice.builder()
-//                .gemstone(GEMSTONE_NAMES[rand.nextInt(GEMSTONE_NAMES.length)])
-//                .caratWeight(Math.round(rand.nextDouble() * 10.0) / 10.0)
-//                .shape(shapes[rand.nextInt(shapes.length)])
-//                .price(Double.parseDouble(faker.commerce().price(100.0, 1000.0)))
-//                .updatedTime(LocalDateTime.now())
-//                .build();
-//
-//        GemstonePrice gemstone2 = GemstonePrice.builder()
-//                .gemstone(GEMSTONE_NAMES[rand.nextInt(GEMSTONE_NAMES.length)])
-//                .caratWeight(Math.round(rand.nextDouble() * 10.0) / 10.0)
-//                .shape(shapes[rand.nextInt(shapes.length)])
-//                .price(Double.parseDouble(faker.commerce().price(100.0, 1000.0)))
-//                .updatedTime(LocalDateTime.now())
-//                .build();
-//
-//        GemstonePrice gemstone3 = GemstonePrice.builder()
-//                .gemstone(GEMSTONE_NAMES[rand.nextInt(GEMSTONE_NAMES.length)])
-//                .caratWeight(Math.round(rand.nextDouble() * 10.0) / 10.0)
-//                .shape(shapes[rand.nextInt(shapes.length)])
-//                .price(Double.parseDouble(faker.commerce().price(100.0, 1000.0)))
-//                .updatedTime(LocalDateTime.now())
-//                .build();
-//
-//        GemstonePrice gemstone4 = GemstonePrice.builder()
-//                .gemstone(GEMSTONE_NAMES[rand.nextInt(GEMSTONE_NAMES.length)])
-//                .caratWeight(Math.round(rand.nextDouble() * 10.0) / 10.0)
-//                .shape(shapes[rand.nextInt(shapes.length)])
-//                .price(Double.parseDouble(faker.commerce().price(100.0, 1000.0)))
-//                .updatedTime(LocalDateTime.now())
-//                .build();
-//
-//        GemstonePrice gemstone5 = GemstonePrice.builder()
-//                .gemstone(GEMSTONE_NAMES[rand.nextInt(GEMSTONE_NAMES.length)])
-//                .caratWeight(Math.round(rand.nextDouble() * 10.0) / 10.0)
-//                .shape(shapes[rand.nextInt(shapes.length)])
-//                .price(Double.parseDouble(faker.commerce().price(100.0, 1000.0)))
-//                .updatedTime(LocalDateTime.now())
-//                .build();
-//
-//        GemstonePrice gemstone6 = GemstonePrice.builder()
-//                .gemstone(GEMSTONE_NAMES[rand.nextInt(GEMSTONE_NAMES.length)])
-//                .caratWeight(Math.round(rand.nextDouble() * 10.0) / 10.0)
-//                .shape(shapes[rand.nextInt(shapes.length)])
-//                .price(Double.parseDouble(faker.commerce().price(100.0, 1000.0)))
-//                .updatedTime(LocalDateTime.now())
-//                .build();
-//
-//        GemstonePrice gemstone7 = GemstonePrice.builder()
-//                .gemstone(GEMSTONE_NAMES[rand.nextInt(GEMSTONE_NAMES.length)])
-//                .caratWeight(Math.round(rand.nextDouble() * 10.0) / 10.0)
-//                .shape(shapes[rand.nextInt(shapes.length)])
-//                .price(Double.parseDouble(faker.commerce().price(100.0, 1000.0)))
-//                .updatedTime(LocalDateTime.now())
-//                .build();
-//
-//        GemstonePrice gemstone8 = GemstonePrice.builder()
-//                .gemstone(GEMSTONE_NAMES[rand.nextInt(GEMSTONE_NAMES.length)])
-//                .caratWeight(Math.round(rand.nextDouble() * 10.0) / 10.0)
-//                .shape(shapes[rand.nextInt(shapes.length)])
-//                .price(Double.parseDouble(faker.commerce().price(100.0, 1000.0)))
-//                .updatedTime(LocalDateTime.now())
-//                .build();
-//
-//        GemstonePrice gemstone9 = GemstonePrice.builder()
-//                .gemstone(GEMSTONE_NAMES[rand.nextInt(GEMSTONE_NAMES.length)])
-//                .caratWeight(Math.round(rand.nextDouble() * 10.0) / 10.0)
-//                .shape(shapes[rand.nextInt(shapes.length)])
-//                .price(Double.parseDouble(faker.commerce().price(100.0, 1000.0)))
-//                .updatedTime(LocalDateTime.now())
-//                .build();
-//
-//        GemstonePrice gemstone10 = GemstonePrice.builder()
-//                .gemstone(GEMSTONE_NAMES[rand.nextInt(GEMSTONE_NAMES.length)])
-//                .caratWeight(Math.round(rand.nextDouble() * 10.0) / 10.0)
-//                .shape(shapes[rand.nextInt(shapes.length)])
-//                .price(Double.parseDouble(faker.commerce().price(100.0, 1000.0)))
-//                .updatedTime(LocalDateTime.now())
-//                .build();
-//
-//        gemstonePriceRepository.saveAll(List.of(gemstone1,gemstone2,gemstone3,gemstone4,gemstone5,gemstone6,gemstone7,gemstone8,gemstone9,gemstone10));
         int index = 0;
-        if (metalPrices.isEmpty()) {
-            metalPrices = metalPriceRepository.findAll();
+        if (metals.isEmpty()) {
+            metals = metalRepository.findAll();
         }
 
         ProductSpecification spec1 = ProductSpecification.builder()
@@ -492,10 +1274,12 @@ public class DataInitializer implements CommandLineRunner {
                 .style("Vintage")
                 .occasion("Wedding")
                 .length("18 inches")
-                .metal(metalPrices.get(rand.nextInt(metalPrices.size())))
+                .metal(metals.get(rand.nextInt(metals.size())))
                 .texture("Smooth")
                 .chainType("Box")
                 .gemstone(gemstones.get(index++))
+                .gemstoneWeight(generateRandomGemstoneWeight())
+                .metalWeight(generateRandomMetalWeight())
                 .products(List.of())
                 .build();
 
@@ -504,10 +1288,12 @@ public class DataInitializer implements CommandLineRunner {
                 .style("Modern")
                 .occasion("Anniversary")
                 .length("7 inches")
-                .metal(metalPrices.get(rand.nextInt(metalPrices.size())))
+                .metal(metals.get(rand.nextInt(metals.size())))
                 .texture("Textured")
                 .chainType("Cuban")
                 .gemstone(gemstones.get(index++))
+                .gemstoneWeight(generateRandomGemstoneWeight())
+                .metalWeight(generateRandomMetalWeight())
                 .products(List.of())
                 .build();
 
@@ -515,11 +1301,13 @@ public class DataInitializer implements CommandLineRunner {
                 .type("Ring")
                 .style("Classic")
                 .occasion("Engagement")
-                .length("N/A")
-                .metal(metalPrices.get(rand.nextInt(metalPrices.size())))
+                .length("NaN")
+                .metal(metals.get(rand.nextInt(metals.size())))
                 .texture("Polished")
-                .chainType("N/A")
+                .chainType("NaN")
                 .gemstone(gemstones.get(index++))
+                .gemstoneWeight(generateRandomGemstoneWeight())
+                .metalWeight(generateRandomMetalWeight())
                 .products(List.of())
                 .build();
 
@@ -527,11 +1315,13 @@ public class DataInitializer implements CommandLineRunner {
                 .type("Earrings")
                 .style("Bohemian")
                 .occasion("Casual")
-                .length("N/A")
-                .metal(metalPrices.get(rand.nextInt(metalPrices.size())))
+                .length("NaN")
+                .metal(metals.get(rand.nextInt(metals.size())))
                 .texture("Hammered")
-                .chainType("N/A")
+                .chainType("NaN")
                 .gemstone(gemstones.get(index++))
+                .gemstoneWeight(generateRandomGemstoneWeight())
+                .metalWeight(generateRandomMetalWeight())
                 .products(List.of())
                 .build();
 
@@ -540,10 +1330,12 @@ public class DataInitializer implements CommandLineRunner {
                 .style("Minimalist")
                 .occasion("Birthday")
                 .length("20 inches")
-                .metal(metalPrices.get(rand.nextInt(metalPrices.size())))
+                .metal(metals.get(rand.nextInt(metals.size())))
                 .texture("Matte")
                 .chainType("Rope")
                 .gemstone(gemstones.get(index++))
+                .gemstoneWeight(generateRandomGemstoneWeight())
+                .metalWeight(generateRandomMetalWeight())
                 .products(List.of())
                 .build();
 
@@ -552,10 +1344,12 @@ public class DataInitializer implements CommandLineRunner {
                 .style("Trendy")
                 .occasion("Summer")
                 .length("9 inches")
-                .metal(metalPrices.get(rand.nextInt(metalPrices.size())))
+                .metal(metals.get(rand.nextInt(metals.size())))
                 .texture("Braided")
                 .chainType("Link")
                 .gemstone(gemstones.get(index++))
+                .gemstoneWeight(generateRandomGemstoneWeight())
+                .metalWeight(generateRandomMetalWeight())
                 .products(List.of())
                 .build();
 
@@ -563,11 +1357,13 @@ public class DataInitializer implements CommandLineRunner {
                 .type("Brooch")
                 .style("Art Deco")
                 .occasion("Formal")
-                .length("N/A")
-                .metal(metalPrices.get(rand.nextInt(metalPrices.size())))
+                .length("NaN")
+                .metal(metals.get(rand.nextInt(metals.size())))
                 .texture("Filigree")
-                .chainType("N/A")
+                .chainType("NaN")
                 .gemstone(gemstones.get(index++))
+                .gemstoneWeight(generateRandomGemstoneWeight())
+                .metalWeight(generateRandomMetalWeight())
                 .products(List.of())
                 .build();
 
@@ -575,11 +1371,13 @@ public class DataInitializer implements CommandLineRunner {
                 .type("Cufflinks")
                 .style("Contemporary")
                 .occasion("Business")
-                .length("N/A")
-                .metal(metalPrices.get(rand.nextInt(metalPrices.size())))
+                .length("NaN")
+                .metal(metals.get(rand.nextInt(metals.size())))
                 .texture("Brushed")
-                .chainType("N/A")
+                .chainType("NaN")
                 .gemstone(gemstones.get(index++))
+                .gemstoneWeight(generateRandomGemstoneWeight())
+                .metalWeight(generateRandomMetalWeight())
                 .products(List.of())
                 .build();
 
@@ -587,11 +1385,13 @@ public class DataInitializer implements CommandLineRunner {
                 .type("Tie Clip")
                 .style("Vintage")
                 .occasion("Formal")
-                .length("N/A")
-                .metal(metalPrices.get(rand.nextInt(metalPrices.size())))
+                .length("NaN")
+                .metal(metals.get(rand.nextInt(metals.size())))
                 .texture("Engraved")
-                .chainType("N/A")
+                .chainType("NaN")
                 .gemstone(gemstones.get(index++))
+                .gemstoneWeight(generateRandomGemstoneWeight())
+                .metalWeight(generateRandomMetalWeight())
                 .products(List.of())
                 .build();
 
@@ -599,11 +1399,13 @@ public class DataInitializer implements CommandLineRunner {
                 .type("Charm")
                 .style("Whimsical")
                 .occasion("Everyday")
-                .length("N/A")
-                .metal(metalPrices.get(rand.nextInt(metalPrices.size())))
+                .length("NaN")
+                .metal(metals.get(rand.nextInt(metals.size())))
                 .texture("Polished")
-                .chainType("N/A")
+                .chainType("NaN")
                 .gemstone(gemstones.get(index++))
+                .gemstoneWeight(generateRandomGemstoneWeight())
+                .metalWeight(generateRandomMetalWeight())
                 .products(List.of())
                 .build();
 
@@ -612,10 +1414,12 @@ public class DataInitializer implements CommandLineRunner {
                 .style("Statement")
                 .occasion("Party")
                 .length("24 inches")
-                .metal(metalPrices.get(rand.nextInt(metalPrices.size())))
+                .metal(metals.get(rand.nextInt(metals.size())))
                 .texture("Etched")
                 .chainType("Snake")
                 .gemstone(gemstones.get(index++))
+                .gemstoneWeight(generateRandomGemstoneWeight())
+                .metalWeight(generateRandomMetalWeight())
                 .products(List.of())
                 .build();
 
@@ -624,10 +1428,12 @@ public class DataInitializer implements CommandLineRunner {
                 .style("Beaded")
                 .occasion("Casual")
                 .length("8 inches")
-                .metal(metalPrices.get(rand.nextInt(metalPrices.size())))
+                .metal(metals.get(rand.nextInt(metals.size())))
                 .texture("Beaded")
-                .chainType("N/A")
+                .chainType("NaN")
                 .gemstone(gemstones.get(index++))
+                .gemstoneWeight(generateRandomGemstoneWeight())
+                .metalWeight(generateRandomMetalWeight())
                 .products(List.of())
                 .build();
 
@@ -635,11 +1441,13 @@ public class DataInitializer implements CommandLineRunner {
                 .type("Ring")
                 .style("Halo")
                 .occasion("Wedding")
-                .length("N/A")
-                .metal(metalPrices.get(rand.nextInt(metalPrices.size())))
+                .length("NaN")
+                .metal(metals.get(rand.nextInt(metals.size())))
                 .texture("High Polish")
-                .chainType("N/A")
+                .chainType("NaN")
                 .gemstone(gemstones.get(index++))
+                .gemstoneWeight(generateRandomGemstoneWeight())
+                .metalWeight(generateRandomMetalWeight())
                 .products(List.of())
                 .build();
 
@@ -647,11 +1455,13 @@ public class DataInitializer implements CommandLineRunner {
                 .type("Earrings")
                 .style("Drop")
                 .occasion("Cocktail")
-                .length("N/A")
-                .metal(metalPrices.get(rand.nextInt(metalPrices.size())))
+                .length("NaN")
+                .metal(metals.get(rand.nextInt(metals.size())))
                 .texture("Smooth")
-                .chainType("N/A")
+                .chainType("NaN")
                 .gemstone(gemstones.get(index++))
+                .gemstoneWeight(generateRandomGemstoneWeight())
+                .metalWeight(generateRandomMetalWeight())
                 .products(List.of())
                 .build();
 
@@ -660,10 +1470,12 @@ public class DataInitializer implements CommandLineRunner {
                 .style("Geometric")
                 .occasion("Fashion")
                 .length("22 inches")
-                .metal(metalPrices.get(rand.nextInt(metalPrices.size())))
+                .metal(metals.get(rand.nextInt(metals.size())))
                 .texture("Hammered")
                 .chainType("Figaro")
                 .gemstone(gemstones.get(index++))
+                .gemstoneWeight(generateRandomGemstoneWeight())
+                .metalWeight(generateRandomMetalWeight())
                 .products(List.of())
                 .build();
 
