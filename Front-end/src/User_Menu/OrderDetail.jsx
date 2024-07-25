@@ -161,14 +161,15 @@ function OrderDetail() {
     const resultURL = `${window.location.href}?id=${data.id}`;
     try {
       const response = await axios.post(
-        `${ServerUrl}/api/payment/create/${data.id}?quotationId=${data.quotation.id}&resultURL=${resultURL}`
+        `${ServerUrl}/api/payment/create/${data.id}?resultURL=${resultURL}`
       );
       if (response.status === 200) {
         window.location.href = response.data.responseList.url;
-        setButtonIsLoading(false);
       }
     } catch (error) {
       showAlert("Failed to redirect user to payment page", "", "danger");
+    } finally {
+      setButtonIsLoading(false);
     }
   };
 
