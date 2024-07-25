@@ -47,20 +47,6 @@ const rbacConfig = {
     "ADMIN",
   ],
   "/userManager/gemstone_manager": ["ADMIN"],
-  // "/user_setting_page/profile_page": [
-  //   "SALE_STAFF",
-  //   "DESIGN_STAFF",
-  //   "PRODUCTION_STAFF",
-  //   "MANAGER",
-  //   "ADMIN",
-  // ],
-  // "/user_setting_page/notification_page": [
-  //   "SALE_STAFF",
-  //   "DESIGN_STAFF",
-  //   "PRODUCTION_STAFF",
-  //   "MANAGER",
-  //   "ADMIN",
-  // ],
 };
 
 // Utility function to check if a role is allowed
