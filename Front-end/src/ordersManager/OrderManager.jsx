@@ -24,7 +24,7 @@ export default function OrderManager() {
     const fetchOrders = (pageNumber) => {
       axios({
         method: "GET",
-        url: `${ServerUrl}/api/admin/get/order/${pageNumber - 1}`,
+        url: `${ServerUrl}/api/order/${pageNumber - 1}`,
         headers: { "Content-Type": "application/json" },
         params: {
           role: userRole,
