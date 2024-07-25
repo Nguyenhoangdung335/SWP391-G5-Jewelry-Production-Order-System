@@ -3,6 +3,7 @@ package com.swp391.JewelryProduction.controller;
 import com.swp391.JewelryProduction.dto.RequestDTOs.StaffGroup;
 import com.swp391.JewelryProduction.enums.OrderEvent;
 import com.swp391.JewelryProduction.enums.OrderStatus;
+import com.swp391.JewelryProduction.enums.Role;
 import com.swp391.JewelryProduction.pojos.Design;
 import com.swp391.JewelryProduction.pojos.Order;
 import com.swp391.JewelryProduction.pojos.Quotation;
@@ -14,6 +15,7 @@ import com.swp391.JewelryProduction.util.Response;
 import com.swp391.JewelryProduction.websocket.image.ImageService;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.support.MessageBuilder;
@@ -35,17 +37,23 @@ import static com.swp391.JewelryProduction.config.stateMachine.StateMachineUtil.
 public class OrderController {
     private final OrderService orderService;
     private final ImageService imageService;
-    private final ProductService productService;
-    private final QuotationRepository quotationRepository;
     private final StateMachineService<OrderStatus, OrderEvent> stateMachineService;
 
-
-    @GetMapping("/list")
-    public ResponseEntity<Response> list() {
+    @GetMapping("/{page}")
+    public ResponseEntity<Response> getOrder(
+            @PathVariable("page") int page,
+            @RequestParam(value = "accountId", required = true) String accountId,
+            @RequestParam(value = "role", required = true) Role role,
+            @RequestParam(value = "status", defaultValue = "ALL") OrderStatus status,
+            @RequestParam(value = "size", defaultValue = "5") int elementsPerPage
+    ) {
+        Page<Order> orderPage = orderService.findOrdersByPageAndStatusBasedOnRole(accountId, role, status, page, elementsPerPage);
         return Response.builder()
                 .status(HttpStatus.OK)
                 .message("Request sent successfully")
-                .response("orders", orderService.findAllOrders())
+                .response("orders", orderPage.getContent())
+                .response("totalPages", orderPage.getTotalPages())
+                .response("totalElements", orderPage.getTotalElements())
                 .buildEntity();
     }
 
@@ -178,14 +186,8 @@ public class OrderController {
                 .buildEntity();
     }
 
-//    @GetMapping("/assigned/{staffId}")
-//    public ResponseEntity<Response> getAssignedOrder(
-//            @PathVariable("staffId") String staffId,
-//            @RequestParam("role") Role role
-//    ) {
-//        return Response.builder()
-//                .message("Request sent successfully")
-//                .response("order", orderService.findLatestUncompletedOrderByStaffAndRole(staffId, role))
-//                .buildEntity();
+//    @PostMapping("/make-by-template")
+//    public ResponseEntity<Response> makeOrderByTemplate () {
+//
 //    }
 }
