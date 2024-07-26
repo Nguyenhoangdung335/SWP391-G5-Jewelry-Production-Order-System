@@ -37,7 +37,7 @@ public class Metal {
 
     @NotNull
     @DecimalMin("0.0")
-    @DecimalMax("100000.0")
+    @DecimalMax("5000000.0")
     @Column(nullable = false)
     private Double price;
 
