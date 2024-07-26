@@ -25,7 +25,7 @@ import java.time.LocalDateTime;
 public class AccountController {
     private final AccountService accountService;
 
-    @GetMapping("/{accountId}")
+    @GetMapping("/info/{accountId}")
     public ResponseEntity<Response> getInfo (
             @PathVariable("accountId")
             @NotBlank @NotEmpty
@@ -38,7 +38,7 @@ public class AccountController {
                 .buildEntity();
     }
 
-    @PutMapping("/{accountId}")
+    @PutMapping("/info/{accountId}")
     public ResponseEntity<Response> updateInfo (
             @PathVariable("accountId")
             String accountId,
