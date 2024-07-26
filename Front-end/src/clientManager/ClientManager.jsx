@@ -28,7 +28,7 @@ export default function ClientManager() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    if (isUpdated) {
+    if (isUpdated || currentPage || filterRole) {
       const fetchData = async () => {
         try {
           const res = await axios.get(
