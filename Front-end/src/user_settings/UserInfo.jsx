@@ -49,7 +49,7 @@ function UserInfo() {
 
   const getData = () => {
     if (token) {
-      axios(`${ServerUrl}/api/account/${decodedToken.id}`, {
+      axios(`${ServerUrl}/api/account/info/${decodedToken.id}`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       })
@@ -116,7 +116,7 @@ function UserInfo() {
       e.stopPropagation();
     } else {
       console.log(account);
-      axios(`${ServerUrl}/api/account/${decodedToken.id}`, {
+      axios(`${ServerUrl}/api/account/info/${decodedToken.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
