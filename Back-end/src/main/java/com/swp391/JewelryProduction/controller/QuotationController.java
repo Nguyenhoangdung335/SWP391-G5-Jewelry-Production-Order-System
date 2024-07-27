@@ -49,11 +49,11 @@ public class    QuotationController {
                 .buildEntity();
     }
 
-    @GetMapping("/default-items")
+    @GetMapping("/default-quote")
     public ResponseEntity<Response> getDefaultItem (@PathVariable("orderId") String orderId) {
         Order order = orderService.findOrderById(orderId);
         return Response.builder()
-                .response("items", quotationService.getDefaultQuotationItems(order))
+                .response("quotation", quotationService.getDefaultQuotation(order))
                 .buildEntity();
     }
 }

@@ -410,7 +410,7 @@ function OrderDetail() {
       {data.quotation && (
         <QuotationModal
           data={data}
-          quotation={data.quotation}
+          passedQuotation={data.quotation}
           orderId={data.id}
           show={showQuotation}
           onHide={() => setShowQuotation(false)}

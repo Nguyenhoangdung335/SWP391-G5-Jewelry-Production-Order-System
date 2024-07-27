@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import ServerUrl from "../reusable/ServerUrl";
 import {
@@ -47,7 +47,7 @@ function OrderDetailManager() {
       (decodedToken.role === "MANAGER" &&
         data?.status === "DES_AWAIT_MANA_APPROVAL"));
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const response = await axios(`${ServerUrl}/api/order/${id}/detail`, {
         headers: { "Content-Type": "application/json" },
@@ -65,7 +65,7 @@ function OrderDetailManager() {
       console.error("Error fetching data", error);
       showAlert("Error fetching data", "", "danger");
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     if (startRender) {
@@ -253,7 +253,7 @@ function OrderDetailManager() {
                     </tr>
                     <tr>
                       <th>Total Price</th>
-                      <td>{formatPrice(data.quotation?.totalPrice || 0)}</td>
+                      <td>{formatPrice(data.quotation?.finalPrice || 0)}</td>
                     </tr>
                     <tr>
                       <th>Status</th>
@@ -337,6 +337,7 @@ function OrderDetailManager() {
                     orderStatus={data?.status}
                     selectedProduct={data?.product}
                     role={decodedToken.role}
+                    fetchData={fetchData}
                   />
                   {isQualifiedApproveSpecification && (
                     <div className="d-flex justify-content-center pt-2 gap-5">
@@ -481,7 +482,7 @@ function OrderDetailManager() {
 
       <QuotationModal
         data={data}
-        quotation={data.quotation}
+        passedQuotation={data.quotation}
         orderId={data.id}
         show={showQuotation}
         onHide={() => setShowQuotation(false)}

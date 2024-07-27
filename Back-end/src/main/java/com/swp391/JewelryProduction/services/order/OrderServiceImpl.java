@@ -178,11 +178,13 @@ public class OrderServiceImpl implements OrderService {
                         staffs.getSaleStaffID(), Role.SALE_STAFF
                 )
         );
-        order.setDesignStaff(
-                staffService.findStaffByIdWithRole(
-                        staffs.getDesignStaffID(), Role.DESIGN_STAFF
-                )
-        );
+        if (staffs.getDesignStaffID() != null) {
+            order.setDesignStaff(
+                    staffService.findStaffByIdWithRole(
+                            staffs.getDesignStaffID(), Role.DESIGN_STAFF
+                    )
+            );
+        }
         order.setProductionStaff(
                 staffService.findStaffByIdWithRole(
                         staffs.getProductionStaffID(), Role.PRODUCTION_STAFF
@@ -191,14 +193,7 @@ public class OrderServiceImpl implements OrderService {
         order = this.updateOrder(order);
 
         firestoreService.saveOrUpdateUser(db,order.getOwner());
-
-//        StateMachine<OrderStatus, OrderEvent> stateMachine = getStateMachine(orderId, stateMachineService);
-//        stateMachine.sendEvent(
-//                Mono.just(MessageBuilder.
-//                        withPayload(OrderEvent.ASSIGN_STAFF)
-//                        .build()
-//                )
-//        ).subscribe();
+        
         sendEvent(stateMachineService, orderId, OrderEvent.ASSIGN_STAFF, null);
 
         return order;
