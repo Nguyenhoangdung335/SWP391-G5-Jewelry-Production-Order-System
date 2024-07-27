@@ -18,5 +18,7 @@ public interface MetalService {
 
     Metal updateMetal(Metal updatingMetal);
 
-    void deleteMetal(Long metalId);
+    void deleteMetal(long metalId);
+
+    public List<Metal> findByProperties(Metal metal);
 }
