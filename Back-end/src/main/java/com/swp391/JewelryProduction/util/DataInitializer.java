@@ -12,6 +12,7 @@ import com.swp391.JewelryProduction.pojos.designPojos.Product;
 import com.swp391.JewelryProduction.pojos.designPojos.ProductSpecification;
 import com.swp391.JewelryProduction.pojos.designPojos.Gemstone;
 import com.swp391.JewelryProduction.repositories.*;
+import com.swp391.JewelryProduction.services.quotation.QuotationService;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +49,8 @@ public class DataInitializer implements CommandLineRunner {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private GemstoneRepository gemstoneRepository;
+    @Autowired
+    private QuotationService quotationService;
 
 
     private final Faker faker = new Faker();
@@ -1640,46 +1643,27 @@ public class DataInitializer implements CommandLineRunner {
                     .orders(List.of(order))
                     .imageURL(temp.imageURL == null? imageURL: temp.imageURL)
                     .build();
-            Quotation quotation = Quotation.builder()
-                    .createdDate(LocalDate.from(createdDate))
-                    .expiredDate(LocalDate.from(createdDate).plusMonths(2).plusDays(rand.nextLong(15)))
-                    .title("Quotation for order" + order.getName())
-                    .order(order)
-                    .build();
-            List<QuotationItem> items = new ArrayList<>();
-            for (int j = 0; j < rand.nextInt(5, 10); j++) {
-                double unitPrice = roundToDecimal(rand.nextDouble(100, 500), 2);
-                double quantity = roundToDecimal(rand.nextDouble(0.5, 10), 2);
-                double totalPrice = roundToDecimal(unitPrice * quantity, 2);
-                items.add(QuotationItem.builder()
-                        .name(faker.commerce().material())
-                        .unitPrice(unitPrice)
-                        .quantity(quantity)
-                        .totalPrice(totalPrice)
-                        .quotation(quotation)
-                        .build());
-            }
-            quotation.setQuotationItems(items);
+            order.setProduct(product);
+
+            Quotation quotation = quotationService.getDefaultQuotation(order);
+            order.setQuotation(quotation);
 
             Transactions transactions = Transactions.builder()
                     .order(order)
                     .dateCreated(LocalDateTime.now())
                     .dateUpdated(LocalDateTime.now())
-                    .amount(quotation.getTotalPrice())
+                    .amount(quotation.getFinalPrice())
                     .status(TransactionStatus.COMPLETED)
                     .build();
-
+            order.setTransactions(transactions);
 
             Design design = Design.builder()
                     .lastUpdated(quotation.getCreatedDate().atStartOfDay().plusDays(5))
                     .designLink(imageURL)
                     .order(order)
                     .build();
-
-            order.setProduct(product);
-            order.setQuotation(quotation);
             order.setDesign(design);
-            order.setTransactions(transactions);
+
             order.setSaleStaff(saleStaff != null ? staffRepository.save(saleStaff) : null);
             order.setDesignStaff(designStaff != null ? staffRepository.save(designStaff) : null);
             order.setProductionStaff(productionStaff != null ? staffRepository.save(productionStaff) : null);
