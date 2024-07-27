@@ -362,13 +362,13 @@ const MetalWeight = ({ value = 0, onChange, minVal = 1, maxVal = 1000, step = 1,
   const handleChange = (event) => {
     setTempValue(event.target.value);
   };
-  if (selectedUnit.toLowerCase() === "kilogram") {
+  if (selectedUnit?.toLowerCase() === "kilogram") {
     maxVal = 10;
     step = 0.001;
   }
 
   useEffect(() => {
-    switch (selectedUnit.toLowerCase()) {
+    switch (selectedUnit?.toLowerCase()) {
       case "kilogram":
         setConvertRate(1000);
         break;
@@ -389,7 +389,7 @@ const MetalWeight = ({ value = 0, onChange, minVal = 1, maxVal = 1000, step = 1,
 
   return (
     <Form.Group className="mb-3 position-relative">
-      <Form.Label className="d-block">Metal Weight*: {formatUnit(tempValue)} {selectedUnit} {!selectedUnit.toLowerCase().includes("gram")? "(" + formatUnit(tempValue*convertRate) + " gram)" : ""}</Form.Label>
+      <Form.Label className="d-block">Metal Weight*: {formatUnit(tempValue)} {selectedUnit} {!selectedUnit?.toLowerCase().includes("gram")? "(" + formatUnit(tempValue*convertRate) + " gram)" : ""}</Form.Label>
       <div className="d-flex justify-content-between align-items-center">
         <span >{minVal}</span>
         <Form.Range
@@ -627,7 +627,7 @@ const GemstoneForm = ({gemstoneData, onChange, selectedData}) => {
 
 function RenderGemstoneTable ({selectedGemstoneProp, handleSelectGemstone}) {
   const [gemstoneData, setGemstoneData] = useState([]);
-  const [selectedGemstone, setSelectedGemstone] = useState(null);
+  const [selectedGemstone, setSelectedGemstone] = useState(selectedGemstoneProp.selectedGemstone);
   const isQualifiedRender = selectedGemstoneProp.selectedGemstoneName;
 
   useEffect(() =>  {
