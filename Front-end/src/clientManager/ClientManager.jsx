@@ -89,7 +89,7 @@ export default function ClientManager() {
 
     try {
       const res = await axios.put(
-        `${ServerUrl}/api/account`,
+        `${ServerUrl}/api/account/`,
         values,
         {
           headers: { "Content-Type": "application/json" },
@@ -129,7 +129,7 @@ export default function ClientManager() {
 
     try {
       const res = await axios.post(
-        `${ServerUrl}/api/account`,
+        `${ServerUrl}/api/account/`,
         newEmployee,
         {
           headers: { "Content-Type": "application/json" },
@@ -274,7 +274,7 @@ export default function ClientManager() {
         <p style={{ margin: 0, fontSize: 24, fontWeight: "bold" }}>
           Welcome, {decodedToken.first_name}!
         </p>
-        <p style={{ fontSize: 18 }}>Client Management</p>
+        <p style={{ fontSize: 18 }}>Customer Management</p>
       </div>
 
       <div
@@ -289,7 +289,7 @@ export default function ClientManager() {
         <div className="w-100 d-flex justify-content-end">
           <Button variant="primary" onClick={handleAddClick}>
             <FiPlus />
-            <span className="ms-1">Add Client</span>
+            <span className="ms-1">Add Customer</span>
           </Button>
         </div>
       </div>
@@ -382,7 +382,7 @@ export default function ClientManager() {
 
       <Modal show={isModalVisible} onHide={handleCancel} centered>
         <Modal.Header>
-          <Modal.Title>Edit Client</Modal.Title>
+          <Modal.Title>Edit Customer</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {selectedUser && (
@@ -496,7 +496,7 @@ export default function ClientManager() {
         centered
       >
         <Modal.Header>
-          <Modal.Title>Add Client</Modal.Title>
+          <Modal.Title>Add Customer</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={handleAdd}>
