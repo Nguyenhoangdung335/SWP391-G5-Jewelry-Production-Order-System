@@ -1,6 +1,7 @@
 package com.swp391.JewelryProduction.services.product;
 
 import com.swp391.JewelryProduction.enums.OrderStatus;
+import com.swp391.JewelryProduction.pojos.Quotation;
 import com.swp391.JewelryProduction.pojos.designPojos.Metal;
 import com.swp391.JewelryProduction.pojos.designPojos.Product;
 import com.swp391.JewelryProduction.pojos.designPojos.ProductSpecification;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -30,14 +32,6 @@ public class ProductServiceImpl implements ProductService {
     private final OrderService orderService;
     private final GemstoneService gemstoneService;
     private final MetalRepository metalRepository;
-    private final CrawlDataService crawlDataService;
-
-    @Value("${price.default.sale_staff}")
-    private double DEFAULT_SALE_STAFF_PRICE;
-    @Value("${price.default.design_staff}")
-    private double DEFAULT_DESIGN_STAFF_PRICE;
-    @Value("${price.default.production_staff}")
-    private double DEFAULT_PRODUCTION_STAFF_PRICE;
 
 
     //<editor-fold desc="PRODUCT SERVICES" defaultstate="collapsed">
@@ -148,11 +142,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Double calculateRoughProductPrice(int productSpecificationId) {
-//        return calculatePrice(
-//                productSpecificationRepository.findById(productSpecificationId).orElseThrow(
-//                        () -> new ObjectNotFoundException("Specification with id "+ productSpecificationId+" not found")
-//        ));
-        return 0.0;
+        return calculatePrice(findProductSpecificationById(productSpecificationId));
     }
 
     @Override
@@ -160,15 +150,21 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findAllByOrderByIdDesc(limit);
     }
 
-//    private Double calculatePrice (ProductSpecification specs) {
-//        double price = gemstoneService.calculatePrice(specs.getGemstone());
-//        price += DEFAULT_SALE_STAFF_PRICE + DEFAULT_DESIGN_STAFF_PRICE + DEFAULT_PRODUCTION_STAFF_PRICE;
-//        price += specs.getMetal().getPrice();
-//        return price;
-//    }
+    private Double calculatePrice (ProductSpecification specs) {
+        Quotation quotation;
+        try {
+            quotation = specs.getProduct().getOrders().getLast().getQuotation();
+        } catch (NoSuchElementException ex) {
+            throw new RuntimeException("Cannot calculate produce price, there is no order found associate with this product", ex);
+        } catch (NullPointerException ex) {
+            throw new RuntimeException("Cannot calculate produce price, cannot fetch the parent object", ex);
+        }
+        return quotation.getFinalPrice();
+    }
     //</editor-fold>
 
     private ProductSpecification mapNewSpecification (ProductSpecification oldSpecs, ProductSpecification newSpecs) {
+        oldSpecs.setStyle(newSpecs.getStyle());
         oldSpecs.setType(newSpecs.getType());
         oldSpecs.setOccasion(newSpecs.getOccasion());
         oldSpecs.setLength(newSpecs.getLength());
@@ -176,6 +172,8 @@ public class ProductServiceImpl implements ProductService {
         oldSpecs.setTexture(newSpecs.getTexture());
         oldSpecs.setChainType(newSpecs.getChainType());
         oldSpecs.setGemstone(newSpecs.getGemstone());
+        oldSpecs.setGemstoneWeight(newSpecs.getGemstoneWeight());
+        oldSpecs.setMetalWeight(newSpecs.getMetalWeight());
         return oldSpecs;
     }
 }
