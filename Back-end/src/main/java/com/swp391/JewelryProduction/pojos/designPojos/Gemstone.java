@@ -101,4 +101,22 @@ public class Gemstone {
         this.active = gemstone.isActive();
         return this;
     }
+
+    @JsonIgnore
+    public double getComplexityCost() {
+        double sum = 0;
+        if (shape != null) sum += shape.getComplexity();
+        if (cut != null) sum += cut.getComplexity();
+        if (clarity != null) sum += clarity.getComplexity();
+        if (color != null) sum += color.getComplexity();
+        double averageWeight = (caratWeightFrom + caratWeightFrom) / 2.0;
+        sum += (averageWeight * 0.05);
+
+        return sum;
+    }
+
+    public String toStringGemstoneSpec () {
+        return String.format("%s \n - Shape: %s \n - Cut: %s \n - Clarity: %s \n - Color: %s \n - Weight range: %s-%s",
+                this.name, this.shape, this.cut, this.clarity, this.color, this.caratWeightFrom, this.caratWeightTo);
+    }
 }
