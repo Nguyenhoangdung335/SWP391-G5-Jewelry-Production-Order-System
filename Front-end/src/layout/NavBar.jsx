@@ -100,7 +100,7 @@ export default function NavBar() {
       id: 2,
       to: "/userManager/client_manager",
       icon: <FaUsers size={30} color="white" />,
-      label: "Clients",
+      label: "Customers",
     },
     {
       id: 3,
@@ -118,7 +118,7 @@ export default function NavBar() {
       id: 5,
       to: "/userManager/employees_manager",
       icon: <LuUser2 size={30} color="white" />,
-      label: "Employees",
+      label: "Staffs",
     },
     {
       id: 6,
