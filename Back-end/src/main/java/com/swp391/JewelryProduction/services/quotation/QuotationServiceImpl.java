@@ -98,7 +98,7 @@ public class QuotationServiceImpl implements QuotationService {
 
         int index = 0;
         List<QuotationItem> itemList = new LinkedList<>();
-        itemList.add(QuotationItem.builder().itemID(index++).name(String.format("%s (%s)", metal.getName(), metal.getUnit())).quantity(specs.getMetalWeight()).unitPrice(metal.getPrice()).unit(metal.getUnit()).totalPrice(specs.getTotalMetalCost()).quotation(quotation).build());
+        itemList.add(QuotationItem.builder().itemID(index++).name(String.format("%s (%s)", metal.getName(), metal.getUnit())).quantity(specs.getMetalWeight()).unitPrice(metal.getCompanyPrice()).unit(metal.getUnit()).totalPrice(specs.getTotalMetalCost()).quotation(quotation).build());
         itemList.add(QuotationItem.builder().itemID(index++).name(gemstone.toStringGemstoneSpec()).quantity(specs.getGemstoneWeight()).unitPrice(gemstone.getPricePerCaratInHundred() * 100.0).unit("Carat").totalPrice(specs.getTotalGemstoneCost()).quotation(quotation).build());
         itemList.add(QuotationItem.builder().itemID(index++).name("Utilities cost").quantity(1).unitPrice(70).unit("Fixed").totalPrice(70.0).quotation(quotation).build());
         itemList.add(QuotationItem.builder().itemID(index++).name("Insurance cost").quantity(1).unitPrice(50).unit("Fixed").totalPrice(50.0).quotation(quotation).build());
