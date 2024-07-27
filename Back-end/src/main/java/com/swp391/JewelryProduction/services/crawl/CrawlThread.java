@@ -51,6 +51,7 @@ public class CrawlThread implements Runnable {
                         .marketPrice(Double.parseDouble(product.selectFirst("td").text().replace("$", "").replace(",", "")) * (isVND ? rate : 1))
                         .updatedTime(LocalDateTime.now())
                         .build();
+                metal.setCompanyPrice(metal.getMarketPrice());
                 synchronized (materials) {
                     this.metals.add(metal);
                 }
