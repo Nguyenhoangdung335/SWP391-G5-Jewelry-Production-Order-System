@@ -3,12 +3,15 @@ package com.swp391.JewelryProduction.pojos;
 import com.fasterxml.jackson.annotation.*;
 import com.swp391.JewelryProduction.util.IdGenerator;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -72,13 +75,28 @@ public class Quotation {
 
     @ToString.Include
     @EqualsAndHashCode.Include
-    @Column(name = "staffs_cost", nullable = false)
-    private double staffsCost;
+    @DecimalMin("0.0")
+    private Double consultCost;
+    @ToString.Include
+    @EqualsAndHashCode.Include
+    @DecimalMin("0.0")
+    private Double designCost;
+    @ToString.Include
+    @EqualsAndHashCode.Include
+    @DecimalMin("0.0")
+    private Double manufactureCost;
+    @ToString.Include
+    @EqualsAndHashCode.Include
+    @DecimalMin("0.0")
+    @DecimalMax("1.0")
+    private Double markupRatio;
 
     public Quotation (Quotation copy) {
         this.title = copy.getTitle();
         this.createdDate = LocalDate.now();
         this.expiredDate = LocalDate.now().plus(Period.between(copy.getCreatedDate(), copy.getExpiredDate()));
+        this.manufactureCost = copy.getManufactureCost();
+        this.markupRatio = copy.getMarkupRatio();
         this.quotationItems = new LinkedList<>();
         copy.getQuotationItems().forEach(item -> {
             QuotationItem newItem = new QuotationItem(item);
@@ -87,15 +105,27 @@ public class Quotation {
         });
     }
 
+    @JsonInclude
     public Double getTotalPrice () {
         double total = 0.0;
         for (var item: quotationItems) {
             total += item.getTotalPrice();
         }
+        if (consultCost != null) total += consultCost;
+        if (designCost != null) total += designCost;
+        if (manufactureCost != null) total += manufactureCost;
         return total;
     }
-    
+
+    @JsonInclude
+    public Double getFinalPrice () {
+        double total = getTotalPrice();
+        if (markupRatio != null) total += total * markupRatio;
+        return total;
+    }
+
+    @JsonIgnore
     public Double getHalfPrice () {
-        return roundToDecimal(getTotalPrice() / 2.0, 2);
+        return roundToDecimal(getFinalPrice() / 2.0, 2);
     }
 }
