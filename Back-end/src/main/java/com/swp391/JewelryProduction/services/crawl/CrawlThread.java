@@ -48,7 +48,7 @@ public class CrawlThread implements Runnable {
                 Metal metal = Metal.builder()
                         .name("Gold")
                         .unit(product.selectFirst("th").text())
-                        .price(Double.parseDouble(product.selectFirst("td").text().replace("$", "").replace(",", "")) * (isVND ? rate : 1))
+                        .marketPrice(Double.parseDouble(product.selectFirst("td").text().replace("$", "").replace(",", "")) * (isVND ? rate : 1))
                         .updatedTime(LocalDateTime.now())
                         .build();
                 synchronized (materials) {

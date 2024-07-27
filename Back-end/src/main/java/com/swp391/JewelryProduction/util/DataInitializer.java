@@ -243,70 +243,70 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void initializeFakeMetalPrice () {
-        Metal metal1 = Metal.builder()
-                .name("Gold")
-                .unit("Ounce")
-                .price(61452.847799999996)
-                .updatedTime(LocalDateTime.now())
-                .build();
-
-        Metal metal2 = Metal.builder()
-                .name("Gold")
-                .unit("Tola")
-                .price(23044.7862)
-                .updatedTime(LocalDateTime.now())
-                .build();
-        Metal metal3 = Metal.builder()
-                .name("Gold")
-                .unit("Kilogram")
-                .price(1975973.859)
-                .updatedTime(LocalDateTime.now())
-                .build();
-        Metal metal4 = Metal.builder()
-                .name("Gold")
-                .unit("Gram 24K")
-                .price(1976.0867999999998)
-                .updatedTime(LocalDateTime.now())
-                .build();
-        Metal metal5 = Metal.builder()
-                .name("Gold")
-                .unit("Gram 22K")
-                .price(1811.1168)
-                .updatedTime(LocalDateTime.now())
-                .build();
-        Metal metal6 = Metal.builder()
-                .name("Gold")
-                .unit("Gram 21K")
-                .price(1728.6317999999999)
-                .updatedTime(LocalDateTime.now())
-                .build();
-        Metal metal7 = Metal.builder()
-                .name("Gold")
-                .unit("Gram 18K")
-                .price(1481.4306)
-                .updatedTime(LocalDateTime.now())
-                .build();
-        Metal metal8 = Metal.builder()
-                .name("Gold")
-                .unit("Gram 14K")
-                .price(1153.0134)
-                .updatedTime(LocalDateTime.now())
-                .build();
-
-        Metal metal9 = Metal.builder()
-                .name("Gold")
-                .unit("Gram 12K")
-                .price(988.0433999999999)
-                .updatedTime(LocalDateTime.now())
-                .build();
-
-        Metal metal10 = Metal.builder()
-                .name("Gold")
-                .unit("Gram 10K")
-                .price(823.3272)
-                .updatedTime(LocalDateTime.now())
-                .build();
-        metals = metalRepository.saveAll(List.of(metal1,metal2,metal3,metal4,metal5,metal6,metal7,metal8,metal9,metal10));
+//        Metal metal1 = Metal.builder()
+//                .name("Gold")
+//                .unit("Ounce")
+//                .price(61452.847799999996)
+//                .updatedTime(LocalDateTime.now())
+//                .build();
+//
+//        Metal metal2 = Metal.builder()
+//                .name("Gold")
+//                .unit("Tola")
+//                .price(23044.7862)
+//                .updatedTime(LocalDateTime.now())
+//                .build();
+//        Metal metal3 = Metal.builder()
+//                .name("Gold")
+//                .unit("Kilogram")
+//                .price(1975973.859)
+//                .updatedTime(LocalDateTime.now())
+//                .build();
+//        Metal metal4 = Metal.builder()
+//                .name("Gold")
+//                .unit("Gram 24K")
+//                .price(1976.0867999999998)
+//                .updatedTime(LocalDateTime.now())
+//                .build();
+//        Metal metal5 = Metal.builder()
+//                .name("Gold")
+//                .unit("Gram 22K")
+//                .price(1811.1168)
+//                .updatedTime(LocalDateTime.now())
+//                .build();
+//        Metal metal6 = Metal.builder()
+//                .name("Gold")
+//                .unit("Gram 21K")
+//                .price(1728.6317999999999)
+//                .updatedTime(LocalDateTime.now())
+//                .build();
+//        Metal metal7 = Metal.builder()
+//                .name("Gold")
+//                .unit("Gram 18K")
+//                .price(1481.4306)
+//                .updatedTime(LocalDateTime.now())
+//                .build();
+//        Metal metal8 = Metal.builder()
+//                .name("Gold")
+//                .unit("Gram 14K")
+//                .price(1153.0134)
+//                .updatedTime(LocalDateTime.now())
+//                .build();
+//
+//        Metal metal9 = Metal.builder()
+//                .name("Gold")
+//                .unit("Gram 12K")
+//                .price(988.0433999999999)
+//                .updatedTime(LocalDateTime.now())
+//                .build();
+//
+//        Metal metal10 = Metal.builder()
+//                .name("Gold")
+//                .unit("Gram 10K")
+//                .price(823.3272)
+//                .updatedTime(LocalDateTime.now())
+//                .build();
+//        metals = metalRepository.saveAll(List.of(metal1,metal2,metal3,metal4,metal5,metal6,metal7,metal8,metal9,metal10));
     }
 
     private void initializeFakeGemstone () {
