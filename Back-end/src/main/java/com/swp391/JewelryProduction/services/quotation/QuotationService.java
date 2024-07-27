@@ -18,5 +18,5 @@ public interface QuotationService {
     void deleteQuotationByID (String quotationID);
     List<Quotation> findAllQuotations();
 
-    List<QuotationItemResponse> getDefaultQuotationItems (Order order);
+    Quotation getDefaultQuotation (Order order);
 }
