@@ -44,7 +44,7 @@ function AssignedStaff({ decodedToken, data, onSubmit }) {
   }, [isQualifiedAssigningStaff]);
 
   const handleSubmit = () => {
-    if (selectedSaleStaff && selectedDesignStaff && selectedProductionStaff) {
+    if (selectedSaleStaff && (data.fromTemplate || selectedDesignStaff) && selectedProductionStaff) {
       const updatedStaff = {
         saleStaffID: selectedSaleStaff,
         designStaffID: selectedDesignStaff,
@@ -81,7 +81,7 @@ function AssignedStaff({ decodedToken, data, onSubmit }) {
               label="Design Staff"
               value={selectedDesignStaff}
               onChange={(e) => setSelectedDesignStaff(e.target.value)}
-              disabled={staff?.designStaffs === null}
+              disabled={staff?.designStaffs === null || data.fromTemplate}
               isQualified={isQualifiedAssigningStaff}
               staffOptions={staff.designStaffs}
               controlId="formDesignStaff"
@@ -118,7 +118,7 @@ function StaffField({label, value, onChange, disabled, isQualified, staffOptions
             onChange={onChange}
             disabled={disabled}
           >
-            <option value="">
+            <option value="" disabled>
               {staffOptions === null ? "Loading..." : `Select ${label}`}
             </option>
             {staffOptions.map((staff) => (
