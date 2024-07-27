@@ -38,6 +38,10 @@ public class QuotationItem {
 
     @ToString.Include
     @EqualsAndHashCode.Include
+    private String unit;
+
+    @ToString.Include
+    @EqualsAndHashCode.Include
     @Column(name = "total_price", columnDefinition = "decimal(15,2)")
     private double totalPrice;
 
@@ -52,6 +56,7 @@ public class QuotationItem {
         this.itemID = copy.getItemID();
         this.name = copy.getName();
         this.unitPrice = copy.getUnitPrice();
+        this.unit = copy.getUnit();
         this.totalPrice = copy.getTotalPrice();
         this.quantity = copy.getQuantity();
     }
