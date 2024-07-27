@@ -45,7 +45,7 @@ export default function Login() {
         .catch((error) => {
           showAlert(
             "Login Failed",
-            "There was an error!",
+            "Your Password or Email is incorrect please check again !!",
             "danger",
           );
           console.error("There was an error!", error);
