@@ -198,6 +198,7 @@ const RenderSpecificationForm = ({handleSubmit, initialSpecs = null}) => {
         ),
         selectedChainType: ["Necklace", "Bracelet", "Anklet"].includes(formState.selectedType) ? "Default": "NaN",
         selectedTexture: "Default",
+        selectedMetalWeight: 1,
         metalUnits: units,
       }));
     }
@@ -242,21 +243,21 @@ const RenderSpecificationForm = ({handleSubmit, initialSpecs = null}) => {
     if (name === "selectedGemstoneName" && value === "") {
       setSelectedGemstoneProp({
         selectedGemstoneName: null,
-        selectedGemstoneShape: null,
-        selectedGemstoneCut: null,
-        selectedGemstoneClarity: null,
-        selectedGemstoneColor: null,
-        selectedGemstoneWeight: null,
+        selectedGemstoneShape: "",
+        selectedGemstoneCut: "",
+        selectedGemstoneClarity: "",
+        selectedGemstoneColor: "",
+        selectedGemstoneWeight: "0.05",
         selectedGemstone: null,
       });
     } else if (name === "selectedGemstoneName" && value) {
       setSelectedGemstoneProp({
         selectedGemstoneName: value,
-        selectedGemstoneShape: gemstoneData.shapes[0],
-        selectedGemstoneCut: gemstoneData.cuts[0],
-        selectedGemstoneClarity: gemstoneData.clarities[0],
-        selectedGemstoneColor: gemstoneData.colors[0],
-        selectedGemstoneWeight: "0.01",
+        selectedGemstoneShape: "",
+        selectedGemstoneCut: "",
+        selectedGemstoneClarity: "",
+        selectedGemstoneColor: "",
+        selectedGemstoneWeight: "0.05",
         selectedGemstone: null,
       });
     } else if (name === "selectedGemstoneWeight" && value) {
