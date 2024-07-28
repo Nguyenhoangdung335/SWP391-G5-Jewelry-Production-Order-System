@@ -115,7 +115,7 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
                     .withStates()
                     .parent(OrderStatus.DESIGN)
                         .initial(OrderStatus.IN_DESIGNING)
-                        .state(OrderStatus.IN_DESIGNING, actionAndGuardConfiguration.notifyDesignStaffAction(), null)
+                        .state(OrderStatus.IN_DESIGNING)
                         .state(OrderStatus.DES_AWAIT_MANA_APPROVAL)
                             .choice(OrderStatus.DES_MANA_APPROVAL_CHOICE)
                                 .state(OrderStatus.DES_MANA_APPROVED, actionAndGuardConfiguration.approvedAction(), null)
@@ -129,7 +129,7 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
                     .withStates()
                     .parent(OrderStatus.PRODUCTION)
                         .initial(OrderStatus.IN_PRODUCTION)
-                        .state(OrderStatus.IN_PRODUCTION, actionAndGuardConfiguration.notifyProductionStaffAction(), null)
+                        .state(OrderStatus.IN_PRODUCTION)
                         .state(OrderStatus.PRO_AWAIT_APPROVAL)
                             .choice(OrderStatus.PRO_APPROVAL_CHOICE)
                                 .state(OrderStatus.PRO_APPROVED, actionAndGuardConfiguration.approvedAction(), null)
@@ -275,13 +275,12 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
             .withExternal()
                 .source(OrderStatus.BET_TRANSACTION_SUCCESSFUL).target(OrderStatus.BET_TRANSACTION_SUCCESSFUL_CHOICE)
                 .event(OrderEvent.BET_TRANSACTION_APPROVE)
-                .action(actionAndGuardConfiguration.notifyDesignStaffAction())
 
             .and()
             .withChoice()
                 .source(OrderStatus.BET_TRANSACTION_SUCCESSFUL_CHOICE)
-                .first(OrderStatus.IN_PRODUCTION, actionAndGuardConfiguration.checkIsFromTemplate())
-                .last(OrderStatus.IN_DESIGNING)
+                .first(OrderStatus.IN_PRODUCTION, actionAndGuardConfiguration.checkIsFromTemplate(), actionAndGuardConfiguration.notifyProductionStaffAction())
+                .last(OrderStatus.IN_DESIGNING, actionAndGuardConfiguration.notifyDesignStaffAction())
 
     /*--------------------------------------------------------------------------------------------------*/
     /*--------------------------------DESIGN SUPERSTATE LOCAL TRANSITION--------------------------------*/
