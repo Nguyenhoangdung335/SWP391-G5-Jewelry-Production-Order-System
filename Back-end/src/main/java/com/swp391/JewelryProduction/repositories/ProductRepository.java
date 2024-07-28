@@ -37,4 +37,7 @@ public interface ProductRepository extends JpaRepository<Product, String> {
 
     @EntityGraph(attributePaths = {"orders", "specification"})
     List<Product> findAllByOrderByIdDesc(Limit limit);
+
+    @EntityGraph(attributePaths = {"specification"})
+    List<Product> findAllByOrdersStatusIsOrderByIdDesc(OrderStatus status, Limit limit);
 }

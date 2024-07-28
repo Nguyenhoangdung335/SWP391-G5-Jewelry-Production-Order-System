@@ -147,7 +147,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<Product> findAllByOrderByIdDesc(Limit limit) {
-        return productRepository.findAllByOrderByIdDesc(limit);
+        return productRepository.findAllByOrdersStatusIsOrderByIdDesc(OrderStatus.ORDER_COMPLETED, limit);
     }
 
     private Double calculatePrice (ProductSpecification specs) {
