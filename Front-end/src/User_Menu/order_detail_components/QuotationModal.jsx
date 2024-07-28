@@ -18,6 +18,7 @@ import { useAuth } from "../../provider/AuthProvider";
 import "./css/QuotationModal.css";
 import { useAlert } from "../../provider/AlertProvider";
 import ResizableTable from "../../reusable/ResizableTable";
+import InputGroupText from "react-bootstrap/esm/InputGroupText";
 
 function QuotationModal({ data, passedQuotation, orderId, show, onHide, fetchData }) {
   const {showAlert} = useAlert();
@@ -49,7 +50,7 @@ function QuotationModal({ data, passedQuotation, orderId, show, onHide, fetchDat
 
   const [quotation, setQuotation] = useState({
     id: passedQuotation? passedQuotation.id: "",
-    title: passedQuotation? passedQuotation.name: "",
+    title: passedQuotation? passedQuotation.title: "",
     createdDate: passedQuotation? passedQuotation.createdDate: currentDate.toISOString().split("T")[0],
     expiredDate: passedQuotation? passedQuotation.expiredDate: new Date(currentDate.setMonth(currentDate.getMonth() + 3)).toISOString().split("T")[0],
     quotationItems: passedQuotation? passedQuotation.quotationItems: [{
@@ -83,35 +84,14 @@ function QuotationModal({ data, passedQuotation, orderId, show, onHide, fetchDat
   useEffect(() => {
     setQuotation(passedQuotation);
     if (isQualifyCreateQuotation) {
-      // if (quotation && quotation.quotationItems?.length > 0) {
-      //   setQuotationItems(quotation.quotationItems);
-      //   setCurrentId(quotation.quotationItems?.length || 0);
-      //   setTitle(quotation.title);
-      //   setCreatedDate(quotation.createdDate);
-      //   setExpiredDate(quotation.expiredDate);
-      // } else {
-      //   const handleFetchInitialQuotation = async () => {
-      //     try {
-      //       const response = await axios.get(`${ServerUrl}/api/quotation/${orderId}/default-quote`);
-      //       if (response.status === 200) {
-      //         const defaultQuote = response.data?.responseList?.quotation;
-      //         setQuotationItems(defaultQuote.quotationItems);
-      //         setCurrentId(defaultQuote.quotationItems.length || 0);
-      //       }
-      //     } catch (error) {
-      //       console.error(error);
-      //     }
-      //   };
-      //   handleFetchInitialQuotation();
-      // }
-      if (!passedQuotation || passedQuotation.quotationItems?.length === 0) {
+      if (!passedQuotation || (passedQuotation?.quotationItems?.length === 0)) {
         const handleFetchInitialQuotation = async () => {
           const response = await axios.get(`${ServerUrl}/api/quotation/${orderId}/default-quote`);
           if (response.status === 200) {
             const defaultQuote = response.data.responseList.quotation;
             setQuotation((prev) => ({
               ...prev,
-              title: defaultQuote.name,
+              title: defaultQuote.title,
               createdDate: currentDate.toISOString().split("T")[0],
               expiredDate: new Date(currentDate.setMonth(currentDate.getMonth() + 3)).toISOString().split("T")[0],
               quotationItems: defaultQuote.quotationItems,
@@ -120,13 +100,13 @@ function QuotationModal({ data, passedQuotation, orderId, show, onHide, fetchDat
               manufactureCost: defaultQuote.manufactureCost,
               markupRatio: defaultQuote.markupRatio,
             }))
-            setCurrentId(quotation.quotationItems.length);
+            setCurrentId(defaultQuote?.quotationItems?.length);
           }
         }
         handleFetchInitialQuotation();
       }
     }
-  }, [passedQuotation, isQualifyCreateQuotation, orderId]);
+  }, [passedQuotation, isQualifyCreateQuotation, orderId, data]);
 
   useEffect(() => {
     if (isQualifyApproving) {
@@ -243,19 +223,22 @@ function QuotationModal({ data, passedQuotation, orderId, show, onHide, fetchDat
           />
         </td>
         <td>
-          <FormControl
-            type="number"
-            value={item.unitPrice}
-            onChange={(e) =>
-              handleInputChange(
-                item.itemID,
-                "unitPrice",
-                parseFloat(e.target.value)
-              )
-            }
-            readOnly={!isQualifyCreateQuotation}
-            style={{ display: "inline" }}
-          />
+          <InputGroup>
+            <InputGroup.Text>$</InputGroup.Text>
+            <FormControl
+              type="number"
+              value={item.unitPrice}
+              onChange={(e) =>
+                handleInputChange(
+                  item.itemID,
+                  "unitPrice",
+                  parseFloat(e.target.value)
+                )
+              }
+              readOnly={!isQualifyCreateQuotation}
+              style={{ display: "inline" }}
+            />
+          </InputGroup>
         </td>
         <td>
           <FormControl
@@ -277,10 +260,14 @@ function QuotationModal({ data, passedQuotation, orderId, show, onHide, fetchDat
     );
   });
 
-  const finalPrice = quotation?.quotationItems?.reduce(
-    (acc, item) => acc + (item.totalPrice || 0),
-    0
-  );
+  const finalPrice = () => {
+    let total = quotation?.quotationItems?.reduce(
+      (acc, item) => acc + (item.totalPrice || 0),
+      0
+    );
+    console.log(total);
+    return total + quotation?.consultCost + quotation?.designCost + quotation?.manufactureCost;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -297,12 +284,11 @@ function QuotationModal({ data, passedQuotation, orderId, show, onHide, fetchDat
       if (response.status === 200) {
         setQuotation((prev) => ({
           ...prev,
-          id: response.data.responseList.id,
+          id: response.data.responseList.quotation.id,
         }))
         setShowCreateReport(true);
         onHide();
         showAlert("Quotation Submit successfully", "", "success");
-        fetchData();
       }
     } catch (error) {
       showAlert("Failed to submit quotation", "", "danger");
@@ -365,7 +351,7 @@ function QuotationModal({ data, passedQuotation, orderId, show, onHide, fetchDat
             </Row>
             {/*   Date Row   */}
             <Row className="mb-2">
-                <Form.Label column sm="2">Created Date:</Form.Label>
+                <Form.Label column sm="2" style={{ fontSize: "1.1rem", fontWeight: "bold" }}>Created Date:</Form.Label>
                 <Col sm="4">
                   <Form.Control
                     type="date"
@@ -375,7 +361,7 @@ function QuotationModal({ data, passedQuotation, orderId, show, onHide, fetchDat
                     readOnly={!isQualifyCreateQuotation}
                   />
                 </Col>
-                <Form.Label column sm="2">Expired Date:</Form.Label>
+                <Form.Label column sm="2" style={{ fontSize: "1.1rem", fontWeight: "bold" }}>Expired Date:</Form.Label>
                 <Col sm="4">
                   <Form.Control
                     type="date"
@@ -391,7 +377,7 @@ function QuotationModal({ data, passedQuotation, orderId, show, onHide, fetchDat
               <Col sm={4} style={{paddingInline: "1.5em"}}>
                 <Form.Group>
                   <Row>
-                    <Form.Label>Consult Cost:</Form.Label>
+                    <Form.Label style={{ fontSize: "1.1rem", fontWeight: "bold" }}>Consult Cost:</Form.Label>
                   </Row>
                   <Row>
                     <Form.Control
@@ -407,7 +393,7 @@ function QuotationModal({ data, passedQuotation, orderId, show, onHide, fetchDat
               <Col sm={4} style={{paddingInline: "1.5em"}}>
                 <Form.Group>
                   <Row>
-                    <Form.Label>Design Cost:</Form.Label>
+                    <Form.Label style={{ fontSize: "1.1rem", fontWeight: "bold" }}>Design Cost:</Form.Label>
                   </Row>
                   <Row>
                     <Form.Control
@@ -423,7 +409,7 @@ function QuotationModal({ data, passedQuotation, orderId, show, onHide, fetchDat
               <Col sm={4} style={{paddingInline: "1.5em"}}>
                 <Form.Group>
                   <Row>
-                    <Form.Label>Manufacture Cost:</Form.Label>
+                    <Form.Label style={{ fontSize: "1.1rem", fontWeight: "bold" }}>Manufacture Cost:</Form.Label>
                   </Row>
                   <Row>
                     <Form.Control
@@ -439,7 +425,7 @@ function QuotationModal({ data, passedQuotation, orderId, show, onHide, fetchDat
             </Row>
 
             <div >
-            <ResizableTable resizable={true} resizeOptions={{}}>
+            <ResizableTable resizable={true} resizeOptions={{}} className="table-clear" style={{position: "relative"}}>
               <thead>
                 <tr>
                   <th>Id</th>
@@ -456,7 +442,7 @@ function QuotationModal({ data, passedQuotation, orderId, show, onHide, fetchDat
               <tbody>
                 {getQuotationItems}
                 <tr style={{ position: "sticky", bottom: "3%"}}>
-                  <td colSpan={4}>Markup Ratio</td>
+                  <td colSpan={4} style={{ fontSize: "1.1rem", fontWeight: "bold" }}>Markup Ratio</td>
                   <td>
                     <InputGroup>
                       <FormControl
@@ -473,11 +459,11 @@ function QuotationModal({ data, passedQuotation, orderId, show, onHide, fetchDat
                       <InputGroup.Text>%</InputGroup.Text>
                     </InputGroup>
                   </td>
-                  <td colSpan={isQualifyCreateQuotation? 2: 1}>{formatPrice(finalPrice * quotation?.markupRatio)}</td>
+                  <td colSpan={isQualifyCreateQuotation? 2: 1}>{formatPrice(finalPrice() * quotation?.markupRatio)}</td>
                 </tr>
                 <tr style={{ position: "sticky", bottom: "-4%"}}>
-                  <td colSpan={5}>Final Price</td>
-                  <td colSpan={isQualifyCreateQuotation? 2: 1}>{formatPrice(finalPrice + finalPrice * quotation?.markupRatio)}</td>
+                  <td colSpan={5} style={{ fontSize: "1.1rem", fontWeight: "bold" }}>Final Price</td>
+                  <td colSpan={isQualifyCreateQuotation? 2: 1}>{formatPrice(finalPrice() + finalPrice() * quotation?.markupRatio)}</td>
                 </tr>
               </tbody>
             </ResizableTable>
@@ -541,6 +527,7 @@ function QuotationModal({ data, passedQuotation, orderId, show, onHide, fetchDat
           orderId={orderId}
           reportType="QUOTATION"
           onHide={() => setShowCreateReport(false)}
+          fetchData={fetchData}
         />
       )}
     </>
