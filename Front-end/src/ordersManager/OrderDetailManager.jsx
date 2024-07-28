@@ -36,6 +36,8 @@ function OrderDetailManager() {
   const [imageLink, setImageLink] = useState(null);
   const [confirmNotification, setConfirmNotification] = useState(null);
   const [startRender, setStartRender] = useState(true);
+  const [buttonIsLoading, setButtonIsLoading] = useState(false);
+  const [reportContentId, setReportContentId] = useState();
 
   const isQualifiedApproveSpecification =
     ["ADMIN", "MANAGER"].includes(decodedToken.role) &&
@@ -130,6 +132,7 @@ function OrderDetailManager() {
 
   const handleDesignImageSubmit = async (e) => {
     e.preventDefault();
+    setButtonIsLoading(true);
     const formData = new FormData();
 
     if (designImage instanceof File) {
@@ -143,12 +146,16 @@ function OrderDetailManager() {
         }
       );
       if (response.status === 200) {
-        setStartRender(true);
         setImageLink(response.data.responseList.designUrl);
+        setReportContentId(response.data.responseList.designId)
         setShowDesignReport(true);
+        setButtonIsLoading(false);
+        showAlert("Upload Design Image successfully", "", "success");
+      } else {
+        showAlert("Upload Design Image failed", "", "danger");
       }
     } else {
-      console.error("designImage is not a File");
+      showAlert("Upload Design Image failed", "", "danger");
     }
   };
 
@@ -167,13 +174,15 @@ function OrderDetailManager() {
         }
       );
       if (response.status === 200) {
-        setStartRender(true);
-        setImageLink(response.data.responseList.designUrl);
+        setImageLink(response.data.responseList.productUrl);
+        setReportContentId(response.data.responseList.productId);
         setShowProductReport(true);
-        showAlert("Upload Design image successfully", "", "success");
+        showAlert("Upload Product Proof successfully", "", "success");
+      } else {
+        showAlert("Upload Product Proof failed", "", "danger");
       }
     } else {
-      showAlert("Upload design image failed", "", "danger");
+      showAlert("Upload Product Proof failed", "", "danger");
     }
   };
 
@@ -186,6 +195,8 @@ function OrderDetailManager() {
       if (response.status === 200) {
         showAlert("Assigned Staff successfully", "", "success");
         setStartRender(true);
+      } else {
+        showAlert("Assigned Staff failed", response.data.message, "danger");
       }
     } catch (error) {
       showAlert("Assigned Staff failed", "", "danger");
@@ -233,11 +244,11 @@ function OrderDetailManager() {
                   <tbody>
                     <tr>
                       <th>Id</th>
-                      <td>{data.product?.id || "NaN"}</td>
+                      <td>{data?.id || "NaN"}</td>
                     </tr>
                     <tr>
                       <th>Name</th>
-                      <td>{data.name || "NaN"}</td>
+                      <td>{data?.name || "NaN"}</td>
                     </tr>
                     <tr>
                       <th>Created Date</th>
@@ -258,6 +269,14 @@ function OrderDetailManager() {
                     <tr>
                       <th>Status</th>
                       <td>
+                        {data.fromTemplate && (
+                          <Badge
+                            className="text-white"
+                            bg="info"
+                          >
+                            From template
+                          </Badge>
+                        )}
                         <Badge
                           className="text-white"
                           bg={
@@ -393,7 +412,7 @@ function OrderDetailManager() {
                     >
                       <h4>Upload Design Image</h4>
                     </div>
-                    <Form noValidate onSubmit={handleDesignImageSubmit}>
+                    <Form noValidate>
                       <Form.Control
                         type="file"
                         name="designImage"
@@ -401,8 +420,11 @@ function OrderDetailManager() {
                         onChange={(e) => setDesignImage(e.target.files[0])}
                       />
                       <div className="d-flex justify-content-end">
-                        <Button type="submit" className="mt-2 mb-2">
-                          Upload
+                        <Button type="submit" className="mt-2 mb-2"
+                          onClick={buttonIsLoading? null: handleDesignImageSubmit}
+                          disabled={buttonIsLoading}
+                        >
+                          {buttonIsLoading ? "Loading..." : "Submit design"}
                         </Button>
                       </div>
                     </Form>
@@ -489,23 +511,25 @@ function OrderDetailManager() {
         fetchData={() => setStartRender(true)}
       />
 
-      {showDesignReport && data.design && (
+      {showDesignReport && reportContentId && (
         <CreateReport
           header="Submit Design Report"
-          reportContentId={data?.design?.id}
+          reportContentId={reportContentId}
           orderId={data.id}
           reportType="DESIGN"
           onHide={() => setShowDesignReport(false)}
+          fetchData={() => setStartRender(true)}
         />
       )}
 
-      {showProductReport && data.design && (
+      {showProductReport && reportContentId && (
         <CreateReport
           header="Submit Finished Product Report"
-          reportContentId={data?.design?.id}
+          reportContentId={reportContentId}
           orderId={data.id}
           reportType="FINISHED_PRODUCT"
           onHide={() => setShowProductReport(false)}
+          fetchData={() => setStartRender(true)}
         />
       )}
     </>
