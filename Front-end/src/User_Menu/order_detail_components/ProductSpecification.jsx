@@ -51,7 +51,7 @@ const renderSpecification = ( specification, parentKey = "") => {
       } else {
         const lowercaseKey = formattedKey.toLowerCase();
         if (lowercaseKey.includes("gemstone") && !key.toLowerCase().includes("gemstone")) key = "Gemstone " + key;
-        return (!lowercaseKey.includes("id") && !lowercaseKey.includes("status") && !lowercaseKey.includes("weightto") && !lowercaseKey.includes("weightfrom") && String(value).toLowerCase() !== "nan")  && (
+        return (!lowercaseKey.includes("id") && !lowercaseKey.includes("status") && !lowercaseKey.includes("weightto") && !lowercaseKey.includes("weightfrom") && String(value).toLowerCase() !== "nan" && value !== null)  && (
           <tr key={formattedKey}>
             <td style={{ width: "50%" }}>{formatString(key)}</td>
             <td>{(value)}</td>
@@ -118,21 +118,11 @@ const ProductSpecificationTable = ({ orderStatus, selectedProduct, role, isEditi
       <Table striped bordered hover>
         <tbody>{renderSpecification(formValues,)}</tbody>
       </Table>
-      {isQualifiedEdit && ((editMode && (
-        <div className="d-flex justify-content-between gap-lg-5 gap-sm-2">
-          <Button style={{ width: "100%" }} variant="primary" onClick={handleSave}>
-            Save
-          </Button>
-          <Button style={{ width: "100%" }} variant="primary" onClick={() => setEditMode(!editMode)}>
-            Close
-          </Button>
-        </div>
-      )) || (
-      !editMode && (
+      {isQualifiedEdit && !editMode && (
         <Button style={{ width: "100%" }} variant="primary" onClick={handleEdit}>
           Edit
         </Button>
-      )))}
+      )}
       {showEditModal && (
         <Modal centered keyboard size="xl" scrollable animation show={showEditModal} onHide={() => {setShowEditModal(false); setEditMode(false)}}>
           <Modal.Header style={{width: "100%"}} closeButton ><p style={{ fontSize: "1.6em", fontWeight: "bold", textAlign: "center", width: "100%"}}>Edit Specification</p></Modal.Header>
