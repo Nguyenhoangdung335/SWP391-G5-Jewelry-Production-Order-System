@@ -178,7 +178,7 @@ public class OrderServiceImpl implements OrderService {
                         staffs.getSaleStaffID(), Role.SALE_STAFF
                 )
         );
-        if (staffs.getDesignStaffID() != null) {
+        if (staffs.getDesignStaffID() != null && !staffs.getDesignStaffID().isEmpty()) {
             order.setDesignStaff(
                     staffService.findStaffByIdWithRole(
                             staffs.getDesignStaffID(), Role.DESIGN_STAFF
@@ -200,9 +200,9 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public double calculateTotalRevenueMonthly(int month) {
+    public double calculateTotalRevenueMonthly(int month, int year) {
         double totalRevenue = 0;
-        for(Order order : orderRepository.findAllByMonthAndYear(month, 2024)) {
+        for(Order order : orderRepository.findAllByMonthAndYear(month, year)) {
             if (QUALIFIED_STATUS.contains(order.getStatus()))
                 totalRevenue += order.getTransactions().getAmount();
         };
