@@ -76,8 +76,9 @@ function AssignedStaff({ decodedToken, data, onSubmit }) {
               isQualified={isQualifiedAssigningStaff}
               staffOptions={staff.saleStaffs}
               controlId="formSaleStaff"
-            />
-          <StaffField
+          />
+          {!data.fromTemplate && (
+            <StaffField
               label="Design Staff"
               value={selectedDesignStaff}
               onChange={(e) => setSelectedDesignStaff(e.target.value)}
@@ -86,7 +87,8 @@ function AssignedStaff({ decodedToken, data, onSubmit }) {
               staffOptions={staff.designStaffs}
               controlId="formDesignStaff"
             />
-            <StaffField
+          )}
+          <StaffField
               label="Production Staff"
               value={selectedProductionStaff}
               onChange={(e) => setSelectedProductionStaff(e.target.value)}
@@ -94,7 +96,7 @@ function AssignedStaff({ decodedToken, data, onSubmit }) {
               isQualified={isQualifiedAssigningStaff}
               staffOptions={staff.productionStaffs}
               controlId="formProductionStaff"
-            />
+          />
           {isQualifiedAssigningStaff &&
           <Button className="mt-3" onClick={handleSubmit}>
             Submit
@@ -111,7 +113,7 @@ function StaffField({label, value, onChange, disabled, isQualified, staffOptions
     <>
       {isQualified &&
         <Form.Group controlId={controlId}>
-          <Form.Label>{label}</Form.Label>
+          <Form.Label><h6>{label}</h6></Form.Label>
           <Form.Control
             as="select"
             value={value}
@@ -129,16 +131,16 @@ function StaffField({label, value, onChange, disabled, isQualified, staffOptions
           </Form.Control>
         </Form.Group>
       }
-      {!isQualified && <Form.Group>
-        <Form.Group controlId={controlId} className="d-flex justify-content-between">
-          <Form.Label style={{minWidth: "32%"}}>{label}</Form.Label>
+      {!isQualified &&
+        <Form.Group controlId={controlId} className="d-flex justify-content-between align-items-center">
+          <Form.Label style={{minWidth: "32%", margin: "0", }}><h6>{label}</h6></Form.Label>
           <Form.Control style={{textAlign: "right"}}
             as="input"
             plaintext readOnly
             value={(value) ?(value.id + "-" + value.userInfo?.firstName + " " +  value.userInfo?.lastName) : "NaN"}
           />
         </Form.Group>
-      </Form.Group>}
+      }
     </>
   );
 }
