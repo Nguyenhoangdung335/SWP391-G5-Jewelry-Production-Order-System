@@ -26,7 +26,7 @@ public interface OrderService {
     List<Order> findOrderByAccountId (String accountId);
     Long countAllOrders ();
 
-    double calculateTotalRevenueMonthly(int month);
+    double calculateTotalRevenueMonthly(int month, int year);
 
     Order findLatestUncompletedOrderByStaffAndRole(String staffId, Role role);
 

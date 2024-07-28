@@ -61,7 +61,7 @@ public class CrawlDataServiceImpl implements CrawlDataService {
                 Optional<Metal> existingMaterialOpt = metalRepository.findByNameAndUnit(metal.getName(), metal.getUnit());
                 if (existingMaterialOpt.isPresent()) {
                     Metal existingMetal = existingMaterialOpt.get();
-                    existingMetal.setPrice(metal.getPrice());
+                    existingMetal.setMarketPrice(metal.getMarketPrice());
                     existingMetal.setUpdatedTime(metal.getUpdatedTime());
                     metalRepository.save(existingMetal);
                 } else {

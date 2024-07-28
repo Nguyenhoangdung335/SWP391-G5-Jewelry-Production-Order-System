@@ -176,8 +176,8 @@ public class MessagesConstant {
                     Best regards,
                     %s
                     """,
-                    customerName, quotation.getHalfPrice(), order.getId(), quotation.getTotalPrice(), quotation.getHalfPrice(),
-                    (quotation.getTotalPrice() - quotation.getHalfPrice()), companyContact, companyName, companyName
+                    customerName, quotation.getHalfPrice(), order.getId(), quotation.getFinalPrice(), quotation.getHalfPrice(),
+                    (quotation.getFinalPrice() - quotation.getHalfPrice()), companyContact, companyName, companyName
             );
         }
     }

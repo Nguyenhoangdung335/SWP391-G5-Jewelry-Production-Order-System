@@ -348,8 +348,13 @@ const MetalUnit = ({ value, onChange, selectedMetalName }) => {
   );
 };
 
-const MetalWeight = ({ value = 0, onChange, minVal = 1, maxVal = 1000, step = 1, selectedUnit}) => {
-  const [tempValue, setTempValue] = useState(value);
+const MetalWeight = ({ value = 0, onChange, minVal = 1, maxVal = 200, step = 1, selectedUnit}) => {
+  const [tempValue, setTempValue] = useState((value < minVal)? minVal: value);
+  const [range, setRange] = useState({
+    min: minVal,
+    max: maxVal,
+    step: step,
+  });
   const [convertRate, setConvertRate] = useState()
   const handleMouseUp = (e) => {
     onChange({ target: { name: e.target.name, value: tempValue } });
@@ -362,26 +367,30 @@ const MetalWeight = ({ value = 0, onChange, minVal = 1, maxVal = 1000, step = 1,
   const handleChange = (event) => {
     setTempValue(event.target.value);
   };
-  if (selectedUnit.toLowerCase() === "kilogram") {
+  if (selectedUnit?.toLowerCase() === "kilogram") {
     maxVal = 10;
     step = 0.001;
   }
 
   useEffect(() => {
-    switch (selectedUnit.toLowerCase()) {
+    switch (selectedUnit?.toLowerCase()) {
       case "kilogram":
         setConvertRate(1000);
+        setRange({ min: 0.01, max: 10, step: 0.01, });
         break;
       case "ounce":
         setConvertRate(28.35);
+        setRange({ min: 0.1, max: 50, step: 0.1, });
         break;
       case "tola":
           setConvertRate(11.6638);
+          setRange({ min: 0.1, max: 50, step: 0.1, });
           break;
       default:
+        setRange({ min: minVal, max: maxVal, step: step, });
           setConvertRate(1);
     }
-  }, [selectedUnit]);
+  }, [selectedUnit, maxVal, minVal, step]);
 
   const formatUnit = (num) => {
     return Number(num).toLocaleString('en', {minimumFractionDigits: 0, maximumFractionDigits: 2});
@@ -389,7 +398,7 @@ const MetalWeight = ({ value = 0, onChange, minVal = 1, maxVal = 1000, step = 1,
 
   return (
     <Form.Group className="mb-3 position-relative">
-      <Form.Label className="d-block">Metal Weight*: {formatUnit(tempValue)} {selectedUnit} {!selectedUnit.toLowerCase().includes("gram")? "(" + formatUnit(tempValue*convertRate) + " gram)" : ""}</Form.Label>
+      <Form.Label className="d-block">Metal Weight*: {formatUnit(tempValue)} {selectedUnit} {!selectedUnit?.toLowerCase().includes("gram")? "(" + formatUnit(tempValue*convertRate) + " gram)" : ""}</Form.Label>
       <div className="d-flex justify-content-between align-items-center">
         <span >{minVal}</span>
         <Form.Range
@@ -549,7 +558,7 @@ const GemstoneColor = ({ value, onChange, gemstoneColor }) => {
 };
 
 const GemstoneWeight = ({ value: gemstoneWeight, onChange, minVal = 0.05, maxVal = 5, step = 0.01 }) => {
-  const [tempValue, setTempValue] = useState(gemstoneWeight);
+  const [tempValue, setTempValue] = useState(gemstoneWeight || 0.05);
   const handleMouseUp = (e) => {
     onChange({ target: { name: e.target.name, value: tempValue } });
   };
@@ -627,18 +636,18 @@ const GemstoneForm = ({gemstoneData, onChange, selectedData}) => {
 
 function RenderGemstoneTable ({selectedGemstoneProp, handleSelectGemstone}) {
   const [gemstoneData, setGemstoneData] = useState([]);
-  const [selectedGemstone, setSelectedGemstone] = useState(null);
+  const [selectedGemstone, setSelectedGemstone] = useState(selectedGemstoneProp.selectedGemstone);
   const isQualifiedRender = selectedGemstoneProp.selectedGemstoneName;
 
   useEffect(() =>  {
     if ( isQualifiedRender ) {
       const requestBody = {
-        name: selectedGemstoneProp.selectedGemstoneName,
-        shape: selectedGemstoneProp.selectedGemstoneShape,
-        clarity: selectedGemstoneProp.selectedGemstoneClarity,
-        color: selectedGemstoneProp.selectedGemstoneColor,
-        weight: selectedGemstoneProp.selectedGemstoneWeight,
-        cut: selectedGemstoneProp.selectedGemstoneCut,
+        name: selectedGemstoneProp.selectedGemstoneName || null,
+        shape: selectedGemstoneProp.selectedGemstoneShape || null,
+        clarity: selectedGemstoneProp.selectedGemstoneClarity || null,
+        color: selectedGemstoneProp.selectedGemstoneColor || null,
+        weight: selectedGemstoneProp.selectedGemstoneWeight || null,
+        cut: selectedGemstoneProp.selectedGemstoneCut || null,
       };
 
       const request = {

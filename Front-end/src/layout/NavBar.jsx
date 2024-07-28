@@ -17,6 +17,7 @@ import logo_white from "./../assets/logo_white.svg";
 import { Badge } from "react-bootstrap";
 import ServerUrl from "../reusable/ServerUrl";
 import axios from "axios";
+import style from "./../App.css";
 
 // Define RBAC configuration
 const rbacConfig = {
@@ -100,7 +101,7 @@ export default function NavBar() {
       id: 2,
       to: "/userManager/client_manager",
       icon: <FaUsers size={30} color="white" />,
-      label: "Clients",
+      label: "Customers",
     },
     {
       id: 3,
@@ -118,7 +119,7 @@ export default function NavBar() {
       id: 5,
       to: "/userManager/employees_manager",
       icon: <LuUser2 size={30} color="white" />,
-      label: "Employees",
+      label: "Staffs",
     },
     {
       id: 6,
@@ -177,7 +178,7 @@ export default function NavBar() {
           </div>
         </Link>
       </div>
-      <div className="d-flex flex-column gap-3 mt-4">
+      <div className="d-flex flex-column gap-3 mt-4" style={{height: "60vh", overflowX: "hidden", overflowY: "auto"}}>
         {navLinks.map((navLink) =>
           isAllowed(userRole, navLink.to) ? (
             <div key={navLink.to} className=" side-bar-item side-bar-ltr">

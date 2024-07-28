@@ -41,7 +41,7 @@ public class GemstoneServiceImpl implements GemstoneService{
 
     @Override
     public Page<Gemstone> findAll(int page, int pageSize, String sortBy) {
-        return gemstoneRepository.findAll(PageRequest.of(page, pageSize, Sort.by(sortBy).ascending()));
+        return gemstoneRepository.getAllByActiveIsTrue(PageRequest.of(page, pageSize, Sort.by(sortBy).ascending()));
     }
 
     @Override

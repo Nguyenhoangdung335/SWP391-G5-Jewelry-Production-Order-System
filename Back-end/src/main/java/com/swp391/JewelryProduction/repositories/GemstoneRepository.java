@@ -7,7 +7,6 @@ import com.swp391.JewelryProduction.enums.gemstone.GemstoneShape;
 import com.swp391.JewelryProduction.pojos.designPojos.Gemstone;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -34,7 +33,7 @@ public interface GemstoneRepository extends JpaRepository<Gemstone, Long> {
 
 
     @Query("SELECT g FROM Gemstone g WHERE " +
-            "(:name IS NULL OR g.name = :name) AND " +
+            "(:name IS NULL OR g.name LIKE %:name%) AND " +
             "(:shape IS NULL OR g.shape = :shape) AND " +
             "(:clarity IS NULL OR g.clarity = :clarity) AND " +
             "(:color IS NULL OR g.color = :color) AND " +
@@ -48,4 +47,5 @@ public interface GemstoneRepository extends JpaRepository<Gemstone, Long> {
             @Param("cut") GemstoneCut cut,
             @Param("weight") Double weight
     );
+
 }

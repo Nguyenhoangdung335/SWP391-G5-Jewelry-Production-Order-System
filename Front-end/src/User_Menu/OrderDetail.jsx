@@ -197,46 +197,54 @@ function OrderDetail() {
             <div className="p-3">
               <h4 className="pb-2">Order Id: {data.id}</h4>
               <Table bordered hover>
-                <tr>
-                  <th>Id</th>
-                  <td>{data.id || "NaN"}</td>
-                </tr>
-                <tr>
-                  <th>Name</th>
-                  <td>{data.name || "NaN"}</td>
-                </tr>
-                <tr>
-                  <th>Created Date</th>
-                  <td>{arrayToDate(data.createdDate)}</td>
-                </tr>
-                <tr>
-                  <th>Completed Date</th>
-                  <td>
-                    {data.completedDate
-                      ? arrayToDate(data.completedDate)
-                      : "Ongoing"}
-                  </td>
-                </tr>
-                <tr>
-                  <th>Total Price</th>
-                  <td>
-                    {data?.quotation?.totalPrice ? formatPrice(data.quotation?.totalPrice) :
-                      "Dont have quotation yet"}
-                  </td>
-                </tr>
-                <tr>
-                  <th>Status</th>
-                  <td>
-                    <Badge
-                      className="text-white"
-                      bg={
-                        data.status === "ORDER_COMPLETED" ? "success" : "danger"
-                      }
-                    >
-                      {data.status}
-                    </Badge>
-                  </td>
-                </tr>
+                <tbody>
+                  <tr>
+                    <th>Id</th>
+                    <td>{data.id || "NaN"}</td>
+                  </tr>
+                  <tr>
+                    <th>Name</th>
+                    <td>{data.name || "NaN"}</td>
+                  </tr>
+                  <tr>
+                    <th>Created Date</th>
+                    <td>{arrayToDate(data.createdDate)}</td>
+                  </tr>
+                  <tr>
+                    <th>Completed Date</th>
+                    <td>
+                      {data.completedDate
+                        ? arrayToDate(data.completedDate)
+                        : "Ongoing"}
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>Total Price</th>
+                    <td>
+                      {data?.quotation?.finalPrice ? formatPrice(data.quotation?.finalPrice) :
+                        "Dont have quotation yet"}
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>Status</th>
+                    <td>
+                      {data.fromTemplate && (
+                        <Badge
+                          className="text-white"
+                          bg="info"
+                        >
+                          From template
+                        </Badge>
+                      )}
+                      <Badge
+                        className="text-white"
+                        bg={data.status === "ORDER_COMPLETED" ? "success" : "danger"}
+                      >
+                        {data.status}
+                      </Badge>
+                    </td>
+                  </tr>
+                </tbody>
               </Table>
             </div>
           </div>
@@ -410,11 +418,10 @@ function OrderDetail() {
       {data.quotation && (
         <QuotationModal
           data={data}
-          quotation={data.quotation}
+          passedQuotation={data.quotation}
           orderId={data.id}
           show={showQuotation}
           onHide={() => setShowQuotation(false)}
-          onQuotationChange={fetchData}
           fetchData={() => fetchData()}
         />
       )}

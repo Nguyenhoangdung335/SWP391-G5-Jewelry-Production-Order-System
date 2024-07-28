@@ -13,10 +13,8 @@ import reactor.core.scheduler.Schedulers;
 import java.text.DateFormatSymbols;
 import java.time.Duration;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.time.format.TextStyle;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -31,16 +29,18 @@ public class AdminServiceImpl implements AdminService{
         data.put("numCustomers", accountService.countAllAccountByRole(List.of(Role.CUSTOMER)));
         data.put("numStaffs", accountService.countAllAccountByRole(List.of(Role.SALE_STAFF, Role.DESIGN_STAFF, Role.PRODUCTION_STAFF, Role.MANAGER, Role.ADMIN)));
         data.put("numOrders", orderService.countAllOrders());
-        String currentYear = String.valueOf(LocalDate.now().getYear());
-        List<String> months = Arrays.stream(new DateFormatSymbols().getMonths()).filter(month -> !month.isEmpty()).map(month -> month + " " + currentYear).toList();
+        LocalDate currentDate = LocalDate.now();
         List<Object> monthlyRevenue = new ArrayList<>();
+        List<String> labelsList = new ArrayList<>();
         double revenue = 0;
-        for(int i = 1; i <= months.size(); i ++ ) {
-            double temp = orderService.calculateTotalRevenueMonthly(i);
+        for(int i = 12; i >= 1; i-- ) {
+            LocalDate tempDate = currentDate.minusMonths(i);
+            double temp = orderService.calculateTotalRevenueMonthly(tempDate.getMonthValue(), tempDate.getYear());
             revenue += temp;
             monthlyRevenue.add(temp);
+            labelsList.add(String.format("%s %s", tempDate.getMonth().getDisplayName(TextStyle.SHORT, Locale.getDefault()), tempDate.getYear()));
         }
-        data.put("labelsList", months);
+        data.put("labelsList", labelsList);
         data.put("dataList", monthlyRevenue);
         data.put("revenue", String.format("%.2f", revenue));
         return data;

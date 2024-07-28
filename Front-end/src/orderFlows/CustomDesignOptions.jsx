@@ -71,23 +71,7 @@ function OrderPage1() {
   );
 }
 
-const RenderSpecificationForm = ({handleSubmit}) => {
-  const [formState, setFormState] = useState({
-    selectedType: "",
-    selectedStyle: "",
-    selectedOccasion: "",
-    selectedLength: "",
-    selectedTexture: "",
-    selectedChainType: "",
-    selectedMetalName: "",
-    selectedMetalUnit: "",
-    selectedMetal: null,
-    selectedMetalWeight: "",
-    selectedGemstone: null,
-    selectedGemstoneWeight: "",
-    metalUnits: null,
-  });
-
+const RenderSpecificationForm = ({handleSubmit, initialSpecs = null}) => {
   const [metalData, setMetalData] = useState([]);
   const [metalName, setMetalName] = useState([]);
   const [metalUnit, setMetalUnit] = useState({});
@@ -100,14 +84,29 @@ const RenderSpecificationForm = ({handleSubmit}) => {
     minWeight: "",
     maxWeight: ""
   });
+  const [formState, setFormState] = useState({
+    selectedType: initialSpecs? initialSpecs.type :"",
+    selectedStyle: initialSpecs? initialSpecs.style :"",
+    selectedOccasion: initialSpecs? initialSpecs.occasion :"",
+    selectedLength: initialSpecs? initialSpecs.length :"",
+    selectedTexture: initialSpecs? initialSpecs.texture :"",
+    selectedChainType: initialSpecs? initialSpecs.chainType :"",
+    selectedMetalName: initialSpecs? initialSpecs.metal.name :"",
+    selectedMetalUnit: initialSpecs? initialSpecs.metal.unit :"",
+    selectedMetal: initialSpecs? initialSpecs.metal :null,
+    selectedMetalWeight: initialSpecs? initialSpecs.metalWeight :"",
+    selectedGemstone: initialSpecs? initialSpecs.gemstone :null,
+    selectedGemstoneWeight: initialSpecs? initialSpecs.gemstoneWeight :"",
+    metalUnits: initialSpecs?  metalUnit[initialSpecs.metal.name] || [] :null,
+  });
   const [selectedGemstoneProp, setSelectedGemstoneProp] = useState({
-    selectedGemstoneName: "",
-    selectedGemstoneShape: "",
-    selectedGemstoneCut: "",
-    selectedGemstoneClarity: "",
-    selectedGemstoneColor: "",
-    selectedGemstoneWeight: "",
-    selectedGemstone: null,
+    selectedGemstoneName: initialSpecs? initialSpecs.gemstone.name: "",
+    selectedGemstoneShape: initialSpecs? initialSpecs.gemstone.shape: "",
+    selectedGemstoneCut: initialSpecs? initialSpecs.gemstone.cut: "",
+    selectedGemstoneClarity: initialSpecs? initialSpecs.gemstone.clarity: "",
+    selectedGemstoneColor: initialSpecs? initialSpecs.gemstone.color: "",
+    selectedGemstoneWeight: initialSpecs? initialSpecs.gemstoneWeight: "",
+    selectedGemstone: initialSpecs? initialSpecs.gemstone: null,
   });
 
   useEffect(() => {
@@ -192,17 +191,18 @@ const RenderSpecificationForm = ({handleSubmit}) => {
       const units = metalUnit[formState.selectedMetalName] || [];
       setFormState((prev) => ({
         ...prev,
-        selectedMetalUnit: units[0],
+        selectedMetalUnit: formState.selectedMetalUnit? formState.selectedMetalUnit: units[0],
         selectedMetal: metalData.find(
           (metal) =>
             metal.name === formState.selectedMetalName && metal.unit === units[0]
         ),
         selectedChainType: ["Necklace", "Bracelet", "Anklet"].includes(formState.selectedType) ? "Default": "NaN",
         selectedTexture: "Default",
+        selectedMetalWeight: 1,
         metalUnits: units,
       }));
     }
-  }, [formState.selectedMetalName, metalData]);
+  }, [formState.selectedMetalName, metalData, metalUnit]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -243,23 +243,28 @@ const RenderSpecificationForm = ({handleSubmit}) => {
     if (name === "selectedGemstoneName" && value === "") {
       setSelectedGemstoneProp({
         selectedGemstoneName: null,
-        selectedGemstoneShape: null,
-        selectedGemstoneCut: null,
-        selectedGemstoneClarity: null,
-        selectedGemstoneColor: null,
-        selectedGemstoneWeight: null,
+        selectedGemstoneShape: "",
+        selectedGemstoneCut: "",
+        selectedGemstoneClarity: "",
+        selectedGemstoneColor: "",
+        selectedGemstoneWeight: "0.05",
         selectedGemstone: null,
       });
     } else if (name === "selectedGemstoneName" && value) {
       setSelectedGemstoneProp({
         selectedGemstoneName: value,
-        selectedGemstoneShape: gemstoneData.shapes[0],
-        selectedGemstoneCut: gemstoneData.cuts[0],
-        selectedGemstoneClarity: gemstoneData.clarities[0],
-        selectedGemstoneColor: gemstoneData.colors[0],
-        selectedGemstoneWeight: "0.01",
+        selectedGemstoneShape: "",
+        selectedGemstoneCut: "",
+        selectedGemstoneClarity: "",
+        selectedGemstoneColor: "",
+        selectedGemstoneWeight: "0.05",
         selectedGemstone: null,
       });
+    } else if (name === "selectedGemstoneWeight" && value) {
+      setSelectedGemstoneProp((prev) => ({
+        ...prev,
+        selectedGemstone: null,
+      }))
     }
   }, [gemstoneData]);
 

@@ -12,6 +12,7 @@ import com.swp391.JewelryProduction.pojos.designPojos.Product;
 import com.swp391.JewelryProduction.pojos.designPojos.ProductSpecification;
 import com.swp391.JewelryProduction.pojos.designPojos.Gemstone;
 import com.swp391.JewelryProduction.repositories.*;
+import com.swp391.JewelryProduction.services.quotation.QuotationService;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +49,8 @@ public class DataInitializer implements CommandLineRunner {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private GemstoneRepository gemstoneRepository;
+    @Autowired
+    private QuotationService quotationService;
 
 
     private final Faker faker = new Faker();
@@ -243,70 +246,71 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void initializeFakeMetalPrice () {
-        Metal metal1 = Metal.builder()
-                .name("Gold")
-                .unit("Ounce")
-                .price(61452.847799999996)
-                .updatedTime(LocalDateTime.now())
-                .build();
-
-        Metal metal2 = Metal.builder()
-                .name("Gold")
-                .unit("Tola")
-                .price(23044.7862)
-                .updatedTime(LocalDateTime.now())
-                .build();
-        Metal metal3 = Metal.builder()
-                .name("Gold")
-                .unit("Kilogram")
-                .price(1975973.859)
-                .updatedTime(LocalDateTime.now())
-                .build();
-        Metal metal4 = Metal.builder()
-                .name("Gold")
-                .unit("Gram 24K")
-                .price(1976.0867999999998)
-                .updatedTime(LocalDateTime.now())
-                .build();
-        Metal metal5 = Metal.builder()
-                .name("Gold")
-                .unit("Gram 22K")
-                .price(1811.1168)
-                .updatedTime(LocalDateTime.now())
-                .build();
-        Metal metal6 = Metal.builder()
-                .name("Gold")
-                .unit("Gram 21K")
-                .price(1728.6317999999999)
-                .updatedTime(LocalDateTime.now())
-                .build();
-        Metal metal7 = Metal.builder()
-                .name("Gold")
-                .unit("Gram 18K")
-                .price(1481.4306)
-                .updatedTime(LocalDateTime.now())
-                .build();
-        Metal metal8 = Metal.builder()
-                .name("Gold")
-                .unit("Gram 14K")
-                .price(1153.0134)
-                .updatedTime(LocalDateTime.now())
-                .build();
-
-        Metal metal9 = Metal.builder()
-                .name("Gold")
-                .unit("Gram 12K")
-                .price(988.0433999999999)
-                .updatedTime(LocalDateTime.now())
-                .build();
-
-        Metal metal10 = Metal.builder()
-                .name("Gold")
-                .unit("Gram 10K")
-                .price(823.3272)
-                .updatedTime(LocalDateTime.now())
-                .build();
-        metals = metalRepository.saveAll(List.of(metal1,metal2,metal3,metal4,metal5,metal6,metal7,metal8,metal9,metal10));
+//        Metal metal1 = Metal.builder()
+//                .name("Gold")
+//                .unit("Ounce")
+//                .price(61452.847799999996)
+//                .updatedTime(LocalDateTime.now())
+//                .build();
+//
+//        Metal metal2 = Metal.builder()
+//                .name("Gold")
+//                .unit("Tola")
+//                .price(23044.7862)
+//                .updatedTime(LocalDateTime.now())
+//                .build();
+//        Metal metal3 = Metal.builder()
+//                .name("Gold")
+//                .unit("Kilogram")
+//                .price(1975973.859)
+//                .updatedTime(LocalDateTime.now())
+//                .build();
+//        Metal metal4 = Metal.builder()
+//                .name("Gold")
+//                .unit("Gram 24K")
+//                .price(1976.0867999999998)
+//                .updatedTime(LocalDateTime.now())
+//                .build();
+//        Metal metal5 = Metal.builder()
+//                .name("Gold")
+//                .unit("Gram 22K")
+//                .price(1811.1168)
+//                .updatedTime(LocalDateTime.now())
+//                .build();
+//        Metal metal6 = Metal.builder()
+//                .name("Gold")
+//                .unit("Gram 21K")
+//                .price(1728.6317999999999)
+//                .updatedTime(LocalDateTime.now())
+//                .build();
+//        Metal metal7 = Metal.builder()
+//                .name("Gold")
+//                .unit("Gram 18K")
+//                .price(1481.4306)
+//                .updatedTime(LocalDateTime.now())
+//                .build();
+//        Metal metal8 = Metal.builder()
+//                .name("Gold")
+//                .unit("Gram 14K")
+//                .price(1153.0134)
+//                .updatedTime(LocalDateTime.now())
+//                .build();
+//
+//        Metal metal9 = Metal.builder()
+//                .name("Gold")
+//                .unit("Gram 12K")
+//                .price(988.0433999999999)
+//                .updatedTime(LocalDateTime.now())
+//                .build();
+//
+//        Metal metal10 = Metal.builder()
+//                .name("Gold")
+//                .unit("Gram 10K")
+//                .price(823.3272)
+//                .updatedTime(LocalDateTime.now())
+//                .build();
+//        metals = metalRepository.saveAll(List.of(metal1,metal2,metal3,metal4,metal5,metal6,metal7,metal8,metal9,metal10));
+        metals = metalRepository.findAll();
     }
 
     private void initializeFakeGemstone () {
@@ -1187,134 +1191,10 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private double generateRandomMetalWeight () {
-        return roundToDecimal(rand.nextDouble(0.001, 200), 2);
+        return roundToDecimal(rand.nextDouble(0.001, 100), 2);
     }
 
     private void initializeFakeProductSpecification () {
-//        GemstonePrice gemstone1 = GemstonePrice.builder()
-//                .gemstone(GEMSTONE_NAMES[rand.nextInt(GEMSTONE_NAMES.length)])
-//                .caratWeight(Math.round(rand.nextDouble() * 10.0) / 10.0)
-//                .shape(shapes[rand.nextInt(shapes.length)])
-//                .price(Double.parseDouble(faker.commerce().price(100.0, 1000.0)))
-//                .updatedTime(LocalDateTime.now())
-//                .build();
-//
-//        Metal metal2 = Metal.builder()
-//                .name("Gold")
-//                .unit("Tola")
-//                .price(23044.7862)
-//                .updatedTime(LocalDateTime.now())
-//                .build();
-//        Metal metal3 = Metal.builder()
-//                .name("Gold")
-//                .unit("Kilogram")
-//                .price(1975973.859)
-//                .updatedTime(LocalDateTime.now())
-//                .build();
-//        Metal metal4 = Metal.builder()
-//                .name("Gold")
-//                .unit("Gram 24K")
-//                .price(1976.0867999999998)
-//                .updatedTime(LocalDateTime.now())
-//                .build();
-//        Metal metal5 = Metal.builder()
-//                .name("Gold")
-//                .unit("Gram 22K")
-//                .price(1811.1168)
-//                .updatedTime(LocalDateTime.now())
-//                .build();
-//        Metal metal6 = Metal.builder()
-//                .name("Gold")
-//                .unit("Gram 21K")
-//                .price(1728.6317999999999)
-//                .updatedTime(LocalDateTime.now())
-//                .build();
-//        Metal metal7 = Metal.builder()
-//                .name("Gold")
-//                .unit("Gram 18K")
-//                .price(1481.4306)
-//                .updatedTime(LocalDateTime.now())
-//                .build();
-//        Metal metal8 = Metal.builder()
-//                .name("Gold")
-//                .unit("Gram 14K")
-//                .price(1153.0134)
-//                .updatedTime(LocalDateTime.now())
-//                .build();
-//
-//        Metal metal9 = Metal.builder()
-//                .name("Gold")
-//                .unit("Gram 12K")
-//                .price(988.0433999999999)
-//                .updatedTime(LocalDateTime.now())
-//                .build();
-//
-//        Metal metal10 = Metal.builder()
-//                .name("Gold")
-//                .unit("Gram 10K")
-//                .price(823.3272)
-//                .updatedTime(LocalDateTime.now())
-//                .build();
-
-//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm dd-MM-yyyy");
-//        List<Metal> metalsList = Arrays.asList(
-//                Metal.builder()
-//                        .name("Aluminum")
-//                        .unit("kg")
-//                        .price(2000.0)
-//                        .updatedTime(LocalDateTime.parse("10:30 15-07-2024", formatter))
-//                        .build(),
-//
-//                Metal.builder()
-//                        .name("Copper")
-//                        .unit("kg")
-//                        .price(7500.0)
-//                        .updatedTime(LocalDateTime.parse("14:15 16-07-2024", formatter))
-//                        .build(),
-//
-//                Metal.builder()
-//                        .name("Steel")
-//                        .unit("ton")
-//                        .price(50000.0)
-//                        .updatedTime(LocalDateTime.parse("09:00 17-07-2024", formatter))
-//                        .build(),
-//
-//                Metal.builder()
-//                        .name("Iron")
-//                        .unit("ton")
-//                        .price(30000.0)
-//                        .updatedTime(LocalDateTime.parse("13:45 18-07-2024", formatter))
-//                        .build(),
-//
-//                Metal.builder()
-//                        .name("Nickel")
-//                        .unit("kg")
-//                        .price(15000.0)
-//                        .updatedTime(LocalDateTime.parse("11:20 19-07-2024", formatter))
-//                        .build(),
-//
-//                Metal.builder()
-//                        .name("Lead")
-//                        .unit("kg")
-//                        .price(2500.0)
-//                        .updatedTime(LocalDateTime.parse("16:10 20-07-2024", formatter))
-//                        .build(),
-//
-//                Metal.builder()
-//                        .name("Tin")
-//                        .unit("kg")
-//                        .price(18000.0)
-//                        .updatedTime(LocalDateTime.parse("08:40 21-07-2024", formatter))
-//                        .build(),
-//
-//                Metal.builder()
-//                        .name("Zinc")
-//                        .unit("kg")
-//                        .price(1200.0)
-//                        .updatedTime(LocalDateTime.parse("17:30 22-07-2024", formatter))
-//                        .build(),
-//
-//        gemstonePriceRepository.saveAll(List.of(gemstone1,gemstone2,gemstone3,gemstone4,gemstone5,gemstone6,gemstone7,gemstone8,gemstone9,gemstone10));
         int index = 0;
         if (metals.isEmpty()) {
             metals = metalRepository.findAll();
@@ -1617,7 +1497,7 @@ public class DataInitializer implements CommandLineRunner {
             String imageURL = "https://picsum.photos/seed/" + rand.nextInt(0, 1000) + "/300";
 
             SpecificationDetail temp = detail.get(i);
-            LocalDateTime createdDate = LocalDateTime.now().minusMonths(rand.nextInt(12)).plusMonths(rand.nextInt(12));
+            LocalDateTime createdDate = LocalDateTime.now().minusMonths(rand.nextInt(12));
 
             Account owner = accountRepository.findById(ownerId).orElse(null);
             Staff saleStaff = staffRepository.findStaffById(saleStaffId).orElse(null);
@@ -1628,7 +1508,7 @@ public class DataInitializer implements CommandLineRunner {
                     .name(faker.commerce().productName())
                     .budget(Double.parseDouble(faker.commerce().price()))
                     .createdDate(createdDate)
-                    .completedDate(createdDate.plusMonths(3))
+                    .completedDate(createdDate.plusMonths(rand.nextInt(3, 8)))
                     .owner(owner != null ? accountRepository.save(owner) : null)
                     .status(OrderStatus.ORDER_COMPLETED)
                     .build();
@@ -1640,46 +1520,27 @@ public class DataInitializer implements CommandLineRunner {
                     .orders(List.of(order))
                     .imageURL(temp.imageURL == null? imageURL: temp.imageURL)
                     .build();
-            Quotation quotation = Quotation.builder()
-                    .createdDate(LocalDate.from(createdDate))
-                    .expiredDate(LocalDate.from(createdDate).plusMonths(2).plusDays(rand.nextLong(15)))
-                    .title("Quotation for order" + order.getName())
-                    .order(order)
-                    .build();
-            List<QuotationItem> items = new ArrayList<>();
-            for (int j = 0; j < rand.nextInt(5, 10); j++) {
-                double unitPrice = roundToDecimal(rand.nextDouble(100, 500), 2);
-                double quantity = roundToDecimal(rand.nextDouble(0.5, 10), 2);
-                double totalPrice = roundToDecimal(unitPrice * quantity, 2);
-                items.add(QuotationItem.builder()
-                        .name(faker.commerce().material())
-                        .unitPrice(unitPrice)
-                        .quantity(quantity)
-                        .totalPrice(totalPrice)
-                        .quotation(quotation)
-                        .build());
-            }
-            quotation.setQuotationItems(items);
+            order.setProduct(product);
+
+            Quotation quotation = quotationService.getDefaultQuotation(order);
+            order.setQuotation(quotation);
 
             Transactions transactions = Transactions.builder()
                     .order(order)
-                    .dateCreated(LocalDateTime.now())
-                    .dateUpdated(LocalDateTime.now())
-                    .amount(quotation.getTotalPrice())
+                    .dateCreated(createdDate)
+                    .dateUpdated(createdDate.plusDays(10))
+                    .amount(quotation.getFinalPrice())
                     .status(TransactionStatus.COMPLETED)
                     .build();
-
+            order.setTransactions(transactions);
 
             Design design = Design.builder()
                     .lastUpdated(quotation.getCreatedDate().atStartOfDay().plusDays(5))
                     .designLink(imageURL)
                     .order(order)
                     .build();
-
-            order.setProduct(product);
-            order.setQuotation(quotation);
             order.setDesign(design);
-            order.setTransactions(transactions);
+
             order.setSaleStaff(saleStaff != null ? staffRepository.save(saleStaff) : null);
             order.setDesignStaff(designStaff != null ? staffRepository.save(designStaff) : null);
             order.setProductionStaff(productionStaff != null ? staffRepository.save(productionStaff) : null);

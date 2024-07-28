@@ -7,7 +7,7 @@ import { jwtDecode } from "jwt-decode";
 import { Form, Button, Modal } from "react-bootstrap";
 import { useAlert } from "../provider/AlertProvider";
 
-function CreateReport({ header = "Request Form", reportContentId, orderId, reportType, onHide }) {
+function CreateReport({ header = "Request Form", reportContentId, orderId, reportType, onHide, fetchData }) {
   const {showAlert} = useAlert();
   const { token } = useAuth();
   const decodedToken = jwtDecode(token);
@@ -41,7 +41,13 @@ function CreateReport({ header = "Request Form", reportContentId, orderId, repor
       .post(url(), request)
       .then((response) => {
         onHide();
-        showAlert("Submit Request successfully", "", "success");
+        if (response.status === 200) {
+          showAlert(response.data.message, "", "success");
+          fetchData();
+        } else {
+          const errors = Object.entries(response.data.responseList);
+          showAlert(response.data.message, errors.map(([key, value]) => (key + ": " + value + "\n")), "warning", 5000);
+        }
       })
       .catch((error) => {
         console.error("There was an error sending the request!", error);

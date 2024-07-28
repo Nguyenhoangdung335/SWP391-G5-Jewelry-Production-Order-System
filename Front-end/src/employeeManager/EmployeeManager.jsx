@@ -99,13 +99,9 @@ export default function EmployeeManager() {
     };
 
     try {
-      const res = await axios.put(
-        `${ServerUrl}/api/account`,
-        values,
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      const res = await axios.put(`${ServerUrl}/api/account/`, values, {
+        headers: { "Content-Type": "application/json" },
+      });
       console.log("Update Response:", res.data);
       const updatedData = data.map((item) =>
         item.id === values.id ? values : item
@@ -138,13 +134,9 @@ export default function EmployeeManager() {
     };
 
     try {
-      const res = await axios.post(
-        `${ServerUrl}/api/account`,
-        newEmployee,
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      const res = await axios.post(`${ServerUrl}/api/account/`, newEmployee, {
+        headers: { "Content-Type": "application/json" },
+      });
       console.log("Add Response:", res.data.responseList.account);
       setData([...data, res.data.responseList.account]); // Update state with new data
       setIsAddModalVisible(false);
@@ -164,12 +156,9 @@ export default function EmployeeManager() {
 
   const handleConfirmDelete = async () => {
     try {
-      const res = await axios.delete(
-        `${ServerUrl}/api/account/${deleteUser}`,
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      const res = await axios.delete(`${ServerUrl}/api/account/${deleteUser}`, {
+        headers: { "Content-Type": "application/json" },
+      });
       console.log("Delete Response:", res.data);
       const updatedData = data.filter((item) => item.id !== deleteUser);
       setData(updatedData);
@@ -284,7 +273,7 @@ export default function EmployeeManager() {
         <p style={{ margin: 0, fontSize: 24, fontWeight: "bold" }}>
           Welcome, {decodedToken.first_name}!
         </p>
-        <p style={{ fontSize: 18 }}>Employees Management</p>
+        <p style={{ fontSize: 18 }}>Staffs Management</p>
       </div>
 
       <div
@@ -337,7 +326,7 @@ export default function EmployeeManager() {
         >
           <Button onClick={handleAddClick}>
             <FiPlus />
-            Add Employee
+            Add Staff
           </Button>
         </div>
       </div>
@@ -431,12 +420,12 @@ export default function EmployeeManager() {
 
       <Modal show={isModalVisible} onHide={handleCancel}>
         <Modal.Header>
-          <Modal.Title>Edit Employee</Modal.Title>
+          <Modal.Title>Edit Staff</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {selectedUser && (
             <Form onSubmit={handleSave}>
-              <Form.Group>
+              <Form.Group className="mb-3">
                 <Form.Label>ID</Form.Label>
                 <FormControl
                   type="text"
@@ -445,7 +434,7 @@ export default function EmployeeManager() {
                   name="id"
                 />
               </Form.Group>
-              <Form.Group>
+              <Form.Group className="mb-3">
                 <Form.Label>Email</Form.Label>
                 <FormControl
                   type="email"
@@ -453,7 +442,7 @@ export default function EmployeeManager() {
                   name="gmail"
                 />
               </Form.Group>
-              <Form.Group>
+              <Form.Group className="mb-3">
                 <Form.Label>Role</Form.Label>
                 <FormControl
                   as="select"
@@ -468,7 +457,7 @@ export default function EmployeeManager() {
                   <option value="MANAGER">Manager</option>
                 </FormControl>
               </Form.Group>
-              <Row>
+              <Row className="mb-3">
                 <Col>
                   <Form.Group>
                     <Form.Label>First Name</Form.Label>
@@ -490,7 +479,7 @@ export default function EmployeeManager() {
                   </Form.Group>
                 </Col>
               </Row>
-              <Form.Group>
+              <Form.Group className="mb-3">
                 <Form.Label>Phone</Form.Label>
                 <FormControl
                   type="text"
@@ -498,28 +487,32 @@ export default function EmployeeManager() {
                   name="phone"
                 />
               </Form.Group>
-              <Form.Group>
-                <Form.Label>Birth Date</Form.Label>
-                <FormControl
-                  type="date"
-                  defaultValue={formatDate(selectedUser.userInfo.birthDate)}
-                  name="birthDate"
-                />
-              </Form.Group>
-              <Form.Group>
-                <Form.Label>Gender</Form.Label>
-                <FormControl
-                  as="select"
-                  defaultValue={selectedUser.userInfo.gender}
-                  name="gender"
-                >
-                  <option value="MALE">Male</option>
-                  <option value="FEMALE">Female</option>
-                  <option value="NON_BINARY">Non-binary</option>
-                  <option value="OTHER">Other</option>
-                </FormControl>
-              </Form.Group>
-              <Form.Group>
+              <Row>
+                <Col>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Birth Date</Form.Label>
+                    <FormControl
+                      type="date"
+                      defaultValue={formatDate(selectedUser.userInfo.birthDate)}
+                      name="birthDate"
+                    />
+                  </Form.Group>
+                </Col>
+                <Col>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Gender</Form.Label>
+                    <FormControl
+                      as="select"
+                      defaultValue={selectedUser.userInfo.gender}
+                      name="gender"
+                    >
+                      <option value="MALE">Male</option>
+                      <option value="FEMALE">Female</option>
+                    </FormControl>
+                  </Form.Group>
+                </Col>
+              </Row>
+              <Form.Group className="mb-3">
                 <Form.Label>Address</Form.Label>
                 <FormControl
                   type="text"
@@ -570,11 +563,11 @@ export default function EmployeeManager() {
         onHide={() => setIsAddModalVisible(false)}
       >
         <Modal.Header>
-          <Modal.Title>Add Employee</Modal.Title>
+          <Modal.Title>Add Staff</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={handleAdd}>
-            <Form.Group controlId="formRole">
+            <Form.Group controlId="formRole" className="mb-3">
               <Form.Label>Role</Form.Label>
               <FormControl as="select" name="role" required>
                 {/* <option value="CUSTOMER">Customer</option> */}
@@ -585,7 +578,7 @@ export default function EmployeeManager() {
                 <option value="MANAGER">Manager</option>
               </FormControl>
             </Form.Group>
-            <Row>
+            <Row className="mb-3">
               <Col>
                 <Form.Group controlId="formFirstName">
                   <Form.Label>First Name</Form.Label>
@@ -599,35 +592,40 @@ export default function EmployeeManager() {
                 </Form.Group>
               </Col>
             </Row>
-            <Form.Group controlId="formGmail">
+            <Form.Group controlId="formGmail" className="mb-3">
               <Form.Label>Gmail</Form.Label>
               <FormControl type="email" name="gmail" required />
             </Form.Group>
-            <Form.Group controlId="formPhone">
-              <Form.Label>Phone</Form.Label>
-              <FormControl type="text" name="phone" required />
-            </Form.Group>
-            <Form.Group controlId="formBirthDate">
-              <Form.Label>Birth Date</Form.Label>
-              <FormControl type="date" name="birthDate" required />
-            </Form.Group>
-            <Form.Group controlId="formGender">
-              <Form.Label>Gender</Form.Label>
-              <FormControl as="select" name="gender" required>
-                <option value="MALE">Male</option>
-                <option value="FEMALE">Female</option>
-                <option value="NON_BINARY">Non-binary</option>
-                <option value="OTHER">Other</option>
-              </FormControl>
-            </Form.Group>
-            <Form.Group controlId="formAddress">
-              <Form.Label>Address</Form.Label>
-              <FormControl type="text" name="address" required />
-            </Form.Group>
-            <Form.Group controlId="formPassword">
+            <Form.Group controlId="formPassword" className="mb-3">
               <Form.Label>Password</Form.Label>
               <FormControl type="password" name="password" required />
             </Form.Group>
+            <Form.Group controlId="formPhone" className="mb-3">
+              <Form.Label>Phone</Form.Label>
+              <FormControl type="text" name="phone" required />
+            </Form.Group>
+            <Row className="mb-3">
+              <Col>
+                <Form.Group controlId="formBirthDate">
+                  <Form.Label>Birth Date</Form.Label>
+                  <FormControl type="date" name="birthDate" required />
+                </Form.Group>
+              </Col>
+              <Col>
+                <Form.Group controlId="formGender">
+                  <Form.Label>Gender</Form.Label>
+                  <FormControl as="select" name="gender" required>
+                    <option value="MALE">Male</option>
+                    <option value="FEMALE">Female</option>
+                  </FormControl>
+                </Form.Group>
+              </Col>
+            </Row>
+            <Form.Group controlId="formAddress" className="mb-3">
+              <Form.Label>Address</Form.Label>
+              <FormControl type="text" name="address" required />
+            </Form.Group>
+
             <div className="d-flex justify-content-between">
               <Button
                 variant="secondary"

@@ -1,9 +1,13 @@
 package com.swp391.JewelryProduction.services.metal;
 
+import com.swp391.JewelryProduction.dto.RequestDTOs.GemstoneRequest;
+import com.swp391.JewelryProduction.pojos.designPojos.Gemstone;
 import com.swp391.JewelryProduction.pojos.designPojos.Metal;
 import com.swp391.JewelryProduction.repositories.MetalRepository;
+import com.swp391.JewelryProduction.repositories.ProductSpecificationRepository;
 import com.swp391.JewelryProduction.util.exceptions.ObjectNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -15,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MetalServiceImpl implements MetalService{
     private final MetalRepository metalRepository;
+    private final ProductSpecificationRepository productSpecificationRepository;
 
     @Override
     public Metal findById (Long metalId) {
@@ -52,10 +57,23 @@ public class MetalServiceImpl implements MetalService{
     }
 
     @Override
-    public void deleteMetal (Long metalId) {
+    public void deleteMetal (long metalId) {
         Metal deletingMetal = metalRepository.findById(metalId).orElseThrow(
                 () -> new ObjectNotFoundException("Metal with Id "+metalId+" does not exist, cannot delete")
         );
-        metalRepository.delete(deletingMetal);
+        if(productSpecificationRepository.existsByMetalId(metalId)) {
+            throw new DataIntegrityViolationException("Cannot delete metal due to existing constraints.");
+        } else metalRepository.delete(deletingMetal);
     }
+
+    @Override
+    public List<Metal> findByProperties(Metal metal) {
+        if(metal.getMarketPrice() == 0.0 && metal.getCompanyPrice() == 0.0) {
+            return metalRepository.findAllByNameAndUnit(metal.getName(),metal.getUnit());
+        }
+        return metalRepository.findBySearch(metal.getName(),
+                                            metal.getUnit(),
+                                            metal.getMarketPrice(),
+                                            metal.getCompanyPrice());
+}
 }

@@ -26,8 +26,7 @@ const formatEnumString = (str) => {
   return str;
 };
 
-const renderSpecification = ( specification, editMode, handleChange, parentKey = "") => {
-  const ignoreKeyword = ["id", "status", "weightto", "weightfrom"];
+const renderSpecification = ( specification, parentKey = "") => {
 
   const renderNested = (obj, parentKey) => {
     return Object.entries(obj).map(([key, value]) => {
@@ -52,7 +51,7 @@ const renderSpecification = ( specification, editMode, handleChange, parentKey =
       } else {
         const lowercaseKey = formattedKey.toLowerCase();
         if (lowercaseKey.includes("gemstone") && !key.toLowerCase().includes("gemstone")) key = "Gemstone " + key;
-        return (!lowercaseKey.includes("id") && !lowercaseKey.includes("status") && !lowercaseKey.includes("weightto") && !lowercaseKey.includes("weightfrom") && String(value).toLowerCase() !== "nan")  && (
+        return (!lowercaseKey.includes("id") && !lowercaseKey.includes("status") && !lowercaseKey.includes("weightto") && !lowercaseKey.includes("weightfrom") && String(value).toLowerCase() !== "nan" && value !== null)  && (
           <tr key={formattedKey}>
             <td style={{ width: "50%" }}>{formatString(key)}</td>
             <td>{(value)}</td>
@@ -65,267 +64,49 @@ const renderSpecification = ( specification, editMode, handleChange, parentKey =
   return renderNested(specification, parentKey);
 };
 
-// const renderSpecification = (specification, editMode, handleChange) => {
-//   return (
-//     <>
-//       <tr>
-//         <td style={{ width: "50%" }}>Type</td>
-//         <td>
-//           {editMode ? (
-//             <Form.Control
-//               type="text"
-//               value={formValues.type}
-//               onChange={(e) => handleChange(e, "type", e.target.value)}
-//             />
-//           ) : (
-//             formatString(formValues.type)
-//           )}
-//         </td>
-//       </tr>
-//       <tr>
-//         <td style={{ width: "50%" }}>Style</td>
-//         <td>
-//           {editMode ? (
-//             <Form.Control
-//               type="text"
-//               value={formValues.style}
-//               onChange={(e) => handleChange(e, "style", e.target.value)}
-//             />
-//           ) : (
-//             formatString(formValues.style)
-//           )}
-//         </td>
-//       </tr>
-//       <tr>
-//         <td style={{ width: "50%" }}>Occasion</td>
-//         <td>
-//           {editMode ? (
-//             <Form.Control
-//               type="text"
-//               value={formValues.occasion}
-//               onChange={(e) => handleChange(e, "occasion", e.target.value)}
-//             />
-//           ) : (
-//             formatString(formValues.occasion)
-//           )}
-//         </td>
-//       </tr>
-//       <tr>
-//         <td style={{ width: "50%" }}>Length</td>
-//         <td>
-//           {editMode ? (
-//             <Form.Control
-//               type="text"
-//               value={formValues.length}
-//               onChange={(e) => handleChange(e, "length", e.target.value)}
-//             />
-//           ) : (
-//             formatString(formValues.length)
-//           )}
-//         </td>
-//       </tr>
-//       <tr>
-//         <td style={{ width: "50%" }}>Texture</td>
-//         <td>
-//           {editMode ? (
-//             <Form.Control
-//               type="text"
-//               value={formValues.texture}
-//               onChange={(e) => handleChange(e, "texture", e.target.value)}
-//             />
-//           ) : (
-//             formatString(formValues.texture)
-//           )}
-//         </td>
-//       </tr>
-//       <tr>
-//         <td style={{ width: "50%" }}>Chain Type</td>
-//         <td>
-//           {editMode ? (
-//             <Form.Control
-//               type="text"
-//               value={formValues.chainType}
-//               onChange={(e) => handleChange(e, "chainType", e.target.value)}
-//             />
-//           ) : (
-//             formatString(formValues.chainType)
-//           )}
-//         </td>
-//       </tr>
-//       <tr>
-//         <td style={{ width: "50%" }}>Gemstone</td>
-//         <td>
-//           {editMode ? (
-//             <div>
-//               <Form.Control
-//                 type="text"
-//                 value={formValues.gemstone.name}
-//                 onChange={(e) =>
-//                   handleChange(e, "gemstone.name", e.target.value)
-//                 }
-//               />
-//               <Form.Control
-//                 type="text"
-//                 value={formValues.gemstone.shape}
-//                 onChange={(e) =>
-//                   handleChange(e, "gemstone.shape", e.target.value)
-//                 }
-//               />
-//               <Form.Control
-//                 type="text"
-//                 value={formValues.gemstone.cut}
-//                 onChange={(e) =>
-//                   handleChange(e, "gemstone.cut", e.target.value)
-//                 }
-//               />
-//               <Form.Control
-//                 type="text"
-//                 value={formValues.gemstone.clarity}
-//                 onChange={(e) =>
-//                   handleChange(e, "gemstone.clarity", e.target.value)
-//                 }
-//               />
-//               <Form.Control
-//                 type="text"
-//                 value={formValues.gemstone.color}
-//                 onChange={(e) =>
-//                   handleChange(e, "gemstone.color", e.target.value)
-//                 }
-//               />
-//               <Form.Control
-//                 type="number"
-//                 value={formValues.gemstone.caratWeightFrom}
-//                 onChange={(e) =>
-//                   handleChange(
-//                     e,
-//                     "gemstone.caratWeightFrom",
-//                     e.target.value
-//                   )
-//                 }
-//               />
-//               <Form.Control
-//                 type="number"
-//                 value={formValues.gemstone.caratWeightTo}
-//                 onChange={(e) =>
-//                   handleChange(e, "gemstone.caratWeightTo", e.target.value)
-//                 }
-//               />
-//             </div>
-//           ) : (
-//             <div>
-//               {formatString(formValues.gemstone.name)} (
-//               {formatString(formValues.gemstone.shape)},{" "}
-//               {formatString(formValues.gemstone.cut)},{" "}
-//               {formatString(formValues.gemstone.clarity)},{" "}
-//               {formatString(formValues.gemstone.color)},{" "}
-//               {formValues.gemstone.caratWeightFrom} -{" "}
-//               {formValues.gemstone.caratWeightTo} carats)
-//             </div>
-//           )}
-//         </td>
-//       </tr>
-//       <tr>
-//         <td style={{ width: "50%" }}>Metal</td>
-//         <td>
-//           {editMode ? (
-//             <div>
-//               <Form.Control
-//                 type="text"
-//                 value={formValues.metal.name}
-//                 onChange={(e) => handleChange(e, "metal.name", e.target.value)}
-//               />
-//               <Form.Control
-//                 type="text"
-//                 value={formValues.metal.unit}
-//                 onChange={(e) => handleChange(e, "metal.unit", e.target.value)}
-//               />
-//             </div>
-//           ) : (
-//             `${formatString(formValues.metal.name)} (${formatString(formValues.metal.unit)})`
-//           )}
-//         </td>
-//       </tr>
-//       </>
-//   );
-// }
-
-const ProductSpecificationTable = ({ orderStatus, selectedProduct, role, isEditing = true }) => {
+const ProductSpecificationTable = ({ orderStatus, selectedProduct, role, isEditing, fetchData }) => {
+  console.log(orderStatus + " " + role + " " + ["IN_EXCHANGING", "ORDER_COMPLETED"].includes(orderStatus));
   const isQualifiedEdit = (["IN_EXCHANGING", "ORDER_COMPLETED"].includes(orderStatus) && ["ADMIN", "SALE_STAFF", "CUSTOMER"].includes(role)) || isEditing;
 
   const {showAlert} = useAlert();
   const [editMode, setEditMode] = useState(isEditing);
   const [formValues, setFormValues] = useState(selectedProduct.specification);
-  const [metalData, setMetalData] = useState([]);
-  const [gemstoneData, setGemstoneData] = useState({
-    shapes: [],
-    cuts: [],
-    clarities: [],
-    colors: [],
-  });
   const [showEditModal, setShowEditModal] = useState(false);
 
   useEffect(() => {
-    if (isQualifiedEdit && isEditing) {
-      const fetchPrice = async () => {
-        try {
-          const response = await axios.get(`${ServerUrl}/api/gemstone/factors`);
-          if (response.status === 200) {
-            const data = response.data.responseList;
-            setMetalData(data.metal);
-            setGemstoneData({
-              shapes: data.shape,
-              cuts: data.cut,
-              clarities: data.clarity,
-              colors: data.color,
-            });
-          }
-        } catch (error) {
-          console.error("Error fetching gemstone and metal:", error);
-        }
-      };
-
-      fetchPrice();
-    }
-  }, [isQualifiedEdit, isEditing]);
-
-  const handleChange = (event, key, newValue) => {
-    const keys = key.split(".");
-    let updatedValues = { ...formValues };
-
-    let temp = updatedValues;
-    for (let i = 0; i < keys.length - 1; i++) {
-      temp = temp[keys[i]];
-    }
-    temp[keys[keys.length - 1]] = newValue;
-
-    setFormValues(updatedValues);
-
-    if (key === "metal") {
-      const selectedMetal = metalData.find((metal) => metal.id === newValue);
-      setFormValues(prev => ({
-        ...prev,
-        metal: selectedMetal
-      }));
-    } else if (key.startsWith("gemstone")) {
-      // Handle gemstone attributes similarly
-      // Assume `newValue` is the selected ID and map it to the appropriate gemstone object
-    }
-  };
+    setFormValues(selectedProduct?.specification || {});
+  }, [selectedProduct]);
 
   const handleEdit = (event) => {
     setEditMode(true);
     setShowEditModal(true);
   };
 
-  const handleSave = async () => {
+  const handleSave = async (event, formState, selectedGemstoneProp) => {
+    event.preventDefault();
+    const productSpecification = {
+      id: formValues.id,
+      type: formState.selectedType,
+      style: formState.selectedStyle,
+      occasion: formState.selectedOccasion,
+      length: formState.selectedLength,
+      metal: formState.selectedMetal,
+      metalWeight: formState.selectedMetalWeight,
+      texture: formState.selectedTexture,
+      chainType: formState.selectedChainType,
+      gemstone: selectedGemstoneProp.selectedGemstone,
+      gemstoneWeight: Number(selectedGemstoneProp.selectedGemstoneWeight)
+    };
+
     try {
       const response = await axios.put(
-        `${ServerUrl}/api/products/customize/${formValues.id}`, formValues,
+        `${ServerUrl}/api/products/customize/${formValues.id}`, productSpecification,
       );
       if (response.status === 200) {
         showAlert("Product specification saved successfully", "", "success");
         setEditMode(false);
         setShowEditModal(false);
+        fetchData();
       }
     } catch (error) {
       showAlert("Failed to save product specification", "", "danger");
@@ -335,28 +116,18 @@ const ProductSpecificationTable = ({ orderStatus, selectedProduct, role, isEditi
   return (
     <>
       <Table striped bordered hover>
-        <tbody>{renderSpecification(formValues, editMode, handleChange, metalData, gemstoneData, )}</tbody>
+        <tbody>{renderSpecification(formValues,)}</tbody>
       </Table>
-      {isQualifiedEdit && ((editMode && (
-        <div className="d-flex justify-content-between gap-lg-5 gap-sm-2">
-          <Button style={{ width: "100%" }} variant="primary" onClick={handleSave}>
-            Save
-          </Button>
-          <Button style={{ width: "100%" }} variant="primary" onClick={() => setEditMode(!editMode)}>
-            Close
-          </Button>
-        </div>
-      )) || (
-      !editMode && (
+      {isQualifiedEdit && !editMode && (
         <Button style={{ width: "100%" }} variant="primary" onClick={handleEdit}>
           Edit
         </Button>
-      )))}
+      )}
       {showEditModal && (
         <Modal centered keyboard size="xl" scrollable animation show={showEditModal} onHide={() => {setShowEditModal(false); setEditMode(false)}}>
           <Modal.Header style={{width: "100%"}} closeButton ><p style={{ fontSize: "1.6em", fontWeight: "bold", textAlign: "center", width: "100%"}}>Edit Specification</p></Modal.Header>
           <Modal.Body style={{width: "100%"}}>
-            <RenderSpecificationForm handleSubmit={handleSave} />
+            <RenderSpecificationForm handleSubmit={handleSave} initialSpecs={formValues}/>
           </Modal.Body>
         </Modal>
       )}

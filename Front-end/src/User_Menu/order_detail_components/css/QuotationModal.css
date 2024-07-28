@@ -14,10 +14,15 @@
 .table-fixed tbody {
   display: block;
 }
+.table-fixed thead {
+  display: table;
+  width: 100%;
+  table-layout: auto;
+}
 
 .table-fixed tbody {
   min-height: 0;
-  max-height: 240px; /* Same as the max-height defined for the scrollable class */
+  max-height: 245px;
   overflow-y: auto;
 }
 
@@ -28,7 +33,6 @@
   table-layout: fixed;
 }
 
-/* .table-fixed th,
-.table-fixed td {
-  width: 20%;
-} */
+.grip-padding > tbody > tr > td, .grip-padding > tbody > tr > th {
+  padding-inline: 1% !important;
+}

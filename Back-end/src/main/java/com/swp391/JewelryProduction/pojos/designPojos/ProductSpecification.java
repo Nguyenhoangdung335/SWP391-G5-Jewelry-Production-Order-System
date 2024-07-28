@@ -76,7 +76,7 @@ public class ProductSpecification {
     @JsonIgnore
     public double getTotalMetalCost() {
         if (metal != null && metalWeight != null) {
-            return roundToDecimal(metal.getPrice() * metalWeight, 2);
+            return roundToDecimal(metal.getCompanyPrice() * metalWeight, 2);
         }
         return 0.0;
     }

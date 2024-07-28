@@ -9,6 +9,9 @@ import com.swp391.JewelryProduction.services.product.ProductService;
 import com.swp391.JewelryProduction.util.Response;
 import com.swp391.JewelryProduction.websocket.image.ImageService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -22,10 +25,12 @@ import java.time.LocalDateTime;
 
 import static com.swp391.JewelryProduction.util.CustomFormatter.roundToDecimal;
 
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/products")
 public class ProductController {
+    private static final Logger log = LoggerFactory.getLogger(ProductController.class);
     private final ProductService productService;
     private final ImageService imageService;
 
@@ -65,10 +70,19 @@ public class ProductController {
 
     @PostMapping("")
     public ResponseEntity<Response> createProduct(@RequestBody Product product) {
-        productService.saveProduct(product);
         return Response.builder()
                 .status(HttpStatus.OK)
                 .message("Request send successfully.")
+                .response("product", productService.saveProduct(product))
+                .buildEntity();
+    }
+
+    @PutMapping("")
+    public ResponseEntity<Response> updateProduct(@RequestBody Product product) {
+        return Response.builder()
+                .status(HttpStatus.OK)
+                .message("Request send successfully.")
+                .response("product", productService.updateProduct(product))
                 .buildEntity();
     }
 
@@ -76,7 +90,7 @@ public class ProductController {
     public ResponseEntity<Response> getLatestProduct() {
         return Response.builder()
                 .status(HttpStatus.OK)
-                .response("products", productService.findAllByOrderByIdDesc(Limit.of(4)))
+                .response("products", productService.findAllByOrderByIdDesc(Limit.of(5)))
                 .message("Request send successfully.")
                 .buildEntity();
     }
