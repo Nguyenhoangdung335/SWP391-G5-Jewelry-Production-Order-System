@@ -39,6 +39,8 @@ export default function ProductManager() {
       .catch((err) => console.log(err));
   }, [currentPage]);
 
+  console.log(data);
+
   const handleEdit = (record) => {
     setSelectedProduct(record);
     setIsModalVisible(true);
@@ -120,6 +122,19 @@ export default function ProductManager() {
       id: form.formProductId.value,
       name: form.formProductName.value,
       description: form.formProductDescription.value,
+      type: form.formProductType.value,
+      style: form.formProductStyle.value,
+      occasion: form.formProductOccasion.value,
+      length: form.formProductLength.value,
+      metal: form.formProductMetal.value,
+      texture: form.formProductTexture.value,
+      chainType: form.formProductChainType.value,
+      gemstoneName: form.formProductGemstoneName.value,
+      gemstoneShape: form.formProductGemstoneShape.value,
+      gemstoneCut: form.formProductGemstoneCut.value,
+      gemstoneClarity: form.formProductGemstoneClarity.value,
+      gemstoneColor: form.formProductGemstoneColor.value,
+      gemstoneCaratWeight: form.formProductGemstoneCaratWeight.value,
     };
     const newData = data.map((item) => (item.id === values.id ? values : item));
     setData(newData);
@@ -134,6 +149,19 @@ export default function ProductManager() {
       id: form.formProductId.value,
       name: form.formProductName.value,
       description: form.formProductDescription.value,
+      type: form.formProductType.value,
+      style: form.formProductStyle.value,
+      occasion: form.formProductOccasion.value,
+      length: form.formProductLength.value,
+      metal: form.formProductMetal.value,
+      texture: form.formProductTexture.value,
+      chainType: form.formProductChainType.value,
+      gemstoneName: form.formProductGemstoneName.value,
+      gemstoneShape: form.formProductGemstoneShape.value,
+      gemstoneCut: form.formProductGemstoneCut.value,
+      gemstoneClarity: form.formProductGemstoneClarity.value,
+      gemstoneColor: form.formProductGemstoneColor.value,
+      gemstoneCaratWeight: form.formProductGemstoneCaratWeight.value,
     };
 
     if (!newProduct.id || !newProduct.name || !newProduct.description) {
@@ -350,6 +378,58 @@ export default function ProductManager() {
                   type="text"
                   defaultValue={selectedProduct.description}
                 />
+                </Form.Group>
+              <Form.Group controlId="formProductType">
+                <Form.Label>Type</Form.Label>
+                <Form.Control type="text" defaultValue={selectedProduct.type} />
+              </Form.Group>
+              <Form.Group controlId="formProductStyle">
+                <Form.Label>Style</Form.Label>
+                <Form.Control type="text" defaultValue={selectedProduct.style} />
+              </Form.Group>
+              <Form.Group controlId="formProductOccasion">
+                <Form.Label>Occasion</Form.Label>
+                <Form.Control type="text" defaultValue={selectedProduct.occasion} />
+              </Form.Group>
+              <Form.Group controlId="formProductLength">
+                <Form.Label>Length</Form.Label>
+                <Form.Control type="text" defaultValue={selectedProduct.length} />
+              </Form.Group>
+              <Form.Group controlId="formProductMetal">
+                <Form.Label>Metal</Form.Label>
+                <Form.Control type="text" defaultValue={selectedProduct.metal} />
+              </Form.Group>
+              <Form.Group controlId="formProductTexture">
+                <Form.Label>Texture</Form.Label>
+                <Form.Control type="text" defaultValue={selectedProduct.texture} />
+              </Form.Group>
+              <Form.Group controlId="formProductChainType">
+                <Form.Label>Chain Type</Form.Label>
+                <Form.Control type="text" defaultValue={selectedProduct.chainType} />
+              </Form.Group>
+              <Form.Group controlId="formProductGemstoneName">
+                <Form.Label>Gemstone Name</Form.Label>
+                <Form.Control type="text" defaultValue={selectedProduct.gemstoneName} />
+              </Form.Group>
+              <Form.Group controlId="formProductGemstoneShape">
+                <Form.Label>Gemstone Shape</Form.Label>
+                <Form.Control type="text" defaultValue={selectedProduct.gemstoneShape} />
+              </Form.Group>
+              <Form.Group controlId="formProductGemstoneCut">
+                <Form.Label>Gemstone Cut</Form.Label>
+                <Form.Control type="text" defaultValue={selectedProduct.gemstoneCut} />
+              </Form.Group>
+              <Form.Group controlId="formProductGemstoneClarity">
+                <Form.Label>Gemstone Clarity</Form.Label>
+                <Form.Control type="text" defaultValue={selectedProduct.gemstoneClarity} />
+              </Form.Group>
+              <Form.Group controlId="formProductGemstoneColor">
+                <Form.Label>Gemstone Color</Form.Label>
+                <Form.Control type="text" defaultValue={selectedProduct.gemstoneColor} />
+              </Form.Group>
+              <Form.Group controlId="formProductGemstoneCaratWeight">
+                <Form.Label>Gemstone Carat Weight</Form.Label>
+                <Form.Control type="number" defaultValue={selectedProduct.gemstoneCaratWeight} />
               </Form.Group>
               <div className="d-flex justify-content-between">
                 <Button
