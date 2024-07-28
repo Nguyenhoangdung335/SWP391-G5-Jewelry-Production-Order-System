@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import ColumnResizer from "column-resizer";
 import { Table } from "react-bootstrap";
 
-const ResizableTable = ({ children, resizable, resizeOptions }) => {
+const ResizableTable = ({ children, resizable, resizeOptions, style, className, }) => {
   const tableRef = useRef(null);
   const [resize, setResize] = useState(null);
 
@@ -11,7 +11,7 @@ const ResizableTable = ({ children, resizable, resizeOptions }) => {
       const resizeFn = new ColumnResizer(tableRef.current, {
         ...resizeOptions,
         liveDrag: true,
-        resizeMode: "flex",
+        resizeMode: "fit",
       });
       // Remove className to avoid conflicts
       tableRef.current.className = tableRef.current?.className?.replace(
@@ -40,7 +40,7 @@ const ResizableTable = ({ children, resizable, resizeOptions }) => {
   }, [tableRef, resizable, enableResize, disableResize]);
 
   return (
-    <Table striped hover bordered ref={tableRef}>
+    <Table striped hover bordered responsive ref={tableRef} style={style} className={className}>
       {children}
     </Table>
   );
