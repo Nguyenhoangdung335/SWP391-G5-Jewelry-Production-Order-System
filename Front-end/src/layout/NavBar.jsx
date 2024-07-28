@@ -18,6 +18,7 @@ import { Badge } from "react-bootstrap";
 import ServerUrl from "../reusable/ServerUrl";
 import axios from "axios";
 import style from "./../App.css";
+import { AiOutlineGold } from "react-icons/ai";
 
 // Define RBAC configuration
 const rbacConfig = {
@@ -48,6 +49,7 @@ const rbacConfig = {
     "ADMIN",
   ],
   "/userManager/gemstone_manager": ["ADMIN"],
+  "/userManager/metal_manager": ["ADMIN"],
 };
 
 // Utility function to check if a role is allowed
@@ -131,16 +133,22 @@ export default function NavBar() {
       id: 7,
       to: "/userManager/gemstone_manager",
       icon: <IoDiamondOutline size={30} color="white" />,
-      label: "Gemstone",
+      label: "Gemstones",
     },
     {
       id: 8,
+      to: "/userManager/metal_manager",
+      icon: <AiOutlineGold size={30} color="white" />,
+      label: "Metals",
+    },
+    {
+      id: 9,
       to: "/userManager/profile",
       icon: <LuUser2 size={30} color="white" />,
       label: "Profile",
     },
     {
-      id: 9,
+      id: 10,
       to: "/userManager/notifications",
       icon: (
         <div style={{ position: "relative" }}>
@@ -166,7 +174,7 @@ export default function NavBar() {
   ];
 
   return (
-    <>
+    <div>
       <div className="text-center text-decoration-none">
         <Link to="/" className="text-decoration-none text-white">
           <div className="logo-container">
@@ -222,6 +230,6 @@ export default function NavBar() {
           </NavLink>
         </div>
       </div>
-    </>
+    </div>
   );
 }

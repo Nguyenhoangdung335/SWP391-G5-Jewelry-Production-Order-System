@@ -30,6 +30,7 @@ import OrderDetail from "../User_Menu/OrderDetail";
 import OrderDetailManager from "../ordersManager/OrderDetailManager";
 import NotificationDetail from "../user_settings/detailpage/NotificationDetail";
 import GemstoneManager from "../GemstoneManager/GemstoneManager";
+import MetalManager from "../metalmanager/MetalManager";
 
 function RouteMap() {
   return (
@@ -148,6 +149,14 @@ function RouteMap() {
           element={
             <ProtectedRoute roles={["ADMIN", "MANAGER", "SALE_STAFF"]}>
               <ProductManager />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/userManager/metal_manager"
+          element={
+            <ProtectedRoute roles={["ADMIN"]}>
+              <MetalManager />
             </ProtectedRoute>
           }
         />

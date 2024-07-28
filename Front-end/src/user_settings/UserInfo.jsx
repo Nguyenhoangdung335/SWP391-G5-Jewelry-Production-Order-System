@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Alert, Button, Col, Form, Row } from "react-bootstrap";
+import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
 import { useAuth } from "../provider/AuthProvider";
 import axios from "axios";
 import ServerUrl from "../reusable/ServerUrl";
@@ -139,7 +139,8 @@ function UserInfo() {
   };
 
   return (
-    <div className="w-50 h-100" style={{ paddingTop: "5%" }}>
+    <Container className="d-flex justify-content-center" style={{ marginTop: "5%" }}>
+    <div className="w-50 h-100" >
       <div style={{ paddingBottom: "50px" }}>
         <h1 className="fw-bold">Profile</h1>
       </div>
@@ -274,6 +275,7 @@ function UserInfo() {
         </Form>
       </div>
     </div>
+    </Container>
   );
 }
 
