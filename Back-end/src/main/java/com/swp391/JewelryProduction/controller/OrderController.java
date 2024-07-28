@@ -131,12 +131,13 @@ public class OrderController {
                     .build();
             order.setDesign(design);
 
-            orderService.updateOrder(order);
+            order = orderService.updateOrder(order);
 
             return Response.builder()
                     .status(HttpStatus.OK)
                     .message("Request sent successfully")
                     .response("designUrl", designUrl)
+                    .response("designId", order.getDesign().getId())
                     .buildEntity();
         } catch (IOException e) {
             throw new RuntimeException("Failed to upload image", e);
@@ -155,12 +156,13 @@ public class OrderController {
             Product product = order.getProduct();
             product.setImageURL(finalProductURL);
 
-            orderService.updateOrder(order);
+            order = orderService.updateOrder(order);
 
             return Response.builder()
                     .status(HttpStatus.OK)
                     .message("Request sent successfully")
-                    .response("designUrl", finalProductURL)
+                    .response("productUrl", finalProductURL)
+                    .response("productId", order.getProduct().getId())
                     .buildEntity();
         } catch (IOException e) {
             throw new RuntimeException("Failed to upload image", e);
