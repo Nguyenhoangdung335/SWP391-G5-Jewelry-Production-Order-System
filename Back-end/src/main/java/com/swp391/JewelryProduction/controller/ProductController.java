@@ -76,7 +76,7 @@ public class ProductController {
     public ResponseEntity<Response> getLatestProduct() {
         return Response.builder()
                 .status(HttpStatus.OK)
-                .response("products", productService.findAllByOrderByIdDesc(Limit.of(4)))
+                .response("products", productService.findAllByOrderByIdDesc(Limit.of(5)))
                 .message("Request send successfully.")
                 .buildEntity();
     }

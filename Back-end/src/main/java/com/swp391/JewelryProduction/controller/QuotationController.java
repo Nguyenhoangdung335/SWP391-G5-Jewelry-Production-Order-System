@@ -28,8 +28,7 @@ public class    QuotationController {
 
     @PostMapping("/submit")
     public ResponseEntity<Response> createQuotation(@PathVariable String orderId, @RequestBody Quotation quotation) {
-        Order order = orderService.findOrderById(orderId);
-        quotation = quotationService.saveQuotation(quotation, order);
+        quotation = quotationService.saveQuotation(quotation, orderService.findOrderById(orderId));
         return Response.builder()
                 .status(HttpStatus.OK)
                 .message("Quotation has been saved successfully")
