@@ -48,6 +48,8 @@ public class QuotationServiceImpl implements QuotationService {
     @Transactional
     @Override
     public Quotation saveQuotation(Quotation quotation, Order order) {
+        if (order.getQuotation() != null)
+            quotationRepository.delete(order.getQuotation());
         quotation.getQuotationItems().forEach(item -> {
             item.setQuotation(quotation);
         });
@@ -84,7 +86,7 @@ public class QuotationServiceImpl implements QuotationService {
         ProductSpecification specs = order.getProduct().getSpecification();
         Gemstone gemstone = order.getProduct().getSpecification().getGemstone();
         Metal metal = order.getProduct().getSpecification().getMetal();
-        double complexityScale = gemstone.getComplexityCost();
+        double complexityScale = (gemstone == null)? 0.0: gemstone.getComplexityCost();
         boolean isFromTemplate = order.isFromTemplate();
 
         Quotation quotation = Quotation.builder()
@@ -99,7 +101,8 @@ public class QuotationServiceImpl implements QuotationService {
         int index = 0;
         List<QuotationItem> itemList = new LinkedList<>();
         itemList.add(QuotationItem.builder().itemID(index++).name(String.format("%s (%s)", metal.getName(), metal.getUnit())).quantity(specs.getMetalWeight()).unitPrice(metal.getPrice()).unit(metal.getUnit()).totalPrice(specs.getTotalMetalCost()).quotation(quotation).build());
-        itemList.add(QuotationItem.builder().itemID(index++).name(gemstone.toStringGemstoneSpec()).quantity(specs.getGemstoneWeight()).unitPrice(gemstone.getPricePerCaratInHundred() * 100.0).unit("Carat").totalPrice(specs.getTotalGemstoneCost()).quotation(quotation).build());
+        if (gemstone != null)
+            itemList.add(QuotationItem.builder().itemID(index++).name(gemstone.toStringGemstoneSpec()).quantity(specs.getGemstoneWeight()).unitPrice(gemstone.getPricePerCaratInHundred() * 100.0).unit("Carat").totalPrice(specs.getTotalGemstoneCost()).quotation(quotation).build());
         itemList.add(QuotationItem.builder().itemID(index++).name("Utilities cost").quantity(1).unitPrice(70).unit("Fixed").totalPrice(70.0).quotation(quotation).build());
         itemList.add(QuotationItem.builder().itemID(index++).name("Insurance cost").quantity(1).unitPrice(50).unit("Fixed").totalPrice(50.0).quotation(quotation).build());
 
