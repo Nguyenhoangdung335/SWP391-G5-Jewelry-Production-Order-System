@@ -51,7 +51,7 @@ public class GemstoneController {
                 .buildEntity();
     }
 
-    @GetMapping("/search")
+    @PostMapping("/search")
     public ResponseEntity<Response> getSearchedGemstones (
             @RequestBody @Valid GemstoneRequest gemstoneRequest
     ) {
