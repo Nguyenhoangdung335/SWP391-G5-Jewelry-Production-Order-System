@@ -12,7 +12,6 @@ import lombok.*;
 
 import java.util.List;
 
-import static com.swp391.JewelryProduction.util.CustomFormatter.roundToDecimal;
 
 @AllArgsConstructor
 @NoArgsConstructor

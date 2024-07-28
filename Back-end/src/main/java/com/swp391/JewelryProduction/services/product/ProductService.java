@@ -24,4 +24,6 @@ public interface ProductService {
     Double calculateRoughProductPrice(int productSpecificationId);
 
     List<Product> findAllByOrderByIdDesc (Limit limit);
+
+    Product updateProduct(Product product);
 }

@@ -3,10 +3,8 @@ package com.swp391.JewelryProduction.controller;
 import com.swp391.JewelryProduction.pojos.designPojos.Metal;
 import com.swp391.JewelryProduction.services.metal.MetalService;
 import com.swp391.JewelryProduction.util.Response;
-import com.swp391.JewelryProduction.util.exceptions.ObjectNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +20,7 @@ public class MetalController {
     public ResponseEntity<Response> findAll(
             @RequestParam("page") int page,
             @RequestParam("size") int pageSize,
-            @RequestParam(name = "sortBy", defaultValue = "unit", required = false) String sortBy
+            @RequestParam(name = "sortBy", defaultValue = "unit") String sortBy
     ) {
         return Response.builder()
                 .status(HttpStatus.OK)

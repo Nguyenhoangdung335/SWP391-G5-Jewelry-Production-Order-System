@@ -68,9 +68,12 @@ public class MetalServiceImpl implements MetalService{
 
     @Override
     public List<Metal> findByProperties(Metal metal) {
-        return metalRepository.findMetalsByNameAndUnit(
-                metal.getName(),
-                metal.getUnit()
-        );
-    }
+        if(metal.getMarketPrice() == 0.0 && metal.getCompanyPrice() == 0.0) {
+            return metalRepository.findAllByNameAndUnit(metal.getName(),metal.getUnit());
+        }
+        return metalRepository.findBySearch(metal.getName(),
+                                            metal.getUnit(),
+                                            metal.getMarketPrice(),
+                                            metal.getCompanyPrice());
+}
 }

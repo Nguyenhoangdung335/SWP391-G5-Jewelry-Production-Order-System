@@ -9,6 +9,7 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -39,11 +40,18 @@ public class Metal {
     @DecimalMin("0.0")
     @DecimalMax("5000000.0")
     @Column(nullable = false)
-    private Double price;
+    private Double marketPrice;
+
+    @NotNull
+    @DecimalMin("0.0")
+    @DecimalMax("5000000.0")
+    @Column(nullable = false)
+    private Double companyPrice;
 
     @Column(nullable = false)
     @JsonFormat(pattern = "HH:mm dd-MM-yyyy")
     @DateTimeFormat(pattern = "HH:mm dd-MM-yyyy")
+    @UpdateTimestamp
     private LocalDateTime updatedTime;
 
     @ToString.Exclude
@@ -56,7 +64,8 @@ public class Metal {
     public String toString() {
         return "Component {" +
                 "name='" + name + '\'' +
-                ", price='" + price + '\'' +
+                ", marketPrice='" + marketPrice + '\'' +
+                ", companyPrice='" + companyPrice + '\'' +
                 ", crawlTime='" + updatedTime + '\'' +
                 '}';
     }
@@ -64,7 +73,8 @@ public class Metal {
     public Metal copyValue (Metal copy) {
         this.name = copy.getName();
         this.unit = copy.getUnit();
-        this.price = copy.getPrice();
+        this.marketPrice = copy.getMarketPrice();
+        this.companyPrice = copy.getCompanyPrice();
         this.updatedTime = copy.getUpdatedTime();
         this.specifications = copy.getSpecifications();
         return this;
