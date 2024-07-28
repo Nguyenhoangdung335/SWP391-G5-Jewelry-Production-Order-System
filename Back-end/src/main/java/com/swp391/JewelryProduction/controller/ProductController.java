@@ -77,6 +77,15 @@ public class ProductController {
                 .buildEntity();
     }
 
+    @PutMapping("")
+    public ResponseEntity<Response> updateProduct(@RequestBody Product product) {
+        return Response.builder()
+                .status(HttpStatus.OK)
+                .message("Request send successfully.")
+                .response("product", productService.updateProduct(product))
+                .buildEntity();
+    }
+
     @GetMapping("/latest_product")
     public ResponseEntity<Response> getLatestProduct() {
         return Response.builder()

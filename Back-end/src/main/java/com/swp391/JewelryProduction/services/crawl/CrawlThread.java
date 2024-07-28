@@ -16,6 +16,9 @@ import org.springframework.beans.factory.annotation.Value;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Random;
+
+import static java.lang.Math.round;
 
 @AllArgsConstructor
 @Setter
@@ -36,6 +39,7 @@ public class CrawlThread implements Runnable {
     @Override
     public void run() {
         Document connectionPage = null;
+        Random random = new Random();
         try {
             connectionPage = connection.getConnection(this.urlExchange);
             Element exchangeRate = connectionPage.selectFirst("#calculator > div:nth-child(1) > div:nth-child(2) > div > div > div:nth-child(2) > div:nth-child(1) > h3 > span:nth-child(2) > span\n");
@@ -49,9 +53,9 @@ public class CrawlThread implements Runnable {
                         .name("Gold")
                         .unit(product.selectFirst("th").text())
                         .marketPrice(Double.parseDouble(product.selectFirst("td").text().replace("$", "").replace(",", "")) * (isVND ? rate : 1))
+                        .companyPrice(round((Double.parseDouble(product.selectFirst("td").text().replace("$", "").replace(",", "")) * (isVND ? rate : 1) - random.nextInt(1, 10)) * 100) / 100.0 )
                         .updatedTime(LocalDateTime.now())
                         .build();
-                metal.setCompanyPrice(metal.getMarketPrice());
                 synchronized (materials) {
                     this.metals.add(metal);
                 }

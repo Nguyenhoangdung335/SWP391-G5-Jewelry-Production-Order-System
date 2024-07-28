@@ -1,6 +1,8 @@
 package com.swp391.JewelryProduction.repositories;
 
 import com.swp391.JewelryProduction.pojos.designPojos.Metal;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,11 +13,22 @@ import java.util.Optional;
 public interface MetalRepository extends JpaRepository<Metal, Long> {
     Optional<Metal> findByNameAndUnit(String name, String unit);
 
+    @Query("SELECT m FROM Metal m " +
+            "WHERE (:name LIKE %:name%) AND " +
+            "(:unit LIKE %:unit%)" +
+            "ORDER BY m.marketPrice ASC, m.companyPrice ASC ")
+    List<Metal> findAllByNameAndUnit(@Param("name") String name,@Param("unit") String unit);
+
+
     @Query("SELECT m FROM Metal m WHERE " +
-            "(:name IS NULL OR m.name LIKE %:name%) AND " +
-            "(:unit IS NULL OR m.unit LIKE %:unit%) ")
-    List<Metal> findMetalsByNameAndUnit(
+            "m.name LIKE CONCAT('%', :name, '%') AND " +
+            "m.unit LIKE CONCAT('%', :unit, '%') AND " +
+            "((m.companyPrice BETWEEN :companyPrice - 10 AND :companyPrice + 10) OR " +
+            "(m.marketPrice BETWEEN :marketPrice - 10 AND :marketPrice + 10))")
+    List<Metal> findBySearch(
             @Param("name") String name,
-            @Param("unit") String unit
+            @Param("unit") String unit,
+            @Param("marketPrice") Double marketPrice,
+            @Param("companyPrice") Double companyPrice
     );
 }

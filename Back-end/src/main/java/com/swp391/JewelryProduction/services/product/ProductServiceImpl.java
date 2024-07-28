@@ -11,6 +11,8 @@ import com.swp391.JewelryProduction.repositories.ProductRepository;
 import com.swp391.JewelryProduction.repositories.ProductSpecificationRepository;
 import com.swp391.JewelryProduction.services.crawl.CrawlDataService;
 import com.swp391.JewelryProduction.services.gemstone.GemstoneService;
+import com.swp391.JewelryProduction.services.metal.MetalService;
+import com.swp391.JewelryProduction.services.metal.MetalServiceImpl;
 import com.swp391.JewelryProduction.services.order.OrderService;
 import com.swp391.JewelryProduction.util.exceptions.ObjectNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +34,7 @@ public class ProductServiceImpl implements ProductService {
     private final OrderService orderService;
     private final GemstoneService gemstoneService;
     private final MetalRepository metalRepository;
+    private final MetalService metalService;
 
 
     //<editor-fold desc="PRODUCT SERVICES" defaultstate="collapsed">
@@ -58,6 +61,17 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     @Override
     public Product saveProduct(Product product) {
+        product.getSpecification().setGemstone(gemstoneService.findById(product.getSpecification().getGemstone().getId()));
+        product.getSpecification().setMetal(metalService.findById(product.getSpecification().getMetal().getId()));
+        productRepository.save(product);
+        return product;
+    }
+
+    @Transactional
+    @Override
+    public Product updateProduct(Product product) {
+        product.getSpecification().setGemstone(gemstoneService.findById(product.getSpecification().getGemstone().getId()));
+        product.getSpecification().setMetal(metalService.findById(product.getSpecification().getMetal().getId()));
         productRepository.save(product);
         return product;
     }
@@ -96,30 +110,18 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     @Override
     public ProductSpecification saveSpecification(ProductSpecification specs) {
-        for(ProductSpecification proSpecs : productSpecificationRepository.findAll()) {
-            if(proSpecs.equals(specs)) return proSpecs;
-        }
-        Gemstone gemstone = specs.getGemstone();
-        Metal metal = specs.getMetal();
-
-        if (gemstone != null) {
-            gemstone = gemstoneService.findById(metal.getId());
-            specs.setGemstone(gemstone);
-        }
-
-        if (metal != null) {
-            metal = metalRepository.findById(metal.getId())
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid Metal ID"));
-            specs.setMetal(metal);
-        }
+        specs.setGemstone(gemstoneService.findById(specs.getGemstone().getId()));
+        specs.setMetal(metalService.findById(specs.getMetal().getId()));
         return productSpecificationRepository.save(specs);
     }
 
+    @Transactional
     @Override
     public ProductSpecification updateSpecification(Integer specificationId, ProductSpecification specs) {
         ProductSpecification oldSpecs = productSpecificationRepository.findById(specificationId).orElseThrow(
                 () -> new ObjectNotFoundException("Failed to update, Specification with id "+specificationId+" does not exist")
         );
+
         return productSpecificationRepository.save(mapNewSpecification(oldSpecs, specs));
     }
 
@@ -168,10 +170,10 @@ public class ProductServiceImpl implements ProductService {
         oldSpecs.setType(newSpecs.getType());
         oldSpecs.setOccasion(newSpecs.getOccasion());
         oldSpecs.setLength(newSpecs.getLength());
-        oldSpecs.setMetal(newSpecs.getMetal());
+        oldSpecs.setMetal(metalService.findById(newSpecs.getMetal().getId()));
         oldSpecs.setTexture(newSpecs.getTexture());
         oldSpecs.setChainType(newSpecs.getChainType());
-        oldSpecs.setGemstone(newSpecs.getGemstone());
+        oldSpecs.setGemstone(gemstoneService.findById(newSpecs.getGemstone().getId()));
         oldSpecs.setGemstoneWeight(newSpecs.getGemstoneWeight());
         oldSpecs.setMetalWeight(newSpecs.getMetalWeight());
         return oldSpecs;

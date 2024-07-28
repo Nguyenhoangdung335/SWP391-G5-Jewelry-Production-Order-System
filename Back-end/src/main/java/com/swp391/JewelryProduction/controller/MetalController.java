@@ -20,7 +20,7 @@ public class MetalController {
     public ResponseEntity<Response> findAll(
             @RequestParam("page") int page,
             @RequestParam("size") int pageSize,
-            @RequestParam(name = "sortBy", defaultValue = "unit", required = false) String sortBy
+            @RequestParam(name = "sortBy", defaultValue = "unit") String sortBy
     ) {
         return Response.builder()
                 .status(HttpStatus.OK)

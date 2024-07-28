@@ -42,8 +42,10 @@ public class Metal {
     @Column(nullable = false)
     private Double marketPrice;
 
+    @NotNull
     @DecimalMin("0.0")
     @DecimalMax("5000000.0")
+    @Column(nullable = false)
     private Double companyPrice;
 
     @Column(nullable = false)
