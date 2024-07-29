@@ -112,7 +112,8 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     @Override
     public ProductSpecification saveSpecification(ProductSpecification specs) {
-        specs.setGemstone(gemstoneService.findById(specs.getGemstone().getId()));
+        if (specs.getGemstone() != null)
+            specs.setGemstone(gemstoneService.findById(specs.getGemstone().getId()));
         specs.setMetal(metalService.findById(specs.getMetal().getId()));
         return productSpecificationRepository.save(specs);
     }
@@ -175,7 +176,10 @@ public class ProductServiceImpl implements ProductService {
         oldSpecs.setMetal(metalService.findById(newSpecs.getMetal().getId()));
         oldSpecs.setTexture(newSpecs.getTexture());
         oldSpecs.setChainType(newSpecs.getChainType());
-        oldSpecs.setGemstone(gemstoneService.findById(newSpecs.getGemstone().getId()));
+        if (newSpecs.getGemstone() != null)
+            oldSpecs.setGemstone(gemstoneService.findById(newSpecs.getGemstone().getId()));
+        if (newSpecs.getGemstone() == null && oldSpecs.getGemstone() != null)
+            oldSpecs.setGemstone(null);
         oldSpecs.setGemstoneWeight(newSpecs.getGemstoneWeight());
         oldSpecs.setMetalWeight(newSpecs.getMetalWeight());
         return oldSpecs;
