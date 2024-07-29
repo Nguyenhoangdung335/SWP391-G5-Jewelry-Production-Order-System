@@ -69,36 +69,6 @@ public class PaypalService {
         return payment;
     }
 
-//    public Payment createBet (
-//              Double total,
-//              String currency,
-//              String method,
-//              String intent,
-//              String description,
-//              String cancelURL,
-//              String successURL,
-//              Order order
-//    ) throws PayPalRESTException {
-//        Payment payment = makePayment(total, currency, method, intent, description, cancelURL, successURL);
-//        transactionService.createTransaction(payment, order);
-//        return payment;
-//    }
-//
-//    public Payment createRemainingPayment (
-//            Double total,
-//            String currency,
-//            String method,
-//            String intent,
-//            String description,
-//            String cancelURL,
-//            String successURL,
-//            Order order
-//    ) throws PayPalRESTException {
-//        Payment payment = makePayment(total, currency, method, intent, description, cancelURL, successURL);
-//        transactionService.(payment, order);
-//        return payment;
-//    }
-
     public Payment executePayment (
             String paymentID,
             String payerID
@@ -113,9 +83,10 @@ public class PaypalService {
 
     public Currency refundSale (
             String currency,
-            String refundAmount,
-            Transactions transactions
+            Order order
     ) throws PayPalRESTException {
+        Transactions transactions = order.getTransactions();
+
         Sale sale = new Sale();
         sale.setId(transactions.getPaypalSaleId());
 
@@ -123,11 +94,14 @@ public class PaypalService {
 
         Amount amount = new Amount();
         amount.setCurrency(currency);
-        amount.setTotal(refundAmount);
+        amount.setTotal(String.valueOf(transactionService.getRefundPercentByPolicy(order) * transactions.getAmount()));
 
         refundRequest.setAmount(amount);
 
         DetailedRefund detailsRefund = sale.refund(apiContext, refundRequest);
+
+        transactionService.refundTransaction(order);
+
         return detailsRefund.getTotalRefundedAmount();
     }
 
