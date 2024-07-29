@@ -13,6 +13,7 @@ import com.swp391.JewelryProduction.pojos.Transactions;
 import com.swp391.JewelryProduction.repositories.TransactionRepository;
 import com.swp391.JewelryProduction.services.order.OrderService;
 import com.swp391.JewelryProduction.util.exceptions.ObjectNotFoundException;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.statemachine.service.StateMachineService;
@@ -31,6 +32,13 @@ import static com.swp391.JewelryProduction.config.stateMachine.StateMachineUtil.
 @Service
 @RequiredArgsConstructor
 public class TransactionServiceImpl implements TransactionService{
+    @Getter
+    private static final List<OrderStatus> noRefundBefore = List.of(OrderStatus.REQ_AWAIT_APPROVAL, OrderStatus.AWAIT_ASSIGN_STAFF, OrderStatus.IN_EXCHANGING, OrderStatus.QUO_AWAIT_MANA_APPROVAL, OrderStatus.QUO_AWAIT_CUST_APPROVAL, OrderStatus.AWAIT_BET_TRANSACTION);
+    @Getter
+    private static final Map<OrderStatus, Double> partialRefund = Map.of(OrderStatus.IN_DESIGNING, 0.9, OrderStatus.DES_AWAIT_MANA_APPROVAL, 0.9, OrderStatus.DES_AWAIT_CUST_APPROVAL, 0.9, OrderStatus.IN_PRODUCTION, 0.5, OrderStatus.PRO_AWAIT_APPROVAL, 0.3, OrderStatus.AWAIT_REMAIN_TRANSACTION, 0.1);
+    @Getter
+    private static final List<OrderStatus> noRefundAfter = List.of(OrderStatus.ORDER_COMPLETED, OrderStatus.CANCEL, OrderStatus.ON_DELIVERING, OrderStatus.DELIVERED_AWAIT_APPROVAL);
+
 
     private final TransactionRepository transactionRepository;
     private final OrderService orderService;
@@ -65,12 +73,6 @@ public class TransactionServiceImpl implements TransactionService{
 
         return transactions;
     }
-
-//    public Transactions updateTransactionStatus (Order order, Payment payment, TransactionStatus status) {
-//        Transactions transactions = order.getTransactions();
-//        if (transactions == null|| !transactions.getStatus().equals(TransactionStatus.CREATED))
-//            throw new IllegalArgumentException("Cannot make bet transaction, transaction does not exist or does not have required status");
-//    }
 
     @Override
     public Transactions makeBetTransaction(Payment payment, Order order) {
@@ -120,7 +122,6 @@ public class TransactionServiceImpl implements TransactionService{
         transactions.setStatus(TransactionStatus.BET);
         transactions.setDateUpdated(LocalDateTime.now());
         transactions.setPaypalSaleId(retrieveSale(payment).getId());
-
         return transactionRepository.save(transactions);
     }
 
@@ -136,8 +137,6 @@ public class TransactionServiceImpl implements TransactionService{
         }
         transactions.setStatus(TransactionStatus.COMPLETED);
         transactions.setDateUpdated(LocalDateTime.now());
-        transactions.setPaypalSaleId(retrieveSale(payment).getId());
-
         return transactionRepository.save(transactions);
     }
 
@@ -160,17 +159,24 @@ public class TransactionServiceImpl implements TransactionService{
     }
 
     @Override
-    public Transactions refundTransaction(Payment payment, Order order) {
+    public Transactions refundTransaction(Order order) {
         Transactions transactions = order.getTransactions();
         if (transactions == null )
             throw new IllegalArgumentException("Cannot refund transaction, transaction does not exist or does not have required status");
 
         transactions.setStatus(TransactionStatus.REFUNDED);
-        transactions.setAmount(0.0);
+        Double initialAmount = transactions.getAmount();
+        transactions.setAmount(initialAmount - initialAmount * getRefundPercentByPolicy(order));
         transactions.setDateUpdated(LocalDateTime.now());
-        transactions.setPaypalSaleId(retrieveSale(payment).getId());
 
         return transactionRepository.save(transactions);
+    }
+
+    @Override
+    public Double getRefundPercentByPolicy(Order order) {
+        if (noRefundBefore.contains(order.getStatus()))
+            return 0.0;
+        else return partialRefund.getOrDefault(order.getStatus(), 0.0);
     }
 
     @Override
