@@ -214,12 +214,12 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
             OrderService orderService = applicationContext.getBean(OrderService.class);
             ReportService reportService = applicationContext.getBean(ReportService.class);
             NotificationService notificationService = applicationContext.getBean(NotificationService.class);
+            PaypalService paypalService = applicationContext.getBean(PaypalService.class);
 
             Order order = getOrder(context, orderService);
             Account owner = order.getOwner();
             owner.setCurrentOrder(null);
-            List<String> cancelReasons = Arrays.asList("You have not completed the transactions in time, thus rendering your order invalid.", "Your request is deemed to be inappropriate.");
-            MessagesConstant message = messagesConstant.createOrderCancelMessage(owner.getUserInfo().getFirstName(), cancelReasons, order);
+            MessagesConstant message = messagesConstant.createOrderCancelMessage(owner.getUserInfo().getFirstName(), order);
 
             Report report = reportService.createNormalReport(order, message.getTitle(), message.getDescription());
             Notification notification = Notification.builder()
@@ -232,8 +232,11 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
             order.getNotifications().add(notification);
 
             try {
+                paypalService.refundSale("USD", order);
                 notification = notificationService.createNotification(notification);
             } catch (MessagingException ignored) {
+            } catch (PayPalRESTException ex) {
+                throw new RuntimeException("Failed to refund");
             }
 
             log.info("Notification cancel order id {} of owner id {}", order.getId(), owner.getId());
@@ -599,15 +602,6 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
         };
     }
 
-    //Comment for later updates
-
-//    @Bean
-//    public Action<OrderStatus, OrderEvent> notifyRestoreOrderAction() {
-//        return context -> {
-//
-//        };
-//    }
-
     @Bean
     public Action<OrderStatus, OrderEvent> notifyRequestDeclinedAction () {
         return context -> {
@@ -640,13 +634,6 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
                 throw new RuntimeException(e);
             }
             log.info("Notification declined message for owner id {}", order.getOwner());
-        };
-    }
-
-    @Bean
-    public Action<OrderStatus, OrderEvent> createChatRoomAction () {
-        return context -> {
-
         };
     }
 
