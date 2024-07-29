@@ -1,5 +1,14 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Form, Container, Row, Col, Table, OverlayTrigger, Tooltip, Image } from "react-bootstrap";
+import {
+  Form,
+  Container,
+  Row,
+  Col,
+  Table,
+  OverlayTrigger,
+  Tooltip,
+  Image,
+} from "react-bootstrap";
 import DoubleRangeSlider from "../reusable/DoubleRangeSlider/DoubleRangeSlider";
 import axios from "axios";
 import ServerUrl from "../reusable/ServerUrl";
@@ -11,18 +20,23 @@ const JewelryType = ({ value, onChange }) => {
   useEffect(() => {
     // Fetch type list from server
     setTypeList([
-        {value: "Rings", name: "Rings"},
-        {value: "Necklace", name: "Necklace"},
-        {value: "Earrings", name: "Earrings"},
-        {value: "Bracelet", name: "Bracelet"},
-        {value: "Anklet", name: "Anklet"},
+      { value: "Rings", name: "Rings" },
+      { value: "Necklace", name: "Necklace" },
+      { value: "Earrings", name: "Earrings" },
+      { value: "Bracelet", name: "Bracelet" },
+      { value: "Anklet", name: "Anklet" },
     ]);
   }, []);
 
   return (
     <Form.Group className="mb-3">
       <Form.Label>Jewelry Type*</Form.Label>
-      <Form.Select name="selectedType" value={value} size="sm" onChange={onChange}>
+      <Form.Select
+        name="selectedType"
+        value={value}
+        size="sm"
+        onChange={onChange}
+      >
         <option value="" disabled>
           Choose one
         </option>
@@ -41,24 +55,29 @@ const DesignStyle = ({ value, onChange }) => {
 
   useEffect(() => {
     setStyleList([
-        {value:"Historic", name: "Historic",},
-        {value:"Georgian", name:"Georgian",},
-        {value:"Victorian", name:"Victorian"},
-        {value:"Edwardian", name:"Edwardian"},
-        {value:"Art nouveau", name: "Art Nouveau"},
-        {value:"Art deco", name: "Art Deco"},
-        {value:"Retro", name: "Retro"},
-        {value:"Modernist", name: "Modernist"},
-        {value:"Minimalistic", name: "Minimalistic"},
-        {value:"Contemporary", name: "Contemporary"},
-        {value:"Cultural", name:"Cultural"},
+      { value: "Historic", name: "Historic" },
+      { value: "Georgian", name: "Georgian" },
+      { value: "Victorian", name: "Victorian" },
+      { value: "Edwardian", name: "Edwardian" },
+      { value: "Art nouveau", name: "Art Nouveau" },
+      { value: "Art deco", name: "Art Deco" },
+      { value: "Retro", name: "Retro" },
+      { value: "Modernist", name: "Modernist" },
+      { value: "Minimalistic", name: "Minimalistic" },
+      { value: "Contemporary", name: "Contemporary" },
+      { value: "Cultural", name: "Cultural" },
     ]);
   }, []);
 
   return (
     <Form.Group className="mb-3">
       <Form.Label>Design Style*</Form.Label>
-      <Form.Select name="selectedStyle" value={value} size="sm" onChange={onChange}>
+      <Form.Select
+        name="selectedStyle"
+        value={value}
+        size="sm"
+        onChange={onChange}
+      >
         <option value="" disabled>
           Choose one
         </option>
@@ -78,23 +97,28 @@ const Occasion = ({ value, onChange }) => {
   useEffect(() => {
     // Fetch occasion list from server
     setOccasionList([
-        {value: "Engagement", name: "Engagement"},
-        {value: "Wedding", name: "Wedding"},
-        {value: "Anniversaries", name: "Anniversaries"},
-        {value: "Birthdays", name: "Birthdays"},
-        {value: "Formal Events", name: "Formal Events"},
-        {value: "Working days", name: "Working days"},
-        {value: "Dinner date", name: "Dinner date"},
-        {value: "Holiday", name: "Holiday"},
-        {value: "Informal gathering", name: "Informal gathering"},
-        {value: "Everyday uses", name: "Everyday uses"},
+      { value: "Engagement", name: "Engagement" },
+      { value: "Wedding", name: "Wedding" },
+      { value: "Anniversaries", name: "Anniversaries" },
+      { value: "Birthdays", name: "Birthdays" },
+      { value: "Formal Events", name: "Formal Events" },
+      { value: "Working days", name: "Working days" },
+      { value: "Dinner date", name: "Dinner date" },
+      { value: "Holiday", name: "Holiday" },
+      { value: "Informal gathering", name: "Informal gathering" },
+      { value: "Everyday uses", name: "Everyday uses" },
     ]);
   }, []);
 
   return (
     <Form.Group className="mb-3">
       <Form.Label>Occasion</Form.Label>
-      <Form.Select name="selectedOccasion" value={value} size="sm" onChange={onChange}>
+      <Form.Select
+        name="selectedOccasion"
+        value={value}
+        size="sm"
+        onChange={onChange}
+      >
         <option value="" disabled>
           Choose one
         </option>
@@ -109,109 +133,106 @@ const Occasion = ({ value, onChange }) => {
 };
 
 const Length = ({ selectedType, selectedLength, onChange }) => {
-    return (
-      <>
-        {selectedType && (
-          <Form.Group className="mb-3">
-            {selectedType === "Necklace" && (
-              <>
-                <Form.Label>
-                  Necklace Length: {selectedLength}"
-                </Form.Label>
-                <Form.Range
-                  name="selectedLength"
-                  step="1"
-                  min="14"
-                  max="42"
-                  value={selectedLength}
-                  onChange={onChange}
-                />
-              </>
-            )}
-            {selectedType === "Bracelet" && (
-              <>
-                <Form.Label>Bracelet Size</Form.Label>
-                <Form.Select
-                  name="selectedLength"
-                  value={selectedLength}
-                  onChange={onChange}
-                  size="sm"
-                >
-                  <option value="" disabled>
-                    Choose one
-                  </option>
-                  <option value="XS">X-Small</option>
-                  <option value="S">Small</option>
-                  <option value="M">Medium</option>
-                  <option value="L">Large</option>
-                  <option value="XL">X-Large</option>
-                  <option value="XXL">XX-Large</option>
-                  <option value="XXXL">XXX-Large</option>
-                </Form.Select>
-                <Form.Text muted>
-                  X-Small: 4.76-5.25". | Small: 5.26-5.75". | Medium: 5.76-6.25".
-                  | Large: 6.26-6.75".<br />
-                  X-Large: 6.76-7.25". | XX-Large: 7.26–7.75". | XXX-Large: 7.76–8.25".
-                </Form.Text>
-              </>
-            )}
-            {selectedType === "Anklet" && (
-              <>
-                <Form.Label>
-                  Anklet Size: {selectedLength}"
-                </Form.Label>
-                <Form.Range
-                  name="selectedLength"
-                  step="1"
-                  min="0"
-                  max="10"
-                  value={selectedLength}
-                  onChange={onChange}
-                />
-              </>
-            )}
-            {selectedType === "Rings" && (
-              <>
-                <Form.Label>
-                  Rings inside diameters: {selectedLength}"
-                </Form.Label>
-                <Form.Range
-                  name="selectedLength"
-                  step="0.001"
-                  min="0.618"
-                  max="0.846"
-                  value={selectedLength}
-                  onChange={onChange}
-                />
-              </>
-            )}
-            {selectedType === "Earrings" && (
-              <>
-                <Form.Label>Earrings size</Form.Label>
-                <Form.Select
-                  name="selectedLength"
-                  value={selectedLength}
-                  onChange={onChange}
-                  size="sm"
-                >
-                  <option value="" disabled>
-                    Choose one
-                  </option>
-                  <option value="S">Small</option>
-                  <option value="M">Medium</option>
-                  <option value="L">Large</option>
-                  <option value="XL">X-Large</option>
-                </Form.Select>
-                <Form.Text muted>
-                  Small: 0.393-1.181". | Medium: 1.575-1.968". | Large: 2.559-3.149". | X-Large: Over 3.149".
-                </Form.Text>
-              </>
-            )}
-          </Form.Group>
-        )}
-      </>
-    );
-  };
+  return (
+    <>
+      {selectedType && (
+        <Form.Group className="mb-3">
+          {selectedType === "Necklace" && (
+            <>
+              <Form.Label>Necklace Length: {selectedLength}"</Form.Label>
+              <Form.Range
+                name="selectedLength"
+                step="1"
+                min="14"
+                max="42"
+                value={selectedLength}
+                onChange={onChange}
+              />
+            </>
+          )}
+          {selectedType === "Bracelet" && (
+            <>
+              <Form.Label>Bracelet Size</Form.Label>
+              <Form.Select
+                name="selectedLength"
+                value={selectedLength}
+                onChange={onChange}
+                size="sm"
+              >
+                <option value="" disabled>
+                  Choose one
+                </option>
+                <option value="XS">X-Small</option>
+                <option value="S">Small</option>
+                <option value="M">Medium</option>
+                <option value="L">Large</option>
+                <option value="XL">X-Large</option>
+                <option value="XXL">XX-Large</option>
+                <option value="XXXL">XXX-Large</option>
+              </Form.Select>
+              <Form.Text muted>
+                X-Small: 4.76-5.25". | Small: 5.26-5.75". | Medium: 5.76-6.25".
+                | Large: 6.26-6.75".
+                <br />
+                X-Large: 6.76-7.25". | XX-Large: 7.26–7.75". | XXX-Large:
+                7.76–8.25".
+              </Form.Text>
+            </>
+          )}
+          {selectedType === "Anklet" && (
+            <>
+              <Form.Label>Anklet Size: {selectedLength}"</Form.Label>
+              <Form.Range
+                name="selectedLength"
+                step="1"
+                min="0"
+                max="10"
+                value={selectedLength}
+                onChange={onChange}
+              />
+            </>
+          )}
+          {selectedType === "Rings" && (
+            <>
+              <Form.Label>Rings inside diameters: {selectedLength}"</Form.Label>
+              <Form.Range
+                name="selectedLength"
+                step="0.001"
+                min="0.618"
+                max="0.846"
+                value={selectedLength}
+                onChange={onChange}
+              />
+            </>
+          )}
+          {selectedType === "Earrings" && (
+            <>
+              <Form.Label>Earrings size</Form.Label>
+              <Form.Select
+                name="selectedLength"
+                value={selectedLength}
+                onChange={onChange}
+                size="sm"
+              >
+                <option value="" disabled>
+                  Choose one
+                </option>
+                <option value="S">Small</option>
+                <option value="M">Medium</option>
+                <option value="L">Large</option>
+                <option value="XL">X-Large</option>
+              </Form.Select>
+              <Form.Text muted>
+                Small: 0.393-1.181". | Medium: 1.575-1.968". | Large:
+                2.559-3.149". | X-Large: Over 3.149".
+              </Form.Text>
+            </>
+          )}
+        </Form.Group>
+      )}
+    </>
+  );
+};
 
 const ChainType = ({ value, onChange }) => {
   const [chainTypeList, setChainTypeList] = useState([]);
@@ -219,31 +240,36 @@ const ChainType = ({ value, onChange }) => {
   useEffect(() => {
     // Fetch chain type list from server
     setChainTypeList([
-        { value: "Default", name: "Default" },
-        { value: "Bead", name: "Bead" },
-        { value: "Box", name: "Box" },
-        { value: "Byzantine", name: "Byzantine" },
-        { value: "Cable", name: "Cable" },
-        { value: "Solid Cable", name: "Solid Cable" },
-        { value: "Curb", name: "Curb" },
-        { value: "Figaro", name: "Figaro" },
-        { value: "Mesh", name: "Mesh" },
-        { value: "Omega", name: "Omega" },
-        { value: "Palma", name: "Palma" },
-        { value: "Popcorn", name: "Popcorn" },
-        { value: "Rolo", name: "Rolo" },
-        { value: "Rope", name: "Rope" },
-        { value: "San Marco", name: "San Marco" },
-        { value: "Singapore", name: "Singapore" },
-        { value: "Snake", name: "Snake" },
-        { value: "Wheat", name: "Wheat" }
+      { value: "Default", name: "Default" },
+      { value: "Bead", name: "Bead" },
+      { value: "Box", name: "Box" },
+      { value: "Byzantine", name: "Byzantine" },
+      { value: "Cable", name: "Cable" },
+      { value: "Solid Cable", name: "Solid Cable" },
+      { value: "Curb", name: "Curb" },
+      { value: "Figaro", name: "Figaro" },
+      { value: "Mesh", name: "Mesh" },
+      { value: "Omega", name: "Omega" },
+      { value: "Palma", name: "Palma" },
+      { value: "Popcorn", name: "Popcorn" },
+      { value: "Rolo", name: "Rolo" },
+      { value: "Rope", name: "Rope" },
+      { value: "San Marco", name: "San Marco" },
+      { value: "Singapore", name: "Singapore" },
+      { value: "Snake", name: "Snake" },
+      { value: "Wheat", name: "Wheat" },
     ]);
   }, []);
 
-  return(
+  return (
     <Form.Group className="mb-3">
       <Form.Label>Chain Type</Form.Label>
-      <Form.Select name="selectedChainType" value={value} size="sm" onChange={onChange}>
+      <Form.Select
+        name="selectedChainType"
+        value={value}
+        size="sm"
+        onChange={onChange}
+      >
         <option value="" disabled>
           Choose one
         </option>
@@ -263,23 +289,28 @@ const Texture = ({ value, onChange }) => {
   useEffect(() => {
     // Fetch texture list from server
     setTextureList([
-        { value: "Default", name: "Default" },
-        { value: "Polished", name: "Polished" },
-        { value: "Satin", name: "Satin" },
-        { value: "Brushed", name: "Brushed" },
-        { value: "Wire Brushed", name: "Wire Brushed" },
-        { value: "Sand Blasted", name: "Sand Blasted" },
-        { value: "Bead Blasted", name: "Bead Blasted" },
-        { value: "Stone", name: "Stone" },
-        { value: "Hammered", name: "Hammered" },
-        { value: "Florentine", name: "Florentine" }
+      { value: "Default", name: "Default" },
+      { value: "Polished", name: "Polished" },
+      { value: "Satin", name: "Satin" },
+      { value: "Brushed", name: "Brushed" },
+      { value: "Wire Brushed", name: "Wire Brushed" },
+      { value: "Sand Blasted", name: "Sand Blasted" },
+      { value: "Bead Blasted", name: "Bead Blasted" },
+      { value: "Stone", name: "Stone" },
+      { value: "Hammered", name: "Hammered" },
+      { value: "Florentine", name: "Florentine" },
     ]);
   }, []);
 
   return (
     <Form.Group className="mb-3">
       <Form.Label>Texture</Form.Label>
-      <Form.Select name="selectedTexture" value={value} size="sm" onChange={onChange}>
+      <Form.Select
+        name="selectedTexture"
+        value={value}
+        size="sm"
+        onChange={onChange}
+      >
         <option value="" disabled>
           Choose one
         </option>
@@ -301,14 +332,19 @@ const MetalType = ({ value, onChange }) => {
     setMetalName([
       { name: "Gold", value: "Gold" },
       { name: "Silver", value: "Silver" },
-      { name: "Platinum", value: "Platinum" }
+      { name: "Platinum", value: "Platinum" },
     ]);
   }, []);
 
   return (
     <Form.Group className="mb-3">
       <Form.Label>Metal Type*</Form.Label>
-      <Form.Select name="selectedMetalName" value={value} size="sm" onChange={onChange}>
+      <Form.Select
+        name="selectedMetalName"
+        value={value}
+        size="sm"
+        onChange={onChange}
+      >
         <option value="" disabled>
           Choose one
         </option>
@@ -326,7 +362,7 @@ const MetalUnit = ({ value, onChange, selectedMetalName }) => {
   const [metalUnit, setMetalUnit] = useState({
     Gold: ["Gram", "Ounce"],
     Silver: ["Gram", "Ounce"],
-    Platinum: ["Gram", "Ounce"]
+    Platinum: ["Gram", "Ounce"],
   });
 
   const units = metalUnit[selectedMetalName] || [];
@@ -334,7 +370,13 @@ const MetalUnit = ({ value, onChange, selectedMetalName }) => {
   return (
     <Form.Group className="mb-3">
       <Form.Label>Metal Unit*</Form.Label>
-      <Form.Select name="selectedMetalUnit" value={value} size="sm" onChange={onChange} disabled={!units.length}>
+      <Form.Select
+        name="selectedMetalUnit"
+        value={value}
+        size="sm"
+        onChange={onChange}
+        disabled={!units.length}
+      >
         <option value="" disabled>
           Choose one
         </option>
@@ -348,7 +390,7 @@ const MetalUnit = ({ value, onChange, selectedMetalName }) => {
   );
 };
 
-const MetalWeight = ({ value = 0, onChange, minVal = 1, maxVal = 200, step = 1, selectedUnit}) => {
+const MetalWeight = ({ value = 0, onChange, minVal = 1, maxVal = 1000, step = 1, selectedUnit}) => {
   const [tempValue, setTempValue] = useState((value < minVal)? minVal: value);
   const [range, setRange] = useState({
     min: minVal,
@@ -393,16 +435,19 @@ const MetalWeight = ({ value = 0, onChange, minVal = 1, maxVal = 200, step = 1, 
   }, [selectedUnit, maxVal, minVal, step]);
 
   const formatUnit = (num) => {
-    return Number(num).toLocaleString('en', {minimumFractionDigits: 0, maximumFractionDigits: 2});
-  }
+    return Number(num).toLocaleString("en", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    });
+  };
 
   return (
     <Form.Group className="mb-3 position-relative">
       <Form.Label className="d-block">Metal Weight*: {formatUnit(tempValue)} {selectedUnit} {!selectedUnit?.toLowerCase().includes("gram")? "(" + formatUnit(tempValue*convertRate) + " gram)" : ""}</Form.Label>
       <div className="d-flex justify-content-between align-items-center">
-        <span >{minVal}</span>
+        <span>{minVal}</span>
         <Form.Range
-          style={{ display: "inline-block", width: "90%", margin: "0 auto"}}
+          style={{ display: "inline-block", width: "90%", margin: "0 auto" }}
           name="selectedMetalWeight"
           value={tempValue}
           size="sm"
@@ -418,16 +463,20 @@ const MetalWeight = ({ value = 0, onChange, minVal = 1, maxVal = 200, step = 1, 
       </div>
     </Form.Group>
   );
-}
+};
 
-const GemstoneWeightRange = ({ minWeight, maxWeight, handleWeightChange}) => {
+const GemstoneWeightRange = ({ minWeight, maxWeight, handleWeightChange }) => {
   return (
     <Form.Group className="mb-3">
       <Form.Label>Gemstone Weight Range</Form.Label>
       <div className="d-flex justify-content-center align-items-center">
-        <div style={{fontSize: ".9rem", marginInline: "0.5rem"}}>{minWeight / 100}</div>
+        <div style={{ fontSize: ".9rem", marginInline: "0.5rem" }}>
+          {minWeight / 100}
+        </div>
         <DoubleRangeSlider min={1} max={1100} onChange={handleWeightChange} />
-        <div style={{fontSize: ".9rem", marginInline: "0.5rem"}}>{maxWeight / 100}</div>
+        <div style={{ fontSize: ".9rem", marginInline: "0.5rem" }}>
+          {maxWeight / 100}
+        </div>
       </div>
     </Form.Group>
   );
@@ -437,10 +486,13 @@ const GemstoneName = ({ value, onChange, gemstoneName }) => {
   return (
     <Form.Group className="mb-3">
       <Form.Label>Gemstone</Form.Label>
-      <Form.Select name="selectedGemstoneName" value={value} size="sm" onChange={onChange}>
-        <option value="">
-          None
-        </option>
+      <Form.Select
+        name="selectedGemstoneName"
+        value={value}
+        size="sm"
+        onChange={onChange}
+      >
+        <option value="">None</option>
         {gemstoneName.map((gemstone, index) => (
           <option key={index} value={gemstone}>
             {gemstone}
@@ -448,12 +500,14 @@ const GemstoneName = ({ value, onChange, gemstoneName }) => {
         ))}
       </Form.Select>
     </Form.Group>
-  )
+  );
 };
 
 const GemstoneShape = ({ value, onChange, gemstoneShape }) => {
   const [hoveredShape, setHoveredShape] = useState(null);
-  const images = importAllImages(require.context('../assets/GemstoneShape', false, /\.png$/));
+  const images = importAllImages(
+    require.context("../assets/GemstoneShape", false, /\.png$/)
+  );
 
   const handleMouseOver = (shape) => {
     setHoveredShape(shape);
@@ -471,17 +525,25 @@ const GemstoneShape = ({ value, onChange, gemstoneShape }) => {
   const renderGemstoneShapePreview = (shape) => {
     const imageName = shape.charAt(0) + shape.slice(1).toLowerCase();
     const imageUrl = images[imageName];
-    return imageUrl ? <Image src={imageUrl} thumbnail/> : <span>Image not found</span>;
+    return imageUrl ? (
+      <Image src={imageUrl} thumbnail />
+    ) : (
+      <span>Image not found</span>
+    );
   };
 
   return (
     <Form.Group className="mb-3 position-relative">
       <Form.Label>Gemstone Shape</Form.Label>
-      <div style={{position: "relative"}}>
-        <Form.Select name="selectedGemstoneShape" value={value} size="sm" onChange={handleChange}>
-          <option value="">
-            All
-          </option>
+      <div style={{ position: "relative" }}>
+        <Form.Select
+          name="selectedGemstoneShape"
+          defaultValue=""
+          value={value}
+          size="sm"
+          onChange={handleChange}
+        >
+          <option value="">All</option>
           {gemstoneShape?.map((shape) => (
             <option
               key={shape}
@@ -494,7 +556,17 @@ const GemstoneShape = ({ value, onChange, gemstoneShape }) => {
           ))}
         </Form.Select>
         {hoveredShape && (
-          <div style={{position: "absolute", top: "-100%", right: "105%", marginLeft: "10px", zIndex: "1", width: "100px", height: "auto"}}>
+          <div
+            style={{
+              position: "absolute",
+              top: "-100%",
+              right: "105%",
+              marginLeft: "10px",
+              zIndex: "1",
+              width: "100px",
+              height: "auto",
+            }}
+          >
             {renderGemstoneShapePreview(hoveredShape)}
           </div>
         )}
@@ -507,10 +579,13 @@ const GemstoneCut = ({ value, onChange, gemstoneCut }) => {
   return (
     <Form.Group className="mb-3">
       <Form.Label>Gemstone Cut*</Form.Label>
-      <Form.Select name="selectedGemstoneCut" value={value} size="sm" onChange={onChange}>
-        <option value="">
-          All
-        </option>
+      <Form.Select
+        name="selectedGemstoneCut"
+        value={value}
+        size="sm"
+        onChange={onChange}
+      >
+        <option value="">All</option>
         {gemstoneCut.map((cut) => (
           <option key={cut} value={cut}>
             {cut}
@@ -525,10 +600,13 @@ const GemstoneClarity = ({ value, onChange, gemstoneClarity }) => {
   return (
     <Form.Group className="mb-3">
       <Form.Label>Gemstone Clarity*</Form.Label>
-      <Form.Select name="selectedGemstoneClarity" value={value} size="sm" onChange={onChange}>
-        <option value="">
-          All
-        </option>
+      <Form.Select
+        name="selectedGemstoneClarity"
+        value={value}
+        size="sm"
+        onChange={onChange}
+      >
+        <option value="">All</option>
         {gemstoneClarity.map((clarity) => (
           <option key={clarity} value={clarity}>
             {clarity}
@@ -543,10 +621,13 @@ const GemstoneColor = ({ value, onChange, gemstoneColor }) => {
   return (
     <Form.Group className="mb-3">
       <Form.Label>Gemstone Color*</Form.Label>
-      <Form.Select name="selectedGemstoneColor" value={value} size="sm" onChange={onChange}>
-        <option value="">
-          All
-        </option>
+      <Form.Select
+        name="selectedGemstoneColor"
+        value={value}
+        size="sm"
+        onChange={onChange}
+      >
+        <option value="">All</option>
         {gemstoneColor.map((color) => (
           <option key={color} value={color}>
             {color}
@@ -573,11 +654,13 @@ const GemstoneWeight = ({ value: gemstoneWeight, onChange, minVal = 0.05, maxVal
 
   return (
     <Form.Group className="mb-3 position-relative">
-      <Form.Label className="d-block">Gemstone Weight*: {gemstoneWeight} Carat</Form.Label>
+      <Form.Label className="d-block">
+        Gemstone Weight*: {gemstoneWeight} Carat
+      </Form.Label>
       <div className="d-flex justify-content-between align-items-center">
-        <span >{minVal}</span>
+        <span>{minVal}</span>
         <Form.Range
-          style={{ display: "inline-block", width: "90%", margin: "0 auto"}}
+          style={{ display: "inline-block", width: "90%", margin: "0 auto" }}
           name="selectedGemstoneWeight"
           value={tempValue}
           size="sm"
@@ -595,52 +678,84 @@ const GemstoneWeight = ({ value: gemstoneWeight, onChange, minVal = 0.05, maxVal
   );
 };
 
-const GemstoneForm = ({gemstoneData, onChange, selectedData}) => {
-  const handleSelectGemstone = useCallback((data) => {
-    console.log(data);
-    onChange({target: { name: "selectedGemstone", value: data}})
-  }, [onChange]);
+const GemstoneForm = ({ gemstoneData, onChange, selectedData }) => {
+  const handleSelectGemstone = useCallback(
+    (data) => {
+      console.log(data);
+      onChange({ target: { name: "selectedGemstone", value: data } });
+    },
+    [onChange]
+  );
 
   return (
     <Container>
       <Row>
         <Col sm={12}>
-          <GemstoneName gemstoneName={gemstoneData.names} onChange={onChange} value={selectedData.selectedGemstoneName} />
+          <GemstoneName
+            gemstoneName={gemstoneData.names}
+            onChange={onChange}
+            value={selectedData.selectedGemstoneName}
+          />
         </Col>
         {selectedData.selectedGemstoneName && (
           <>
             <Col sm={12} md={6}>
-              <GemstoneShape gemstoneShape={gemstoneData.shapes} onChange={onChange} value={selectedData.selectedGemstoneShape} />
+              <GemstoneShape
+                gemstoneShape={gemstoneData.shapes}
+                onChange={onChange}
+                value={selectedData.selectedGemstoneShape}
+              />
             </Col>
             <Col sm={12} md={6}>
-              <GemstoneCut gemstoneCut={gemstoneData.cuts} onChange={onChange} value={selectedData.selectedGemstoneCut} />
+              <GemstoneCut
+                gemstoneCut={gemstoneData.cuts}
+                onChange={onChange}
+                value={selectedData.selectedGemstoneCut}
+              />
             </Col>
             <Col sm={12} md={6}>
-              <GemstoneClarity gemstoneClarity={gemstoneData.clarities} onChange={onChange} value={selectedData.selectedGemstoneClarity} />
+              <GemstoneClarity
+                gemstoneClarity={gemstoneData.clarities}
+                onChange={onChange}
+                value={selectedData.selectedGemstoneClarity}
+              />
             </Col>
             <Col sm={12} md={6}>
-              <GemstoneColor gemstoneColor={gemstoneData.colors} onChange={onChange} value={selectedData.selectedGemstoneColor} />
+              <GemstoneColor
+                gemstoneColor={gemstoneData.colors}
+                onChange={onChange}
+                value={selectedData.selectedGemstoneColor}
+              />
             </Col>
             <Col sm={12}>
-              <GemstoneWeight onChange={onChange} value={selectedData.selectedGemstoneWeight} minVal={gemstoneData.minWeight} maxVal={gemstoneData.maxWeight} step={0.01} />
+              <GemstoneWeight
+                onChange={onChange}
+                value={selectedData.selectedGemstoneWeight}
+                minVal={gemstoneData.minWeight}
+                maxVal={gemstoneData.maxWeight}
+                step={0.01}
+              />
             </Col>
           </>
         )}
       </Row>
       <Row>
-        <RenderGemstoneTable selectedGemstoneProp={selectedData} handleSelectGemstone={handleSelectGemstone} />
+        <RenderGemstoneTable
+          selectedGemstoneProp={selectedData}
+          handleSelectGemstone={handleSelectGemstone}
+        />
       </Row>
     </Container>
   );
-}
+};
 
-function RenderGemstoneTable ({selectedGemstoneProp, handleSelectGemstone}) {
+function RenderGemstoneTable({ selectedGemstoneProp, handleSelectGemstone }) {
   const [gemstoneData, setGemstoneData] = useState([]);
   const [selectedGemstone, setSelectedGemstone] = useState(selectedGemstoneProp.selectedGemstone);
   const isQualifiedRender = selectedGemstoneProp.selectedGemstoneName;
 
-  useEffect(() =>  {
-    if ( isQualifiedRender ) {
+  useEffect(() => {
+    if (isQualifiedRender) {
       const requestBody = {
         name: selectedGemstoneProp.selectedGemstoneName || null,
         shape: selectedGemstoneProp.selectedGemstoneShape || null,
@@ -651,10 +766,10 @@ function RenderGemstoneTable ({selectedGemstoneProp, handleSelectGemstone}) {
       };
 
       const request = {
-        method: 'POST',
+        method: "POST",
         url: `${ServerUrl}/api/gemstone/search`,
         headers: {
-            'content-type': 'application/json',
+          "content-type": "application/json",
         },
         data: requestBody,
       };
@@ -666,18 +781,19 @@ function RenderGemstoneTable ({selectedGemstoneProp, handleSelectGemstone}) {
           setGemstoneData(gemstone);
           handleSelectGemstone(gemstone[0]);
         }
-      }
+      };
 
       fetchGemstone();
     }
-  }, [isQualifiedRender,
+  }, [
+    isQualifiedRender,
     selectedGemstoneProp.selectedGemstoneName,
     selectedGemstoneProp.selectedGemstoneShape,
     selectedGemstoneProp.selectedGemstoneColor,
     selectedGemstoneProp.selectedGemstoneClarity,
     selectedGemstoneProp.selectedGemstoneCut,
     selectedGemstoneProp.selectedGemstoneWeight,
-    handleSelectGemstone
+    handleSelectGemstone,
   ]);
 
   const handleRowClick = (gemstone) => {
@@ -685,42 +801,63 @@ function RenderGemstoneTable ({selectedGemstoneProp, handleSelectGemstone}) {
     handleSelectGemstone(gemstone);
   };
 
-  return isQualifiedRender && (
-    <Table striped bordered hover className="table-fixed">
-      <thead>
-        <tr>
-          <th>Gemstone</th>
-          <th>Shape</th>
-          <th>Cut</th>
-          <th>Clarity</th>
-          <th>Color</th>
-          <th>Weight</th>
-          <th>Price Per Carat</th>
-        </tr>
-      </thead>
-      <tbody>
-        {gemstoneData && gemstoneData.length > 0 && (
-          gemstoneData
-            .sort((a, b) => (a === selectedGemstone ? -1 : b === selectedGemstone ? 1 : 0))
-            .map((gemstone) => (
-            <tr key={gemstone.id} onClick={() => handleRowClick(gemstone)} className={gemstone === selectedGemstone ? 'selected-row' : 'unselected-row'} style={{ cursor: 'pointer',}}>
-              <td>{gemstone === selectedGemstone ? '✔️ ' : ''}{gemstone.name}</td>
-              <td>{gemstone.shape}</td>
-              <td>{gemstone.cut}</td>
-              <td>{gemstone.clarity}</td>
-              <td>{gemstone.color}</td>
-              <td>{gemstone.caratWeightFrom}-{gemstone.caratWeightTo}</td>
-              <td>{formatPrice(gemstone.pricePerCaratInHundred * 100)}</td>
-              </tr>
-          )))}
+  return (
+    isQualifiedRender && (
+      <Table striped bordered hover className="table-fixed">
+        <thead>
+          <tr>
+            <th>Gemstone</th>
+            <th>Shape</th>
+            <th>Cut</th>
+            <th>Clarity</th>
+            <th>Color</th>
+            <th>Weight</th>
+            <th>Price Per Carat</th>
+          </tr>
+        </thead>
+        <tbody>
+          {gemstoneData &&
+            gemstoneData.length > 0 &&
+            gemstoneData
+              .sort((a, b) =>
+                a === selectedGemstone ? -1 : b === selectedGemstone ? 1 : 0
+              )
+              .map((gemstone) => (
+                <tr
+                  key={gemstone.id}
+                  onClick={() => handleRowClick(gemstone)}
+                  className={
+                    gemstone === selectedGemstone
+                      ? "selected-row"
+                      : "unselected-row"
+                  }
+                  style={{ cursor: "pointer" }}
+                >
+                  <td>
+                    {gemstone === selectedGemstone ? "✔️ " : ""}
+                    {gemstone.name}
+                  </td>
+                  <td>{gemstone.shape}</td>
+                  <td>{gemstone.cut}</td>
+                  <td>{gemstone.clarity}</td>
+                  <td>{gemstone.color}</td>
+                  <td>
+                    {gemstone.caratWeightFrom}-{gemstone.caratWeightTo}
+                  </td>
+                  <td>{formatPrice(gemstone.pricePerCaratInHundred * 100)}</td>
+                </tr>
+              ))}
           {(!gemstoneData || (gemstoneData && gemstoneData.length === 0)) && (
             <tr>
-              <td colSpan={7} style={{textAlign: "center"}}>There is no entries</td>
+              <td colSpan={7} style={{ textAlign: "center" }}>
+                There is no entries
+              </td>
             </tr>
           )}
-      </tbody>
-    </Table>
-  )
+        </tbody>
+      </Table>
+    )
+  );
 }
 
 const formatPrice = (price) => {
@@ -755,5 +892,5 @@ export {
   GemstoneColor,
   GemstoneWeightRange,
   GemstoneWeight,
-  GemstoneForm
+  GemstoneForm,
 };
