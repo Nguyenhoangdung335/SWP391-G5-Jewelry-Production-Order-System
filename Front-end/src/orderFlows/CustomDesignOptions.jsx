@@ -100,11 +100,11 @@ const RenderSpecificationForm = ({handleSubmit, initialSpecs = null}) => {
     metalUnits: initialSpecs?  metalUnit[initialSpecs.metal.name] || [] :null,
   });
   const [selectedGemstoneProp, setSelectedGemstoneProp] = useState({
-    selectedGemstoneName: initialSpecs? initialSpecs.gemstone.name: "",
-    selectedGemstoneShape: initialSpecs? initialSpecs.gemstone.shape: "",
-    selectedGemstoneCut: initialSpecs? initialSpecs.gemstone.cut: "",
-    selectedGemstoneClarity: initialSpecs? initialSpecs.gemstone.clarity: "",
-    selectedGemstoneColor: initialSpecs? initialSpecs.gemstone.color: "",
+    selectedGemstoneName: initialSpecs.gemstone? initialSpecs.gemstone.name: "",
+    selectedGemstoneShape: initialSpecs.gemstone? initialSpecs.gemstone.shape: "",
+    selectedGemstoneCut: initialSpecs.gemstone? initialSpecs.gemstone.cut: "",
+    selectedGemstoneClarity: initialSpecs.gemstone? initialSpecs.gemstone.clarity: "",
+    selectedGemstoneColor: initialSpecs.gemstone? initialSpecs.gemstone.color: "",
     selectedGemstoneWeight: initialSpecs? initialSpecs.gemstoneWeight: "",
     selectedGemstone: initialSpecs? initialSpecs.gemstone: null,
   });
