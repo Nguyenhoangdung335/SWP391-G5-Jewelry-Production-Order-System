@@ -35,6 +35,16 @@ public class GemstoneController {
                 .buildEntity();
     }
 
+    @GetMapping("/props")
+    public ResponseEntity<Response> getGemstoneProps () {
+        return Response.builder()
+                .response("shapes", GemstoneShape.values())
+                .response("colors", GemstoneColor.values())
+                .response("cuts", GemstoneCut.values())
+                .response("clarities", GemstoneClarity.values())
+                .buildEntity();
+    }
+
     @GetMapping("")
     public ResponseEntity<Response> getAllGemstones(
             @RequestParam("page") int page,
