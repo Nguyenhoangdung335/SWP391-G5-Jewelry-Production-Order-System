@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Container, Table } from "react-bootstrap";
+import {Col, Container, Row, Table} from "react-bootstrap";
 import ServerUrl from "../reusable/ServerUrl";
 
 const baseUrl = `${ServerUrl}/api/v1/crawls`;
@@ -53,35 +53,54 @@ function LivePrice() {
     };
   }, []);
 
+  const formatDateTime = (dateTimeString) => {
+    const [time, date] = dateTimeString.split(' ');
+    const [day, month, year] = date.split('-');
+    return {
+      time,
+      date: `${day}-${month}-${year}`
+    };
+  };
+
+  const latestDateTime = data.length > 0 ? formatDateTime(data[0].updatedTime) : { time: '', date: '' };
+
   return (
-    <Container className="pt-5 pb-4 w-75" style={{height:"90vh"}}>
-      <div className="text-center pb-3">
-        <h2>Real Time Gold Price</h2>
-      </div>
-      <Table bordered hover>
-        <thead>
+      <Container className="pt-5 pb-4 w-75" style={{ height: "90vh" }}>
+        <Row className="text-center pb-3">
+          <Col>
+            <h2 className="display-4">Real Time Gold Price</h2>
+            <div className="pt-2">
+              {latestDateTime.time && latestDateTime.date && (
+                  <div>
+                    <span className="d-block font-weight-bold">{latestDateTime.time}</span>
+                    <span className="text-muted">{latestDateTime.date}</span>
+                  </div>
+              )}
+            </div>
+          </Col>
+        </Row>
+        <Table bordered hover responsive className="table-striped">
+          <thead className="thead-dark">
           <tr>
             <th>ID</th>
             <th>Name</th>
-            <th>Price (Unit: $)</th>
-            <th>Time</th>
+            <th>Company Price ($)</th>
+            <th>Market Price ($)</th>
           </tr>
-        </thead>
-        <tbody>
+          </thead>
+          <tbody>
           {data &&
-            data.map((dataItem) => {
-              return (
-                <tr key={dataItem.id}>
-                  <td>{dataItem.id}</td>
-                  <td>{dataItem.name} {dataItem.unit}</td>
-                  <td>{dataItem.price}</td>
-                  <td>{dataItem.updatedTime}</td>
-                </tr>
-              );
-            })}
-        </tbody>
-      </Table>
-    </Container>
+              data.map((dataItem) => (
+                  <tr key={dataItem.id}>
+                    <td>{dataItem.id}</td>
+                    <td>{dataItem.name} {dataItem.unit}</td>
+                    <td>{dataItem.companyPrice}</td>
+                    <td>{dataItem.marketPrice}</td>
+                  </tr>
+              ))}
+          </tbody>
+        </Table>
+      </Container>
   );
 }
 
