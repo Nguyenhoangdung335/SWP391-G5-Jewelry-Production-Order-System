@@ -61,19 +61,21 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     @Override
     public Product saveProduct(Product product) {
-        product.getSpecification().setGemstone(gemstoneService.findById(product.getSpecification().getGemstone().getId()));
-        product.getSpecification().setMetal(metalService.findById(product.getSpecification().getMetal().getId()));
-        productRepository.save(product);
-        return product;
+        ProductSpecification specs = product.getSpecification();
+        if (specs.getGemstone() != null)
+            specs.setGemstone(gemstoneService.findById(specs.getGemstone().getId()));
+        specs.setMetal(metalService.findById(specs.getMetal().getId()));
+        return productRepository.save(product);
     }
 
     @Transactional
     @Override
     public Product updateProduct(Product product) {
-        product.getSpecification().setGemstone(gemstoneService.findById(product.getSpecification().getGemstone().getId()));
-        product.getSpecification().setMetal(metalService.findById(product.getSpecification().getMetal().getId()));
-        productRepository.save(product);
-        return product;
+        ProductSpecification specs = product.getSpecification();
+        if (specs.getGemstone() != null)
+            specs.setGemstone(gemstoneService.findById(specs.getGemstone().getId()));
+        specs.setMetal(metalService.findById(specs.getMetal().getId()));
+        return productRepository.save(product);
     }
 
     @Transactional
