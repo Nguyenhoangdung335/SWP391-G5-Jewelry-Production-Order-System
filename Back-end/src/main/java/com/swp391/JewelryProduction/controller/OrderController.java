@@ -150,11 +150,9 @@ public class OrderController {
             @RequestParam MultipartFile file
     ) {
         try {
-            String finalProductURL = imageService.uploadImage(file, "product-images");
+            String finalProductURL = imageService.uploadImage(file, "proof-images");
             Order order = orderService.findOrderById(orderId);
-
-            Product product = order.getProduct();
-            product.setImageURL(finalProductURL);
+            order.setProofUrl(finalProductURL);
 
             order = orderService.updateOrder(order);
 
