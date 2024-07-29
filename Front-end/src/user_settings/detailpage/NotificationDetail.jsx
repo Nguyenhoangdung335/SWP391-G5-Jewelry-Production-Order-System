@@ -92,6 +92,80 @@ const NotificationDetail = () => {
     }
   };
 
+  const customTagMap = {
+    bold: (content, key) => <strong key={key}>{content}</strong>,
+    ul: (content, key) => <ul key={key}>{content}</ul>,
+    li: (content, key) => <li key={key}>{content}</li>,
+    email: (content, key) => <a href={`mailto:${content}`} key={key}>{content}</a>,
+  };
+  
+  const processDescription = (description) => {
+    const tagPattern = /\[(\/?)(bold|ul|li|email)\]/g;
+    const parts = [];
+    const stack = [];
+    let lastIndex = 0;
+  
+    description.replace(tagPattern, (match, closingSlash, tag, index) => {
+      // Push preceding text
+      if (index > lastIndex) {
+        const text = description.slice(lastIndex, index);
+        if (stack.length > 0) {
+          stack[stack.length - 1].content.push(text);
+        } else {
+          parts.push(text);
+        }
+      }
+  
+      if (closingSlash) {
+        // Closing tag
+        const openTag = stack.pop();
+        const content = openTag.content.map((item, idx) =>
+          typeof item === 'string' ? item : <React.Fragment key={`${openTag.tag}-${index}-${idx}`}>{item}</React.Fragment>
+        );
+  
+        const element = customTagMap[openTag.tag](content, `${openTag.tag}-${index}`);
+        if (stack.length > 0) {
+          stack[stack.length - 1].content.push(element);
+        } else {
+          parts.push(element);
+        }
+      } else {
+        // Opening tag
+        stack.push({ tag, content: [] });
+      }
+  
+      lastIndex = index + match.length;
+    });
+  
+    // Push remaining text
+    if (lastIndex < description.length) {
+      const text = description.slice(lastIndex);
+      if (stack.length > 0) {
+        stack[stack.length - 1].content.push(text);
+      } else {
+        parts.push(text);
+      }
+    }
+  
+    return parts.map((part, index) => (typeof part === 'string' ? part : <React.Fragment key={index}>{part}</React.Fragment>));
+  };
+
+  const renderDescription = (descriptionParts) => {
+    return descriptionParts.map((part, index) => {
+      if (typeof part === 'string') {
+        // If it's a string, split it by double newline to handle paragraphs
+        return part.split('\n\n').map((paragraph, i) => {
+          console.log(paragraph);
+          return (
+          <p key={`${index}-${i}`} >
+            {paragraph}
+          </p>
+        )});
+      }
+      return part;
+    });
+  };
+
   return (
     <Container className="p-4">
       <CustomAlert
@@ -113,18 +187,14 @@ const NotificationDetail = () => {
             <h2>{notification.title}</h2>
             <p>{notification.createdDate}</p>
           </div>
-          <div>
-            <p
-              style={{
-                paddingInline: "5%",
-                maxWidth: "100%",
-                fontSize: "1.3rem",
-                wordBreak: "break-all",
-                whiteSpace: "pre-wrap",
-              }}
-            >
-              {notification.description}
-            </p>
+          <div style={{
+            paddingInline: "5%",
+            maxWidth: "100%",
+            fontSize: "1.3rem",
+            wordBreak: "break-all",
+            whiteSpace: "pre-wrap",
+          }}>
+            {renderDescription(processDescription(notification.description))}
           </div>
         </div>
       </Row>
