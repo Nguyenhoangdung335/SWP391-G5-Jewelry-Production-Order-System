@@ -6,9 +6,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 
 @Data
 @Builder
@@ -23,6 +26,9 @@ public class MessagesConstant {
     private String title;
     private String description;
 
+    @Builder.Default
+    private NumberFormat formatter = NumberFormat.getCurrencyInstance(Locale.ENGLISH);
+
     public class RequestApprovedMessage {
         public String title () {
             return title = "Your Request Has Been Approved";
@@ -36,8 +42,9 @@ public class MessagesConstant {
                     I am pleased to inform you that your request for a custom jewelry has been approved. \
                     Our team has reviewed your submission and is pleased to confirm that your request meets the necessary \
                     criteria and requirements. As a result, we will be moving forward with the design phase. Please note \
-                    that any further information or documentation required will be sent to you separately. If you have any \
-                    questions or concerns, please do not hesitate to reach out to us at %s. Thank you \
+                    that any further information or documentation required will be sent to you separately.
+                    
+                    If you have any questions or concerns, please do not hesitate to reach out to us at [email]%s[/email]. Thank you \
                     for your patience and cooperation.
                     
                     Best regards,
@@ -61,10 +68,11 @@ public class MessagesConstant {
                     I regret to inform you that your request for a custom jewelry has been declined. \
                     After careful review, our team has determined that it does not align with our current \
                     priorities or requirements. We appreciate the effort you took to submit your request \
-                    and apologize for any inconvenience this may cause. If you would like to resubmit your \
-                    request or discuss alternative options, please do not hesitate to reach out to us at \
-                    %s. We are always happy to consider alternative approaches and look forward to the \
-                    possibility of working together in the future.
+                    and apologize for any inconvenience this may cause.
+                    
+                    If you would like to resubmit your request or discuss alternative options, please do not \
+                    hesitate to reach out to us at [email]%s[/email]. We are always happy to consider alternative approaches \
+                    and look forward to the possibility of working together in the future.
                     
                     Best regards,
                     %s
@@ -81,7 +89,7 @@ public class MessagesConstant {
 
         public String description (Staff assignedStaff, Order order, List<String> responsibilities) {
             StringBuilder builder = new StringBuilder();
-            responsibilities.forEach(res -> builder.append(" - ").append(res).append(". \n"));
+            responsibilities.forEach(res -> builder.append("[li]").append(res).append(".[/li]"));
             LocalDate startDate = LocalDate.now();
             LocalDate endDate = startDate.plusMonths(1).plusWeeks(2);
 
@@ -96,7 +104,7 @@ public class MessagesConstant {
                     
                     As part of the project team, your responsibilities will include:
                     
-                    %s
+                    [ul]%s[/ul]
                     
                     Your involvement in this project will commence on %s and is expected to be \
                     completed by %s. Please review the project scope and timeline carefully and \
@@ -159,13 +167,13 @@ public class MessagesConstant {
                     you will love the final product.
                     
                     As a reminder, you have already made a 50%% payment towards your order. To proceed \
-                    with the delivery, please complete the remaining payment of %.2f.
+                    with the delivery, please complete the remaining payment of %s.
                     
                     Order Details:
                       -  Order ID:  %s
-                      -  Total Amount: %.2f
-                      -  Amount Paid: %.2f
-                      -  Remaining Amount: %.2f
+                      -  Total Amount: %s
+                      -  Amount Paid: %s
+                      -  Remaining Amount: %s
                     
                     If you have any questions or need further assistance, please do not hesitate to \
                     reach out to our customer support team at %s.
@@ -176,8 +184,8 @@ public class MessagesConstant {
                     Best regards,
                     %s
                     """,
-                    customerName, quotation.getHalfPrice(), order.getId(), quotation.getFinalPrice(), quotation.getHalfPrice(),
-                    (quotation.getFinalPrice() - quotation.getHalfPrice()), companyContact, companyName, companyName
+                    customerName, formatter.format(quotation.getHalfPrice()), order.getId(), formatter.format(quotation.getFinalPrice()), formatter.format(quotation.getHalfPrice()),
+                    formatter.format(quotation.getFinalPrice() - quotation.getHalfPrice()), companyContact, companyName, companyName
             );
         }
     }
@@ -208,6 +216,51 @@ public class MessagesConstant {
                     %s
                     """,
                     customerName, order.getId(), builder.toString(), companyContact, companyName
+            );
+        }
+    }
+
+    public class OrderCompletedMessage {
+        public String title () {
+            return title = "Exciting News: Your Custom Order Is on Its Way!";
+        }
+
+        public String description (Order order) {
+            Quotation quotation = order.getQuotation();
+            LocalDateTime completedDate = order.getCompletedDate();
+
+            return description = String.format(
+                    """
+                    Dear %s,
+
+                    We’re delighted to share that your custom order from %s has \
+                    been lovingly crafted and is now on its way to you! 🎁
+
+                    [bold]Order Details:[/bold]
+
+                    Order Number: %s
+                    Total Amount: %s
+                    Date Completed: %s
+                    
+                    What’s Next?
+
+                    Shipment: Our skilled artisans have carefully packed your unique piece, and it’s \
+                    now en route to its new home.
+                    Delivery: Expect your order to arrive within the next [Delivery Timeframe]. We \
+                    appreciate your patience during this exciting wait!
+
+                    If you have any questions or need assistance, feel free to reply to this email or \
+                    call our friendly customer support team at %s.
+
+                    Thank you for choosing [Your Company Name] for your custom jewelry. We can’t wait \
+                    for you to unwrap your beautiful creation!
+
+                    Warm regards,
+                    [Your Company Name]
+                    """,
+                    customerName, companyName, order.getId(), formatter.format(quotation.getFinalPrice()),
+                    completedDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")), completedDate.plusMonths(2).format(DateTimeFormatter.ofPattern("dd-MM-yyyy")),
+                    companyContact, companyName, companyName
             );
         }
     }
@@ -251,8 +304,17 @@ public class MessagesConstant {
                 .build();
     }
 
-    public MessagesConstant createRemainingTransactionMessge (String customerName, Order order) {
+    public MessagesConstant createRemainingTransactionMessage(String customerName, Order order) {
         RemainingTransactionMessage message = new RemainingTransactionMessage();
+        return MessagesConstant.builder()
+                .customerName(customerName)
+                .title(message.title())
+                .description(message.description(order))
+                .build();
+    }
+
+    public MessagesConstant createOrderCompletedMessage (String customerName, Order order) {
+        OrderCompletedMessage message = new OrderCompletedMessage();
         return MessagesConstant.builder()
                 .customerName(customerName)
                 .title(message.title())
