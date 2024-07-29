@@ -73,7 +73,7 @@ export default function ClientManager() {
       id: selectedUser.id,
       role: form.role.value,
       email: form.gmail.value,
-      phone: form.phone.value,
+      password: form.password.value,
       dateCreated: selectedUser.dateCreated,
       status: selectedUser.status,
       userInfo: {
@@ -90,17 +90,26 @@ export default function ClientManager() {
     try {
       const res = await axios.put(
         `${ServerUrl}/api/account/`,
-        values,
+        values  ,
         {
           headers: { "Content-Type": "application/json" },
         }
       );
       console.log("Update Response:", res.data);
       if (res.status === 200) {
-        showAlert("");
+        showAlert(
+            "Edited successfully",
+            "Edited " + selectedUser.id + " successfully",
+            "success"
+        );
         setIsUpdated(true);
       }
     } catch (err) {
+      showAlert(
+          "Edit failed",
+          "Edit " + selectedUser.id + " failed",
+          "danger"
+      );
       console.error("Error updating account:", err);
     } finally {
       setIsModalVisible(false);
@@ -114,8 +123,7 @@ export default function ClientManager() {
     const newEmployee = {
       role: "CUSTOMER",
       email: form.gmail.value,
-      password: "#User1234",
-      phone: form.phone.value,
+      password: form.password.value,
       status: "ACTIVE ",
       userInfo: {
         firstName: form.firstName.value,
@@ -136,9 +144,19 @@ export default function ClientManager() {
         }
       );
       if (res.status === 200) {
+        showAlert(
+            "Added successfully",
+            "Added " + res.data.responseList.account.id + " successfully",
+            "success"
+        );
         setIsUpdated(true);
       }
     } catch (err) {
+      showAlert(
+          "Add failed",
+          "",
+          "danger"
+      );
       console.error("Error adding account:", err);
     } finally {
       setIsAddModalVisible(false);
@@ -164,9 +182,19 @@ export default function ClientManager() {
       );
       console.log("Delete Response:", res.data);
       if (res.status === 200) {
+        showAlert(
+            "Deleted successfully",
+            "Deleted " + deleteUser + " successfully",
+            "success"
+        );
         setIsUpdated(true);
       }
     } catch (err) {
+      showAlert(
+          "Delete failed",
+          "Delete " + deleteUser + " failed",
+          "danger"
+      );
       console.log("Error deleting account:", err);
     } finally {
       setDeleteModalVisible(false);
@@ -399,6 +427,29 @@ export default function ClientManager() {
                 </Form.Control>
               </Form.Group>
 
+              <Form.Group controlId="gmail" className="mb-3">
+                <Form.Label>Email</Form.Label>
+                <Form.Control
+                    type="email"
+                    defaultValue={selectedUser.email}
+                    required
+                />
+              </Form.Group>
+
+              <Form.Group controlId="password" className="mb-3">
+                <Form.Label>
+                  Password
+                </Form.Label>
+                <Col sm={9}>
+                  <Form.Control
+                      type="text"
+                      name="password"
+                      placeholder={"Change password as needed. . ."}
+                      defaultValue={""}
+                  />
+                </Col>
+              </Form.Group>
+
               <Row className="mb-3">
                 <Col>
                   <Form.Group controlId="firstName">
@@ -421,15 +472,6 @@ export default function ClientManager() {
                   </Form.Group>
                 </Col>
               </Row>
-
-              <Form.Group controlId="gmail" className="mb-3">
-                <Form.Label>Email</Form.Label>
-                <Form.Control
-                  type="email"
-                  defaultValue={selectedUser.email}
-                  required
-                />
-              </Form.Group>
 
               <Form.Group controlId="phone" className="mb-3">
                 <Form.Label>Phone</Form.Label>
@@ -525,6 +567,19 @@ export default function ClientManager() {
             <Form.Group controlId="gmail" className="mb-3">
               <Form.Label>Email</Form.Label>
               <Form.Control type="email" required />
+            </Form.Group>
+
+            <Form.Group controlId="password" className="mb-3">
+              <Form.Label>
+                Password
+              </Form.Label>
+              <Col sm={9}>
+                <Form.Control
+                    type="text"
+                    name="password"
+                    required
+                />
+              </Col>
             </Form.Group>
 
             <Form.Group controlId="phone" className="mb-3">
