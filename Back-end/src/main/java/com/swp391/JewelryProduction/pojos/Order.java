@@ -73,21 +73,21 @@ public class Order {
 
     @ToString.Include
     @EqualsAndHashCode.Include
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "quotation_id")
     @JsonManagedReference("Order-Quotation")
     private Quotation quotation;
 
     @ToString.Include
     @EqualsAndHashCode.Include
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "design_id")
     @JsonManagedReference("Order-Design")
     private Design design;
 
     @ToString.Include
     @EqualsAndHashCode.Include
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "transaction_id")
     @JsonManagedReference("Order-Transactions")
     private Transactions transactions;
@@ -137,6 +137,11 @@ public class Order {
     @ToString.Exclude
     private List<Report> relatedReports = new LinkedList<>();
 
+    @EqualsAndHashCode.Include
+    @ToString.Include
+    @Column(length = 1024)
+    private String proofUrl;
+
     @ToString.Include
     @Transient
     private Staff saleStaff;
@@ -149,7 +154,7 @@ public class Order {
     @Transient
     private Staff productionStaff;
 
-    //<editor-fold desc="STAFF GETTERS AND SETTERS" defaultstate="collapsed">
+    //<editor-fold desc="ADDITIONAL GETTERS AND SETTERS" defaultstate="collapsed">
     public Staff getSaleStaff() {
         return getStaffByRole(Role.SALE_STAFF);
     }
@@ -158,6 +163,18 @@ public class Order {
     }
     public Staff getProductionStaff() {
         return getStaffByRole(Role.PRODUCTION_STAFF);
+    }
+
+    @JsonInclude
+    public String getShownImageUrl () {
+        if (this.design != null && this.design.getDesignLink() != null && !this.design.getDesignLink().isEmpty())
+            return this.design.getDesignLink();
+        else if (this.proofUrl != null && !this.proofUrl.isEmpty())
+            return this.proofUrl;
+        else if (this.product != null && this.product.getImageURL() != null && !this.product.getImageURL().isEmpty())
+            return this.product.getImageURL();
+        else
+            return null;
     }
 
     private Staff getStaffByRole(Role role) {
