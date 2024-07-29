@@ -271,7 +271,7 @@ function OrderDetailManager() {
                           >
                             From template
                           </Badge>
-                        )}
+                        )}{'    '}
                         <Badge
                           className="text-white"
                           bg={

@@ -211,12 +211,6 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderResponse mappedToResponse(Order order) {
-        String imageURL = null;
-        if (order.getProduct() != null && order.getProduct().getImageURL() != null)
-            imageURL = order.getProduct().getImageURL();
-        else if (order.getDesign() != null && order.getDesign().getDesignLink() != null)
-            imageURL = order.getDesign().getDesignLink();
-
         return OrderResponse.builder()
                 .id(order.getId())
                 .budget(order.getBudget())
@@ -224,7 +218,7 @@ public class OrderServiceImpl implements OrderService {
                 .createdDate(order.getCreatedDate())
                 .completedDate(order.getCompletedDate())
                 .status(order.getStatus())
-                .imageURL(imageURL)
+                .imageURL(order.getShownImageUrl())
                 .build();
     }
 

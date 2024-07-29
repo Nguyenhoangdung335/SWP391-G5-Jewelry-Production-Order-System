@@ -1511,6 +1511,7 @@ public class DataInitializer implements CommandLineRunner {
                     .completedDate(createdDate.plusMonths(rand.nextInt(3, 8)))
                     .owner(owner != null ? accountRepository.save(owner) : null)
                     .status(OrderStatus.ORDER_COMPLETED)
+                    .proofUrl(temp.imageURL == null? imageURL: temp.imageURL)
                     .build();
 
             Product product = Product.builder()

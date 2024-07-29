@@ -50,6 +50,7 @@ public class Transactions {
     @Column(name = "paypal_sale_id")
     private String paypalSaleId;
 
+    @Enumerated(EnumType.STRING)
     @ToString.Include
     @EqualsAndHashCode.Include
     private TransactionStatus status;
