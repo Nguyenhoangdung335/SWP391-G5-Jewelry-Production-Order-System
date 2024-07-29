@@ -97,14 +97,15 @@ const NotificationDetail = () => {
     ul: (content, key) => <ul key={key}>{content}</ul>,
     li: (content, key) => <li key={key}>{content}</li>,
     email: (content, key) => <a href={`mailto:${content}`} key={key}>{content}</a>,
+    under: (content, key) => <u key={key}>{content}</u>
   };
-  
+
   const processDescription = (description) => {
-    const tagPattern = /\[(\/?)(bold|ul|li|email)\]/g;
+    const tagPattern = /\[(\/?)(bold|ul|li|email|under)\]/g;
     const parts = [];
     const stack = [];
     let lastIndex = 0;
-  
+
     description.replace(tagPattern, (match, closingSlash, tag, index) => {
       // Push preceding text
       if (index > lastIndex) {
@@ -115,14 +116,14 @@ const NotificationDetail = () => {
           parts.push(text);
         }
       }
-  
+
       if (closingSlash) {
         // Closing tag
         const openTag = stack.pop();
         const content = openTag.content.map((item, idx) =>
           typeof item === 'string' ? item : <React.Fragment key={`${openTag.tag}-${index}-${idx}`}>{item}</React.Fragment>
         );
-  
+
         const element = customTagMap[openTag.tag](content, `${openTag.tag}-${index}`);
         if (stack.length > 0) {
           stack[stack.length - 1].content.push(element);
@@ -133,10 +134,10 @@ const NotificationDetail = () => {
         // Opening tag
         stack.push({ tag, content: [] });
       }
-  
+
       lastIndex = index + match.length;
     });
-  
+
     // Push remaining text
     if (lastIndex < description.length) {
       const text = description.slice(lastIndex);
@@ -146,24 +147,8 @@ const NotificationDetail = () => {
         parts.push(text);
       }
     }
-  
-    return parts.map((part, index) => (typeof part === 'string' ? part : <React.Fragment key={index}>{part}</React.Fragment>));
-  };
 
-  const renderDescription = (descriptionParts) => {
-    return descriptionParts.map((part, index) => {
-      if (typeof part === 'string') {
-        // If it's a string, split it by double newline to handle paragraphs
-        return part.split('\n\n').map((paragraph, i) => {
-          console.log(paragraph);
-          return (
-          <p key={`${index}-${i}`} >
-            {paragraph}
-          </p>
-        )});
-      }
-      return part;
-    });
+    return parts.map((part, index) => (typeof part === 'string' ? part : <React.Fragment key={index}>{part}</React.Fragment>));
   };
 
   return (
@@ -193,8 +178,9 @@ const NotificationDetail = () => {
             fontSize: "1.3rem",
             wordBreak: "break-all",
             whiteSpace: "pre-wrap",
+            marginBottom: "5%"
           }}>
-            {renderDescription(processDescription(notification.description))}
+            {processDescription(notification.description)}
           </div>
         </div>
       </Row>
