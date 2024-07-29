@@ -2,11 +2,11 @@ package com.swp391.JewelryProduction.config.stateMachine;
 
 import com.paypal.api.payments.Payer;
 import com.paypal.base.rest.PayPalRESTException;
-import com.swp391.JewelryProduction.Application;
 import com.swp391.JewelryProduction.enums.OrderEvent;
 import com.swp391.JewelryProduction.enums.OrderStatus;
 import com.swp391.JewelryProduction.enums.Role;
 import com.swp391.JewelryProduction.pojos.*;
+import com.swp391.JewelryProduction.pojos.designPojos.Product;
 import com.swp391.JewelryProduction.services.PaypalService;
 import com.swp391.JewelryProduction.services.account.AccountService;
 import com.swp391.JewelryProduction.services.email.EmailService;
@@ -474,10 +474,8 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
             try {
                 Order order = getOrder(context, orderService);
                 Account owner = order.getOwner();
-                Transactions transactions = order.getTransactions();
-                Quotation quotation = order.getQuotation();
 
-                MessagesConstant message = messagesConstant.createRemainingTransactionMessge(owner.getUserInfo().getFirstName() + " " + owner.getUserInfo().getLastName(), order);
+                MessagesConstant message = messagesConstant.createRemainingTransactionMessage(owner.getUserInfo().getFirstName() + " " + owner.getUserInfo().getLastName(), order);
                 Report report = reportService.createNormalReport(order, message.getTitle(), message.getDescription());
                 Notification notification = Notification.builder()
                         .order(order)
@@ -495,14 +493,27 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
     }
 
     @Bean
-    public Action<OrderStatus, OrderEvent> deleteImageAction () {
+    public Action<OrderStatus, OrderEvent> deleteDesignAction() {
         return context -> {
             OrderService orderService = applicationContext.getBean(OrderService.class);
 
             Order order = getOrder(context, orderService);
-            Design design = order.getDesign();
-            design.setDesignLink(null);
+            order.setDesign(null);
+
             orderService.updateOrder(order);
+        };
+    }
+
+    @Bean
+    public Action<OrderStatus, OrderEvent> deleteProofAction () {
+        return context -> {
+            OrderService orderService = applicationContext.getBean(OrderService.class);
+
+            Order order = getOrder(context, orderService);
+            order.setProofUrl(null);
+            order = orderService.updateOrder(order);
+
+            log.info("Delete product proof of order {} successfully", order.getId());
         };
     }
 
@@ -559,11 +570,30 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
             log.info("\tnotifyOrderCompleteAction is called\t");
 
             OrderService orderService = applicationContext.getBean(OrderService.class);
+            ReportService reportService = applicationContext.getBean(ReportService.class);
+            NotificationService notificationService = applicationContext.getBean(NotificationService.class);
 
             try {
                 Order order = getOrder(context, orderService);
+                Account owner = order.getOwner();
+                MessagesConstant message = messagesConstant.createOrderCompletedMessage(owner.getUserInfo().getFirstName(), order);
+
                 order.setCompletedDate(LocalDateTime.now());
+                Product product = order.getProduct();
+                if (product != null && (product.getImageURL() == null || product.getImageURL().isEmpty()))
+                    product.setImageURL(order.getProofUrl());
+                Report report = reportService.createNormalReport(order, message.getTitle(), message.getDescription());
+                Notification notification = Notification.builder()
+                        .order(order)
+                        .report(report)
+                        .receiver(owner)
+                        .build();
+                report.getNotifications().add(notification);
+                order.getNotifications().add(notification);
+                order.getRelatedReports().add(report);
+
                 order = orderService.updateOrder(order);
+                notificationService.createNotification(notification, false, true);
             } catch (Exception ex) {
             }
         };

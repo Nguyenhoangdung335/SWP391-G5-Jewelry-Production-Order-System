@@ -308,7 +308,7 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
             .withLocal()
                 .source(OrderStatus.DES_MANA_DECLINED).target(OrderStatus.IN_DESIGNING)
                 .event(OrderEvent.DES_MANA_DECLINE)
-                .action(actionAndGuardConfiguration.deleteImageAction())
+                .action(actionAndGuardConfiguration.deleteDesignAction())
             .and()
             .withLocal()
                 .source(OrderStatus.DES_AWAIT_CUST_APPROVAL).target(OrderStatus.DES_CUST_APPROVAL_CHOICE)
@@ -353,6 +353,7 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
             .withLocal()
                 .source(OrderStatus.PRO_DECLINED).target(OrderStatus.IN_PRODUCTION)
                 .event(OrderEvent.PRO_DECLINE)
+                .action(actionAndGuardConfiguration.deleteProofAction())
 
     /*------------------------------------------------------------------------------------------------*/
     /*------------------------------------------------------------------------------------------------*/
@@ -387,7 +388,6 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderS
             .withExternal()
                 .source(OrderStatus.REMAIN_TRANSACTION_SUCCESSFUL).target(OrderStatus.ORDER_COMPLETED)
                 .event(OrderEvent.REMAIN_TRANSACTION_APPROVE)
-                .action(actionAndGuardConfiguration.notifyOrderCompleteAction())
 
     /*-----------------------------------------------------------------------------------------------------*/
     /*--------------------------------TRANSPORT SUPERSTATE LOCAL TRANSITION--------------------------------*/
