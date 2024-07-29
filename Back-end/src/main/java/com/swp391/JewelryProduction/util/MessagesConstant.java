@@ -1,6 +1,7 @@
 package com.swp391.JewelryProduction.util;
 
 import com.swp391.JewelryProduction.pojos.*;
+import com.swp391.JewelryProduction.services.transaction.TransactionServiceImpl;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,9 +26,6 @@ public class MessagesConstant {
     private String companyContact = "jewelryshop.business@gmail.com";
     private String title;
     private String description;
-
-    @Builder.Default
-    private NumberFormat formatter = NumberFormat.getCurrencyInstance(Locale.ENGLISH);
 
     public class RequestApprovedMessage {
         public String title () {
@@ -167,13 +165,13 @@ public class MessagesConstant {
                     you will love the final product.
                     
                     As a reminder, you have already made a 50%% payment towards your order. To proceed \
-                    with the delivery, please complete the remaining payment of %s.
+                    with the delivery, please complete the remaining payment of $%s.
                     
                     Order Details:
                       -  Order ID:  %s
-                      -  Total Amount: %s
-                      -  Amount Paid: %s
-                      -  Remaining Amount: %s
+                      -  Total Amount: $%s
+                      -  Amount Paid: $%s
+                      -  Remaining Amount: $%s
                     
                     If you have any questions or need further assistance, please do not hesitate to \
                     reach out to our customer support team at %s.
@@ -184,38 +182,59 @@ public class MessagesConstant {
                     Best regards,
                     %s
                     """,
-                    customerName, formatter.format(quotation.getHalfPrice()), order.getId(), formatter.format(quotation.getFinalPrice()), formatter.format(quotation.getHalfPrice()),
-                    formatter.format(quotation.getFinalPrice() - quotation.getHalfPrice()), companyContact, companyName, companyName
+                    customerName, quotation.getHalfPrice(), order.getId(), quotation.getFinalPrice(), quotation.getHalfPrice(),
+                    quotation.getFinalPrice() - quotation.getHalfPrice(), companyContact, companyName, companyName
             );
         }
     }
 
     public class OrderCancelMessage {
         public String title () {
-            return title = "Your Order have been canceled";
+            return title = "Order Cancellation Confirmation";
         }
 
-        public String description (List<String> reasons, Order order) {
-            StringBuilder builder = new StringBuilder();
-            reasons.forEach(res -> builder.append(" - ").append(res).append(". \n"));
+        public String description (Order order) {
+            Transactions transactions = order.getTransactions();
+            String refundDecision;
+            if (TransactionServiceImpl.getNoRefundBefore().contains(order.getStatus()))
+                refundDecision = "Unfortunately, we cannot process a refund at this time.";
+            else if (TransactionServiceImpl.getPartialRefund().containsKey(order.getStatus()))
+                refundDecision = "A partial refund of %"+TransactionServiceImpl.getPartialRefund().get(order.getStatus()) * 100+" of the total transaction will be processed in a timely manner.";
+            else
+                refundDecision = "Unfortunately, we cannot process a refund at this time.";
 
             return description = String.format(
                     """
                     Dear %s,
-    
-                    I am sorry to inform that your order of ID %s have been cancelled. \
-                    Our team has reviewed your submission and was determined that your order has violated the following\
-                    company policy:
                     
-                    %s
+                    We’ve received your request to cancel your order with %s. \
+                    We understand that circumstances can change, and we appreciate your prompt communication.
                     
-                    If you have any questions or concerns, please do not hesitate to reach out to us at %s. Thank you \
-                    for your patience and cooperation.
-    
+                    [bold]Order Details:[/bold]
+                    
+                    [ul]
+                    [li]Order Id: %s[/li]
+                    [li]Total Amount: $%s[/li]
+                    [/ul]
+                    
+                    [bold]Cancellation Status:[/bold]
+                    Your order was in [under]%s[/under] state.
+                    Based on this state, our system has determined the following:
+                    Refund Decision: %s.
+
+                    Please refer to our return policy for further instructions if needed.
+                    Next Steps:
+                    
+                    If you have any questions or need additional assistance, feel free to reply \
+                    to this email or contact our customer support team at [email]%s[/email].
+                    Thank you for choosing %s. We appreciate your understanding, \
+                    and we hope to serve you again in the future.
+                    
                     Best regards,
-                    %s
+                    [bold]%s[/bold]
                     """,
-                    customerName, order.getId(), builder.toString(), companyContact, companyName
+                    customerName, companyName, order.getId(), (transactions != null)? transactions.getAmount(): 0.0,
+                    order.getStatus(), refundDecision, companyContact, companyName, companyName
             );
         }
     }
@@ -239,26 +258,26 @@ public class MessagesConstant {
                     [bold]Order Details:[/bold]
 
                     Order Number: %s
-                    Total Amount: %s
+                    Total Amount: $%s
                     Date Completed: %s
                     
                     What’s Next?
 
                     Shipment: Our skilled artisans have carefully packed your unique piece, and it’s \
                     now en route to its new home.
-                    Delivery: Expect your order to arrive within the next [Delivery Timeframe]. We \
+                    Delivery: Expect your order to arrive within the next %s. We \
                     appreciate your patience during this exciting wait!
 
                     If you have any questions or need assistance, feel free to reply to this email or \
                     call our friendly customer support team at %s.
 
-                    Thank you for choosing [Your Company Name] for your custom jewelry. We can’t wait \
+                    Thank you for choosing %s for your custom jewelry. We can’t wait \
                     for you to unwrap your beautiful creation!
 
                     Warm regards,
-                    [Your Company Name]
+                    %s
                     """,
-                    customerName, companyName, order.getId(), formatter.format(quotation.getFinalPrice()),
+                    customerName, companyName, order.getId(), quotation.getFinalPrice(),
                     completedDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")), completedDate.plusMonths(2).format(DateTimeFormatter.ofPattern("dd-MM-yyyy")),
                     companyContact, companyName, companyName
             );
@@ -295,12 +314,12 @@ public class MessagesConstant {
                 .build();
     }
 
-    public MessagesConstant createOrderCancelMessage(String customerName, List<String> reasons, Order order) {
+    public MessagesConstant createOrderCancelMessage(String customerName, Order order) {
         OrderCancelMessage orderCancelMessage = new OrderCancelMessage();
         return MessagesConstant.builder()
                 .customerName(customerName)
                 .title(orderCancelMessage.title())
-                .description(orderCancelMessage.description(reasons, order))
+                .description(orderCancelMessage.description(order))
                 .build();
     }
 
