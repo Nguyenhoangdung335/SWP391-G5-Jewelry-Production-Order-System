@@ -242,9 +242,6 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Order cancelOrder(String orderId) {
         Order order = this.findOrderById(orderId);
-        order.setStatus(OrderStatus.CANCEL);
-        order = this.updateOrder(order);
-
         sendEvent(stateMachineService, order.getId(), OrderEvent.CANCEL, null);
         return order;
     }
