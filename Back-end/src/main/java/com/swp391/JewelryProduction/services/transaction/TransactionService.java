@@ -21,7 +21,9 @@ public interface TransactionService {
 
     Transactions findTransactionByPaypalPaymentId(String paypalPaymentId);
 
-    Transactions refundTransaction(Payment payment, Order order);
+    Transactions refundTransaction(Order order);
+
+    Double getRefundPercentByPolicy(Order order);
 
     void handleTransactionChoice(Transactions transactions, String orderId, boolean choice);
 }
