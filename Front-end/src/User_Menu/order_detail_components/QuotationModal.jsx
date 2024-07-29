@@ -265,7 +265,6 @@ function QuotationModal({ data, passedQuotation, orderId, show, onHide, fetchDat
       (acc, item) => acc + (item.totalPrice || 0),
       0
     );
-    console.log(total);
     return total + quotation?.consultCost + quotation?.designCost + quotation?.manufactureCost;
   };
 
@@ -380,13 +379,16 @@ function QuotationModal({ data, passedQuotation, orderId, show, onHide, fetchDat
                     <Form.Label style={{ fontSize: "1.1rem", fontWeight: "bold" }}>Consult Cost:</Form.Label>
                   </Row>
                   <Row>
-                    <Form.Control
-                      type="number"
-                      name="consultCost"
-                      value={quotation?.consultCost}
-                      onChange={handleChange}
-                      readOnly={!isQualifyCreateQuotation}
-                    />
+                    <InputGroup>
+                      <InputGroup.Text>$</InputGroup.Text>
+                      <Form.Control
+                        type="number"
+                        name="consultCost"
+                        value={quotation?.consultCost}
+                        onChange={handleChange}
+                        readOnly={!isQualifyCreateQuotation}
+                      />
+                    </InputGroup>
                   </Row>
                 </Form.Group>
               </Col>
@@ -396,13 +398,16 @@ function QuotationModal({ data, passedQuotation, orderId, show, onHide, fetchDat
                     <Form.Label style={{ fontSize: "1.1rem", fontWeight: "bold" }}>Design Cost:</Form.Label>
                   </Row>
                   <Row>
-                    <Form.Control
-                      type="number"
-                      name="designCost"
-                      value={quotation?.designCost}
-                      onChange={handleChange}
-                      readOnly={!isQualifyCreateQuotation}
-                    />
+                    <InputGroup>
+                    <InputGroup.Text>$</InputGroup.Text>
+                      <Form.Control
+                        type="number"
+                        name="designCost"
+                        value={quotation?.designCost}
+                        onChange={handleChange}
+                        readOnly={!isQualifyCreateQuotation}
+                      />
+                    </InputGroup>
                   </Row>
                 </Form.Group>
               </Col>
@@ -412,13 +417,16 @@ function QuotationModal({ data, passedQuotation, orderId, show, onHide, fetchDat
                     <Form.Label style={{ fontSize: "1.1rem", fontWeight: "bold" }}>Manufacture Cost:</Form.Label>
                   </Row>
                   <Row>
-                    <Form.Control
-                      type="number"
-                      name="manufactureCost"
-                      value={quotation?.manufactureCost}
-                      onChange={handleChange}
-                      readOnly={!isQualifyCreateQuotation}
-                    />
+                    <InputGroup>
+                    <InputGroup.Text>$</InputGroup.Text>
+                      <Form.Control
+                        type="number"
+                        name="manufactureCost"
+                        value={quotation?.manufactureCost}
+                        onChange={handleChange}
+                        readOnly={!isQualifyCreateQuotation}
+                      />
+                    </InputGroup>
                   </Row>
                 </Form.Group>
               </Col>

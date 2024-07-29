@@ -57,11 +57,7 @@ function OrderDetailManager() {
       if (response.status === 200) {
         const orderDetail = response.data.responseList.orderDetail;
         setData(orderDetail);
-        setImageLink(
-          orderDetail.product.imageURL
-            ? orderDetail.product.imageURL
-            : orderDetail.design?.designLink || noImage
-        );
+        setImageLink(orderDetail.shownImageUrl);
       }
     } catch (error) {
       console.error("Error fetching data", error);
@@ -71,7 +67,6 @@ function OrderDetailManager() {
 
   useEffect(() => {
     if (startRender) {
-      console.log("Start fetching");
       fetchData();
       setStartRender(false);
     }

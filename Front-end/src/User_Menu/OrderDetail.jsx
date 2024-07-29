@@ -66,10 +66,7 @@ function OrderDetail() {
       if (response.status === 200) {
         const orderDetail = response.data.responseList.orderDetail;
         setData(orderDetail);
-        setImageLink(
-          orderDetail.product.imageURL
-            ? orderDetail.product.imageURL
-            : orderDetail.design?.designLink || noImage
+        setImageLink(orderDetail.shownImageUrl || noImage
         );
       }
     } catch (error) {

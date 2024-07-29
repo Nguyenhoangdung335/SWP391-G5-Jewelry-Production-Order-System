@@ -65,7 +65,6 @@ const renderSpecification = ( specification, parentKey = "") => {
 };
 
 const ProductSpecificationTable = ({ orderStatus, selectedProduct, role, isEditing, fetchData }) => {
-  console.log(orderStatus + " " + role + " " + ["IN_EXCHANGING", "ORDER_COMPLETED"].includes(orderStatus));
   const isQualifiedEdit = (["IN_EXCHANGING", "ORDER_COMPLETED"].includes(orderStatus) && ["ADMIN", "SALE_STAFF", "CUSTOMER"].includes(role)) || isEditing;
 
   const {showAlert} = useAlert();
