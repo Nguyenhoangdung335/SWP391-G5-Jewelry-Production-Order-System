@@ -167,12 +167,12 @@ public class Order {
 
     @JsonInclude
     public String getShownImageUrl () {
-        if (this.design != null && this.design.getDesignLink() != null && !this.design.getDesignLink().isEmpty())
-            return this.design.getDesignLink();
+        if (this.product != null && this.product.getImageURL() != null && !this.product.getImageURL().isEmpty() && this.status.equals(OrderStatus.ORDER_COMPLETED))
+            return this.product.getImageURL();
         else if (this.proofUrl != null && !this.proofUrl.isEmpty())
             return this.proofUrl;
-        else if (this.product != null && this.product.getImageURL() != null && !this.product.getImageURL().isEmpty())
-            return this.product.getImageURL();
+        else if (this.design != null && this.design.getDesignLink() != null && !this.design.getDesignLink().isEmpty())
+            return this.design.getDesignLink();
         else
             return null;
     }
