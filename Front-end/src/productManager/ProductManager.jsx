@@ -359,91 +359,260 @@ export default function ProductManager() {
         </Modal.Header>
         <Modal.Body>
           {selectedProduct && (
-            <Form onSubmit={handleSave}>
-              <Form.Group controlId="formProductId">
-                <Form.Label>ID</Form.Label>
-                <Form.Control
-                  type="text"
-                  defaultValue={selectedProduct.id}
-                  readOnly
-                />
-              </Form.Group>
-              <Form.Group controlId="formProductName">
-                <Form.Label>Name</Form.Label>
-                <Form.Control type="text" defaultValue={selectedProduct.name} />
-              </Form.Group>
-              <Form.Group controlId="formProductDescription">
-                <Form.Label>Description</Form.Label>
-                <Form.Control
-                  type="text"
-                  defaultValue={selectedProduct.description}
-                />
+            <Form>
+            <Row>
+              <Col md={6}>
+                <Form.Group controlId="productName">
+                  <Form.Label>Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="name"
+                    // value={productDetails.name}
+                    // onChange={handleChange}
+                  />
                 </Form.Group>
-              <Form.Group controlId="formProductType">
-                <Form.Label>Type</Form.Label>
-                <Form.Control type="text" defaultValue={selectedProduct.type} />
-              </Form.Group>
-              <Form.Group controlId="formProductStyle">
-                <Form.Label>Style</Form.Label>
-                <Form.Control type="text" defaultValue={selectedProduct.style} />
-              </Form.Group>
-              <Form.Group controlId="formProductOccasion">
-                <Form.Label>Occasion</Form.Label>
-                <Form.Control type="text" defaultValue={selectedProduct.occasion} />
-              </Form.Group>
-              <Form.Group controlId="formProductLength">
-                <Form.Label>Length</Form.Label>
-                <Form.Control type="text" defaultValue={selectedProduct.length} />
-              </Form.Group>
-              <Form.Group controlId="formProductMetal">
-                <Form.Label>Metal</Form.Label>
-                <Form.Control type="text" defaultValue={selectedProduct.metal} />
-              </Form.Group>
-              <Form.Group controlId="formProductTexture">
-                <Form.Label>Texture</Form.Label>
-                <Form.Control type="text" defaultValue={selectedProduct.texture} />
-              </Form.Group>
-              <Form.Group controlId="formProductChainType">
-                <Form.Label>Chain Type</Form.Label>
-                <Form.Control type="text" defaultValue={selectedProduct.chainType} />
-              </Form.Group>
-              <Form.Group controlId="formProductGemstoneName">
-                <Form.Label>Gemstone Name</Form.Label>
-                <Form.Control type="text" defaultValue={selectedProduct.gemstoneName} />
-              </Form.Group>
-              <Form.Group controlId="formProductGemstoneShape">
-                <Form.Label>Gemstone Shape</Form.Label>
-                <Form.Control type="text" defaultValue={selectedProduct.gemstoneShape} />
-              </Form.Group>
-              <Form.Group controlId="formProductGemstoneCut">
-                <Form.Label>Gemstone Cut</Form.Label>
-                <Form.Control type="text" defaultValue={selectedProduct.gemstoneCut} />
-              </Form.Group>
-              <Form.Group controlId="formProductGemstoneClarity">
-                <Form.Label>Gemstone Clarity</Form.Label>
-                <Form.Control type="text" defaultValue={selectedProduct.gemstoneClarity} />
-              </Form.Group>
-              <Form.Group controlId="formProductGemstoneColor">
-                <Form.Label>Gemstone Color</Form.Label>
-                <Form.Control type="text" defaultValue={selectedProduct.gemstoneColor} />
-              </Form.Group>
-              <Form.Group controlId="formProductGemstoneCaratWeight">
-                <Form.Label>Gemstone Carat Weight</Form.Label>
-                <Form.Control type="number" defaultValue={selectedProduct.gemstoneCaratWeight} />
-              </Form.Group>
-              <div className="d-flex justify-content-between">
-                <Button
-                  variant="secondary"
-                  onClick={handleCancel}
-                  className="mt-2"
-                >
-                  Back
-                </Button>
-                <Button variant="primary" type="submit" className="mt-2">
-                  Save changes
-                </Button>
-              </div>
-            </Form>
+              </Col>
+              <Col md={6}>
+                <Form.Group controlId="productImage">
+                  <Form.Label>Image</Form.Label>
+                  {/*  onChange={handleImageChange} */}
+                  <Form.Control type="file" />  
+                  {/* <Image src={imageDetails.imageURL} fluid thumbnail /> */}
+                </Form.Group>
+              </Col>
+            </Row>
+            <Form.Group controlId="productDescription">
+              <Form.Label>Description</Form.Label>
+              <Form.Control
+                as="textarea"
+                name="description"
+                // value={productDetails.description}
+                // onChange={handleChange}
+              />
+            </Form.Group>
+            <Row>
+              <Col md={6}>
+                <Form.Group controlId="chainType">
+                  <Form.Label>Chain Type</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="specification.chainType"
+                    // value={productDetails.specification.chainType}
+                    // onChange={handleChange}
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group controlId="gemstoneWeight">
+                  <Form.Label>Gemstone Weight</Form.Label>
+                  <Form.Control
+                    type="number"
+                    step="0.01"
+                    name="specification.gemstoneWeight"
+                    // value={productDetails.specification.gemstoneWeight}
+                    // onChange={handleChange}
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+            <Row>
+              <Col md={6}>
+                <Form.Group controlId="length">
+                  <Form.Label>Length</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="specification.length"
+                    // value={productDetails.specification.length}
+                    // onChange={handleChange}
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group controlId="metalWeight">
+                  <Form.Label>Metal Weight</Form.Label>
+                  <Form.Control
+                    type="number"
+                    step="0.01"
+                    name="specification.metalWeight"
+                    // value={productDetails.specification.metalWeight}
+                    // onChange={handleChange}
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+            <Row>
+              <Col md={6}>
+                <Form.Group controlId="occasion">
+                  <Form.Label>Occasion</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="specification.occasion"
+                    // value={productDetails.specification.occasion}
+                    // onChange={handleChange}
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group controlId="style">
+                  <Form.Label>Style</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="specification.style"
+                    // value={productDetails.specification.style}
+                    // onChange={handleChange}
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+            <Row>
+              <Col md={6}>
+                <Form.Group controlId="texture">
+                  <Form.Label>Texture</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="specification.texture"
+                    // value={productDetails.specification.texture}
+                    // onChange={handleChange}
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group controlId="type">
+                  <Form.Label>Type</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="specification.type"
+                    // value={productDetails.specification.type}
+                    // onChange={handleChange}
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+            <h5>Gemstone Details</h5>
+            <Row>
+              <Col md={6}>
+                <Form.Group controlId="gemstoneId">
+                  <Form.Label>Gemstone ID</Form.Label>
+                  <Form.Control
+                    type="number"
+                    name="specification.gemstone.id"
+                    // value={productDetails.specification.gemstone.id}
+                    // onChange={handleChange}
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group controlId="caratWeightFrom">
+                  <Form.Label>Carat Weight From</Form.Label>
+                  <Form.Control
+                    type="number"
+                    step="0.01"
+                    name="specification.gemstone.caratWeightFrom"
+                    // value={productDetails.specification.gemstone.caratWeightFrom}
+                    // onChange={handleChange}
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+            <Row>
+              <Col md={6}>
+                <Form.Group controlId="caratWeightTo">
+                  <Form.Label>Carat Weight To</Form.Label>
+                  <Form.Control
+                    type="number"
+                    step="0.01"
+                    name="specification.gemstone.caratWeightTo"
+                    // value={productDetails.specification.gemstone.caratWeightTo}
+                    // onChange={handleChange}
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group controlId="clarity">
+                  <Form.Label>Clarity</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="specification.gemstone.clarity"
+                    // value={productDetails.specification.gemstone.clarity}
+                    // onChange={handleChange}
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+            <Row>
+              <Col md={6}>
+                <Form.Group controlId="color">
+                  <Form.Label>Color</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="specification.gemstone.color"
+                    // value={productDetails.specification.gemstone.color}
+                    // onChange={handleChange}
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group controlId="cut">
+                  <Form.Label>Cut</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="specification.gemstone.cut"
+                    // value={productDetails.specification.gemstone.cut}
+                    // onChange={handleChange}
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+            <Row>
+              <Col md={6}>
+                <Form.Group controlId="gemstoneName">
+                  <Form.Label>Gemstone Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="specification.gemstone.name"
+                    // value={productDetails.specification.gemstone.name}
+                    // onChange={handleChange}
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group controlId="pricePerCaratInHundred">
+                  <Form.Label>Price per Carat (in hundred)</Form.Label>
+                  <Form.Control
+                    type="number"
+                    step="0.01"
+                    name="specification.gemstone.pricePerCaratInHundred"
+                    // value={productDetails.specification.gemstone.pricePerCaratInHundred}
+                    // onChange={handleChange}
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+            <Row>
+              <Col md={6}>
+                <Form.Group controlId="shape">
+                  <Form.Label>Shape</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="specification.gemstone.shape"
+                    // value={productDetails.specification.gemstone.shape}
+                    // onChange={handleChange}
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group controlId="metalId">
+                  <Form.Label>Metal ID</Form.Label>
+                  <Form.Control
+                    type="number"
+                    name="specification.metal.id"
+                    // value={productDetails.specification.metal.id}
+                    // onChange={handleChange}
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+          </Form>
           )}
         </Modal.Body>
       </Modal>
