@@ -5,8 +5,6 @@ import {
   Row,
   Col,
   Table,
-  OverlayTrigger,
-  Tooltip,
   Image,
 } from "react-bootstrap";
 import DoubleRangeSlider from "../reusable/DoubleRangeSlider/DoubleRangeSlider";
