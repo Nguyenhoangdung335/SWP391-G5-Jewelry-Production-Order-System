@@ -4,6 +4,7 @@ import { useAuth } from "../provider/AuthProvider";
 import axios from "axios";
 import ServerUrl from "../reusable/ServerUrl";
 import { jwtDecode } from "jwt-decode";
+import { useAlert } from "../provider/AlertProvider";
 
 function UserInfo() {
   const [dobError, setDobError] = useState("");
@@ -19,6 +20,8 @@ function UserInfo() {
   const [ status, setStatus] = useState("");
   const [ dateCreated, setDateCreated] = useState("");
   const { token } = useAuth();
+  const {showAlert} = useAlert();
+
   let account = {
     email,
     password,
@@ -125,14 +128,22 @@ function UserInfo() {
       })
         .then((response) => {
           if (response.status === 200) {
-            alert("Update successful");
+            showAlert(
+                "Edited successfully",
+                "",
+                "success"
+            );
             getData();
           } else if (response.status === 400) {
             throw new Error(response.message);
           }
         })
         .catch((error) => {
-          alert(error);
+          showAlert(
+              "Edit failed",
+              "Something went wrong. . .",
+              "danger"
+          );
           console.log("There is an error: " + error);
         });
     }

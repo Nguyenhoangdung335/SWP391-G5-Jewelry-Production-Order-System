@@ -136,65 +136,74 @@ export default function OrderManager() {
 
       <Table striped bordered hover>
         <thead>
-          <tr>
-            {columns.map((col) => (
+        <tr>
+          {columns.map((col) => (
               <th key={col.dataIndex}>{col.title}</th>
-            ))}
-          </tr>
+          ))}
+        </tr>
         </thead>
         <tbody>
-          {data.map((order) => (
-            <tr key={order.id}>
-              <td>{order.id}</td>
-              <td>{order.name}</td>
-              {/* <td>{order.budget}</td> */}
-              <td>{arrayToDate(order.createdDate)}</td>
-              <td>{arrayToDate(order?.completedDate)}</td>
-              <td>
-                <Badge
-                  className="text-white"
-                  bg={order.status === "ORDER_COMPLETED" ? "success" : "danger"}
-                >
-                  {order.status}
-                </Badge>
-              </td>
-              <td>
-                <Button variant="primary" onClick={() => showDetail(order)}>
-                  Show Detail
-                </Button>
+        {data.length === 0 ? (
+            <tr>
+              <td colSpan={columns.length} className="text-center">
+                <div className="p-3">
+                  <h5 className="font-weight-bold text-muted">No orders with corresponding status available</h5>
+                </div>
               </td>
             </tr>
-          ))}
+        ) : (
+            data.map((order) => (
+                <tr key={order.id}>
+                  <td>{order.id}</td>
+                  <td>{order.name}</td>
+                  <td>{arrayToDate(order.createdDate)}</td>
+                  <td>{arrayToDate(order?.completedDate)}</td>
+                  <td>
+                    <Badge
+                        className="text-white"
+                        bg={order.status === "ORDER_COMPLETED" ? "success" : "danger"}
+                    >
+                      {order.status}
+                    </Badge>
+                  </td>
+                  <td>
+                    <Button variant="primary" onClick={() => showDetail(order)}>
+                      Show Detail
+                    </Button>
+                  </td>
+                </tr>
+            ))
+        )}
         </tbody>
       </Table>
 
       <div style={styles.paginationContainer}>
         <div
-          style={{
-            ...styles.paginationButton,
-            ...(currentPage === 1 ? styles.paginationButtonDisabled : {}),
-          }}
-          onClick={() => handlePageChange(currentPage - 1)}
+            style={{
+              ...styles.paginationButton,
+              ...(currentPage === 1 ? styles.paginationButtonDisabled : {}),
+            }}
+            onClick={() => handlePageChange(currentPage - 1)}
         >
           &lt;
         </div>
         {[...Array(totalPages).keys()].map((page) => (
-          <div
-            key={page + 1}
-            style={{
-              ...styles.paginationButton,
-              ...(page + 1 === currentPage
-                ? styles.paginationButtonActive
-                : {}),
-            }}
-            onClick={() => handlePageChange(page + 1)}
-          >
-            {page + 1}
-          </div>
+            <div
+                key={page + 1}
+                style={{
+                  ...styles.paginationButton,
+                  ...(page + 1 === currentPage
+                      ? styles.paginationButtonActive
+                      : {}),
+                }}
+                onClick={() => handlePageChange(page + 1)}
+            >
+              {page + 1}
+            </div>
         ))}
         <div
-          style={{
-            ...styles.paginationButton,
+            style={{
+              ...styles.paginationButton,
             ...(currentPage === totalPages
               ? styles.paginationButtonDisabled
               : {}),
