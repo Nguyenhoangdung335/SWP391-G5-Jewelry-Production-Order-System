@@ -22,6 +22,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import static com.swp391.JewelryProduction.util.CustomFormatter.roundToDecimal;
+
 @Service
 @RequiredArgsConstructor
 public class QuotationServiceImpl implements QuotationService {
@@ -93,9 +95,9 @@ public class QuotationServiceImpl implements QuotationService {
                 .title("Quotation for order "+order.getId())
                 .createdDate(LocalDate.now())
                 .expiredDate(LocalDate.now().plusMonths(3))
-                .consultCost(isFromTemplate? 0.0: basedLaborCost + saleMultiplier * complexityScale)
-                .designCost(isFromTemplate? 0.0: basedLaborCost + designMultiplier * complexityScale)
-                .manufactureCost(basedLaborCost + productionMultiplier * complexityScale)
+                .consultCost(isFromTemplate? 0.0: roundToDecimal(basedLaborCost + saleMultiplier * complexityScale, 2))
+                .designCost(isFromTemplate? 0.0: roundToDecimal(basedLaborCost + designMultiplier * complexityScale,2))
+                .manufactureCost(roundToDecimal(basedLaborCost + productionMultiplier * complexityScale, 2))
                 .build();
 
         int index = 0;
