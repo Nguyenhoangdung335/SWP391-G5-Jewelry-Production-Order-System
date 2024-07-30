@@ -31,6 +31,9 @@ export default function GemstoneManager() {
       .then((res) => {
         setData(res.data.responseList.gemstone);
         setTotalPage(res.data.responseList.totalPages);
+        if (reRender === true) {
+          setReRender(false);
+        }
       })
       .catch((err) => {
         console.error(err);
@@ -182,7 +185,7 @@ export default function GemstoneManager() {
       </div>
       <div style={{ maxHeight: "320px", overflowY: "auto" }}>
         <Table striped bordered hover>
-          <thead style={{ position: "sticky", top: "0" }}>
+          <thead style={{ position: "sticky", top: "-1%" }}>
             <tr>
               <th>ID</th>
               <th>Name</th>
@@ -207,7 +210,7 @@ export default function GemstoneManager() {
                 <td>
                   {gemstone.caratWeightFrom} - {gemstone.caratWeightTo}
                 </td>
-                <td>{gemstone.pricePerCaratInHundred}</td>
+                <td>{formatPrice(gemstone.pricePerCaratInHundred * 100)}</td>
                 <td>
                   <div className="d-flex justify-content-center gap-2">
                     <Button
@@ -270,13 +273,14 @@ export default function GemstoneManager() {
       </div>
 
       {/* Edit Gemstone */}
-      <Modal show={isModalVisible} onHide={handleCancel} centered>
+      <Modal show={isModalVisible} onHide={handleCancel} centered size="lg">
         <Modal.Header>
           <Modal.Title>Edit Gemstone</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body style={{ width: "100%" }}>
           <GemstoneForm
             types="editGemstone"
+            onClose={handleAddCancel}
             selectedGemstone={selectedGemstone}
             isUpdated={handleReRender}
           />
@@ -302,14 +306,30 @@ export default function GemstoneManager() {
       </Modal>
 
       {/* Create Gemstone */}
-      <Modal show={isCreateModalVisible} onHide={handleAddCancel} centered>
+      <Modal
+        show={isCreateModalVisible}
+        onHide={handleAddCancel}
+        centered
+        size="lg"
+      >
         <Modal.Header>
           <Modal.Title>Add Gemstone</Modal.Title>
         </Modal.Header>
-        <ModalBody>
-          <GemstoneForm types="addGemstone" isUpdated={handleReRender} />
+        <ModalBody style={{ width: "100%" }}>
+          <GemstoneForm
+            types="addGemstone"
+            onClose={handleAddCancel}
+            isUpdated={handleReRender}
+          />
         </ModalBody>
       </Modal>
     </div>
   );
 }
+
+const formatPrice = (price) => {
+  return price.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+  });
+};
