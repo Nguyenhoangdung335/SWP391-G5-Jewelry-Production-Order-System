@@ -59,7 +59,7 @@ function OrderHistory() {
                             className="rounded-0"
                             onError={(ev) => (ev.target.src = noImage)}
                             variant="top"
-                            src={i.imageURL || noImage}
+                            src={i.shownImageUrl || noImage}
                             alt="Order Image"
                         />
                         <Card.Body
