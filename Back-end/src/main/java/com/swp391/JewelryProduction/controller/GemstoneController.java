@@ -49,7 +49,7 @@ public class GemstoneController {
     public ResponseEntity<Response> getAllGemstones(
             @RequestParam("page") int page,
             @RequestParam("size") int pageSize,
-            @RequestParam(name = "sortBy", defaultValue = "caratWeightFrom") String sortBy
+            @RequestParam(name = "sortBy", defaultValue = "id") String sortBy
     ) {
         Page<Gemstone> gemstonePage = gemstoneService.findAll(page, pageSize, sortBy);
         return Response.builder()
