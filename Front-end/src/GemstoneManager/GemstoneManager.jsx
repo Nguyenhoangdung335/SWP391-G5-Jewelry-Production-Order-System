@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, Modal, Form } from "react-bootstrap";
+import { Table, Button, Modal, Form, ModalBody } from "react-bootstrap";
 import { FiPlus } from "react-icons/fi";
 import { FaBox } from "react-icons/fa";
 import axios from "axios";
 import ServerUrl from "../reusable/ServerUrl";
 import { FaEdit } from "react-icons/fa";
 import { FaTrash } from "react-icons/fa";
+import { GemstoneForm } from "./GemstoneForm";
 
 export default function GemstoneManager() {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -14,28 +15,28 @@ export default function GemstoneManager() {
   const [selectedGemstone, setSelectedGemstone] = useState(null);
   const [deleteGemstone, setDeleteGemstone] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const [totalPage, setTotalPage] = useState();
+  const itemsPerPage = 20;
   const [data, setData] = useState([]);
-
-  console.log("Entering");
+  const [reRender, setReRender] = useState(false);
 
   useEffect(() => {
-    console.log("jhkhj");
     axios({
       method: "GET",
-      url: `${ServerUrl}/api/admin/gemstones`,
+      url: `${ServerUrl}/api/gemstone?page=${
+        currentPage - 1
+      }&size=${itemsPerPage}`,
       headers: { "Content-Type": "application/json" },
     })
       .then((res) => {
-        console.log("Testing")
-        console.log(res.data);
-        setData(res.data.responseList);
+        setData(res.data.responseList.gemstone);
+        setTotalPage(res.data.responseList.totalPages);
       })
       .catch((err) => {
         console.error(err);
         console.log(err);
       });
-  }, []);
+  }, [currentPage, reRender]);
 
   const handleEdit = (record) => {
     setSelectedGemstone(record);
@@ -57,7 +58,7 @@ export default function GemstoneManager() {
     console.log(GemstoneId);
     axios({
       method: "DELETE",
-      url: `${ServerUrl}/api/admin/gemstone-type/${GemstoneId}`,
+      url: `${ServerUrl}/api/gemstone/${GemstoneId}`,
       headers: { "Content-Type": "application/json" },
     })
       .then((res) => {
@@ -78,53 +79,6 @@ export default function GemstoneManager() {
     setIsCreateModalVisible(false);
   };
 
-  const handleSave = (event) => {
-    event.preventDefault();
-    const form = event.currentTarget;
-    const values = {
-      id: form.formProductId.value,
-      name: form.formProductName.value,
-      description: form.formProductDescription.value,
-    };
-    const newData = data.map((item) => (item.id === values.id ? values : item));
-    setData(newData);
-    setIsModalVisible(false);
-    setSelectedGemstone(null);
-  };
-
-  const handleAdd = (event) => {
-    event.preventDefault();
-    const form = event.currentTarget;
-    const newProduct = {
-      id: form.formProductId.value,
-      name: form.formProductName.value,
-      description: form.formProductDescription.value,
-    };
-
-    // Kiểm tra nếu bất kỳ trường nào bị bỏ trống
-    if (!newProduct.id || !newProduct.name || !newProduct.description) {
-      alert("Please fill in all fields");
-      return;
-    }
-
-    // Gửi yêu cầu POST tới back-end
-    axios({
-      method: "POST",
-      url: `${ServerUrl}/api/products`,
-      headers: { "Content-Type": "application/json" },
-      data: newProduct,
-    })
-      .then((res) => {
-        // Thêm sản phẩm mới vào trạng thái data nếu thành công
-        setData([...data, res.data]);
-        setIsCreateModalVisible(false);
-      })
-      .catch((err) => {
-        console.error("Error creating Gemstone:", err);
-        alert("There was an error creating the product. Please try again.");
-      });
-  };
-
   const handleCancelDelete = () => {
     setIsDeleteModalVisible(false);
     setDeleteGemstone(null);
@@ -134,12 +88,14 @@ export default function GemstoneManager() {
     setCurrentPage(pageNumber);
   };
 
-  const paginatedData = data.gemstoneType.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+  const paginatedData = data.slice(
+    // (currentPage - 1) * itemsPerPage,
+    // currentPage * itemsPerPage
+    0,
+    20
   );
 
-  const totalPages = Math.ceil(data.length / itemsPerPage);
+  const totalPages = totalPage;
 
   const styles = {
     paginationContainer: {
@@ -169,6 +125,10 @@ export default function GemstoneManager() {
       color: "#6c757d",
       cursor: "not-allowed",
     },
+  };
+
+  const handleReRender = (data) => {
+    setReRender(data);
   };
 
   return (
@@ -220,45 +180,57 @@ export default function GemstoneManager() {
           </div>
         </div>
       </div>
-      <Table striped bordered hover>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Shape</th>
-            <th>Status</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {paginatedData.map((gemstone) => (
-            <tr key={gemstone.id}>
-              <td>{gemstone.id}</td>
-              <td>{gemstone.name}</td>
-              <td>{gemstone.basePricePerCarat}</td>
-              <td>{gemstone.status ? "True" : "False"}</td>
-              <td>
-                <div className="d-flex justify-content-center gap-2">
-                  <Button
-                    className="border-0"
-                    variant="link"
-                    onClick={() => handleEdit(gemstone)}
-                  >
-                    <FaEdit size={20} />
-                  </Button>
-                  <Button
-                    className="border-0"
-                    variant="link"
-                    onClick={() => handleDeleteClick(gemstone)}
-                  >
-                    <FaTrash size={20} />
-                  </Button>
-                </div>
-              </td>
+      <div style={{ maxHeight: "320px", overflowY: "auto" }}>
+        <Table striped bordered hover>
+          <thead style={{ position: "sticky", top: "0" }}>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Shape</th>
+              <th>Cut</th>
+              <th>Clarity</th>
+              <th>Color</th>
+              <th>Carat Weight From - To</th>
+              <th>Price Per Carat (In Hundred)</th>
+              <th>Action</th>
             </tr>
-          ))}
-        </tbody>
-      </Table>
+          </thead>
+          <tbody>
+            {paginatedData.map((gemstone) => (
+              <tr key={gemstone.id}>
+                <td>{gemstone.id}</td>
+                <td>{gemstone.name}</td>
+                <td>{gemstone.shape}</td>
+                <td>{gemstone.cut}</td>
+                <td>{gemstone.clarity}</td>
+                <td>{gemstone.color}</td>
+                <td>
+                  {gemstone.caratWeightFrom} - {gemstone.caratWeightTo}
+                </td>
+                <td>{gemstone.pricePerCaratInHundred}</td>
+                <td>
+                  <div className="d-flex justify-content-center gap-2">
+                    <Button
+                      className="border-0"
+                      variant="link"
+                      onClick={() => handleEdit(gemstone)}
+                    >
+                      <FaEdit size={20} />
+                    </Button>
+                    <Button
+                      className="border-0"
+                      variant="link"
+                      onClick={() => handleDeleteClick(gemstone)}
+                    >
+                      <FaTrash size={20} />
+                    </Button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </div>
 
       <div style={styles.paginationContainer}>
         <div
@@ -303,44 +275,11 @@ export default function GemstoneManager() {
           <Modal.Title>Edit Gemstone</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {selectedGemstone && (
-            <Form onSubmit={handleSave}>
-              <Form.Group controlId="formProductId">
-                <Form.Label>ID</Form.Label>
-                <Form.Control
-                  type="text"
-                  defaultValue={selectedGemstone.id}
-                  readOnly
-                />
-              </Form.Group>
-              <Form.Group controlId="formProductName">
-                <Form.Label>Name</Form.Label>
-                <Form.Control
-                  type="text"
-                  defaultValue={selectedGemstone.name}
-                />
-              </Form.Group>
-              <Form.Group controlId="formProductDescription">
-                <Form.Label>Description</Form.Label>
-                <Form.Control
-                  type="text"
-                  defaultValue={selectedGemstone.description}
-                />
-              </Form.Group>
-              <div className="d-flex justify-content-between">
-                <Button
-                  variant="secondary"
-                  onClick={handleCancel}
-                  className="mt-2"
-                >
-                  Back
-                </Button>
-                <Button variant="primary" type="submit" className="mt-2">
-                  Save changes
-                </Button>
-              </div>
-            </Form>
-          )}
+          <GemstoneForm
+            types="editGemstone"
+            selectedGemstone={selectedGemstone}
+            isUpdated={handleReRender}
+          />
         </Modal.Body>
       </Modal>
 
@@ -365,41 +304,11 @@ export default function GemstoneManager() {
       {/* Create Gemstone */}
       <Modal show={isCreateModalVisible} onHide={handleAddCancel} centered>
         <Modal.Header>
-          <Modal.Title>Create Product</Modal.Title>
+          <Modal.Title>Add Gemstone</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
-          <div className="mb-4">
-            <FaBox /> <span className="text-4xl ml-3 font-medium">Product</span>
-          </div>
-          <Form onSubmit={handleAdd}>
-            <Form.Group controlId="formProductId">
-              <Form.Label>ID</Form.Label>
-              <Form.Control type="text" />
-            </Form.Group>
-            <Form.Group controlId="formProductName">
-              <Form.Label>Name</Form.Label>
-              <Form.Control type="text" />
-            </Form.Group>
-            <Form.Group controlId="formProductDescription">
-              <Form.Label>Description</Form.Label>
-              <Form.Control type="text" />
-            </Form.Group>
-            <div className="mt-4 d-flex justify-content-between">
-              <Button variant="secondary" onClick={handleAddCancel}>
-                Back
-              </Button>
-              <Button type="submit">Save changes</Button>
-
-              {/* <Button
-                variant="secondary"
-                onClick={handleAddCancel}
-                style={{ marginLeft: 8 }}
-              >
-                Create Your Dream Jewelry
-              </Button> */}
-            </div>
-          </Form>
-        </Modal.Body>
+        <ModalBody>
+          <GemstoneForm types="addGemstone" isUpdated={handleReRender} />
+        </ModalBody>
       </Modal>
     </div>
   );
