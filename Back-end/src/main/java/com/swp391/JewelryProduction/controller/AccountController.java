@@ -11,6 +11,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -81,7 +82,7 @@ public class AccountController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<Response> createAccount(@RequestBody AccountDTO accountDTO) {
+    public ResponseEntity<Response> createAccount(@Valid @RequestBody AccountDTO accountDTO) {
         accountDTO.setDateCreated(LocalDateTime.now());
         return Response.builder()
                 .status(HttpStatus.OK)
