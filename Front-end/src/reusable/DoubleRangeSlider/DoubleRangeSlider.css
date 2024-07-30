@@ -6,6 +6,7 @@
   position: relative;
 }
 
+
 .slider {
     position: relative;
     width: 100%;
@@ -31,7 +32,7 @@
   }
   
   .slider__range {
-    background-color: #183231;
+    background-color: #2c549f;
     z-index: 2;
   }
   
@@ -202,4 +203,7 @@
     pointer-events: all;
     position: relative;
   }
+  
+
+
   

@@ -43,6 +43,7 @@ const DoubleRangeSlider = ({ min, max, isDouble, onChange }) => {
 
   return (
     <div className="slider-container">
+      <span>{minVal}</span>
       <input
         type="range"
         min={min}
@@ -75,6 +76,7 @@ const DoubleRangeSlider = ({ min, max, isDouble, onChange }) => {
         {/* <div className="slider__left-value">{minVal / 100}</div>
         <div className="slider__right-value">{maxVal / 100}</div> */}
       </div>
+      <span>{maxVal}</span>
     </div>
   );
 };
