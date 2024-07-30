@@ -74,7 +74,6 @@ export default function ClientManager() {
       role: form.role.value,
       email: form.gmail.value,
       password: form.password.value,
-      dateCreated: selectedUser.dateCreated,
       status: selectedUser.status,
       userInfo: {
         id: selectedUser.userInfo.id,
@@ -96,13 +95,22 @@ export default function ClientManager() {
         }
       );
       console.log("Update Response:", res.data);
-      if (res.status === 200) {
+      if (res.data.statusCode === 200) {
         showAlert(
             "Edited successfully",
             "Edited " + selectedUser.id + " successfully",
             "success"
         );
         setIsUpdated(true);
+        setIsModalVisible(false);
+        setSelectedUser(null);
+      }
+      if (res.data.statusCode === 400){
+        showAlert(
+            res.data.message.toString(),
+            "",
+            "warning"
+        );
       }
     } catch (err) {
       showAlert(
@@ -111,9 +119,6 @@ export default function ClientManager() {
           "danger"
       );
       console.error("Error updating account:", err);
-    } finally {
-      setIsModalVisible(false);
-      setSelectedUser(null);
     }
   };
 
@@ -150,6 +155,14 @@ export default function ClientManager() {
             "success"
         );
         setIsUpdated(true);
+        setIsAddModalVisible(false);
+      }
+      if (res.status === 400){
+        showAlert(
+            res.data.message,
+            "",
+            "warning"
+        );
       }
     } catch (err) {
       showAlert(
@@ -159,7 +172,6 @@ export default function ClientManager() {
       );
       console.error("Error adding account:", err);
     } finally {
-      setIsAddModalVisible(false);
     }
   };
 
@@ -444,10 +456,25 @@ export default function ClientManager() {
                   <Form.Control
                       type="text"
                       name="password"
+                      pattern={"^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$"}
                       placeholder={"Change password as needed. . ."}
                       defaultValue={""}
                   />
                 </Col>
+                <div style={{
+                  display: 'block',
+                  marginTop: '5px',
+                  fontSize: '12px',
+                  color: '#6c757d',
+                  lineHeight: '1.5'
+                }}>
+                  <ul>
+                    <li>Password must be at least 8 characters long.</li>
+                    <li>Include at least one uppercase letter.</li>
+                    <li>Include at least one lowercase letter.</li>
+                    <li>Include at least one numeric character.</li>
+                  </ul>
+                </div>
               </Form.Group>
 
               <Row className="mb-3">
@@ -577,27 +604,42 @@ export default function ClientManager() {
                 <Form.Control
                     type="text"
                     name="password"
+                    pattern={"^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$"}
                     required
                 />
               </Col>
+              <div style={{
+                display: 'block',
+                marginTop: '5px',
+                fontSize: '12px',
+                color: '#6c757d',
+                lineHeight: '1.5'
+              }}>
+                <ul>
+                  <li>Password must be at least 8 characters long.</li>
+                  <li>Include at least one uppercase letter.</li>
+                  <li>Include at least one lowercase letter.</li>
+                  <li>Include at least one numeric character.</li>
+                </ul>
+              </div>
             </Form.Group>
 
             <Form.Group controlId="phone" className="mb-3">
               <Form.Label>Phone</Form.Label>
-              <Form.Control type="text" required />
+              <Form.Control type="text" required/>
             </Form.Group>
             <Row>
               <Col>
                 <Form.Group controlId="birthDate" className="mb-3">
                   <Form.Label>Birth Date</Form.Label>
-                  <Form.Control type="date" required />
+                  <Form.Control type="date" required/>
                 </Form.Group>
               </Col>
               <Col>
                 <Form.Group controlId="gender" className="mb-3">
                   <Form.Label>Gender</Form.Label>
                   <Form.Control as="select" required>
-                    <option value="MALE">Male</option>
+                  <option value="MALE">Male</option>
                     <option value="FEMALE">Female</option>
                   </Form.Control>
                 </Form.Group>

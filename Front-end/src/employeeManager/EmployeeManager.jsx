@@ -85,8 +85,7 @@ export default function EmployeeManager() {
       id: selectedUser.id,
       role: form.role.value,
       email: form.gmail.value,
-      phone: form.phone.value,
-      dateCreated: selectedUser.dateCreated,
+      password: form.password.value,
       status: selectedUser.status,
       userInfo: {
         id: selectedUser.userInfo.id,
@@ -107,6 +106,7 @@ export default function EmployeeManager() {
       const updatedData = data.map((item) =>
         item.id === values.id ? values : item
       );
+      if(res.status===200)
       setData(updatedData);
         showAlert(
             "Edited successfully",
@@ -115,6 +115,13 @@ export default function EmployeeManager() {
         );
       setIsModalVisible(false);
       setSelectedUser(null);
+      if (res.data.statusCode === 400){
+        showAlert(
+            res.data.message,
+            "",
+            "warning"
+        );
+      }
     } catch (err) {
         showAlert(
             "Edit  failed",
@@ -132,7 +139,6 @@ export default function EmployeeManager() {
       role: form.role.value,
       email: form.gmail.value,
       password: form.password.value,
-      phone: form.phone.value,
       status: "ACTIVE",
       userInfo: {
         firstName: form.firstName.value,
@@ -148,15 +154,22 @@ export default function EmployeeManager() {
       const res = await axios.post(`${ServerUrl}/api/account/`, newEmployee, {
         headers: { "Content-Type": "application/json" },
       });
-      console.log("Add Response:", res.data.responseList.account);
-      setData([...data, res.data.responseList.account]); // Update state with new data
+      if (res.status === 200) {
+        setData([...data, res.data.responseList.account]); // Update state with new data
         showAlert(
-          "Added successfully",
-          "Added " + res.data.responseList.account.id + " successfully",
-          "success"
+            "Added successfully",
+            "Added " + res.data.responseList.account.id + " successfully",
+            "success"
         );
-      setIsAddModalVisible(false);
-
+        setIsAddModalVisible(false);
+      }
+      if (res.status === 400){
+        showAlert(
+            res.data.message,
+            "",
+            "warning"
+        );
+      }
     } catch (err) {
         showAlert(
             "Add failed",
@@ -487,21 +500,12 @@ export default function EmployeeManager() {
                 />
               </Form.Group>
               <Form.Group className="mb-3">
-                <Form.Label>Email</Form.Label>
-                <FormControl
-                  type="email"
-                  defaultValue={selectedUser.email}
-                  name="gmail"
-                />
-              </Form.Group>
-              <Form.Group className="mb-3">
                 <Form.Label>Role</Form.Label>
                 <FormControl
-                  as="select"
-                  defaultValue={selectedUser.role}
-                  name="role"
+                    as="select"
+                    defaultValue={selectedUser.role}
+                    name="role"
                 >
-                  {/* <option value="CUSTOMER">Customer</option> */}
                   <option value="ADMIN">Admin</option>
                   <option value="SALE_STAFF">Sale Staff</option>
                   <option value="DESIGN_STAFF">Design Staff</option>
@@ -509,17 +513,55 @@ export default function EmployeeManager() {
                   <option value="MANAGER">Manager</option>
                 </FormControl>
               </Form.Group>
-              <Row className="mb-3">
-                <Col>
-                  <Form.Group>
-                    <Form.Label>First Name</Form.Label>
-                    <FormControl
-                      type="text"
-                      defaultValue={selectedUser.userInfo.firstName}
-                      name="firstName"
-                    />
-                  </Form.Group>
-                </Col>
+              <Form.Group className="mb-3">
+                <Form.Label>Email</Form.Label>
+                <FormControl
+                  type="email"
+                  defaultValue={selectedUser.email}
+                  name="gmail"
+                />
+              </Form.Group>
+
+                <Form.Group controlId="password" className="mb-3">
+                    <Form.Label>
+                        Password
+                    </Form.Label>
+                    <Col sm={9}>
+                        <Form.Control
+                            type="text"
+                            name="password"
+                            pattern={"^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$"}
+                            placeholder={"Change password as needed. . ."}
+                            defaultValue={""}
+                        />
+                    </Col>
+                    <div style={{
+                        display: 'block',
+                        marginTop: '5px',
+                        fontSize: '12px',
+                        color: '#6c757d',
+                        lineHeight: '1.5'
+                    }}>
+                        <ul>
+                            <li>Password must be at least 8 characters long.</li>
+                            <li>Include at least one uppercase letter.</li>
+                            <li>Include at least one lowercase letter.</li>
+                            <li>Include at least one numeric character.</li>
+                        </ul>
+                    </div>
+                </Form.Group>
+
+                <Row className="mb-3">
+                    <Col>
+                        <Form.Group>
+                            <Form.Label>First Name</Form.Label>
+                            <FormControl
+                                type="text"
+                                defaultValue={selectedUser.userInfo.firstName}
+                                name="firstName"
+                            />
+                        </Form.Group>
+                    </Col>
                 <Col>
                   <Form.Group>
                     <Form.Label>Last Name</Form.Label>
@@ -648,10 +690,34 @@ export default function EmployeeManager() {
               <Form.Label>Gmail</Form.Label>
               <FormControl type="email" name="gmail" required />
             </Form.Group>
-            <Form.Group controlId="formPassword" className="mb-3">
-              <Form.Label>Password</Form.Label>
-              <FormControl type="password" name="password" required />
-            </Form.Group>
+              <Form.Group controlId="password" className="mb-3">
+                  <Form.Label>
+                      Password
+                  </Form.Label>
+                  <Col sm={9}>
+                      <Form.Control
+                          type="text"
+                          name="password"
+                          pattern={"^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$"}
+                          placeholder={"Change password as needed. . ."}
+                          defaultValue={""}
+                      />
+                  </Col>
+                  <div style={{
+                      display: 'block',
+                      marginTop: '5px',
+                      fontSize: '12px',
+                      color: '#6c757d',
+                      lineHeight: '1.5'
+                  }}>
+                      <ul>
+                          <li>Password must be at least 8 characters long.</li>
+                          <li>Include at least one uppercase letter.</li>
+                          <li>Include at least one lowercase letter.</li>
+                          <li>Include at least one numeric character.</li>
+                      </ul>
+                  </div>
+              </Form.Group>
             <Form.Group controlId="formPhone" className="mb-3">
               <Form.Label>Phone</Form.Label>
               <FormControl type="text" name="phone" required />
