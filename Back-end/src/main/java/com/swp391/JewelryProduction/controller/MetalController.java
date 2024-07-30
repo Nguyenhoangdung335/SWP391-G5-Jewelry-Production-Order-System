@@ -16,6 +16,13 @@ import org.springframework.web.bind.annotation.*;
 public class MetalController {
     private final MetalService metalService;
 
+    @GetMapping("/factor")
+    public ResponseEntity<Response> getMetalFactors () {
+        return Response.builder()
+                .responseList(metalService.getAllMetalFactors())
+                .buildEntity();
+    }
+
     @GetMapping("")
     public ResponseEntity<Response> findAll(
             @RequestParam("page") int page,
@@ -31,7 +38,7 @@ public class MetalController {
                 .buildEntity();
     }
 
-    @GetMapping("/search")
+    @PostMapping("/search")
     public ResponseEntity<Response> findSearchedMetals (
             @RequestBody Metal metal
     ) {
