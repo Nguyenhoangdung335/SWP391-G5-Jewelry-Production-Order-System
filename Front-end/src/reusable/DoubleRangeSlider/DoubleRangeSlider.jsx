@@ -43,7 +43,6 @@ const DoubleRangeSlider = ({ min, max, isDouble, onChange }) => {
 
   return (
     <div className="slider-container">
-      <span>{minVal}</span>
       <input
         type="range"
         min={min}
@@ -51,7 +50,7 @@ const DoubleRangeSlider = ({ min, max, isDouble, onChange }) => {
         step={0.01}
         value={minVal}
         onChange={(event) => {
-          const value = Math.min(Number(event.target.value), maxVal - 1);
+          const value = Math.min(Number(event.target.value), maxVal - 0.01);
           setMinVal(value);
           minValRef.current = value;
         }}
@@ -65,7 +64,7 @@ const DoubleRangeSlider = ({ min, max, isDouble, onChange }) => {
         step={0.01}
         value={maxVal}
         onChange={(event) => {
-          const value = Math.max(Number(event.target.value), minVal + 1);
+          const value = Math.max(Number(event.target.value), minVal + 0.01);
           setMaxVal(value);
           maxValRef.current = value;
         }}
@@ -75,10 +74,9 @@ const DoubleRangeSlider = ({ min, max, isDouble, onChange }) => {
       <div className="slider">
         <div className="slider__track" />
         <div ref={range} className="slider__range" />
-        {/* <div className="slider__left-value">{minVal / 100}</div>
-        <div className="slider__right-value">{maxVal / 100}</div> */}
+        {/* <div className="slider__left-value"> {minVal}</div>
+        <div className="slider__right-value">{maxVal}</div> */}
       </div>
-      <span>{maxVal}</span>
     </div>
   );
 };

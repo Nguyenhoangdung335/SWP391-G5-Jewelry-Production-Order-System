@@ -10,6 +10,7 @@ import { Badge } from "react-bootstrap";
 import ServerUrl from "../reusable/ServerUrl";
 import axios from "axios";
 import logo_white from "./../assets/logo_white.svg";
+import { AiOutlineProfile } from "react-icons/ai";
 
 function SideBar() {
   const { token, setToken } = useAuth();
@@ -48,7 +49,7 @@ function SideBar() {
   const navLinks = [
     {
       to: "/user_setting_page/profile_page",
-      icon: <LuUser2 size={30} color="white" />,
+      icon: <AiOutlineProfile size={30} color="white" />,
       label: "Profile",
     },
     {
