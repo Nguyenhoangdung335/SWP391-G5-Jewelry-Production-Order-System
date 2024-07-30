@@ -22,7 +22,7 @@ export function GemstoneForm({ types, selectedGemstone, isUpdated, onClose }) {
     selectedGemstone ? selectedGemstone.caratWeightFrom : 0.1
   );
   const [maxWeight, setMaxWeight] = useState(
-    selectedGemstone ? selectedGemstone.caratWeightTo : 10.1
+    selectedGemstone ? selectedGemstone.caratWeightTo : 11
   );
   const [clarity, setClarity] = useState(
     selectedGemstone ? selectedGemstone.clarity : ""
@@ -32,7 +32,7 @@ export function GemstoneForm({ types, selectedGemstone, isUpdated, onClose }) {
   );
   const [cut, setCut] = useState(selectedGemstone ? selectedGemstone.cut : "");
   const [pricePerCaratInHundred, setPricePerCaratInHundred] = useState(
-    selectedGemstone ? selectedGemstone.pricePerCaratInHundred : 0
+    selectedGemstone ? selectedGemstone.pricePerCaratInHundred : null
   );
   const [data, setData] = useState({});
 
@@ -116,6 +116,7 @@ export function GemstoneForm({ types, selectedGemstone, isUpdated, onClose }) {
           <FormLabel>Name: </FormLabel>
           <FormControl
             type="text"
+            placeholder="Enter Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
@@ -202,21 +203,34 @@ export function GemstoneForm({ types, selectedGemstone, isUpdated, onClose }) {
           </FormSelect>
         </FormGroup>
 
-        <DoubleRangeSlider
-          min={0.1}
-          max={11}
-          onChange={({ min, max }) => {
-            setMinWeight(min);
-            setMaxWeight(max);
-          }}
-        />
+        <FormGroup className="mb-3">
+          <FormLabel>
+            Carat Weight: {minWeight} - {maxWeight}
+          </FormLabel>
+          <DoubleRangeSlider
+            min={0.1}
+            max={11}
+            onChange={({ min, max }) => {
+              setMinWeight(min);
+              setMaxWeight(max);
+            }}
+          />
+        </FormGroup>
 
         <FormGroup className="mb-3">
-          <FormLabel>PricePerCaratInHundred: </FormLabel>
+          <FormLabel>Price Per Carat: </FormLabel>
           <FormControl
             type="number"
+            min={0}
             value={pricePerCaratInHundred}
-            onChange={(e) => setPricePerCaratInHundred(e.target.value)}
+            placeholder="Enter Price"
+            onChange={(e) => {
+              if (e.target.value > 0) {
+                setPricePerCaratInHundred(e.target.value);
+              } else {
+                setPricePerCaratInHundred();
+              }
+            }}
             required
           />
         </FormGroup>
