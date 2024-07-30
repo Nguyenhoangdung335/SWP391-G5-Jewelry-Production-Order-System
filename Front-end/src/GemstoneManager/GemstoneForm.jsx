@@ -11,7 +11,7 @@ import {
 } from "react-bootstrap";
 import DoubleRangeSlider from "../reusable/DoubleRangeSlider/DoubleRangeSlider";
 
-export function GemstoneForm({ types, selectedGemstone, isUpdated }) {
+export function GemstoneForm({ types, selectedGemstone, isUpdated, onClose }) {
   const [name, setName] = useState(
     selectedGemstone ? selectedGemstone.name : ""
   );
@@ -69,7 +69,7 @@ export function GemstoneForm({ types, selectedGemstone, isUpdated }) {
         color: color,
         caratWeightFrom: minWeight,
         caratWeightTo: maxWeight,
-        pricePerCaratInHundred: 100,
+        pricePerCaratInHundred: pricePerCaratInHundred / 100,
       },
     })
       .then((res) => {
@@ -95,7 +95,7 @@ export function GemstoneForm({ types, selectedGemstone, isUpdated }) {
         color: color,
         caratWeightFrom: minWeight,
         caratWeightTo: maxWeight,
-        pricePerCaratInHundred: 100,
+        pricePerCaratInHundred: pricePerCaratInHundred / 100,
       },
     })
       .then((res) => {
@@ -204,7 +204,7 @@ export function GemstoneForm({ types, selectedGemstone, isUpdated }) {
 
         <DoubleRangeSlider
           min={0.1}
-          max={10}
+          max={11}
           onChange={({ min, max }) => {
             setMinWeight(min);
             setMaxWeight(max);
@@ -222,7 +222,7 @@ export function GemstoneForm({ types, selectedGemstone, isUpdated }) {
         </FormGroup>
 
         <div className="d-flex justify-content-between">
-          <Button variant="secondary" className="mt-2">
+          <Button variant="secondary" onClick={onClose} className="mt-2">
             Back
           </Button>
           <Button variant="primary" type="submit" className="mt-2">
