@@ -50,7 +50,7 @@ const DoubleRangeSlider = ({ min, max, isDouble, onChange }) => {
         step={0.01}
         value={minVal}
         onChange={(event) => {
-          const value = Math.min(Number(event.target.value), maxVal - 1);
+          const value = Math.min(Number(event.target.value), maxVal - 0.01);
           setMinVal(value);
           minValRef.current = value;
         }}
@@ -64,7 +64,7 @@ const DoubleRangeSlider = ({ min, max, isDouble, onChange }) => {
         step={0.01}
         value={maxVal}
         onChange={(event) => {
-          const value = Math.max(Number(event.target.value), minVal + 1);
+          const value = Math.max(Number(event.target.value), minVal + 0.01);
           setMaxVal(value);
           maxValRef.current = value;
         }}
