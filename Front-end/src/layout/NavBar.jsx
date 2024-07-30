@@ -3,12 +3,7 @@ import { Link, NavLink } from "react-router-dom";
 import { MdSpaceDashboard } from "react-icons/md";
 import { FaUsers } from "react-icons/fa";
 import { IoMdCart, IoMdNotificationsOutline } from "react-icons/io";
-import {
-  IoChatboxEllipses,
-  IoDiamondOutline,
-  IoLogOutOutline,
-  IoSettingsOutline,
-} from "react-icons/io5";
+import { IoDiamondOutline, IoLogOutOutline } from "react-icons/io5";
 import { LuUser2 } from "react-icons/lu";
 import { FiBox } from "react-icons/fi";
 import { useAuth } from "../provider/AuthProvider";
@@ -17,7 +12,6 @@ import logo_white from "./../assets/logo_white.svg";
 import { Badge } from "react-bootstrap";
 import ServerUrl from "../reusable/ServerUrl";
 import axios from "axios";
-import style from "./../App.css";
 import { AiOutlineGold, AiOutlineProfile } from "react-icons/ai";
 
 // Define RBAC configuration
