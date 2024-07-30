@@ -1,8 +1,6 @@
 package com.swp391.JewelryProduction.repositories;
 
 import com.swp391.JewelryProduction.pojos.designPojos.Metal;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -31,4 +29,10 @@ public interface MetalRepository extends JpaRepository<Metal, Long> {
             @Param("marketPrice") Double marketPrice,
             @Param("companyPrice") Double companyPrice
     );
+
+    @Query("SELECT DISTINCT m.name FROM Metal m")
+    List<String> findAllDistinctMetalName ();
+
+    @Query("SELECT DISTINCT m.unit FROM Metal m")
+    List<String> findAllDistinctMetalUnit();
 }
