@@ -4,6 +4,7 @@ import com.swp391.JewelryProduction.pojos.designPojos.Metal;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.Map;
 
 public interface MetalService {
     Metal findById(Long metalId);
@@ -21,4 +22,6 @@ public interface MetalService {
     void deleteMetal(long metalId);
 
     public List<Metal> findByProperties(Metal metal);
+
+    Map<String, Object> getAllMetalFactors();
 }

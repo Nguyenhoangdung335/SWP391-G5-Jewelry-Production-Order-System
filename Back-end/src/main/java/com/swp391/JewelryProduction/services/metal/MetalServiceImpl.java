@@ -1,25 +1,29 @@
 package com.swp391.JewelryProduction.services.metal;
 
-import com.swp391.JewelryProduction.dto.RequestDTOs.GemstoneRequest;
-import com.swp391.JewelryProduction.pojos.designPojos.Gemstone;
+import com.swp391.JewelryProduction.dto.ResponseDTOs.MetalResponse;
 import com.swp391.JewelryProduction.pojos.designPojos.Metal;
 import com.swp391.JewelryProduction.repositories.MetalRepository;
 import com.swp391.JewelryProduction.repositories.ProductSpecificationRepository;
 import com.swp391.JewelryProduction.util.exceptions.ObjectNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class MetalServiceImpl implements MetalService{
     private final MetalRepository metalRepository;
     private final ProductSpecificationRepository productSpecificationRepository;
+    private final ModelMapper modelMapper;
 
     @Override
     public Metal findById (Long metalId) {
@@ -75,5 +79,29 @@ public class MetalServiceImpl implements MetalService{
                                             metal.getUnit(),
                                             metal.getMarketPrice(),
                                             metal.getCompanyPrice());
-}
+    }
+
+    @Override
+    public Map<String, Object> getAllMetalFactors() {
+        List<Metal> metals = metalRepository.findAll(Sort.by("name").ascending().and(Sort.by("unit").ascending()));
+        Map<String, List<Object>> metalsByName = new HashMap<>();
+        List<String> metalNames = new ArrayList<>();
+
+        metals.forEach( (metal) -> {
+            String currName = metal.getName();
+            if (metalsByName.containsKey(currName)) {
+                metalsByName.get(currName).add(metal);
+            } else {
+                List<Object> temp = new ArrayList<>();
+                temp.add(modelMapper.map(metal, MetalResponse.class));
+                metalsByName.put(currName, temp);
+                metalNames.add(currName);
+            }
+        });
+
+        Map<String, Object> factors = new HashMap<>();
+        factors.put("names", metalNames);
+        factors.put("metalsByName", metalsByName);
+        return factors;
+    }
 }
