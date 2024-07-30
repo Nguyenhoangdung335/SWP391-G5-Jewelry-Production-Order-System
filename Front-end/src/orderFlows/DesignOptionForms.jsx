@@ -11,6 +11,7 @@ import DoubleRangeSlider from "../reusable/DoubleRangeSlider/DoubleRangeSlider";
 import axios from "axios";
 import ServerUrl from "../reusable/ServerUrl";
 import "./../App.css";
+import { useAlert } from "../provider/AlertProvider";
 
 const JewelryType = ({ value, onChange }) => {
   const [typeList, setTypeList] = useState([]);
@@ -93,7 +94,6 @@ const Occasion = ({ value, onChange }) => {
   const [occasionList, setOccasionList] = useState([]);
 
   useEffect(() => {
-    // Fetch occasion list from server
     setOccasionList([
       { value: "Engagement", name: "Engagement" },
       { value: "Wedding", name: "Wedding" },
@@ -236,7 +236,6 @@ const ChainType = ({ value, onChange }) => {
   const [chainTypeList, setChainTypeList] = useState([]);
 
   useEffect(() => {
-    // Fetch chain type list from server
     setChainTypeList([
       { value: "Default", name: "Default" },
       { value: "Bead", name: "Bead" },
@@ -285,7 +284,6 @@ const Texture = ({ value, onChange }) => {
   const [textureList, setTextureList] = useState([]);
 
   useEffect(() => {
-    // Fetch texture list from server
     setTextureList([
       { value: "Default", name: "Default" },
       { value: "Polished", name: "Polished" },
@@ -322,18 +320,7 @@ const Texture = ({ value, onChange }) => {
   );
 };
 
-const MetalType = ({ value, onChange }) => {
-  const [metalName, setMetalName] = useState([]);
-
-  useEffect(() => {
-    // Fetch metal name list from server
-    setMetalName([
-      { name: "Gold", value: "Gold" },
-      { name: "Silver", value: "Silver" },
-      { name: "Platinum", value: "Platinum" },
-    ]);
-  }, []);
-
+const MetalName = ({ value, metalNames, onChange }) => {
   return (
     <Form.Group className="mb-3">
       <Form.Label>Metal Type*</Form.Label>
@@ -346,9 +333,9 @@ const MetalType = ({ value, onChange }) => {
         <option value="" disabled>
           Choose one
         </option>
-        {metalName.map((metal, index) => (
-          <option key={index} value={metal.value}>
-            {metal.name}
+        {metalNames.map((name, index) => (
+          <option key={index} value={name}>
+            {name}
           </option>
         ))}
       </Form.Select>
@@ -356,15 +343,8 @@ const MetalType = ({ value, onChange }) => {
   );
 };
 
-const MetalUnit = ({ value, onChange, selectedMetalName }) => {
-  const [metalUnit, setMetalUnit] = useState({
-    Gold: ["Gram", "Ounce"],
-    Silver: ["Gram", "Ounce"],
-    Platinum: ["Gram", "Ounce"],
-  });
-
-  const units = metalUnit[selectedMetalName] || [];
-
+const MetalUnit = ({ value, unitsByName, onChange, selectedMetalName }) => {
+  const renderingMetals = selectedMetalName? unitsByName[selectedMetalName]: [];
   return (
     <Form.Group className="mb-3">
       <Form.Label>Metal Unit*</Form.Label>
@@ -373,14 +353,14 @@ const MetalUnit = ({ value, onChange, selectedMetalName }) => {
         value={value}
         size="sm"
         onChange={onChange}
-        disabled={!units.length}
+        disabled={!renderingMetals.length}
       >
         <option value="" disabled>
           Choose one
         </option>
-        {units.map((unit, index) => (
-          <option key={index} value={unit}>
-            {unit}
+        {renderingMetals.map((metal, index) => (
+          <option key={metal.id} value={metal.unit}>
+            {metal.unit}
           </option>
         ))}
       </Form.Select>
@@ -443,7 +423,7 @@ const MetalWeight = ({ value = 0, onChange, minVal = 1, maxVal = 1000, step = 1,
     <Form.Group className="mb-3 position-relative">
       <Form.Label className="d-block">Metal Weight*: {formatUnit(tempValue)} {selectedUnit} {!selectedUnit?.toLowerCase().includes("gram")? "(" + formatUnit(tempValue*convertRate) + " gram)" : ""}</Form.Label>
       <div className="d-flex justify-content-between align-items-center">
-        <span>{minVal}</span>
+        <span>{range.min}</span>
         <Form.Range
           style={{ display: "inline-block", width: "90%", margin: "0 auto" }}
           name="selectedMetalWeight"
@@ -453,11 +433,12 @@ const MetalWeight = ({ value = 0, onChange, minVal = 1, maxVal = 1000, step = 1,
           onChange={handleChange}
           onMouseUp={handleMouseUp}
           onTouchEnd={handleTouchEnd}
-          min={minVal}
-          max={maxVal}
-          step={step}
+          min={range.min}
+          max={range.max}
+          step={range.step}
+          disabled={!selectedUnit}
         />
-        <span>{maxVal}</span>
+        <span>{range.max}</span>
       </div>
     </Form.Group>
   );
@@ -676,6 +657,89 @@ const GemstoneWeight = ({ value: gemstoneWeight, onChange, minVal = 0.05, maxVal
   );
 };
 
+function MetalForm({onChange, selectedMetalData, selectedType}) {
+  const {showAlert} = useAlert();
+  const [metalData, setMetalData] = useState({
+    names: [],
+    metalsByName: null,
+  });
+
+  useEffect(() => {
+    const fetchMetalData = async () => {
+      const response = await axios.get(`${ServerUrl}/api/metal/factor`);
+      if (response.status === 200) {
+        setMetalData({
+          names: response.data.responseList.names,
+          metalsByName: response.data.responseList.metalsByName,
+        });
+      } else {
+        showAlert("Error", "Failed to retrieve metal data", "danger");
+      }
+    }
+
+    fetchMetalData();
+  }, []);
+
+  const handleChangeMetal = useCallback((e) => {
+    onChange(e);
+    const {name, value} = e.target;
+    if (name === "selectedMetalName" && value && value !== "") {
+      const chosenMetalList = metalData.metalsByName[value];
+      console.log(chosenMetalList);
+      console.log(chosenMetalList[0]);
+      const tempEvent = {
+        target: {
+          name: "selectedMetalUnit",
+          value: chosenMetalList[0]?.unit,
+        }
+      };
+      onChange(tempEvent);
+    }
+  }, [metalData, onChange]);
+
+  useEffect(() => {
+    if (selectedMetalData.selectedMetalName && selectedMetalData.selectedMetalUnit) {
+      const tempEvent = {
+        target: {
+          name: "selectedMetal",
+          value: metalData.metalsByName[selectedMetalData.selectedMetalName].find(metal => metal.unit === selectedMetalData.selectedMetalUnit),
+        }
+      };
+      onChange(tempEvent);
+    }
+  }, [selectedMetalData.selectedMetalName, selectedMetalData.selectedMetalUnit, metalData.metalsByName, onChange]);
+
+  return (
+    <Container fluid>
+      <Row>
+        <Col sm={12}><h4>Material: </h4></Col>
+      </Row>
+      <Row>
+        <Col sm={12} md={6}>
+          <MetalName
+            metalNames={metalData.names}
+            onChange={handleChangeMetal}
+            value={selectedMetalData.selectedMetalName}
+          />
+        </Col>
+        <Col sm={12} md={6}>
+          <MetalUnit
+            unitsByName={metalData.metalsByName}
+            onChange={handleChangeMetal}
+            value={selectedMetalData.selectedMetalUnit}
+            selectedMetalName={selectedMetalData.selectedMetalName}
+          />
+        </Col>
+      </Row>
+      <Row>
+        <Col sm={12}>
+          <MetalWeight onChange={onChange} selectedUnit={selectedMetalData.selectedMetalUnit} value={selectedMetalData.selectedMetalWeight} />
+        </Col>
+      </Row>
+    </Container>
+  );
+}
+
 const GemstoneForm = ({ gemstoneData, onChange, selectedData }) => {
   const handleSelectGemstone = useCallback(
     (data) => {
@@ -690,9 +754,9 @@ const GemstoneForm = ({ gemstoneData, onChange, selectedData }) => {
       <Row>
         <Col sm={12}>
           <GemstoneName
-            gemstoneName={gemstoneData.names}
+            gemstoneName={gemstoneData?.names || []}
             onChange={onChange}
-            value={selectedData.selectedGemstoneName}
+            value={selectedData?.selectedGemstoneName}
           />
         </Col>
         {selectedData.selectedGemstoneName && (
@@ -880,7 +944,7 @@ export {
   Length,
   ChainType,
   Texture,
-  MetalType,
+  MetalName,
   MetalUnit,
   MetalWeight,
   GemstoneName,
@@ -890,5 +954,6 @@ export {
   GemstoneColor,
   GemstoneWeightRange,
   GemstoneWeight,
+  MetalForm,
   GemstoneForm,
 };
