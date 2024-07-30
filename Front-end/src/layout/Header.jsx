@@ -275,6 +275,11 @@ export default function Header() {
                   Gold Price
                 </Link>
               </Nav.Link>
+                <Nav.Link>
+                    <Link to="/gemstone_list_page" className="nav-item nav-item-ltr">
+                        Gemstone List
+                    </Link>
+                </Nav.Link>
               <Nav.Link>
                 <Link to="/about_page" className="nav-item nav-item-ltr">
                   About

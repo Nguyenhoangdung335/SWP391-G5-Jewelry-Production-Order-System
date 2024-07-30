@@ -4,12 +4,19 @@
     min-width: 1200px;
     min-height: 600px;
     max-height: 600px;
-    margin: 20px;
+    margin: 20px auto;
     border: 1px solid #ccc;
     background-color: #fff;
     overflow: hidden;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
+}
+
+#chat-page {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
 }
 
 .hidden {
@@ -30,11 +37,13 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    overflow-y: auto;
+    max-height: 90vh;
 }
 
 .users-list-container {
     height: 100%;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 .users-list h2 {
@@ -57,6 +66,7 @@
     background-color: white;
     opacity: 0.75;
     margin-right: 10%;
+    border-radius: 5px;
 }
 
 .user-item:hover {
@@ -73,7 +83,7 @@
 }
 
 .user-item-ltr::before {
-    height: 0%;
+    height: 0;
 }
 
 .user-item-ltr:hover::before {
@@ -138,7 +148,7 @@
 }
 
 .nav-item-ltr::before {
-    width: 0%;
+    width: 0;
 }
 
 .nav-item-ltr:hover::before {
@@ -155,6 +165,8 @@
     box-sizing: border-box;
     border-top-right-radius: 8px;
     border-bottom-right-radius: 8px;
+    overflow-y: auto;
+    max-height: 90vh;
 }
 
 .chat-area.drag-over {
@@ -164,12 +176,15 @@
 .message {
     margin-bottom: 5px;
     border-radius: 5px;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    word-break: break-word;
 }
 
 #chat-messages {
     display: flex;
     flex-direction: column;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 .message p {
@@ -177,6 +192,8 @@
     padding: 0 10px;
     border-radius: 15px;
     word-wrap: break-word;
+    white-space: pre-wrap;
+    word-break: break-word;
 }
 
 .message a {
@@ -201,6 +218,7 @@
 
 .uploaded-image {
     max-width: 250px;
+    height: auto;
     max-height: 250px;
     border-radius: 5px;
     object-fit: cover;
