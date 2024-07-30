@@ -43,7 +43,7 @@ public class Product {
     @ToString.Include
     @EqualsAndHashCode.Include
     private String description;
-    @Column(length = 1024)
+    @Column(length = 2048)
     @ToString.Include
     @EqualsAndHashCode.Include
     private String imageURL;

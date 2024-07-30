@@ -49,7 +49,7 @@ public class ProductSpecification {
 
     @ToString.Include
     @EqualsAndHashCode.Include
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
     @JoinColumn(name = "gemstone_id")
     private Gemstone gemstone;
 
@@ -59,7 +59,7 @@ public class ProductSpecification {
 
     @ToString.Include
     @EqualsAndHashCode.Include
-    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
     @JoinColumn(name = "metal_id")
     private Metal metal;
 

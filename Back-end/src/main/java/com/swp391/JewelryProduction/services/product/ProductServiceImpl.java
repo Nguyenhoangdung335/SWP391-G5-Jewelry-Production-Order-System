@@ -89,6 +89,8 @@ public class ProductServiceImpl implements ProductService {
                 orderService.updateOrder(order);
         });
         product.setOrders(null);
+        product.getSpecification().setMetal(null);
+        product.getSpecification().setGemstone(null);
         productRepository.save(product);
         productRepository.deleteById(id);
     }
