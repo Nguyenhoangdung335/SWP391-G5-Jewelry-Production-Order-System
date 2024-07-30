@@ -48,8 +48,8 @@ const rbacConfig = {
     "MANAGER",
     "ADMIN",
   ],
-  "/userManager/gemstone_manager": ["ADMIN"],
-  "/userManager/metal_manager": ["ADMIN"],
+  "/userManager/gemstone_manager": ["ADMIN", "SALE_STAFF"],
+  "/userManager/metal_manager": ["ADMIN", "SALE_STAFF"],
 };
 
 // Utility function to check if a role is allowed
