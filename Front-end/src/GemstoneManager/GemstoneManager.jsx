@@ -194,7 +194,7 @@ export default function GemstoneManager() {
               <th>Clarity</th>
               <th>Color</th>
               <th>Carat Weight From - To</th>
-              <th>Price Per Carat (In Hundred)</th>
+              <th>Price Per Carat</th>
               <th>Action</th>
             </tr>
           </thead>
