@@ -31,6 +31,7 @@ import OrderDetailManager from "../ordersManager/OrderDetailManager";
 import NotificationDetail from "../user_settings/detailpage/NotificationDetail";
 import GemstoneManager from "../GemstoneManager/GemstoneManager";
 import MetalManager from "../metalmanager/MetalManager";
+import GemstoneList from "../Home/GemstoneList";
 
 function RouteMap() {
   return (
@@ -46,7 +47,8 @@ function RouteMap() {
         <Route path="/collections_page" element={<Collections />} />
         <Route path="/blogs_page" element={<Blogs />} />
         <Route path="/live_price_page" element={<LivePrice />} />
-        <Route path="/chat" element={<Chat />} />
+          <Route path="/gemstone_list_page" element={<GemstoneList />} />
+          <Route path="/chat" element={<Chat />} />
         <Route path="/about_page" element={<About />} />
         <Route
           path="/order_page"

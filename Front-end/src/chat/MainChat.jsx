@@ -343,7 +343,9 @@ const Chat = () => {
                             <div ref={roleSelectListRef} className="role-select-list hidden">
                                 <select id="role-select" ref={roleSelectRef} onChange={onRoleChange}
                                         className="form-select mb-3">
-                                    <option value="CUSTOMER">Customer</option>
+                                    {["SALE_STAFF"].includes(decodedToken.role) && (
+                                        <option value="CUSTOMER">Customer</option>
+                                    )}
                                     <option value="SALE_STAFF">Sale Staff</option>
                                     <option value="DESIGN_STAFF">Design Staff</option>
                                     <option value="PRODUCTION_STAFF">Production Staff</option>
