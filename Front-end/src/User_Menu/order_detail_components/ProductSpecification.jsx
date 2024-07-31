@@ -81,7 +81,7 @@ const ProductSpecificationTable = ({ orderStatus, selectedProduct, role, isEditi
     setShowEditModal(true);
   };
 
-  const handleSave = async (event, formState, selectedGemstoneProp) => {
+  const handleSave = async (event, formState, selectedGemstoneProp, selectedMetalProp) => {
     event.preventDefault();
     const productSpecification = {
       id: formValues.id,
@@ -89,8 +89,8 @@ const ProductSpecificationTable = ({ orderStatus, selectedProduct, role, isEditi
       style: formState.selectedStyle,
       occasion: formState.selectedOccasion,
       length: formState.selectedLength,
-      metal: formState.selectedMetal,
-      metalWeight: formState.selectedMetalWeight,
+      metal: selectedMetalProp.selectedMetal,
+      metalWeight: selectedMetalProp.selectedMetalWeight,
       texture: formState.selectedTexture,
       chainType: formState.selectedChainType,
       gemstone: selectedGemstoneProp.selectedGemstone,
