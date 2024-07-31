@@ -1,9 +1,9 @@
 import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
-import { Button, Col, Container, Form, Modal, Row, Table } from "react-bootstrap";
+import { Button, Col, Container, Form, Modal, Row } from "react-bootstrap";
 import ServerUrl from "../reusable/ServerUrl";
 import CreateRequest from "./CreateRequest";
-import { ChainType, DesignStyle, JewelryType, Length, Occasion, Texture, GemstoneForm, MetalWeight, MetalForm } from "./DesignOptionForms";
+import { ChainType, DesignStyle, JewelryType, Length, Occasion, Texture, GemstoneForm, MetalForm, } from "./DesignOptionForms";
 
 function OrderPage1() {
   const [showModal, setShowModal] = useState(false);
@@ -33,7 +33,7 @@ function OrderPage1() {
       <h3 className="fw-bold" style={{ margin: "30px 0px 30px" }}>
         Create Your Dream Jewelry.
       </h3>
-      <RenderSpecificationForm handleMakeRequest={handleMakeRequest} />
+      <RenderSpecificationForm submitAction={handleMakeRequest} />
       <Modal show={showModal} size="lg" backdrop="static" keyboard={false}>
         <Modal.Header>
           <Modal.Title>Create Request</Modal.Title>
@@ -46,7 +46,7 @@ function OrderPage1() {
   );
 }
 
-const RenderSpecificationForm = ({handleSubmit, initialSpecs = null, handleMakeRequest}) => {
+const RenderSpecificationForm = ({handleSubmit, initialSpecs = null, submitAction}) => {
   const [gemstoneData, setGemstoneData] = useState({
     names: [],
     shapes: [],
@@ -76,8 +76,8 @@ const RenderSpecificationForm = ({handleSubmit, initialSpecs = null, handleMakeR
     selectedGemstone: initialSpecs? initialSpecs.gemstone: null,
   });
   const [selectedMetalProp, setSelectedMetalProp] = useState({
-    selectedMetalName: initialSpecs? initialSpecs.metal.name: "",
-    selectedMetalUnit: initialSpecs? initialSpecs.metal.unit: "",
+    selectedMetalName: initialSpecs?.metal? initialSpecs.metal.name: "",
+    selectedMetalUnit: initialSpecs?.metal? initialSpecs.metal.unit: "",
     selectedMetal: initialSpecs? initialSpecs.metal: null,
     selectedMetalWeight: initialSpecs? initialSpecs.metalWeight: "",
   });
@@ -131,12 +131,7 @@ const RenderSpecificationForm = ({handleSubmit, initialSpecs = null, handleMakeR
         setFormState((prev) => ({ ...prev, selectedLength: "0", selectedTexture: "Default", selectedChainType: "Default" }));
         break;
       case "Rings":
-        setFormState((prev) => ({
-          ...prev,
-          selectedLength: "0.618",
-          selectedTexture: "Default",
-          selectedChainType: "NaN"
-        }));
+        setFormState((prev) => ({ ...prev, selectedLength: "0.618", selectedTexture: "Default", selectedChainType: "NaN" }));
         break;
       default:
         setFormState((prev) => ({ ...prev, selectedLength: "0" }));
@@ -175,8 +170,8 @@ const RenderSpecificationForm = ({handleSubmit, initialSpecs = null, handleMakeR
       data: productSpecification,
     })
     .then((response) => {
-      if (handleMakeRequest)
-        handleMakeRequest(response.data.responseList.productSpecification.id);
+      if (submitAction)
+        submitAction(response.data.responseList.productSpecification.id);
     })
     .catch((error) => {
       console.log("There is an error in this code" + error);
@@ -261,7 +256,7 @@ const RenderSpecificationForm = ({handleSubmit, initialSpecs = null, handleMakeR
   };
 
   return (
-    <Form onSubmit={handleSubmitData} className="mb-5">
+    <Form onSubmit={(event) => handleSubmit? handleSubmit(event, formState, selectedGemstoneProp, selectedMetalProp): handleSubmitData} className="mb-5">
       <Container>
         <Row>
           <Col sm={12} md={6} lg={4}>
@@ -284,7 +279,7 @@ const RenderSpecificationForm = ({handleSubmit, initialSpecs = null, handleMakeR
       {/* Metal */}
       {formState.selectedType && (
         <>
-          <MetalForm onChange={handleChangeMetal} selectedType={formState.selectedType} selectedMetalData={selectedMetalProp}/>
+          <MetalForm onChange={handleChangeMetal} selectedMetalData={selectedMetalProp} />
 
           {selectedMetalProp.selectedMetalName && (
             <Row>
