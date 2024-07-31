@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, Modal, Form, Row, Col } from "react-bootstrap";
+import { Table, Button, Modal, Form, Row, Col, Image } from "react-bootstrap";
 import { FiPlus } from "react-icons/fi";
 import { FaBox } from "react-icons/fa";
 import { useAuth } from "../provider/AuthProvider";
@@ -25,7 +25,8 @@ export default function ProductManager() {
   const [data, setData] = useState([]);
   const { token } = useAuth();
   const decodedToken = jwtDecode(token);
-  // const [isLoading, setIsLoading] = useState(true);
+  const [productDetails, setProductDetails] = useState({});
+  const [imageDetails, setImageDetails] = useState({});
 
   useEffect(() => {
     axios({
@@ -39,10 +40,9 @@ export default function ProductManager() {
       .catch((err) => console.log(err));
   }, [currentPage]);
 
-  console.log(data);
-
   const handleEdit = (record) => {
     setSelectedProduct(record);
+    setProductDetails(record);
     setIsModalVisible(true);
   };
 
@@ -51,49 +51,11 @@ export default function ProductManager() {
     setIsDeleteModalVisible(true);
   };
 
-  // const handleCreateNewProduct = () => {
-  //   setSelectedProduct({
-  //               "name": "",
-  //               "description": "",
-  //               "imageURL": "https://firebasestorage.googleapis.com/v0/b/chat-d8802.appspot.com/o/product-images%2FProductSpecification14.jpg?alt=media&token=e368f6f4-6059-4014-bdb3-726571e8c11a",
-  //               "specification": {
-  //                   "id": 14,
-  //                   "type": "Earrings",
-  //                   "style": "Drop",
-  //                   "occasion": "Cocktail",
-  //                   "length": "N/A",
-  //                   "metal": {
-  //                       "id": 5,
-  //                       "name": "Gold",
-  //                       "unit": "Gram 22K",
-  //                       "price": 70.68,
-  //                       "updatedTime": "00:15 23-07-2024"
-  //                   },
-  //                   "texture": "Smooth",
-  //                   "chainType": "N/A",
-  //                   "gemstone": {
-  //                       "id": 14,
-  //                       "type": {
-  //                           "id": 5,
-  //                           "name": "Amethyst",
-  //                           "basePricePerCarat": 3630.06,
-  //                           "status": true
-  //                       },
-  //                       "shape": "PRINCESS",
-  //                       "cut": "FAIR",
-  //                       "clarity": "FL",
-  //                       "color": "H",
-  //                       "caratWeight": 4.65
-  //                   }
-  //               }});
-  //   setIsCreateModalVisible(true);
-  // }
-
   const handleCancel = () => {
     setIsModalVisible(false);
     setSelectedProduct(null);
   };
-
+ 
   const handleConfirmDelete = () => {
     const productId = deleteProduct.id;
     axios({
@@ -102,11 +64,9 @@ export default function ProductManager() {
       headers: { "Content-Type": "application/json" },
     })
       .then((res) => {
-        console.log(res);
         setIsDeleteModalVisible(false);
         setDeleteProduct(null);
 
-        // Remove the deleted product from data
         const updatedData = data.filter((product) => product.id !== productId);
         setData(updatedData);
       })
@@ -114,32 +74,58 @@ export default function ProductManager() {
         console.error("Error deleting product:", err);
       });
   };
+  
 
   const handleSave = (event) => {
     event.preventDefault();
     const form = event.currentTarget;
-    const values = {
-      id: form.formProductId.value,
+    const updatedProduct = {
+      ...productDetails,
       name: form.formProductName.value,
       description: form.formProductDescription.value,
-      type: form.formProductType.value,
-      style: form.formProductStyle.value,
-      occasion: form.formProductOccasion.value,
-      length: form.formProductLength.value,
-      metal: form.formProductMetal.value,
-      texture: form.formProductTexture.value,
-      chainType: form.formProductChainType.value,
-      gemstoneName: form.formProductGemstoneName.value,
-      gemstoneShape: form.formProductGemstoneShape.value,
-      gemstoneCut: form.formProductGemstoneCut.value,
-      gemstoneClarity: form.formProductGemstoneClarity.value,
-      gemstoneColor: form.formProductGemstoneColor.value,
-      gemstoneCaratWeight: form.formProductGemstoneCaratWeight.value,
+      specification: {
+        ...productDetails.specification,
+        type: form.formProductType.value,
+        style: form.formProductStyle.value,
+        occasion: form.formProductOccasion.value,
+        length: form.formProductLength.value,
+        metal: {
+          name: form.formProductMetal.value,
+          id: productDetails.specification.metal.id,
+        },
+        texture: form.formProductTexture.value,
+        chainType: form.formProductChainType.value,
+        gemstone: {
+          name: form.formProductGemstoneName.value,
+          shape: form.formProductGemstoneShape.value,
+          cut: form.formProductGemstoneCut.value,
+          clarity: form.formProductGemstoneClarity.value,
+          color: form.formProductGemstoneColor.value,
+          caratWeight: form.formProductGemstoneCaratWeight.value,
+          id: productDetails.specification.gemstone.id,
+        },
+      },
+      imageURL: imageDetails.imageURL || selectedProduct.imageURL,
     };
-    const newData = data.map((item) => (item.id === values.id ? values : item));
-    setData(newData);
-    setIsModalVisible(false);
-    setSelectedProduct(null);
+  
+    axios({
+      method: "PUT",
+      url: `${ServerUrl}/api/products`,
+      headers: { "Content-Type": "application/json" },
+      data: updatedProduct,
+    })
+      .then((res) => {
+        const newData = data.map((item) =>
+          item.id === updatedProduct.id ? updatedProduct : item
+        );
+        setData(newData);
+        setIsModalVisible(false);
+        setSelectedProduct(null);
+      })
+      .catch((err) => {
+        console.error("Error updating product:", err);
+        alert("There was an error updating the product. Please try again.");
+      });
   };
 
   const handleAdd = (event) => {
@@ -182,6 +168,26 @@ export default function ProductManager() {
       .catch((err) => {
         console.error("Error creating product:", err);
         alert("There was an error creating the product. Please try again.");
+      });
+  };
+
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    const formData = new FormData();
+    formData.append("imageFile", file);
+
+    axios({
+      method: "POST",
+      url: `${ServerUrl}/api/products/image`,
+      data: formData,
+      headers: { "Content-Type": "multipart/form-data" },
+    })
+      .then((response) => {
+        setImageDetails({ imageURL: response.data });
+      })
+      .catch((err) => {
+        console.error("Error uploading image:", err);
+        alert("There was an error uploading the image. Please try again.");
       });
   };
 
@@ -286,6 +292,7 @@ export default function ProductManager() {
             <th>ID</th>
             <th>Name</th>
             <th>Description</th>
+            
             <th>Action</th>
           </tr>
         </thead>
@@ -354,268 +361,326 @@ export default function ProductManager() {
         </div>
       </div>
       <Modal show={isModalVisible} onHide={handleCancel} centered>
-        <Modal.Header>
-          <Modal.Title>Edit Product</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {selectedProduct && (
-            <Form>
-            <Row>
-              <Col md={6}>
-                <Form.Group controlId="productName">
-                  <Form.Label>Name</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="name"
-                    // value={productDetails.name}
-                    // onChange={handleChange}
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group controlId="productImage">
-                  <Form.Label>Image</Form.Label>
-                  {/*  onChange={handleImageChange} */}
-                  <Form.Control type="file" />  
-                  {/* <Image src={imageDetails.imageURL} fluid thumbnail /> */}
-                </Form.Group>
-              </Col>
-            </Row>
-            <Form.Group controlId="productDescription">
-              <Form.Label>Description</Form.Label>
+  <Modal.Header>
+    <Modal.Title>Edit Product</Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+    {selectedProduct && (
+      <Form onSubmit={handleSave}>
+        <Row>
+          <Col md={6}>
+            <Form.Group controlId="formProductName">
+              <Form.Label>Name</Form.Label>
               <Form.Control
-                as="textarea"
-                name="description"
-                // value={productDetails.description}
-                // onChange={handleChange}
+                type="text"
+                name="name"
+                defaultValue={selectedProduct.name}
               />
             </Form.Group>
-            <Row>
-              <Col md={6}>
-                <Form.Group controlId="chainType">
-                  <Form.Label>Chain Type</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="specification.chainType"
-                    // value={productDetails.specification.chainType}
-                    // onChange={handleChange}
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group controlId="gemstoneWeight">
-                  <Form.Label>Gemstone Weight</Form.Label>
-                  <Form.Control
-                    type="number"
-                    step="0.01"
-                    name="specification.gemstoneWeight"
-                    // value={productDetails.specification.gemstoneWeight}
-                    // onChange={handleChange}
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-            <Row>
-              <Col md={6}>
-                <Form.Group controlId="length">
-                  <Form.Label>Length</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="specification.length"
-                    // value={productDetails.specification.length}
-                    // onChange={handleChange}
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group controlId="metalWeight">
-                  <Form.Label>Metal Weight</Form.Label>
-                  <Form.Control
-                    type="number"
-                    step="0.01"
-                    name="specification.metalWeight"
-                    // value={productDetails.specification.metalWeight}
-                    // onChange={handleChange}
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-            <Row>
-              <Col md={6}>
-                <Form.Group controlId="occasion">
-                  <Form.Label>Occasion</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="specification.occasion"
-                    // value={productDetails.specification.occasion}
-                    // onChange={handleChange}
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group controlId="style">
-                  <Form.Label>Style</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="specification.style"
-                    // value={productDetails.specification.style}
-                    // onChange={handleChange}
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-            <Row>
-              <Col md={6}>
-                <Form.Group controlId="texture">
-                  <Form.Label>Texture</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="specification.texture"
-                    // value={productDetails.specification.texture}
-                    // onChange={handleChange}
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group controlId="type">
-                  <Form.Label>Type</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="specification.type"
-                    // value={productDetails.specification.type}
-                    // onChange={handleChange}
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-            <h5>Gemstone Details</h5>
-            <Row>
-              <Col md={6}>
-                <Form.Group controlId="gemstoneId">
-                  <Form.Label>Gemstone ID</Form.Label>
-                  <Form.Control
-                    type="number"
-                    name="specification.gemstone.id"
-                    // value={productDetails.specification.gemstone.id}
-                    // onChange={handleChange}
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group controlId="caratWeightFrom">
-                  <Form.Label>Carat Weight From</Form.Label>
-                  <Form.Control
-                    type="number"
-                    step="0.01"
-                    name="specification.gemstone.caratWeightFrom"
-                    // value={productDetails.specification.gemstone.caratWeightFrom}
-                    // onChange={handleChange}
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-            <Row>
-              <Col md={6}>
-                <Form.Group controlId="caratWeightTo">
-                  <Form.Label>Carat Weight To</Form.Label>
-                  <Form.Control
-                    type="number"
-                    step="0.01"
-                    name="specification.gemstone.caratWeightTo"
-                    // value={productDetails.specification.gemstone.caratWeightTo}
-                    // onChange={handleChange}
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group controlId="clarity">
-                  <Form.Label>Clarity</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="specification.gemstone.clarity"
-                    // value={productDetails.specification.gemstone.clarity}
-                    // onChange={handleChange}
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-            <Row>
-              <Col md={6}>
-                <Form.Group controlId="color">
-                  <Form.Label>Color</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="specification.gemstone.color"
-                    // value={productDetails.specification.gemstone.color}
-                    // onChange={handleChange}
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group controlId="cut">
-                  <Form.Label>Cut</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="specification.gemstone.cut"
-                    // value={productDetails.specification.gemstone.cut}
-                    // onChange={handleChange}
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-            <Row>
-              <Col md={6}>
-                <Form.Group controlId="gemstoneName">
-                  <Form.Label>Gemstone Name</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="specification.gemstone.name"
-                    // value={productDetails.specification.gemstone.name}
-                    // onChange={handleChange}
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group controlId="pricePerCaratInHundred">
-                  <Form.Label>Price per Carat (in hundred)</Form.Label>
-                  <Form.Control
-                    type="number"
-                    step="0.01"
-                    name="specification.gemstone.pricePerCaratInHundred"
-                    // value={productDetails.specification.gemstone.pricePerCaratInHundred}
-                    // onChange={handleChange}
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-            <Row>
-              <Col md={6}>
-                <Form.Group controlId="shape">
-                  <Form.Label>Shape</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="specification.gemstone.shape"
-                    // value={productDetails.specification.gemstone.shape}
-                    // onChange={handleChange}
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group controlId="metalId">
-                  <Form.Label>Metal ID</Form.Label>
-                  <Form.Control
-                    type="number"
-                    name="specification.metal.id"
-                    // value={productDetails.specification.metal.id}
-                    // onChange={handleChange}
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-          </Form>
-          )}
-        </Modal.Body>
-      </Modal>
+          </Col>
+          <Col md={6}>
+            <Form.Group controlId="formProductImage">
+              <Form.Label>Image</Form.Label>
+              <Form.Control type="file" onChange={handleImageChange} />
+              <Image
+                src={imageDetails.imageURL || selectedProduct.imageURL}
+                fluid
+                thumbnail
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+        <Form.Group controlId="formProductDescription">
+          <Form.Label>Description</Form.Label>
+          <Form.Control
+            as="textarea"
+            name="description"
+            defaultValue={selectedProduct.description}
+          />
+        </Form.Group>
+        <Row>
+          <Col md={6}>
+            <Form.Group controlId="formProductType">
+              <Form.Label>Type</Form.Label>
+              <Form.Select
+                name="specification.type"
+                defaultValue={selectedProduct.specification.type}
+              >
+                <option value="">Select type</option>
+                <option value="Rings">Rings</option>
+                <option value="Necklace">Necklace</option>
+                <option value="Earrings">Earrings</option>
+                <option value="Bracelet">Bracelet</option>
+                <option value="Anklet">Anklet</option>
+              </Form.Select>
+            </Form.Group>
+          </Col>
+          <Col md={6}>
+            <Form.Group controlId="formProductStyle">
+              <Form.Label>Style</Form.Label>
+              <Form.Select
+                name="specification.style"
+                defaultValue={selectedProduct.specification.style}
+              >
+                <option value={selectedProduct.specification.style}>{selectedProduct.specification.style}</option>
+                <option value="Historic">Historic</option>
+                <option value="Georgian">Georgian</option>
+                <option value="Victorian">Victorian</option>
+                <option value="Edwardian">Edwardian</option>
+                <option value="Art nouveau">Art nouveau</option>
+                <option value="Art deco">Art deco</option>
+                <option value="Retro">Retro</option>
+                <option value="Modernist">Modernist</option>
+                <option value="Minimalistic">Minimalistic</option>
+                <option value="Contemporary">Contemporary</option>
+                <option value="Cultural">Cultural</option>
+              </Form.Select>
+            </Form.Group>
+          </Col>
+        </Row>
+        <Row>
+        <Col md={6}>
+          <Form.Group controlId="formProductGemstoneId">
+            <Form.Label>Gemstone ID</Form.Label>
+            <Form.Control
+              type="number"
+              name="gemstoneId"
+              value={productDetails.specification?.gemstone?.id || ''}
+              onChange={(e) => setProductDetails({
+                ...productDetails,
+                specification: {
+                  ...productDetails.specification,
+                  gemstone: {
+                    ...productDetails.specification.gemstone,
+                    id: e.target.value,
+                  },
+                },
+              })}
+            />
+          </Form.Group>
+        </Col>
+        <Col md={6}>
+          <Form.Group controlId="formProductMetalId">
+            <Form.Label>Metal ID</Form.Label>
+            <Form.Control
+              type="number"
+              name="metalId"
+              value={productDetails.specification?.metal?.id || ''}
+              onChange={(e) => setProductDetails({
+                ...productDetails,
+                specification: {
+                  ...productDetails.specification,
+                  metal: {
+                    ...productDetails.specification.metal,
+                    id: e.target.value,
+                  },
+                },
+              })}
+            />
+          </Form.Group>
+        </Col>
+      </Row>
+        <Row>
+          <Col md={6}>
+            <Form.Group controlId="formProductOccasion">
+              <Form.Label>Occasion</Form.Label>
+              <Form.Select
+                name="specification.occasion"
+                defaultValue={selectedProduct.specification.occasion}
+              >
+                <option value={selectedProduct.specification.occasion}>{selectedProduct.specification.occasion}</option>
+                <option value="Engagement">Engagement</option>
+                <option value="Wedding">Wedding</option>
+                <option value="Anniversaries">Anniversaries</option>
+                <option value="Birthdays">Birthdays</option>
+                <option value="Formal Events">Formal Events</option>
+                <option value="Working days">Working days</option>
+                <option value="Dinner date">Dinner date</option>
+                <option value="Holiday">Holiday</option>
+                <option value="Informal gathering">Informal gathering</option>
+                <option value="Everyday uses">Everyday uses</option>
+              </Form.Select>
+            </Form.Group>
+          </Col>
+          <Col md={6}>
+            <Form.Group controlId="formProductLength">
+              <Form.Label>Length</Form.Label>
+              <Form.Select
+                name="specification.length"
+                defaultValue={selectedProduct.specification.length}
+              >
+                <option value={selectedProduct.specification.length}>{selectedProduct.specification.length}</option>
+                <option value="XS">X-Small</option>
+                <option value="S">Small</option>
+                <option value="M">Medium</option>
+                <option value="L">Large</option>
+                <option value="XL">X-Large</option>
+                <option value="XXL">XX-Large</option>
+                <option value="XXXL">XXX-Large</option>
+              </Form.Select>
+            </Form.Group>
+          </Col>
+        </Row>
+        <Row>
+          <Col md={6}>
+            <Form.Group controlId="formProductMetal">
+              <Form.Label>Metal</Form.Label>
+              <Form.Select
+                name="specification.metal.name"
+                defaultValue={selectedProduct.specification.metal.name}
+              >
+                <option value="">Select metal</option>
+                <option value="Gold">Gold</option>
+              </Form.Select>
+            </Form.Group>
+          </Col>
+          <Col md={6}>
+            <Form.Group controlId="formProductTexture">
+              <Form.Label>Texture</Form.Label>
+              <Form.Select
+                name="specification.texture"
+                defaultValue={selectedProduct.specification.texture}
+              >
+                <option value={selectedProduct.specification.texture}>{selectedProduct.specification.texture}</option>
+                <option value="Polished">Polished</option>
+                <option value="Satin">Satin</option>
+                <option value="Brushed">Brushed</option>
+                <option value="Wire Brushed">Wire Brushed</option>
+                <option value="Sand Blasted">Sand Blasted</option>
+                <option value="Bead Blasted">Bead Blasted</option>
+                <option value="Stone">Stone</option>
+                <option value="Hammered">Hammered</option>
+                <option value="Florentine">Florentine</option>
+              </Form.Select>
+            </Form.Group>
+          </Col>
+        </Row>
+        <Row>
+          <Col md={6}>
+            <Form.Group controlId="formProductChainType">
+              <Form.Label>Chain Type</Form.Label>
+              <Form.Select
+                name="specification.chainType"
+                defaultValue={selectedProduct.specification.chainType}
+              >
+                <option value={selectedProduct.specification.chainType}>{selectedProduct.specification.chainType}</option>
+                <option value="Bead">Bead</option>
+                <option value="Box">Box</option>
+                <option value="Byzantine">Byzantine</option>
+                <option value="Cable">Cable</option>
+                <option value="Solid Cable">Solid Cable</option>
+                <option value="Curb">Curb</option>
+                <option value="Figaro">Figaro</option>
+                <option value="Mesh">Mesh</option>
+                <option value="Omega">Omega</option>
+                <option value="Palma">Palma</option>
+                <option value="Popcorn">Popcorn</option>
+                <option value="Rolo">Rolo</option>
+                <option value="Rope">Rope</option>
+                <option value="San Marco">San Marco</option>
+                <option value="Singapore">Singapore</option>
+                <option value="Snake">Snake</option>
+                <option value="Wheat">Wheat</option>
+              </Form.Select>
+            </Form.Group>
+          </Col>
+          <Col md={6}>
+            <Form.Group controlId="formProductGemstoneName">
+              <Form.Label>Gemstone Name</Form.Label>
+              <Form.Select
+                name="specification.gemstone.name"
+                defaultValue={selectedProduct.specification.gemstone.name}
+              >
+                <option value="">Select gemstone name</option>
+                <option value="Diamond">Diamond</option>
+              </Form.Select>
+            </Form.Group>
+          </Col>
+        </Row>
+        <Row>
+          <Col md={6}>
+            <Form.Group controlId="formProductGemstoneShape">
+              <Form.Label>Gemstone Shape</Form.Label>
+              <Form.Select
+                name="specification.gemstone.shape"
+                defaultValue={selectedProduct.specification.gemstone.shape}
+              >
+                <option value="">Select gemstone shape</option>
+                <option value="ROUND">ROUND</option>
+              </Form.Select>
+            </Form.Group>
+          </Col>
+          <Col md={6}>
+            <Form.Group controlId="formProductGemstoneCut">
+              <Form.Label>Gemstone Cut</Form.Label>
+              <Form.Select
+                name="specification.gemstone.cut"
+                defaultValue={selectedProduct.specification.gemstone.cut}
+              >
+                <option value="">Select gemstone cut</option>
+                <option value="EXCELLENT">EXCELLENT</option>
+              </Form.Select>
+            </Form.Group>
+          </Col>
+        </Row>
+        <Row>
+          <Col md={6}>
+            <Form.Group controlId="formProductGemstoneClarity">
+              <Form.Label>Gemstone Clarity</Form.Label>
+              <Form.Select
+                name="specification.gemstone.clarity"
+                defaultValue={selectedProduct.specification.gemstone.clarity}
+              >
+                <option value="">Select gemstone clarity</option>
+                <option value="I1">I1</option>
+                <option value="I2">I2</option>
+                <option value="I3">I3</option>
+                <option value="IF_VVS">IF/VVS</option>
+                <option value="S3">S3</option>
+                <option value="SI1">SI1</option>
+                <option value="SI2">SI2</option>
+                <option value="VS1">VS1</option>
+                <option value="VS2">VS2</option>
+              </Form.Select>
+            </Form.Group>
+          </Col>
+          <Col md={6}>
+            <Form.Group controlId="formProductGemstoneColor">
+              <Form.Label>Gemstone Color</Form.Label>
+              <Form.Select
+                name="specification.gemstone.color"
+                defaultValue={selectedProduct.specification.gemstone.color}
+              >
+                <option value="">Select gemstone color</option>
+                <option value="D">D</option>
+                <option value="G">G</option>
+                <option value="I">I</option>
+                <option value="K">K</option>
+                <option value="M">M</option>
+              </Form.Select>
+            </Form.Group>
+          </Col>
+        </Row>
+        <Row>
+          <Col md={6}>
+            <Form.Group controlId="formProductGemstoneCaratWeight">
+              <Form.Label>Gemstone Carat Weight</Form.Label>
+              <Form.Control
+                type="number"
+                step="0.01"
+                name="specification.gemstone.caratWeight"
+                defaultValue={selectedProduct.specification.gemstoneWeight}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+        <Button variant="primary" type="submit">
+          Save Changes
+        </Button>
+      </Form>
+    )}
+  </Modal.Body>
+</Modal>
       <EditProductModal
         show={showEditing}
         onHide={() => setShowEditing(!showEditing)}
@@ -639,56 +704,3 @@ export default function ProductManager() {
     </div>
   );
 }
-
-// function ProductEditor ({selectedProduct}) {
-//   const newProduct = {
-//     "name": "",
-//     "description": "",
-//     "imageURL": "",
-//     "specification": {
-//         "type": "",
-//         "style": "",
-//         "occasion": "",
-//         "length": "",
-//         "metal": {
-//             "id": 5,
-//             "name": "Gold",
-//             "unit": "Gram 22K",
-//             "price": 70.68,
-//             "updatedTime": "00:15 23-07-2024"
-//         },
-//         "texture": "Smooth",
-//         "chainType": "N/A",
-//         "gemstone": {
-//             "id": 14,
-//             "type": {
-//                 "id": 5,
-//                 "name": "Amethyst",
-//                 "basePricePerCarat": 3630.06,
-//                 "status": true
-//             },
-//             "shape": "PRINCESS",
-//             "cut": "FAIR",
-//             "clarity": "FL",
-//             "color": "H",
-//             "caratWeight": 4.65
-//         }
-//     }};
-//     const productSpecification = {
-//       type: formState.selectedType,
-//       style: formState.selectedStyle,
-//       occasion: formState.selectedOccasion,
-//       length: formState.selectedLength,
-//       metal: formState.selectedMetal,
-//       texture: formState.selectedTexture,
-//       chainType: formState.selectedChainType,
-//       gemstone: {
-//         type: formState.selectedGemstoneType,
-//         shape: formState.selectedGemstoneShape.shape,
-//         cut: formState.selectedGemstoneCut.cutQuality,
-//         clarity: formState.selectedGemstoneClarity.clarity,
-//         color: formState.selectedGemstoneColor.color,
-//         caratWeight: formState.selectedGemstoneWeight,
-//       },
-//     };
-// }

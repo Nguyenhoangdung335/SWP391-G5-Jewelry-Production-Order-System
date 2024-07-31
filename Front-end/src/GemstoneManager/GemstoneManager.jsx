@@ -157,7 +157,7 @@ export default function GemstoneManager() {
         <p style={{ margin: 0, fontSize: 24, fontWeight: "bold" }}>
           Welcome, Admin!
         </p>
-        <p style={{ fontSize: 18 }}>Gemstone Management</p>
+        <p style={{ fontSize: 18 }}>Gemstone Management </p>
       </div>
       <div
         style={{
