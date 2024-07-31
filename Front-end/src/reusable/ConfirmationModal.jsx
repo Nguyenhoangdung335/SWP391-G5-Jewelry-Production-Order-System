@@ -2,7 +2,7 @@ import { Modal, Button } from 'react-bootstrap';
 
 function ConfirmationModal({show, onConfirm, onCancel, title = "Confirm", body = "Are you sure" }) {
   return (
-    <Modal show={show} onHide={onCancel} backdrop="true" centered>
+    <Modal show={show} onHide={onCancel} backdrop="true" centered animation keyboard>
       <Modal.Header closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
@@ -10,10 +10,10 @@ function ConfirmationModal({show, onConfirm, onCancel, title = "Confirm", body =
         {body}
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={onCancel}>
+        <Button variant="secondary" type={"button"} onClick={onCancel}>
           Cancel
         </Button>
-        <Button variant="primary" onClick={onConfirm}>
+        <Button variant="primary" type={"button"} onClick={onConfirm}>
           Confirm
         </Button>
       </Modal.Footer>
