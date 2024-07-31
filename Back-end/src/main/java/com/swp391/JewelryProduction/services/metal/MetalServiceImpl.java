@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -57,6 +58,7 @@ public class MetalServiceImpl implements MetalService{
         Metal searchMetal = metalRepository.findById(updatingMetal.getId()).orElseThrow(
                 () -> new ObjectNotFoundException("Metal with Id "+updatingMetal.getId()+" does not exist, cannot update")
         );
+        updatingMetal.setUpdatedTime(LocalDateTime.now());
         return metalRepository.save(searchMetal.copyValue(updatingMetal));
     }
 
