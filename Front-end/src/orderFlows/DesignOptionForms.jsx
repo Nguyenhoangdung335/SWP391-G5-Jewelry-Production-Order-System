@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
 import {
   Form,
   Container,
@@ -6,6 +6,7 @@ import {
   Col,
   Table,
   Image,
+  InputGroup,
 } from "react-bootstrap";
 import DoubleRangeSlider from "../reusable/DoubleRangeSlider/DoubleRangeSlider";
 import axios from "axios";
@@ -320,53 +321,128 @@ const Texture = ({ value, onChange }) => {
   );
 };
 
-const MetalName = ({ value, metalNames, onChange }) => {
+const MetalName = forwardRef(({ value, metalNames, onChange, isEditing = false }, ref) => {
+  const [error, setError] = useState("");
+
+  const validate = () => {
+    if (!isEditing) return true;
+
+    if (!value || value === "") {
+      setError("Metal name are required!");
+      return false;
+    } else {
+      setError("");
+      return true;
+    }
+  }
+
+  useEffect(() => {
+    validate();
+  }, [value, isEditing]);
+
+  useImperativeHandle(ref, () => ( { validate, } ));
+
   return (
     <Form.Group className="mb-3">
-      <Form.Label>Metal Type*</Form.Label>
-      <Form.Select
-        name="selectedMetalName"
-        value={value}
-        size="sm"
-        onChange={onChange}
-      >
-        <option value="" disabled>
-          Choose one
-        </option>
-        {metalNames.map((name, index) => (
-          <option key={index} value={name}>
-            {name}
-          </option>
-        ))}
-      </Form.Select>
+      <Form.Label>Metal Name*</Form.Label>
+      {!isEditing && (
+        <>
+          <Form.Select
+            name="selectedMetalName"
+            value={value}
+            size="sm"
+            onChange={onChange}
+          >
+            <option value="" disabled>
+              Choose one
+            </option>
+            {metalNames.map((name, index) => (
+              <option key={index} value={name}>
+                {name}
+              </option>
+            ))}
+          </Form.Select>
+        </>
+      )}
+      {isEditing && (
+        <>
+          <Form.Control
+            type="text"
+            size="sm"
+            placeholder="Metal name"
+            name="selectedMetalName"
+            value={value}
+            onChange={onChange}
+          />
+        </>
+      )}
+      {error && <Form.Text className="text-danger">{error}</Form.Text>}
     </Form.Group>
   );
-};
+});
 
-const MetalUnit = ({ value, unitsByName, onChange, selectedMetalName }) => {
-  const renderingMetals = selectedMetalName? unitsByName[selectedMetalName]: [];
+const MetalUnit = forwardRef(({ value, unitsByName, onChange, selectedMetalName, isEditing = false }, ref) => {
+  const renderingMetals = selectedMetalName && unitsByName? unitsByName[selectedMetalName]: [];
+  const [error, setError] = useState("");
+
+  const validate = () => {
+    if (!value) {
+      setError("Metal unit is required.");
+      return false;
+    } else {
+      setError("");
+      return true;
+    }
+  };
+
+  useImperativeHandle(ref, () => ({
+    validate,
+  }));
+
+  useEffect(() => {
+    validate();
+  }, [value, isEditing]);
+
   return (
     <Form.Group className="mb-3">
       <Form.Label>Metal Unit*</Form.Label>
-      <Form.Select
-        name="selectedMetalUnit"
-        value={value}
-        size="sm"
-        onChange={onChange}
-        disabled={!renderingMetals.length}
-      >
-        <option value="" disabled>
-          Choose one
-        </option>
-        {renderingMetals.map((metal, index) => (
-          <option key={metal.id} value={metal.unit}>
-            {metal.unit}
-          </option>
-        ))}
-      </Form.Select>
+      {!isEditing && (
+        <>
+          <Form.Select
+            name="selectedMetalUnit"
+            value={value}
+            size="sm"
+            onChange={onChange}
+            disabled={!renderingMetals.length}
+          >
+            <option value="" disabled>
+              Choose one
+            </option>
+            {renderingMetals.map((metal) => (
+              <option key={metal.id} value={metal.unit}>
+                {metal.unit}
+              </option>
+            ))}
+          </Form.Select>
+        </>
+      )}
+      {isEditing && (
+        <>
+          <Form.Control
+            column
+            type="text"
+            size="sm"
+            placeholder="Metal Unit"
+            value={value}
+            name="selectedMetalUnit"
+            onChange={onChange}
+          />
+        </>
+      )}
+      {error && <Form.Text className="text-danger">{error}</Form.Text>}
     </Form.Group>
   );
-};
+});
 
 const MetalWeight = ({ value = 0, onChange, minVal = 1, maxVal = 1000, step = 1, selectedUnit}) => {
   const [tempValue, setTempValue] = useState((value < minVal)? minVal: value);
@@ -375,23 +451,9 @@ const MetalWeight = ({ value = 0, onChange, minVal = 1, maxVal = 1000, step = 1,
     max: maxVal,
     step: step,
   });
-  const [convertRate, setConvertRate] = useState()
-  const handleMouseUp = (e) => {
-    onChange({ target: { name: e.target.name, value: tempValue } });
-  };
+  const [convertRate, setConvertRate] = useState();
 
-  const handleTouchEnd = (e) => {
-    onChange({ target: { name: e.target.name, value: tempValue } });
-  };
-
-  const handleChange = (event) => {
-    setTempValue(event.target.value);
-  };
-  if (selectedUnit?.toLowerCase() === "kilogram") {
-    maxVal = 10;
-    step = 0.001;
-  }
-
+  /* ----------------------useEffect to set the range, step and convertRate based on metal unit----------------------------- */
   useEffect(() => {
     switch (selectedUnit?.toLowerCase()) {
       case "kilogram":
@@ -411,6 +473,18 @@ const MetalWeight = ({ value = 0, onChange, minVal = 1, maxVal = 1000, step = 1,
           setConvertRate(1);
     }
   }, [selectedUnit, maxVal, minVal, step]);
+
+  const handleMouseUp = (e) => {
+    onChange({ target: { name: e.target.name, value: tempValue } });
+  };
+
+  const handleTouchEnd = (e) => {
+    onChange({ target: { name: e.target.name, value: tempValue } });
+  };
+
+  const handleChange = (event) => {
+    setTempValue(event.target.value);
+  };
 
   const formatUnit = (num) => {
     return Number(num).toLocaleString("en", {
@@ -443,6 +517,49 @@ const MetalWeight = ({ value = 0, onChange, minVal = 1, maxVal = 1000, step = 1,
     </Form.Group>
   );
 };
+
+const InputPrice = forwardRef(({label, propName, value, onChange, minVal, maxVal}, ref) => {
+  const [error, setError] = useState("");
+
+  const validate = () => {
+    if (!value || value === "") {
+      setError(`${label} must not be empty`);
+      return false;
+    } else if (value < minVal || value > maxVal) {
+      setError(`${label} must be in the range of ${minVal} and ${maxVal}`);
+      return false;
+    } else {
+      setError("");
+      return true;
+    }
+  };
+
+  useImperativeHandle(ref, () => ({
+    validate,
+  }));
+
+  useEffect(() => {
+    validate();
+  }, [value]);
+
+  return (
+    <Form.Group>
+      <Form.Label className="">{label}</Form.Label>
+      <InputGroup>
+        <InputGroup.Text>$</InputGroup.Text>
+          <Form.Control
+          type="number"
+          size="sm"
+          placeholder={label}
+          name={propName}
+          value={value}
+          onChange={onChange}
+        />
+      </InputGroup>
+      {error && <Form.Text className="text-danger">{error}</Form.Text>}
+    </Form.Group>
+  );
+});
 
 const GemstoneWeightRange = ({ minWeight, maxWeight, handleWeightChange }) => {
   return (
@@ -657,88 +774,125 @@ const GemstoneWeight = ({ value: gemstoneWeight, onChange, minVal = 0.05, maxVal
   );
 };
 
-function MetalForm({onChange, selectedMetalData, selectedType}) {
+const MetalForm = forwardRef(({onChange, selectedMetalData, isEditing = false}, ref) => {
+  const metalNameRef = useRef(null);
+  const metalUnitRef = useRef(null);
+  const metalWeightRef = useRef(null);
+
   const {showAlert} = useAlert();
   const [metalData, setMetalData] = useState({
     names: [],
     metalsByName: null,
   });
 
+  /* ---------------------UseEffect to fetch metal data for selection--------------------- */
   useEffect(() => {
-    const fetchMetalData = async () => {
-      const response = await axios.get(`${ServerUrl}/api/metal/factor`);
-      if (response.status === 200) {
-        setMetalData({
-          names: response.data.responseList.names,
-          metalsByName: response.data.responseList.metalsByName,
-        });
-      } else {
-        showAlert("Error", "Failed to retrieve metal data", "danger");
+    if (!isEditing) {
+      const fetchMetalData = async () => {
+        const response = await axios.get(`${ServerUrl}/api/metal/factor`);
+        if (response.status === 200) {
+          setMetalData({
+            names: response.data.responseList.names,
+            metalsByName: response.data.responseList.metalsByName,
+          });
+        } else {
+          showAlert("Error", "Failed to retrieve metal data", "danger");
+        }
+      }
+
+      fetchMetalData();
+    }
+  }, [isEditing]);
+
+  /* ---------------------UseEffect to change metal unit and object based on name and unit--------------------- */
+  useEffect(() => {
+    if (!isEditing) {
+      if (selectedMetalData.selectedMetalName && selectedMetalData.selectedMetalUnit && metalData.metalsByName) {
+        const tempEvent = {
+          target: {
+            name: "selectedMetal",
+            value: metalData.metalsByName[selectedMetalData.selectedMetalName].find(metal => metal.unit === selectedMetalData.selectedMetalUnit),
+          }
+        };
+        onChange(tempEvent);
       }
     }
-
-    fetchMetalData();
-  }, []);
+  }, [selectedMetalData.selectedMetalName, selectedMetalData.selectedMetalUnit, metalData.metalsByName, onChange, isEditing]);
 
   const handleChangeMetal = useCallback((e) => {
     onChange(e);
-    const {name, value} = e.target;
-    if (name === "selectedMetalName" && value && value !== "") {
-      const chosenMetalList = metalData.metalsByName[value];
-      console.log(chosenMetalList);
-      console.log(chosenMetalList[0]);
-      const tempEvent = {
-        target: {
-          name: "selectedMetalUnit",
-          value: chosenMetalList[0]?.unit,
-        }
-      };
-      onChange(tempEvent);
+    if (!isEditing) {
+      const {name, value} = e.target;
+      if (name === "selectedMetalName" && value && value !== "") {
+        const chosenMetalList = metalData.metalsByName[value];
+        console.log(chosenMetalList);
+        console.log(chosenMetalList[0]);
+        const tempEvent = {
+          target: {
+            name: "selectedMetalUnit",
+            value: chosenMetalList[0]?.unit,
+          }
+        };
+        onChange(tempEvent);
+      }
     }
-  }, [metalData, onChange]);
+  }, [metalData, onChange, isEditing]);
 
-  useEffect(() => {
-    if (selectedMetalData.selectedMetalName && selectedMetalData.selectedMetalUnit) {
-      const tempEvent = {
-        target: {
-          name: "selectedMetal",
-          value: metalData.metalsByName[selectedMetalData.selectedMetalName].find(metal => metal.unit === selectedMetalData.selectedMetalUnit),
-        }
-      };
-      onChange(tempEvent);
-    }
-  }, [selectedMetalData.selectedMetalName, selectedMetalData.selectedMetalUnit, metalData.metalsByName, onChange]);
+  const validate = () => {
+    if (!isEditing) return true;
+
+    const isMetalNameValid = metalNameRef.current.validate();
+    const isMetalUnitValid = metalUnitRef.current.validate();
+
+    return (isMetalNameValid && isMetalUnitValid);
+  }
+
+  useImperativeHandle(ref, () => ( { validate, } ));
 
   return (
     <Container fluid>
-      <Row>
-        <Col sm={12}><h4>Material: </h4></Col>
-      </Row>
-      <Row>
+      {!isEditing && (
+        <Row>
+          <Col sm={12}><h4>Material: </h4></Col>
+        </Row>
+      )}
+      <Row className="mb-3">
         <Col sm={12} md={6}>
           <MetalName
             metalNames={metalData.names}
             onChange={handleChangeMetal}
             value={selectedMetalData.selectedMetalName}
+            isEditing={isEditing}
+            ref={metalNameRef}
           />
         </Col>
         <Col sm={12} md={6}>
           <MetalUnit
-            unitsByName={metalData.metalsByName}
+            unitsByName={metalData?.metalsByName}
             onChange={handleChangeMetal}
-            value={selectedMetalData.selectedMetalUnit}
-            selectedMetalName={selectedMetalData.selectedMetalName}
+            value={selectedMetalData?.selectedMetalUnit}
+            selectedMetalName={selectedMetalData?.selectedMetalName}
+            isEditing={isEditing}
+            ref={metalUnitRef}
           />
         </Col>
       </Row>
-      <Row>
+      {!isEditing && (
+        <Row className="mb-3">
         <Col sm={12}>
-          <MetalWeight onChange={onChange} selectedUnit={selectedMetalData.selectedMetalUnit} value={selectedMetalData.selectedMetalWeight} />
+          <MetalWeight
+            onChange={onChange}
+            selectedUnit={selectedMetalData.selectedMetalUnit}
+            value={selectedMetalData.selectedMetalWeight}
+            isEditing={isEditing}
+            ref={metalWeightRef}
+          />
         </Col>
       </Row>
+      )}
     </Container>
   );
-}
+});
 
 const GemstoneForm = ({ gemstoneData, onChange, selectedData }) => {
   const handleSelectGemstone = useCallback(
@@ -929,6 +1083,10 @@ const formatPrice = (price) => {
   });
 };
 
+const formatNumber = (number) => {
+  return number.toLocaleString(undefined, { minimumFractionDigits: 2 });
+};
+
 function importAllImages(r) {
   let images = {};
   r.keys().map((item, index) => {
@@ -947,6 +1105,7 @@ export {
   MetalName,
   MetalUnit,
   MetalWeight,
+  InputPrice,
   GemstoneName,
   GemstoneShape,
   GemstoneCut,
