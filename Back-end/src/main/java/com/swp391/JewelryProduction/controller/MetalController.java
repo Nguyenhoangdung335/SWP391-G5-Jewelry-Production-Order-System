@@ -5,6 +5,7 @@ import com.swp391.JewelryProduction.services.metal.MetalService;
 import com.swp391.JewelryProduction.util.Response;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,12 +30,13 @@ public class MetalController {
             @RequestParam("size") int pageSize,
             @RequestParam(name = "sortBy", defaultValue = "unit") String sortBy
     ) {
+        Page<Metal> metalPage = metalService.findAll(page, pageSize, sortBy);
         return Response.builder()
                 .status(HttpStatus.OK)
                 .message("Request sent successfully")
-                .response("metals", metalService.findAll(page, pageSize, sortBy).getContent())
-                .response("totalPages", metalService.findAll(page, pageSize, sortBy).getTotalPages())
-                .response("totalElements", metalService.findAll(page, pageSize, sortBy).getTotalElements())
+                .response("metals", metalPage.getContent())
+                .response("totalPages", metalPage.getTotalPages())
+                .response("totalElements", metalPage.getTotalElements())
                 .buildEntity();
     }
 
@@ -65,10 +67,11 @@ public class MetalController {
     public ResponseEntity<Response> createMetal(
             @RequestBody @Valid Metal metal
     ) {
+        Metal createdMetal = metalService.createMetal(metal);
         return Response.builder()
                 .status(HttpStatus.OK)
-                .message("Request sent successfully")
-                .response("metal", metalService.createMetal(metal))
+                .message("Successfully create metal with ID " + createdMetal.getId())
+                .response("metal", createdMetal)
                 .buildEntity();
     }
 
@@ -77,10 +80,11 @@ public class MetalController {
     public ResponseEntity<Response> update(
             @RequestBody @Valid Metal metal
     ) {
+        Metal updatedMetal = metalService.updateMetal(metal);
         return Response.builder()
                 .status(HttpStatus.OK)
-                .message("Request sent successfully")
-                .response("metal", metalService.updateMetal(metal))
+                .message("Successfully update metal with ID " + updatedMetal.getId())
+                .response("metal", updatedMetal)
                 .buildEntity();
     }
 
@@ -92,7 +96,7 @@ public class MetalController {
         metalService.deleteMetal(id);
         return Response.builder()
                 .status(HttpStatus.OK)
-                .message("Request sent successfully")
+                .message("Successfully delete metal with ID " + id)
                 .buildEntity();
     }
 }
