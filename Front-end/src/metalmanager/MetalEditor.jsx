@@ -18,6 +18,12 @@ const MetalEditor = ({isShow, metalData = null, onHide, fetchData}) => {
         selectedMarketPrice: 0.0,
         selectedMetal: metalData,
     });
+    const metalName = {
+        selectedMetalName: "selectedMetalName",
+        selectedMetalUnit: "selectedMetalUnit",
+        selectedMetal: "selectedMetal",
+        selectedMetalWeight: "selectedMetalWeight",
+      }
 
     useEffect(() => {
         setSelectedMetalProp({
@@ -83,6 +89,7 @@ const MetalEditor = ({isShow, metalData = null, onHide, fetchData}) => {
                     selectedMetalData={selectedMetalProp}
                     onChange={handleChangeMetal}
                     isEditing={true}
+                    metalName={metalName}
                 />
                 <Container>
                     <Row>
