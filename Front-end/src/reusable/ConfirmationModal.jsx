@@ -13,7 +13,7 @@ function ConfirmationModal({show, onConfirm, onCancel, title = "Confirm", body =
         <Button variant="secondary" type={"button"} onClick={onCancel}>
           Cancel
         </Button>
-        <Button variant="primary" type={"button"} onClick={onConfirm}>
+        <Button variant="danger" type={"button"} onClick={onConfirm}>
           Confirm
         </Button>
       </Modal.Footer>
