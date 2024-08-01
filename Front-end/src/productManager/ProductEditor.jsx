@@ -3,7 +3,6 @@ import {
   Col,
   Container,
   Form,
-  Image,
   Modal,
   Row,
 } from "react-bootstrap";
@@ -29,7 +28,9 @@ const ProductEditor = ({
   isShow,
   onHide,
   fetchData,
+  isInitialMount = true,
 }) => {
+  const initialMount = useRef(isInitialMount || true);
   const { showAlert } = useAlert();
   const [formState, setFormState] = useState({
     selectedType: "",
@@ -122,6 +123,13 @@ const ProductEditor = ({
 
   /* -----------------------useEffect to reset the gemstone, the length, texture, and chain type when choose another jewelry type ---------------------- */
   useEffect(() => {
+    if (formState.selectedType && formState.selectedType !== "" && initialMount.current) {
+        initialMount.current = false;
+        return;
+    } else if (!formState.selectedType || formState.selectedType === "") {
+        return;
+    }
+
     setFormState((prev) => ({
       ...prev,
       selectedGemstoneType: null,
@@ -177,20 +185,6 @@ const ProductEditor = ({
         setFormState((prev) => ({ ...prev, selectedLength: "0" }));
     }
   }, [formState.selectedType]);
-
-  useEffect(() => {
-    if (selectedMetalProp.selectedMetalName) {
-      setFormState((prev) => ({
-        ...prev,
-        selectedChainType: ["Necklace", "Bracelet", "Anklet"].includes(
-          formState.selectedType
-        )
-          ? "Default"
-          : "NaN",
-        selectedTexture: "Default",
-      }));
-    }
-  }, [selectedMetalProp.selectedMetalName, formState.selectedType]);
 
   const handleChange = useCallback((e) => {
     const { name, value } = e.target;
@@ -327,9 +321,9 @@ const ProductEditor = ({
         selectedLength !== "0" &&
         selectedLength &&
         (!selectedGemstoneName || (selectedGemstoneName && selectedGemstone)) &&
-        name &&
-        description &&
-        imageURL
+        name !== "" &&
+        description !== "" &&
+        imageURL !== ""
     );
     return !(
       selectedStyle &&

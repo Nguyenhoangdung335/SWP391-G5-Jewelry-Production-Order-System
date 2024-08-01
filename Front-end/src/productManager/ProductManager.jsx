@@ -220,12 +220,13 @@ export default function ProductManager() {
         </div>
       </div>
 
-      <ProductEditor
+      {showProductEditor && (<ProductEditor
         fetchData={fetchProductPages}
         isShow={showProductEditor}
         onHide={handleHideEditor}
         product={selectedProduct}
-      />
+        isInitialMount={true}
+      />)}
 
       {selectedProduct && (
         <ConfirmationModal
