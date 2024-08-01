@@ -234,7 +234,7 @@ const Length = ({ selectedType, selectedLength, onChange, name = "selectedLength
   );
 };
 
-const ChainType = ({ value, onChange, name = "selectedTexture" }) => {
+const ChainType = ({ value, onChange, name = "selectedChainType" }) => {
   const [chainTypeList, setChainTypeList] = useState([]);
 
   useEffect(() => {
@@ -282,7 +282,7 @@ const ChainType = ({ value, onChange, name = "selectedTexture" }) => {
   );
 };
 
-const Texture = ({ value, onChange, name = "selectedChainType" }) => {
+const Texture = ({ value, onChange, name = "selectedTexture" }) => {
   const [textureList, setTextureList] = useState([]);
 
   useEffect(() => {
