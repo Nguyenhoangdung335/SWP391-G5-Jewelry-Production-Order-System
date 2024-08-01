@@ -1187,11 +1187,11 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private double generateRandomGemstoneWeight () {
-        return roundToDecimal(rand.nextDouble(0.01, 10.99), 2);
+        return roundToDecimal(rand.nextDouble(0.01, 0.69), 2);
     }
 
     private double generateRandomMetalWeight () {
-        return roundToDecimal(rand.nextDouble(0.001, 100), 2);
+        return roundToDecimal(rand.nextDouble(1, 50), 2);
     }
 
     private void initializeFakeProductSpecification () {
@@ -1229,7 +1229,7 @@ public class DataInitializer implements CommandLineRunner {
                 .build();
 
         ProductSpecification spec3 = ProductSpecification.builder()
-                .type("Ring")
+                .type("Rings")
                 .style("Classic")
                 .occasion("Engagement")
                 .length("NaN")
@@ -1369,7 +1369,7 @@ public class DataInitializer implements CommandLineRunner {
                 .build();
 
         ProductSpecification spec13 = ProductSpecification.builder()
-                .type("Ring")
+                .type("Rings")
                 .style("Halo")
                 .occasion("Wedding")
                 .length("NaN")
@@ -1489,7 +1489,7 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void initializeFakeOrder () {
-        for (int i = 1; i <= 13; i++) {
+        for (int i = 1; i <= 10; i++) {
             String ownerId = String.format("ACC%05d", rand.nextInt(1, 9));
             String saleStaffId = String.format("ACC%05d", rand.nextInt(11, 15));
             String designStaffId = String.format("ACC%05d", rand.nextInt(16, 20));

@@ -41,8 +41,9 @@ export default function MetalManager() {
   }, [currentPage, filter]);
 
   useEffect(() => {
+    if (currentPage > totalPages) setCurrentPage(currentPage - 1);
     fetchMetalPage();
-  }, [fetchMetalPage]);
+  }, [fetchMetalPage, currentPage, totalPages]);
 
   const handleEdit = (metal) => {
     setSelectedMetal(metal);

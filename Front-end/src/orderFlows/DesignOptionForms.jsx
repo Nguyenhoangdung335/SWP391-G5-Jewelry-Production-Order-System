@@ -13,8 +13,9 @@ import axios from "axios";
 import ServerUrl from "../reusable/ServerUrl";
 import "./../App.css";
 import { useAlert } from "../provider/AlertProvider";
+import noImage from "./../assets/no_image.jpg";
 
-const JewelryType = ({ value, onChange }) => {
+const JewelryType = ({ value, onChange, name = "selectedType" }) => {
   const [typeList, setTypeList] = useState([]);
 
   useEffect(() => {
@@ -32,7 +33,7 @@ const JewelryType = ({ value, onChange }) => {
     <Form.Group className="mb-3">
       <Form.Label>Jewelry Type*</Form.Label>
       <Form.Select
-        name="selectedType"
+        name={name}
         value={value}
         size="sm"
         onChange={onChange}
@@ -50,7 +51,7 @@ const JewelryType = ({ value, onChange }) => {
   );
 };
 
-const DesignStyle = ({ value, onChange }) => {
+const DesignStyle = ({ value, onChange, name = "selectedStyle" }) => {
   const [styleList, setStyleList] = useState([]);
 
   useEffect(() => {
@@ -73,7 +74,7 @@ const DesignStyle = ({ value, onChange }) => {
     <Form.Group className="mb-3">
       <Form.Label>Design Style*</Form.Label>
       <Form.Select
-        name="selectedStyle"
+        name={name}
         value={value}
         size="sm"
         onChange={onChange}
@@ -91,7 +92,7 @@ const DesignStyle = ({ value, onChange }) => {
   );
 };
 
-const Occasion = ({ value, onChange }) => {
+const Occasion = ({ value, onChange, name = "selectedOccasion" }) => {
   const [occasionList, setOccasionList] = useState([]);
 
   useEffect(() => {
@@ -113,7 +114,7 @@ const Occasion = ({ value, onChange }) => {
     <Form.Group className="mb-3">
       <Form.Label>Occasion</Form.Label>
       <Form.Select
-        name="selectedOccasion"
+        name={name}
         value={value}
         size="sm"
         onChange={onChange}
@@ -131,7 +132,7 @@ const Occasion = ({ value, onChange }) => {
   );
 };
 
-const Length = ({ selectedType, selectedLength, onChange }) => {
+const Length = ({ selectedType, selectedLength, onChange, name = "selectedLength" }) => {
   return (
     <>
       {selectedType && (
@@ -140,7 +141,7 @@ const Length = ({ selectedType, selectedLength, onChange }) => {
             <>
               <Form.Label>Necklace Length: {selectedLength}"</Form.Label>
               <Form.Range
-                name="selectedLength"
+                name={name}
                 step="1"
                 min="14"
                 max="42"
@@ -153,7 +154,7 @@ const Length = ({ selectedType, selectedLength, onChange }) => {
             <>
               <Form.Label>Bracelet Size</Form.Label>
               <Form.Select
-                name="selectedLength"
+                name={name}
                 value={selectedLength}
                 onChange={onChange}
                 size="sm"
@@ -182,7 +183,7 @@ const Length = ({ selectedType, selectedLength, onChange }) => {
             <>
               <Form.Label>Anklet Size: {selectedLength}"</Form.Label>
               <Form.Range
-                name="selectedLength"
+                name={name}
                 step="1"
                 min="0"
                 max="10"
@@ -195,7 +196,7 @@ const Length = ({ selectedType, selectedLength, onChange }) => {
             <>
               <Form.Label>Rings inside diameters: {selectedLength}"</Form.Label>
               <Form.Range
-                name="selectedLength"
+                name={name}
                 step="0.001"
                 min="0.618"
                 max="0.846"
@@ -208,7 +209,7 @@ const Length = ({ selectedType, selectedLength, onChange }) => {
             <>
               <Form.Label>Earrings size</Form.Label>
               <Form.Select
-                name="selectedLength"
+                name={name}
                 value={selectedLength}
                 onChange={onChange}
                 size="sm"
@@ -233,7 +234,7 @@ const Length = ({ selectedType, selectedLength, onChange }) => {
   );
 };
 
-const ChainType = ({ value, onChange }) => {
+const ChainType = ({ value, onChange, name = "selectedTexture" }) => {
   const [chainTypeList, setChainTypeList] = useState([]);
 
   useEffect(() => {
@@ -263,7 +264,7 @@ const ChainType = ({ value, onChange }) => {
     <Form.Group className="mb-3">
       <Form.Label>Chain Type</Form.Label>
       <Form.Select
-        name="selectedChainType"
+        name={name}
         value={value}
         size="sm"
         onChange={onChange}
@@ -281,7 +282,7 @@ const ChainType = ({ value, onChange }) => {
   );
 };
 
-const Texture = ({ value, onChange }) => {
+const Texture = ({ value, onChange, name = "selectedChainType" }) => {
   const [textureList, setTextureList] = useState([]);
 
   useEffect(() => {
@@ -303,7 +304,7 @@ const Texture = ({ value, onChange }) => {
     <Form.Group className="mb-3">
       <Form.Label>Texture</Form.Label>
       <Form.Select
-        name="selectedTexture"
+        name={name}
         value={value}
         size="sm"
         onChange={onChange}
@@ -321,7 +322,7 @@ const Texture = ({ value, onChange }) => {
   );
 };
 
-const MetalName = forwardRef(({ value, metalNames, onChange, isEditing = false }, ref) => {
+const MetalName = forwardRef(({ value, metalNames, onChange, isEditing = false, name = "selectedMetalName" }, ref) => {
   const [error, setError] = useState("");
 
   const validate = () => {
@@ -348,7 +349,7 @@ const MetalName = forwardRef(({ value, metalNames, onChange, isEditing = false }
       {!isEditing && (
         <>
           <Form.Select
-            name="selectedMetalName"
+            name={name}
             value={value}
             size="sm"
             onChange={onChange}
@@ -381,7 +382,7 @@ const MetalName = forwardRef(({ value, metalNames, onChange, isEditing = false }
   );
 });
 
-const MetalUnit = forwardRef(({ value, unitsByName, onChange, selectedMetalName, isEditing = false }, ref) => {
+const MetalUnit = forwardRef(({ value, unitsByName, onChange, selectedMetalName, isEditing = false, name = "selectedMetalUnit" }, ref) => {
   const renderingMetals = selectedMetalName && unitsByName? unitsByName[selectedMetalName]: [];
   const [error, setError] = useState("");
 
@@ -409,7 +410,7 @@ const MetalUnit = forwardRef(({ value, unitsByName, onChange, selectedMetalName,
       {!isEditing && (
         <>
           <Form.Select
-            name="selectedMetalUnit"
+            name={name}
             value={value}
             size="sm"
             onChange={onChange}
@@ -444,7 +445,7 @@ const MetalUnit = forwardRef(({ value, unitsByName, onChange, selectedMetalName,
   );
 });
 
-const MetalWeight = ({ value = 0, onChange, minVal = 1, maxVal = 1000, step = 1, selectedUnit}) => {
+const MetalWeight = ({ value = 0, onChange, minVal = 1, maxVal = 1000, step = 1, selectedUnit, name = "selectedMetalWeight"}) => {
   const [tempValue, setTempValue] = useState((value < minVal)? minVal: value);
   const [range, setRange] = useState({
     min: minVal,
@@ -500,7 +501,7 @@ const MetalWeight = ({ value = 0, onChange, minVal = 1, maxVal = 1000, step = 1,
         <span>{range.min}</span>
         <Form.Range
           style={{ display: "inline-block", width: "90%", margin: "0 auto" }}
-          name="selectedMetalWeight"
+          name={name}
           value={tempValue}
           size="sm"
           placeholder="Weight"
@@ -578,12 +579,12 @@ const GemstoneWeightRange = ({ minWeight, maxWeight, handleWeightChange }) => {
   );
 };
 
-const GemstoneName = ({ value, onChange, gemstoneName }) => {
+const GemstoneName = ({ value, onChange, gemstoneName, name = "selectedGemstoneName" }) => {
   return (
     <Form.Group className="mb-3">
       <Form.Label>Gemstone</Form.Label>
       <Form.Select
-        name="selectedGemstoneName"
+        name={name}
         value={value}
         size="sm"
         onChange={onChange}
@@ -599,7 +600,7 @@ const GemstoneName = ({ value, onChange, gemstoneName }) => {
   );
 };
 
-const GemstoneShape = ({ value, onChange, gemstoneShape }) => {
+const GemstoneShape = ({ value, onChange, gemstoneShape, name = "selectedGemstoneShape" }) => {
   const [hoveredShape, setHoveredShape] = useState(null);
   const images = importAllImages(
     require.context("../assets/GemstoneShape", false, /\.png$/)
@@ -633,8 +634,7 @@ const GemstoneShape = ({ value, onChange, gemstoneShape }) => {
       <Form.Label>Gemstone Shape</Form.Label>
       <div style={{ position: "relative" }}>
         <Form.Select
-          name="selectedGemstoneShape"
-          defaultValue=""
+          name={name}
           value={value}
           size="sm"
           onChange={handleChange}
@@ -671,12 +671,12 @@ const GemstoneShape = ({ value, onChange, gemstoneShape }) => {
   );
 };
 
-const GemstoneCut = ({ value, onChange, gemstoneCut }) => {
+const GemstoneCut = ({ value, onChange, gemstoneCut, name = "selectedGemstoneCut" }) => {
   return (
     <Form.Group className="mb-3">
       <Form.Label>Gemstone Cut*</Form.Label>
       <Form.Select
-        name="selectedGemstoneCut"
+        name={name}
         value={value}
         size="sm"
         onChange={onChange}
@@ -692,12 +692,12 @@ const GemstoneCut = ({ value, onChange, gemstoneCut }) => {
   );
 };
 
-const GemstoneClarity = ({ value, onChange, gemstoneClarity }) => {
+const GemstoneClarity = ({ value, onChange, gemstoneClarity, name = "selectedGemstoneClarity" }) => {
   return (
     <Form.Group className="mb-3">
       <Form.Label>Gemstone Clarity*</Form.Label>
       <Form.Select
-        name="selectedGemstoneClarity"
+        name={name}
         value={value}
         size="sm"
         onChange={onChange}
@@ -713,12 +713,12 @@ const GemstoneClarity = ({ value, onChange, gemstoneClarity }) => {
   );
 };
 
-const GemstoneColor = ({ value, onChange, gemstoneColor }) => {
+const GemstoneColor = ({ value, onChange, gemstoneColor, name = "selectedGemstoneColor" }) => {
   return (
     <Form.Group className="mb-3">
       <Form.Label>Gemstone Color*</Form.Label>
       <Form.Select
-        name="selectedGemstoneColor"
+        name={name}
         value={value}
         size="sm"
         onChange={onChange}
@@ -734,7 +734,7 @@ const GemstoneColor = ({ value, onChange, gemstoneColor }) => {
   );
 };
 
-const GemstoneWeight = ({ value: gemstoneWeight, onChange, minVal = 0.05, maxVal = 5, step = 0.01 }) => {
+const GemstoneWeight = ({ value: gemstoneWeight, onChange, minVal = 0.05, maxVal = 5, step = 0.01, name = "selectedGemstoneWeight" }) => {
   const [tempValue, setTempValue] = useState(gemstoneWeight || 0.05);
   const handleMouseUp = (e) => {
     onChange({ target: { name: e.target.name, value: tempValue } });
@@ -757,7 +757,7 @@ const GemstoneWeight = ({ value: gemstoneWeight, onChange, minVal = 0.05, maxVal
         <span>{minVal}</span>
         <Form.Range
           style={{ display: "inline-block", width: "90%", margin: "0 auto" }}
-          name="selectedGemstoneWeight"
+          name={name}
           value={tempValue}
           size="sm"
           placeholder="Weight"
@@ -774,10 +774,9 @@ const GemstoneWeight = ({ value: gemstoneWeight, onChange, minVal = 0.05, maxVal
   );
 };
 
-const MetalForm = forwardRef(({onChange, selectedMetalData, isEditing = false}, ref) => {
+const MetalForm = forwardRef(({onChange, selectedMetalData, isEditing = false, metalName}, ref) => {
   const metalNameRef = useRef(null);
   const metalUnitRef = useRef(null);
-  const metalWeightRef = useRef(null);
 
   const {showAlert} = useAlert();
   const [metalData, setMetalData] = useState({
@@ -810,7 +809,7 @@ const MetalForm = forwardRef(({onChange, selectedMetalData, isEditing = false}, 
       if (selectedMetalData.selectedMetalName && selectedMetalData.selectedMetalUnit && metalData.metalsByName) {
         const tempEvent = {
           target: {
-            name: "selectedMetal",
+            name: metalName.selectedMetal,
             value: metalData.metalsByName[selectedMetalData.selectedMetalName].find(metal => metal.unit === selectedMetalData.selectedMetalUnit),
           }
         };
@@ -823,13 +822,11 @@ const MetalForm = forwardRef(({onChange, selectedMetalData, isEditing = false}, 
     onChange(e);
     if (!isEditing) {
       const {name, value} = e.target;
-      if (name === "selectedMetalName" && value && value !== "") {
+      if (name === metalName.selectedMetalName && value && value !== "") {
         const chosenMetalList = metalData.metalsByName[value];
-        console.log(chosenMetalList);
-        console.log(chosenMetalList[0]);
         const tempEvent = {
           target: {
-            name: "selectedMetalUnit",
+            name: metalName.selectedMetalUnit,
             value: chosenMetalList[0]?.unit,
           }
         };
@@ -864,6 +861,7 @@ const MetalForm = forwardRef(({onChange, selectedMetalData, isEditing = false}, 
             value={selectedMetalData.selectedMetalName}
             isEditing={isEditing}
             ref={metalNameRef}
+            name={metalName.selectedMetalName}
           />
         </Col>
         <Col sm={12} md={6}>
@@ -874,6 +872,7 @@ const MetalForm = forwardRef(({onChange, selectedMetalData, isEditing = false}, 
             selectedMetalName={selectedMetalData?.selectedMetalName}
             isEditing={isEditing}
             ref={metalUnitRef}
+            name={metalName.selectedMetalUnit}
           />
         </Col>
       </Row>
@@ -885,7 +884,7 @@ const MetalForm = forwardRef(({onChange, selectedMetalData, isEditing = false}, 
             selectedUnit={selectedMetalData.selectedMetalUnit}
             value={selectedMetalData.selectedMetalWeight}
             isEditing={isEditing}
-            ref={metalWeightRef}
+            name={metalName.selectedMetalWeight}
           />
         </Col>
       </Row>
@@ -894,11 +893,45 @@ const MetalForm = forwardRef(({onChange, selectedMetalData, isEditing = false}, 
   );
 });
 
-const GemstoneForm = ({ gemstoneData, onChange, selectedData }) => {
+const GemstoneForm = ({onChange, selectedData, gemstoneName}) => {
+  const [gemstoneData, setGemstoneData] = useState({
+    names: [],
+    shapes: [],
+    cuts: [],
+    clarities: [],
+    colors: [],
+    minWeight: "",
+    maxWeight: ""
+  });
+
+  useEffect(() => {
+    const fetchPrice = async () => {
+      try {
+        const response = await axios.get(`${ServerUrl}/api/gemstone/factors`);
+        if (response.status === 200) {
+          const data = response.data.responseList;
+          setGemstoneData({
+            names: data.names,
+            shapes: data.shapes,
+            cuts: data.cuts,
+            clarities: data.clarities,
+            colors: data.colors,
+            minWeight: data.minWeight,
+            maxWeight: data.maxWeight,
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching gemstone and metal:", error);
+      }
+    };
+
+    fetchPrice();
+  }, []);
+
   const handleSelectGemstone = useCallback(
     (data) => {
       console.log(data);
-      onChange({ target: { name: "selectedGemstone", value: data } });
+      onChange({ target: { name: gemstoneName.selectedGemstone, value: data } });
     },
     [onChange]
   );
@@ -911,6 +944,7 @@ const GemstoneForm = ({ gemstoneData, onChange, selectedData }) => {
             gemstoneName={gemstoneData?.names || []}
             onChange={onChange}
             value={selectedData?.selectedGemstoneName}
+            name={gemstoneName.selectedGemstoneName}
           />
         </Col>
         {selectedData.selectedGemstoneName && (
@@ -920,6 +954,7 @@ const GemstoneForm = ({ gemstoneData, onChange, selectedData }) => {
                 gemstoneShape={gemstoneData.shapes}
                 onChange={onChange}
                 value={selectedData.selectedGemstoneShape}
+                name={gemstoneName.selectedGemstoneShape}
               />
             </Col>
             <Col sm={12} md={6}>
@@ -927,6 +962,7 @@ const GemstoneForm = ({ gemstoneData, onChange, selectedData }) => {
                 gemstoneCut={gemstoneData.cuts}
                 onChange={onChange}
                 value={selectedData.selectedGemstoneCut}
+                name={gemstoneName.selectedGemstoneCut}
               />
             </Col>
             <Col sm={12} md={6}>
@@ -934,6 +970,7 @@ const GemstoneForm = ({ gemstoneData, onChange, selectedData }) => {
                 gemstoneClarity={gemstoneData.clarities}
                 onChange={onChange}
                 value={selectedData.selectedGemstoneClarity}
+                name={gemstoneName.selectedGemstoneClarity}
               />
             </Col>
             <Col sm={12} md={6}>
@@ -941,6 +978,7 @@ const GemstoneForm = ({ gemstoneData, onChange, selectedData }) => {
                 gemstoneColor={gemstoneData.colors}
                 onChange={onChange}
                 value={selectedData.selectedGemstoneColor}
+                name={gemstoneName.selectedGemstoneColor}
               />
             </Col>
             <Col sm={12}>
@@ -950,6 +988,7 @@ const GemstoneForm = ({ gemstoneData, onChange, selectedData }) => {
                 minVal={gemstoneData.minWeight}
                 maxVal={gemstoneData.maxWeight}
                 step={0.01}
+                name={gemstoneName.selectedGemstoneWeight}
               />
             </Col>
           </>
@@ -1076,6 +1115,148 @@ function RenderGemstoneTable({ selectedGemstoneProp, handleSelectGemstone }) {
   );
 }
 
+const ImageInput = ({label, initialImageUrl, onChange, urlName, fileName}) => {
+  const [image, setImage] = useState({
+      file: null,
+      url: "",
+  });
+
+  useEffect(() => {
+    if (initialImageUrl) {
+      setImage((prev) => ({...prev, url: initialImageUrl}))
+    }
+  }, [initialImageUrl]);
+
+  const handleImageChange = (event) => {
+    console.log("Image changing");
+    const file = event.target.files[0];
+    if (file) {
+        const fileURL = URL.createObjectURL(file);
+        setImage({ file, url: fileURL });
+
+        const customEvent = {
+            target: {
+                name: "imageURL",
+                value: fileURL,
+                file: file,
+            }
+        };
+        onChange(customEvent);
+    }
+      setImage((prev) => ({file: event.target.files[0], url: initialImageUrl}));
+  }
+
+  const isValidUrl = (url) => {
+    try {
+        new URL(url);
+        return true;
+    } catch (e) {
+        return false;
+    }
+};
+
+  const handleImagePaste = async (event) => {
+    console.log("pasting");
+    const clipboardData = event.clipboardData || window.clipboardData;
+    const text = clipboardData.getData('text');
+
+    // Check if the clipboard data contains an image
+    const items = clipboardData.items;
+    items?.forEach((item) => {
+      if (item.type.indexOf("image") !== -1) {
+        const blob = item.getAsFile();
+        if (blob) {
+            const file = new File([blob], "pasted-image", { type: blob.type });
+            const fileURL = URL.createObjectURL(file);
+            setImage({ file: file, url: fileURL });
+
+            const customEvent = {
+                target: {
+                    name: "imageURL",
+                    value: fileURL,
+                    file: file,
+                }
+            };
+            onChange(customEvent);
+            return;
+        }
+      }
+    });
+
+    // if (items) {
+    //     for (let i = 0; i < items.length; i++) {
+    //         if (items[i].type.indexOf("image") !== -1) {
+    //             const blob = items[i].getAsFile();
+    //             if (blob) {
+    //                 const file = new File([blob], "pasted-image", { type: blob.type });
+    //                 const fileURL = URL.createObjectURL(file);
+    //                 setImage({ file: file, url: fileURL });
+
+    //                 const customEvent = {
+    //                     target: {
+    //                         name: "imageURL",
+    //                         value: fileURL,
+    //                         file: file,
+    //                     }
+    //                 };
+    //                 onChange(customEvent);
+    //                 return;
+    //             }
+    //         }
+    //     }
+    // }
+
+    // If the clipboard data contains a valid URL
+    if (isValidUrl(text)) {
+        try {
+            const response = await fetch(text);
+            const blob = await response.blob();
+            const file  = new File([blob], "pasted-image-url", { type: blob.type });
+            const fileURL = URL.createObjectURL(file);
+            setImage({ file: file, url: fileURL });
+
+            const customEvent = {
+                target: {
+                    name: "imageURL",
+                    value: fileURL,
+                    file: file,
+                }
+            };
+            onChange(customEvent);
+        } catch (error) {
+            console.error("Failed to download image from URL", error);
+        }
+    }
+  }
+
+  return (
+      <>
+          <Row className="mb-3">
+              <Image rounded fluid src={image.url || noImage} />
+          </Row>
+          <Row className="mb-3">
+            <Form.Group>
+                <Form.Label>{label}</Form.Label>
+                <Form.Control
+                  name={fileName}
+                  type="file"
+                  size="sm"
+                  placeholder="Product Description"
+                  accept="image/png, image/gif, image/jpeg, image/jpg"
+                  onChange={handleImageChange}
+                  onPaste={handleImagePaste}
+                />
+            </Form.Group>
+            <textarea
+              style={{ position: "absolute", left: "-9999px" }}
+              onPaste={handleImagePaste}
+              className="visually-hidden"
+            ></textarea>
+          </Row>
+      </>
+  );
+};
+
 const formatPrice = (price) => {
   return price.toLocaleString("en-US", {
     style: "currency",
@@ -1115,4 +1296,5 @@ export {
   GemstoneWeight,
   MetalForm,
   GemstoneForm,
+  ImageInput,
 };
