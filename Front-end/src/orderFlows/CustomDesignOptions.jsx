@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useCallback, useEffect, useState } from "react";
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from "react";
 import { Button, Col, Container, Form, Modal, Row } from "react-bootstrap";
 import ServerUrl from "../reusable/ServerUrl";
 import CreateRequest from "./CreateRequest";
@@ -47,15 +47,6 @@ function OrderPage1() {
 }
 
 const RenderSpecificationForm = ({handleSubmit, initialSpecs = null, submitAction}) => {
-  const [gemstoneData, setGemstoneData] = useState({
-    names: [],
-    shapes: [],
-    cuts: [],
-    clarities: [],
-    colors: [],
-    minWeight: "",
-    maxWeight: ""
-  });
   const [formState, setFormState] = useState({
     selectedType: initialSpecs? initialSpecs.type :"",
     selectedStyle: initialSpecs? initialSpecs.style :"",
@@ -63,8 +54,6 @@ const RenderSpecificationForm = ({handleSubmit, initialSpecs = null, submitActio
     selectedLength: initialSpecs? initialSpecs.length :"",
     selectedTexture: initialSpecs? initialSpecs.texture :"",
     selectedChainType: initialSpecs? initialSpecs.chainType :"",
-    selectedGemstone: initialSpecs? initialSpecs.gemstone :null,
-    selectedGemstoneWeight: initialSpecs? initialSpecs.gemstoneWeight :"",
   });
   const [selectedGemstoneProp, setSelectedGemstoneProp] = useState({
     selectedGemstoneName: initialSpecs?.gemstone? initialSpecs.gemstone.name: "",
@@ -82,29 +71,29 @@ const RenderSpecificationForm = ({handleSubmit, initialSpecs = null, submitActio
     selectedMetalWeight: initialSpecs? initialSpecs.metalWeight: "",
   });
 
-  useEffect(() => {
-    const fetchPrice = async () => {
-      try {
-        const response = await axios.get(`${ServerUrl}/api/gemstone/factors`);
-        if (response.status === 200) {
-          const data = response.data.responseList;
-          setGemstoneData({
-            names: data.names,
-            shapes: data.shapes,
-            cuts: data.cuts,
-            clarities: data.clarities,
-            colors: data.colors,
-            minWeight: data.minWeight,
-            maxWeight: data.maxWeight,
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching gemstone and metal:", error);
-      }
-    };
-
-    fetchPrice();
-  }, []);
+  const formName = {
+    selectedType: "selectedType",
+    selectedStyle: "selectedStyle",
+    selectedOccasion: "selectedOccasion",
+    selectedLength: "selectedLength",
+    selectedTexture: "selectedTexture",
+    selectedChainType: "selectedChainType"
+  };
+  const gemstoneName = {
+    selectedGemstoneName: "selectedGemstoneName",
+    selectedGemstoneShape: "selectedGemstoneShape",
+    selectedGemstoneCut: "selectedGemstoneCut",
+    selectedGemstoneClarity: "selectedGemstoneClarity",
+    selectedGemstoneColor: "selectedGemstoneColor",
+    selectedGemstoneWeight: "selectedGemstoneWeight",
+    selectedGemstone: "selectedGemstone",
+  }
+  const metalName = {
+    selectedMetalName: "selectedMetalName",
+    selectedMetalUnit: "selectedMetalUnit",
+    selectedMetal: "selectedMetal",
+    selectedMetalWeight: "selectedMetalWeight",
+  }
 
   useEffect(() => {
     setFormState((prev) => ({
@@ -193,11 +182,6 @@ const RenderSpecificationForm = ({handleSubmit, initialSpecs = null, submitActio
     if (name === "selectedGemstoneName" && value === "" && !value) {
       setSelectedGemstoneProp({
         selectedGemstoneName: null,
-        selectedGemstoneShape: "",
-        selectedGemstoneCut: "",
-        selectedGemstoneClarity: "",
-        selectedGemstoneColor: "",
-        selectedGemstoneWeight: "",
         selectedGemstone: null,
       });
     } else if (name === "selectedGemstoneName" && value) {
@@ -251,7 +235,6 @@ const RenderSpecificationForm = ({handleSubmit, initialSpecs = null, submitActio
       selectedLength !== "0" &&
       selectedLength &&
       (!selectedGemstoneName || (selectedGemstoneName && selectedGemstone))
-      // (selectedMetalName && selectedMetal)
     );
   };
 
@@ -260,35 +243,35 @@ const RenderSpecificationForm = ({handleSubmit, initialSpecs = null, submitActio
       <Container>
         <Row>
           <Col sm={12} md={6} lg={4}>
-            <JewelryType onChange={handleChange} value={formState.selectedType} />
+            <JewelryType onChange={handleChange} value={formState.selectedType} name={formName.selectedType} />
           </Col>
           <Col sm={12} md={6} lg={4}>
-            <DesignStyle onChange={handleChange} value={formState.selectedStyle}/>
+            <DesignStyle onChange={handleChange} value={formState.selectedStyle} name={formName.selectedStyle} />
           </Col>
           <Col sm={12} md={6} lg={4}>
-            <Occasion onChange={handleChange} value={formState.selectedOccasion} />
+            <Occasion onChange={handleChange} value={formState.selectedOccasion} name={formName.selectedOccasion} />
           </Col>
         </Row>
       </Container>
 
       {/* Conditional Rendering Length */}
       {formState.selectedType && (
-        <Length selectedType={formState.selectedType} selectedLength={formState.selectedLength} onChange={handleChange} />
+        <Length selectedType={formState.selectedType} selectedLength={formState.selectedLength} onChange={handleChange} name={formName.selectedLength} />
       )}
 
       {/* Metal */}
       {formState.selectedType && (
         <>
-          <MetalForm onChange={handleChangeMetal} selectedMetalData={selectedMetalProp} />
+          <MetalForm onChange={handleChangeMetal} selectedMetalData={selectedMetalProp} metalName={metalName} />
 
           {selectedMetalProp.selectedMetalName && (
             <Row>
               <Col sm={12} md={true}>
-                <Texture onChange={handleChange} value={formState.selectedTexture} />
+                <Texture onChange={handleChange} value={formState.selectedTexture} name={formName.selectedTexture} />
               </Col>
               {!["Rings", "Earrings"].includes(formState.selectedType) && (
                   <Col sm={12} md={6}>
-                    <ChainType onChange={handleChange} value={formState.selectedChainType} />
+                    <ChainType onChange={handleChange} value={formState.selectedChainType} name={formName.selectedChainType} />
                   </Col>
               )}
             </Row>
@@ -300,7 +283,7 @@ const RenderSpecificationForm = ({handleSubmit, initialSpecs = null, submitActio
       {["Rings", "Necklace", "Earrings"].includes(formState.selectedType) && (
         <>
           <h5 className="pt-1">Gemstone</h5>
-          <GemstoneForm gemstoneData={gemstoneData} onChange={handleChangeGemstone} selectedData={selectedGemstoneProp} />
+          <GemstoneForm onChange={handleChangeGemstone} selectedData={selectedGemstoneProp} gemstoneName={gemstoneName} />
         </>
       )}
 
@@ -309,7 +292,7 @@ const RenderSpecificationForm = ({handleSubmit, initialSpecs = null, submitActio
       </div>
     </Form>
   )
-}
+};
 
 export default OrderPage1;
 
