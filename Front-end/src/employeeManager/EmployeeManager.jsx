@@ -14,7 +14,7 @@ import ServerUrl from "../reusable/ServerUrl";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import { useAuth } from "../provider/AuthProvider";
 import { jwtDecode } from "jwt-decode";
-import {useAlert} from "../provider/AlertProvider";
+import { useAlert } from "../provider/AlertProvider";
 
 export default function EmployeeManager() {
   const [filterRole, setFilterRole] = useState("ALL");
@@ -29,7 +29,7 @@ export default function EmployeeManager() {
   const [totalPages, setTotalPages] = useState(1);
   const { token } = useAuth();
   const decodedToken = jwtDecode(token);
-  const {showAlert} = useAlert()
+  const { showAlert } = useAlert();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -106,28 +106,19 @@ export default function EmployeeManager() {
       const updatedData = data.map((item) =>
         item.id === values.id ? values : item
       );
-      if(res.status===200)
-      setData(updatedData);
-        showAlert(
-            "Edited successfully",
-            "Edited " + values.id + " successfully",
-            "success"
-        );
+      if (res.status === 200) setData(updatedData);
+      showAlert(
+        "Edited successfully",
+        "Edited " + values.id + " successfully",
+        "success"
+      );
       setIsModalVisible(false);
       setSelectedUser(null);
-      if (res.data.statusCode === 400){
-        showAlert(
-            res.data.message,
-            "",
-            "warning"
-        );
+      if (res.data.statusCode === 400) {
+        showAlert(res.data.message, "", "warning");
       }
     } catch (err) {
-        showAlert(
-            "Edit  failed",
-            "Edit " + values.id + " failed",
-            "danger"
-        );
+      showAlert("Edit  failed", "Edit " + values.id + " failed", "danger");
       console.error("Error updating account:", err);
     }
   };
@@ -157,25 +148,17 @@ export default function EmployeeManager() {
       if (res.status === 200) {
         setData([...data, res.data.responseList.account]); // Update state with new data
         showAlert(
-            "Added successfully",
-            "Added " + res.data.responseList.account.id + " successfully",
-            "success"
+          "Added successfully",
+          "Added " + res.data.responseList.account.id + " successfully",
+          "success"
         );
         setIsAddModalVisible(false);
       }
-      if (res.status === 400){
-        showAlert(
-            res.data.message,
-            "",
-            "warning"
-        );
+      if (res.status === 400) {
+        showAlert(res.data.message, "", "warning");
       }
     } catch (err) {
-        showAlert(
-            "Add failed",
-            "",
-            "danger"
-        );
+      showAlert("Add failed", "", "danger");
       console.error("Error adding account:", err);
     }
   };
@@ -187,9 +170,9 @@ export default function EmployeeManager() {
   const handleDeleteClick = (id) => {
     if (id === decodedToken.id) {
       showAlert(
-          "Delete Failed",
-          "You cannot delete your own account",
-          "warning"
+        "Delete Failed",
+        "You cannot delete your own account",
+        "warning"
       );
     } else {
       // Otherwise, proceed with the deletion
@@ -206,17 +189,13 @@ export default function EmployeeManager() {
       console.log("Delete Response:", res.data);
       const updatedData = data.filter((item) => item.id !== deleteUser);
       setData(updatedData);
-        showAlert(
-            "Deleted successfully",
-            "Deleted " + deleteUser + " successfully",
-            "success"
-        );
+      showAlert(
+        "Deleted successfully",
+        "Deleted " + deleteUser + " successfully",
+        "success"
+      );
     } catch (err) {
-        showAlert(
-            "Delete failed",
-            "",
-            "danger"
-        );
+      showAlert("Delete failed", "", "danger");
       console.log("Error deleting account:", err);
     }
     setDeleteModalVisible(false);
@@ -273,7 +252,7 @@ export default function EmployeeManager() {
       cursor: "not-allowed",
     },
   };
-
+  
   return (
     <div style={{ padding: "3%" }}>
       <style jsx>{`
@@ -387,97 +366,98 @@ export default function EmployeeManager() {
 
       <Table striped bordered hover>
         <thead>
-        <tr>
-          <th>ID</th>
-          <th>Email</th>
-          <th>Role</th>
-          <th>Name</th>
-          <th>Phone</th>
-          <th>Status</th>
-          <th>Action</th>
-        </tr>
+          <tr>
+            <th>ID</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
         </thead>
         <tbody>
-        {data.length === 0 ? (
+          {data.length === 0 ? (
             <tr>
               <td colSpan="7" className="text-center">
                 <div className="p-3">
-                  <h5 className="font-weight-bold text-muted">No users with corresponding role available</h5>
+                  <h5 className="font-weight-bold text-muted">
+                    No users with corresponding role available
+                  </h5>
                 </div>
               </td>
             </tr>
-        ) : (
+          ) : (
             data.map((item) => (
-                <tr key={item.id}>
-                  <td>{item.id}</td>
-                  <td>{item.email}</td>
-                  <td>{item.role}</td>
-                  <td>{`${item.userInfo.firstName} ${item.userInfo.lastName}`}</td>
-                  <td>{item.userInfo.phoneNumber}</td>
-                  <td>
-          <span
-              className={`badge ${
-                  item.status === "ACTIVE" ? "bg-success" : "bg-danger"
-              }`}
-          >
-            {item.status}
-          </span>
-                  </td>
-                  <td className="d-flex justify-content-center gap-2">
-                    <Button
-                        className="border-0"
-                        variant="link"
-                        onClick={() => handleEdit(item)}
-                    >
-                      <FaEdit size={20}/>
-                    </Button>
-                    <Button
-                        className="border-0"
-                        variant="link"
-                        onClick={() => handleDeleteClick(item.id)}
-                    >
-                      <FaTrash size={20}/>
-                    </Button>
-                  </td>
-                </tr>
+              <tr key={item.id}>
+                <td>{item.id}</td>
+                <td>{item.email}</td>
+                <td>{item.role}</td>
+                <td>{`${item.userInfo.firstName} ${item.userInfo.lastName}`}</td>
+                <td>{item.userInfo.phoneNumber}</td>
+                <td>
+                  <span
+                    className={`badge ${
+                      item.status === "ACTIVE" ? "bg-success" : "bg-danger"
+                    }`}
+                  >
+                    {item.status}
+                  </span>
+                </td>
+                <td className="d-flex justify-content-center gap-2">
+                  <Button
+                    className="border-0"
+                    variant="link"
+                    onClick={() => handleEdit(item)}
+                  >
+                    <FaEdit size={20} />
+                  </Button>
+                  <Button
+                    className="border-0"
+                    variant="link"
+                    onClick={() => handleDeleteClick(item.id)}
+                  >
+                    <FaTrash size={20} />
+                  </Button>
+                </td>
+              </tr>
             ))
-        )}
+          )}
         </tbody>
-
       </Table>
 
       <div style={styles.paginationContainer}>
         <div
-            style={{
-              ...styles.paginationButton,
-              ...(currentPage === 1 ? styles.paginationButtonDisabled : {}),
-            }}
-            onClick={() => handlePageChange(currentPage - 1)}
+          style={{
+            ...styles.paginationButton,
+            ...(currentPage === 1 ? styles.paginationButtonDisabled : {}),
+          }}
+          onClick={() => handlePageChange(currentPage - 1)}
         >
           &lt;
         </div>
         {[...Array(totalPages).keys()].map((page) => (
-            <div
-                key={page + 1}
-                style={{
-                  ...styles.paginationButton,
-                  ...(page + 1 === currentPage
-                      ? styles.paginationButtonActive
-                      : {}),
-                }}
-                onClick={() => handlePageChange(page + 1)}
-            >
-              {page + 1}
-            </div>
-        ))}
-        <div
+          <div
+            key={page + 1}
             style={{
               ...styles.paginationButton,
-              ...(currentPage === totalPages
-                  ? styles.paginationButtonDisabled
-                  : {}),
+              ...(page + 1 === currentPage
+                ? styles.paginationButtonActive
+                : {}),
             }}
-            onClick={() => handlePageChange(currentPage + 1)}
+            onClick={() => handlePageChange(page + 1)}
+          >
+            {page + 1}
+          </div>
+        ))}
+        <div
+          style={{
+            ...styles.paginationButton,
+            ...(currentPage === totalPages
+              ? styles.paginationButtonDisabled
+              : {}),
+          }}
+          onClick={() => handlePageChange(currentPage + 1)}
         >
           &gt;
         </div>
@@ -488,7 +468,7 @@ export default function EmployeeManager() {
           <Modal.Title>Edit Staff</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-        {selectedUser && (
+          {selectedUser && (
             <Form onSubmit={handleSave}>
               <Form.Group className="mb-3">
                 <Form.Label>ID</Form.Label>
@@ -502,9 +482,9 @@ export default function EmployeeManager() {
               <Form.Group className="mb-3">
                 <Form.Label>Role</Form.Label>
                 <FormControl
-                    as="select"
-                    defaultValue={selectedUser.role}
-                    name="role"
+                  as="select"
+                  defaultValue={selectedUser.role}
+                  name="role"
                 >
                   <option value="ADMIN">Admin</option>
                   <option value="SALE_STAFF">Sale Staff</option>
@@ -522,46 +502,48 @@ export default function EmployeeManager() {
                 />
               </Form.Group>
 
-                <Form.Group controlId="password" className="mb-3">
-                    <Form.Label>
-                        Password
-                    </Form.Label>
-                    <Col sm={9}>
-                        <Form.Control
-                            type="text"
-                            name="password"
-                            pattern={"^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$"}
-                            placeholder={"Change password as needed. . ."}
-                            defaultValue={""}
-                        />
-                    </Col>
-                    <div style={{
-                        display: 'block',
-                        marginTop: '5px',
-                        fontSize: '12px',
-                        color: '#6c757d',
-                        lineHeight: '1.5'
-                    }}>
-                        <ul>
-                            <li>Password must be at least 8 characters long.</li>
-                            <li>Include at least one uppercase letter.</li>
-                            <li>Include at least one lowercase letter.</li>
-                            <li>Include at least one numeric character.</li>
-                        </ul>
-                    </div>
-                </Form.Group>
+              <Form.Group controlId="password" className="mb-3">
+                <Form.Label>Password</Form.Label>
+                <Col sm={9}>
+                  <Form.Control
+                    type="text"
+                    name="password"
+                    pattern={
+                      "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$"
+                    }
+                    placeholder={"Change password as needed. . ."}
+                    defaultValue={""}
+                  />
+                </Col>
+                <div
+                  style={{
+                    display: "block",
+                    marginTop: "5px",
+                    fontSize: "12px",
+                    color: "#6c757d",
+                    lineHeight: "1.5",
+                  }}
+                >
+                  <ul>
+                    <li>Password must be at least 8 characters long.</li>
+                    <li>Include at least one uppercase letter.</li>
+                    <li>Include at least one lowercase letter.</li>
+                    <li>Include at least one numeric character.</li>
+                  </ul>
+                </div>
+              </Form.Group>
 
-                <Row className="mb-3">
-                    <Col>
-                        <Form.Group>
-                            <Form.Label>First Name</Form.Label>
-                            <FormControl
-                                type="text"
-                                defaultValue={selectedUser.userInfo.firstName}
-                                name="firstName"
-                            />
-                        </Form.Group>
-                    </Col>
+              <Row className="mb-3">
+                <Col>
+                  <Form.Group>
+                    <Form.Label>First Name</Form.Label>
+                    <FormControl
+                      type="text"
+                      defaultValue={selectedUser.userInfo.firstName}
+                      name="firstName"
+                    />
+                  </Form.Group>
+                </Col>
                 <Col>
                   <Form.Group>
                     <Form.Label>Last Name</Form.Label>
@@ -690,34 +672,36 @@ export default function EmployeeManager() {
               <Form.Label>Gmail</Form.Label>
               <FormControl type="email" name="gmail" required />
             </Form.Group>
-              <Form.Group controlId="password" className="mb-3">
-                  <Form.Label>
-                      Password
-                  </Form.Label>
-                  <Col sm={9}>
-                      <Form.Control
-                          type="text"
-                          name="password"
-                          pattern={"^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$"}
-                          placeholder={"Change password as needed. . ."}
-                          defaultValue={""}
-                      />
-                  </Col>
-                  <div style={{
-                      display: 'block',
-                      marginTop: '5px',
-                      fontSize: '12px',
-                      color: '#6c757d',
-                      lineHeight: '1.5'
-                  }}>
-                      <ul>
-                          <li>Password must be at least 8 characters long.</li>
-                          <li>Include at least one uppercase letter.</li>
-                          <li>Include at least one lowercase letter.</li>
-                          <li>Include at least one numeric character.</li>
-                      </ul>
-                  </div>
-              </Form.Group>
+            <Form.Group controlId="password" className="mb-3">
+              <Form.Label>Password</Form.Label>
+              <Col sm={9}>
+                <Form.Control
+                  type="text"
+                  name="password"
+                  pattern={
+                    "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$"
+                  }
+                  placeholder={"Change password as needed. . ."}
+                  defaultValue={""}
+                />
+              </Col>
+              <div
+                style={{
+                  display: "block",
+                  marginTop: "5px",
+                  fontSize: "12px",
+                  color: "#6c757d",
+                  lineHeight: "1.5",
+                }}
+              >
+                <ul>
+                  <li>Password must be at least 8 characters long.</li>
+                  <li>Include at least one uppercase letter.</li>
+                  <li>Include at least one lowercase letter.</li>
+                  <li>Include at least one numeric character.</li>
+                </ul>
+              </div>
+            </Form.Group>
             <Form.Group controlId="formPhone" className="mb-3">
               <Form.Label>Phone</Form.Label>
               <FormControl type="text" name="phone" required />
