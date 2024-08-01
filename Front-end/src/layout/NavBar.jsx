@@ -17,7 +17,7 @@ import { AiOutlineGold, AiOutlineProfile } from "react-icons/ai";
 // Define RBAC configuration
 const rbacConfig = {
   "/userManager/dashboard": ["ADMIN"],
-  "/userManager/client_manager": ["MANAGER", "ADMIN"],
+  "/userManager/customer_manager": ["MANAGER", "ADMIN"],
   "/userManager/orders_manager": [
     "SALE_STAFF",
     "DESIGN_STAFF",
@@ -95,7 +95,7 @@ export default function NavBar() {
     },
     {
       id: 2,
-      to: "/userManager/client_manager",
+      to: "/userManager/customer_manager",
       icon: <FaUsers size={30} color="white" />,
       label: "Customers",
     },
