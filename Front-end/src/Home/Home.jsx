@@ -14,7 +14,6 @@ import {useAuth} from "../provider/AuthProvider";
 import {jwtDecode} from "jwt-decode";
 import axios from "axios";
 import ServerUrl from "../reusable/ServerUrl";
-import CustomAlert from "../reusable/CustomAlert";
 import {useAlert} from "../provider/AlertProvider";
 
 const HoverDiv = ({children}) => {

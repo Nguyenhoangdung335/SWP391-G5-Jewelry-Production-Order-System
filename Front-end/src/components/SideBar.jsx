@@ -3,7 +3,6 @@ import { Link, NavLink } from "react-router-dom";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { IoLogOutOutline } from "react-icons/io5";
 import { useAuth } from "../provider/AuthProvider";
-import { LuUser2 } from "react-icons/lu";
 import { MdHistory, MdOutlineDashboard } from "react-icons/md";
 import { jwtDecode } from "jwt-decode";
 import { Badge } from "react-bootstrap";
