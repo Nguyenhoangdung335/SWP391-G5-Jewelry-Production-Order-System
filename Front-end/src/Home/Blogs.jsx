@@ -25,7 +25,7 @@ export default function Blogs() {
                     </div>
                 </div>
                 <div className="blog-content-img1 w-100 d-flex justify-content-center align-items-center">
-                    <div className="w-75">
+                    <div className="w-55">
                         <img
                             src="https://customjewelry.com/wp-content/uploads/2024/05/Custom-Design-Process-Step-43DWaxModel.jpg"
                             alt=""

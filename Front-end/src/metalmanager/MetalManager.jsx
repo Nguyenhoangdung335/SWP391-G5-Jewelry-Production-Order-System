@@ -90,6 +90,64 @@ export default function MetalManager() {
     setCurrentPage(pageNumber);
   };
 
+  const renderPagination = () => {
+    const pagination = [];
+    const displayPages = 3; // Number of pages to display before and after current page
+    const firstPage = Math.max(2, currentPage - displayPages);
+    const lastPage = Math.min(totalPages - 1, currentPage + displayPages);
+
+    pagination.push(
+        <div
+            key={1}
+            style={{
+              ...styles.paginationButton,
+              ...(currentPage === 1 ? styles.paginationButtonActive : {}),
+            }}
+            onClick={() => handlePageChange(1)}
+        >
+          1
+        </div>
+    );
+
+    if (firstPage > 2) {
+      pagination.push(<div key="start-ellipsis">...</div>);
+    }
+
+    for (let i = firstPage; i <= lastPage; i++) {
+      pagination.push(
+          <div
+              key={i}
+              style={{
+                ...styles.paginationButton,
+                ...(i === currentPage ? styles.paginationButtonActive : {}),
+              }}
+              onClick={() => handlePageChange(i)}
+          >
+            {i}
+          </div>
+      );
+    }
+
+    if (lastPage < totalPages - 1) {
+      pagination.push(<div key="end-ellipsis">...</div>);
+    }
+
+    pagination.push(
+        <div
+            key={totalPages}
+            style={{
+              ...styles.paginationButton,
+              ...(currentPage === totalPages ? styles.paginationButtonActive : {}),
+            }}
+            onClick={() => handlePageChange(totalPages)}
+        >
+          {totalPages}
+        </div>
+    );
+
+    return pagination;
+  };
+
   const styles = {
     paginationContainer: {
       display: "flex",
@@ -217,20 +275,7 @@ export default function MetalManager() {
         >
           &lt;
         </div>
-        {[...Array(totalPages).keys()].map((page) => (
-          <div
-            key={page + 1}
-            style={{
-              ...styles.paginationButton,
-              ...(page + 1 === currentPage
-                ? styles.paginationButtonActive
-                : {}),
-            }}
-            onClick={() => handlePageChange(page + 1)}
-          >
-            {page + 1}
-          </div>
-        ))}
+        {renderPagination()}
         <div
           style={{
             ...styles.paginationButton,

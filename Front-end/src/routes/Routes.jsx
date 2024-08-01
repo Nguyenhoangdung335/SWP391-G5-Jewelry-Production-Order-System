@@ -13,7 +13,7 @@ import About from "../Home/About";
 import Blogs from "../Home/Blogs";
 import CustomDesignOptions from "../orderFlows/CustomDesignOptions";
 import UserManagerLayout from "../layout/UserManagerLayout";
-import ClientManager from "../clientManager/ClientManager";
+import CustomerManager from "../customerManager/CustomerManager";
 import DashboardManger from "../dashboard/DashboardManger";
 import OrderManager from "../ordersManager/OrderManager";
 import BlogManager from "../blogManager/BlogManager";
@@ -91,10 +91,10 @@ function RouteMap() {
           }
         />
         <Route
-          path="/userManager/client_manager"
+          path="/userManager/customer_manager"
           element={
             <ProtectedRoute roles={["ADMIN", "MANAGER"]}>
-              <ClientManager />
+              <CustomerManager />
             </ProtectedRoute>
           }
         />
