@@ -168,7 +168,7 @@ export default function NavBar() {
   ];
 
   return (
-    <div>
+    <div style={{ position: "relative", height: "100vh"}}>
       <div className="text-center text-decoration-none">
         <Link to="/" className="text-decoration-none text-white">
           <div className="logo-container">
@@ -225,6 +225,17 @@ export default function NavBar() {
             <IoLogOutOutline size={30} color="white" />
             <h5 style={{ color: "white", margin: 0, fontSize: 20 }}>Log out</h5>
           </NavLink>
+        </div>
+      </div>
+
+      <div className="text-center d-flex justify-content-center align-items-end flex-row" style={{ position: "absolute", bottom: "10%", width: "100%", height: "10%", color: "white", margin: 0, fontSize: 20}}>
+        <div style={{ color: "white", margin: 0, fontSize: 20 }}>
+          <div>
+            <h5>{decodedToken.role}</h5>
+          </div>
+          <div>
+            <p>{decodedToken.first_name}</p>
+          </div>
         </div>
       </div>
     </div>
