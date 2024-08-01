@@ -23,7 +23,7 @@ export default function MetalManager() {
   const [currentPage, setCurrentPage] = useState(1);
   const [filter, setFilter] = useState("id");
   const [totalPages, setTotalPages] = useState(1);
-  const itemsPerPage = 7;
+  const itemsPerPage = 5;
   const [data, setData] = useState([]);
   const decodedToken = jwtDecode(token);
 
@@ -218,7 +218,7 @@ export default function MetalManager() {
         </Form.Select>
 
         <Button onClick={() => setShowMetalEditor(true)}>
-          <FiPlus /> New Gemstone
+          <FiPlus /> New Metal
         </Button>
       </div>
       <Table striped bordered hover>
