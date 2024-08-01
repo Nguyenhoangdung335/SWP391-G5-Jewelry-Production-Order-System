@@ -138,6 +138,7 @@ const RenderSpecificationForm = ({handleSubmit, initialSpecs = null, submitActio
   }, [selectedMetalProp.selectedMetalName, formState.selectedType]);
 
   const handleSubmitData = (e) => {
+    console.log("Testing");
     e.preventDefault();
     const productSpecification = {
       type: formState.selectedType,
@@ -238,8 +239,16 @@ const RenderSpecificationForm = ({handleSubmit, initialSpecs = null, submitActio
     );
   };
 
+  const handleSwitchSubmitMethod = (e) => {
+    if (handleSubmit && typeof handleSubmit === "function") {
+      handleSubmit(e, formState, selectedGemstoneProp, selectedMetalProp)
+    } else {
+      handleSubmitData(e);
+    }
+  };
+
   return (
-    <Form onSubmit={(event) => handleSubmit? handleSubmit(event, formState, selectedGemstoneProp, selectedMetalProp): handleSubmitData} className="mb-5">
+    <Form onSubmit={handleSwitchSubmitMethod} className="mb-5">
       <Container>
         <Row>
           <Col sm={12} md={6} lg={4}>
