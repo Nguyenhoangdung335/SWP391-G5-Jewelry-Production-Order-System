@@ -75,22 +75,6 @@ public class TransactionServiceImpl implements TransactionService{
     }
 
     @Override
-    public Transactions makeBetTransaction(Payment payment, Order order) {
-        Transactions transactions = order.getTransactions();
-        if (transactions == null|| !transactions.getStatus().equals(TransactionStatus.CREATED))
-            throw new IllegalArgumentException("Cannot make bet transaction, transaction does not exist or does not have required status");
-        try {
-            transactions.setStatus(TransactionStatus.BET);
-            transactions.setPaypalPaymentId(payment.getId());
-            transactions.setAmount(Double.parseDouble(payment.getTransactions().getFirst().getAmount().getTotal()));
-        } catch (Exception ex) {
-            log.error("Unable to make bet transaction for order id "+ order.getId());
-        }
-
-        return transactions;
-    }
-
-    @Override
     @Transactional
     public Transactions saveTransaction(Transactions transactions) {
         return transactionRepository.save(transactions);

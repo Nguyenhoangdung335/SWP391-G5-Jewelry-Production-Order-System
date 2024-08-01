@@ -10,8 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 public interface TransactionService {
     Transactions createTransaction (Payment payment, Order order);
 
-    Transactions makeBetTransaction(Payment payment, Order order);
-
     Transactions saveTransaction (Transactions transactions);
 
     @Transactional

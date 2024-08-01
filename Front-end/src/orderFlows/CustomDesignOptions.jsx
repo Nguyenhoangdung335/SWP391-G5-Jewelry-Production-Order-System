@@ -138,7 +138,6 @@ const RenderSpecificationForm = ({handleSubmit, initialSpecs = null, submitActio
   }, [selectedMetalProp.selectedMetalName, formState.selectedType]);
 
   const handleSubmitData = (e) => {
-    console.log("Testing");
     e.preventDefault();
     const productSpecification = {
       type: formState.selectedType,

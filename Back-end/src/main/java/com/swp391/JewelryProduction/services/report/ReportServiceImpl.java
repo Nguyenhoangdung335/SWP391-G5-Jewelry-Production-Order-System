@@ -82,14 +82,6 @@ public class ReportServiceImpl implements ReportService {
         }
 
         order = orderService.updateOrder(order);
-//
-//        StateMachine<OrderStatus, OrderEvent> stateMachine = getStateMachine(order.getId(), stateMachineService);
-//        stateMachine.getExtendedState().getVariables().put(REPORT_ID, requestReport.getId());
-//        stateMachine.sendEvent(
-//                Mono.just(MessageBuilder
-//                        .withPayload(OrderEvent.REQ_RECEIVED)
-//                        .build())
-//        ).subscribe();
         sendEvent(stateMachineService, order.getId(), OrderEvent.REQ_RECEIVED, Map.of(REPORT_ID, requestReport.getId()));
 
         return requestReport;
