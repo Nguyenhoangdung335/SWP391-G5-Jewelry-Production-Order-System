@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Table, Button, Modal, Form, Row, Col } from "react-bootstrap";
 import { FiPlus } from "react-icons/fi";
 import axios from "axios";
-import { roles } from "../data/Roles";
 import ServerUrl from "../reusable/ServerUrl";
 import { FaTrash } from "react-icons/fa";
 import { FaEdit } from "react-icons/fa";

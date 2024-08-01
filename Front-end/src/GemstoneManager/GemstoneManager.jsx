@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, Modal, Form, ModalBody } from "react-bootstrap";
+import { Table, Button, Modal, ModalBody } from "react-bootstrap";
 import { FiPlus } from "react-icons/fi";
-import { FaBox } from "react-icons/fa";
 import axios from "axios";
 import ServerUrl from "../reusable/ServerUrl";
 import { FaEdit } from "react-icons/fa";
 import { FaTrash } from "react-icons/fa";
 import { GemstoneForm } from "./GemstoneForm";
+import { jwtDecode } from "jwt-decode";
+import { useAuth } from "../provider/AuthProvider";
 
 export default function GemstoneManager() {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -19,6 +20,8 @@ export default function GemstoneManager() {
   const itemsPerPage = 20;
   const [data, setData] = useState([]);
   const [reRender, setReRender] = useState(false);
+  const { token } = useAuth();
+  const decodedToken = jwtDecode(token);
 
   useEffect(() => {
     axios({
@@ -155,7 +158,7 @@ export default function GemstoneManager() {
       `}</style>
       <div className="mb-2">
         <p style={{ margin: 0, fontSize: 24, fontWeight: "bold" }}>
-          Welcome, Admin!
+          Welcome, {decodedToken.first_name}!
         </p>
         <p style={{ fontSize: 18 }}>Gemstone Management </p>
       </div>
@@ -183,7 +186,7 @@ export default function GemstoneManager() {
           </div>
         </div>
       </div>
-      <div style={{ maxHeight: "320px", overflowY: "auto" }}>
+      <div style={{ maxHeight: "300px", overflowY: "auto" }}>
         <Table striped bordered hover>
           <thead style={{ position: "sticky", top: "-1%" }}>
             <tr>

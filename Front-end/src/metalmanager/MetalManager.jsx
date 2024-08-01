@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Table, Button, Modal, Form } from "react-bootstrap";
+import { Table, Button, Form } from "react-bootstrap";
 import { FiPlus } from "react-icons/fi";
-import { FaBox } from "react-icons/fa";
 import axios from "axios";
 import ServerUrl from "../reusable/ServerUrl";
 import { FaEdit } from "react-icons/fa";
@@ -23,7 +22,7 @@ export default function MetalManager() {
   const [currentPage, setCurrentPage] = useState(1);
   const [filter, setFilter] = useState("id");
   const [totalPages, setTotalPages] = useState(1);
-  const itemsPerPage = 7;
+  const itemsPerPage = 5;
   const [data, setData] = useState([]);
   const decodedToken = jwtDecode(token);
 
@@ -218,7 +217,7 @@ export default function MetalManager() {
         </Form.Select>
 
         <Button onClick={() => setShowMetalEditor(true)}>
-          <FiPlus /> New Gemstone
+          <FiPlus /> New Metal
         </Button>
       </div>
       <Table striped bordered hover>

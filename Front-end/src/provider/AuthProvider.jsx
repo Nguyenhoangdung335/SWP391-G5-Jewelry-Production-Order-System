@@ -34,23 +34,6 @@ export const AuthProvider = ({ children }) => {
       }
       return status >= 200;
     };
-
-    // const interceptor = axios.interceptors.response.use(
-    //   (response) => {
-    //     return response;
-    //   },
-    //   (error) => {
-    //     if (error.response && error.response.status === 401) {
-    //       setToken(null);
-    //       navigate("/login");
-    //     }
-    //     return Promise.reject(error);
-    //   }
-    // );
-    // return () => {
-    //   axios.interceptors.response.eject(interceptor);
-    // };
-    
   }, [token, navigate]);
 
   const contextValue = useMemo(

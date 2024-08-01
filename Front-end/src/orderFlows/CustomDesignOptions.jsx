@@ -1,9 +1,26 @@
 import axios from "axios";
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from "react";
-import { Button, Col, Container, Form, Modal, Row } from "react-bootstrap";
+import { useCallback, useEffect, useState } from "react";
+import {
+  Button,
+  Col,
+  Container,
+  Form,
+  Modal,
+  Row,
+  Table,
+} from "react-bootstrap";
 import ServerUrl from "../reusable/ServerUrl";
 import CreateRequest from "./CreateRequest";
-import { ChainType, DesignStyle, JewelryType, Length, Occasion, Texture, GemstoneForm, MetalForm, } from "./DesignOptionForms";
+import {
+  ChainType,
+  DesignStyle,
+  JewelryType,
+  Length,
+  Occasion,
+  Texture,
+  GemstoneForm,
+  MetalWeight,
+} from "./DesignOptionForms";
 
 function OrderPage1() {
   const [showModal, setShowModal] = useState(false);
