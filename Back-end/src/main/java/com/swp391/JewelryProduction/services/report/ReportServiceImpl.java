@@ -61,7 +61,6 @@ public class ReportServiceImpl implements ReportService {
                         .createdDate(LocalDateTime.now())
                         .type(ReportType.REQUEST)
                         .sender(sender)
-                        .reportingOrder(order)
                         .build();
         order.getRelatedReports().add(requestReport);
         order.setProduct(product);

@@ -585,6 +585,8 @@ public class ActionAndGuardConfiguration implements ApplicationContextAware {
                 Product product = order.getProduct();
                 if (product != null && (product.getImageURL() == null || product.getImageURL().isEmpty()))
                     product.setImageURL(order.getProofUrl());
+                if (!order.isFromTemplate())
+                    product.setImageURL(order.getProofUrl());
                 Report report = reportService.createNormalReport(order, message.getTitle(), message.getDescription());
                 Notification notification = Notification.builder()
                         .order(order)

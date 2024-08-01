@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("api/quotation/{orderId}")
 @RequiredArgsConstructor
-public class    QuotationController {
+public class QuotationController {
     private final QuotationService quotationService;
     private final OrderService orderService;
 

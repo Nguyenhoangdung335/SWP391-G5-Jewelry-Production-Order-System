@@ -1537,7 +1537,7 @@ public class DataInitializer implements CommandLineRunner {
 
             Design design = Design.builder()
                     .lastUpdated(quotation.getCreatedDate().atStartOfDay().plusDays(5))
-                    .designLink(imageURL)
+                    .designLink(temp.imageURL == null? imageURL: temp.imageURL)
                     .order(order)
                     .build();
             order.setDesign(design);
