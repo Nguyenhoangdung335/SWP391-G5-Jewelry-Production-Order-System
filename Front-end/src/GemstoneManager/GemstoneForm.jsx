@@ -10,8 +10,10 @@ import {
   FormSelect,
 } from "react-bootstrap";
 import DoubleRangeSlider from "../reusable/DoubleRangeSlider/DoubleRangeSlider";
+import { useAlert } from "../provider/AlertProvider";
 
 export function GemstoneForm({ types, selectedGemstone, isUpdated, onClose }) {
+  const { showAlert } = useAlert();
   const [name, setName] = useState(
     selectedGemstone ? selectedGemstone.name : ""
   );
@@ -74,9 +76,9 @@ export function GemstoneForm({ types, selectedGemstone, isUpdated, onClose }) {
     })
       .then((res) => {
         isUpdated(true);
-        alert(res.data.message);
+        showAlert("Added Successfully", res.data.message, "success");
       })
-      .catch((err) => alert(err));
+      .catch((err) => showAlert("Added Failed", err, "danger"));
   };
 
   const handleConfirmEdit = (e) => {
@@ -100,9 +102,9 @@ export function GemstoneForm({ types, selectedGemstone, isUpdated, onClose }) {
     })
       .then((res) => {
         isUpdated(true);
-        alert(res.data.message);
+        showAlert("Edited Successfully", res.data.message, "success");
       })
-      .catch((err) => alert(err));
+      .catch((err) => showAlert("Edited Failed", err, "danger"));
   };
 
   return (
