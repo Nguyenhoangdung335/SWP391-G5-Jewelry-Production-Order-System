@@ -20,6 +20,7 @@ import {
   Texture,
   GemstoneForm,
   MetalWeight,
+  MetalForm,
 } from "./DesignOptionForms";
 
 function OrderPage1() {
