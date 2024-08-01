@@ -36,6 +36,7 @@ import GemstoneList from "../Home/GemstoneList";
 function RouteMap() {
   return (
     <Routes>
+      {/* Public Pages */}
       <Route path="/" element={<LandingPageLayout />}>
         <Route index element={<Home />} />
         <Route path="/login" element={<Login />} />
@@ -47,8 +48,8 @@ function RouteMap() {
         <Route path="/collections_page" element={<Collections />} />
         <Route path="/blogs_page" element={<Blogs />} />
         <Route path="/live_price_page" element={<LivePrice />} />
-          <Route path="/gemstone_list_page" element={<GemstoneList />} />
-          <Route path="/chat" element={<Chat />} />
+        <Route path="/gemstone_list_page" element={<GemstoneList />} />
+        <Route path="/chat" element={<Chat />} />
         <Route path="/about_page" element={<About />} />
         <Route
           path="/order_page"
@@ -67,6 +68,8 @@ function RouteMap() {
           </ProtectedRoute>
         }
       ></Route>
+
+      {/* Management Pages */}
       <Route path="/userManager" element={<UserManagerLayout />}>
         <Route
           index
@@ -157,7 +160,7 @@ function RouteMap() {
         <Route
           path="/userManager/metal_manager"
           element={
-            <ProtectedRoute roles={["ADMIN"]}>
+            <ProtectedRoute roles={["ADMIN", "SALE_STAFF"]}>
               <MetalManager />
             </ProtectedRoute>
           }
@@ -213,12 +216,14 @@ function RouteMap() {
         <Route
           path="/userManager/gemstone_manager"
           element={
-            <ProtectedRoute roles={["ADMIN"]}>
+            <ProtectedRoute roles={["ADMIN", "SALE_STAFF"]}>
               <GemstoneManager />
             </ProtectedRoute>
           }
         />
       </Route>
+      
+      {/* Customer Setting Page */}
       <Route path="/user_setting_page" element={<SettingPageLayout />}>
         <Route
           path="/user_setting_page/profile_page"
