@@ -17,7 +17,7 @@ const GemstoneList = () => {
     const fetchGemstones = async () => {
       try {
         const response = await axios.get(
-          `${ServerUrl}/api/gemstone?page=0&size=174&sortBy=id`
+          `${ServerUrl}/api/gemstone?page=0&size=200&sortBy=id`
         );
         if (response.data.status === "OK") {
           setGemstones(response.data.responseList.gemstone);
