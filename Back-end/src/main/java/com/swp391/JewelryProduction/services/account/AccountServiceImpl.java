@@ -195,7 +195,7 @@ public class AccountServiceImpl implements AccountService {
     public Account setAccount(AccountDTO accountDTO) {
         Account account = Account.builder()
                 .id(accountDTO.getId())
-                .dateCreated(accountDTO.getDateCreated())
+                .dateCreated(accountDTO.getDateCreated() == null ? LocalDateTime.now(): accountDTO.getDateCreated())
                 .status(accountDTO.getStatus())
                 .email(accountDTO.getEmail().toLowerCase())
                 .password(passwordEncoder.encode(accountDTO.getPassword()))
