@@ -1,0 +1,16 @@
+services:
+  backend:
+    build:
+      context: ./Back-end
+      dockerfile: Dockerfile
+    container_name: backend
+    env_file: ./Back-end/src/main/resources/keys.env
+    ports:
+      - 8080:8080
+  frontend:
+    build:
+      context: ./Front-end
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - 3000:3000
