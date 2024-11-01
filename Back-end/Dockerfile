@@ -1,10 +1,11 @@
-FROM maven:3.9.7-ibm-semeru-21-jammy AS build
-LABEL authors="nguye"
-COPY . .
+FROM maven:3.8.7-openjdk-17 AS build
+WORKDIR /app
+COPY pom.xml ./
+RUN mvn dependency:go-offline -B
+COPY src ./src
 RUN mvn clean package -DskipTests
 
-FROM openjdk:21-jdk
-COPY --from=build /target/JewelryProduction-0.0.1-SNAPSHOT.jar JewelryProduction.jar
+FROM gcr.io/distroless/java21-debian12
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
-CMD ["sh", "-c", "java -jar app.jar --server.port=${PORT}"]
-ENTRYPOINT ["java", "-jar", "JewelryProduction.jar"]
